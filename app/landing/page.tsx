@@ -4,7 +4,6 @@ import Link from 'next/link'
 export default function Page() {
   return (
     <div className="min-h-screen bg-[#050505] text-white selection:bg-[#d4af37]/30 font-sans">
-      {/* Nav */}
       <nav className="flex justify-between items-center p-6 max-w-7xl mx-auto border-b border-white/5">
         <div className="text-2xl font-bold tracking-tighter text-[#d4af37]">HOMVI</div>
         <div className="hidden md:flex gap-8 text-sm uppercase tracking-[0.2em] text-gray-400">
@@ -17,7 +16,6 @@ export default function Page() {
         </Link>
       </nav>
 
-      {/* Hero Section */}
       <section className="pt-24 pb-12 px-6 text-center max-w-4xl mx-auto">
         <span className="text-[#d4af37] text-xs uppercase tracking-[0.3em] font-bold mb-4 block">CRM Inmobiliario Premium</span>
         <h1 className="text-5xl md:text-7xl font-light tracking-tight mb-8">
@@ -31,15 +29,14 @@ export default function Page() {
           <Link href="/today" className="bg-white text-black px-8 py-4 rounded-full font-medium hover:bg-gray-200 transition-all">
             EMPIEZA GRATIS
           </Link>
-          <button className="border border-white/20 px-8 py-4 rounded-full font-medium hover:bg-white/5 transition-all">
+          <button className="border border-white/20 px-8 py-4 rounded-full font-medium hover:bg-white/5 transition-all text-sm">
             VER DEMO
           </button>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-20 px-6 max-w-6xl mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 py-10 border-y border-white/5">
+      <section className="py-20 px-6 max-w-6xl mx-auto border-y border-white/5 mt-10">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="text-center">
             <p className="text-4xl font-light mb-2">2,400+</p>
             <p className="text-gray-500 text-[10px] uppercase tracking-widest">Agentes activos</p>
@@ -59,42 +56,44 @@ export default function Page() {
         </div>
       </section>
 
-      {/* Features */}
       <section className="py-24 px-6 max-w-5xl mx-auto">
         <div className="grid md:grid-cols-3 gap-16">
           <div className="space-y-4">
             <div className="text-[#d4af37] text-3xl font-serif">01</div>
-            <h3 className="text-xl">Pipeline Visual</h3>
+            <h3 className="text-xl font-medium tracking-tight">Pipeline Visual</h3>
             <p className="text-gray-500 text-sm leading-relaxed">Visualiza el estado de cada cliente en tiempo real. De lead a cierre, sin fricción.</p>
           </div>
           <div className="space-y-4">
             <div className="text-[#d4af37] text-3xl font-serif">02</div>
-            <h3 className="text-xl">Follow-ups Precisos</h3>
+            <h3 className="text-xl font-medium tracking-tight">Follow-ups Precisos</h3>
             <p className="text-gray-500 text-sm leading-relaxed">Nunca pierda un seguimiento. Recordatorios, historial y priorización automática.</p>
           </div>
           <div className="space-y-4">
             <div className="text-[#d4af37] text-3xl font-serif">03</div>
-            <h3 className="text-xl">Catálogo</h3>
-            <p className="text-gray-500 text-sm leading-relaxed">Conecta clientes con propiedades. Filtra por zona y precio al instante.</p>
+            <h3 className="text-xl font-medium tracking-tight">Catálogo Lujo</h3>
+            <p className="text-gray-500 text-sm leading-relaxed">Conecta clientes con propiedades. Filtra por zona, precio y características al instante.</p>
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-24 px-6 text-center bg-[#d4af37]/5">
-        <h2 className="text-4xl font-light mb-4 text-[#d4af37]">Empieza a cerrar más. Hoy.</h2>
-        <p className="text-gray-400 mb-8 max-w-md mx-auto">Sin tarjeta de crédito. Configura en 5 minutos.</p>
-        <div className="max-w-md mx-auto">
-          <Link href="/today" className="inline-block bg-[#d4af37] text-black px-12 py-4 rounded-full font-bold hover:bg-[#b8962e] transition-all">
+      <section className="py-24 px-6 text-center bg-[#d4af37]/5 border-t border-[#d4af37]/10">
+        <h2 className="text-4xl font-light mb-4">Empieza a cerrar más. Hoy.</h2>
+        <p className="text-gray-400 mb-10 max-w-md mx-auto text-sm">Sin tarjeta de crédito. Configura en 5 minutos.</p>
+        <div className="max-w-md mx-auto flex flex-col gap-4">
+          <input 
+            type="email" 
+            placeholder="tu@email.com" 
+            className="bg-black border border-white/10 rounded-full px-6 py-4 text-sm focus:border-[#d4af37] outline-none transition-colors"
+          />
+          <Link href="/today" className="bg-[#d4af37] text-black px-8 py-4 rounded-full text-sm font-bold hover:bg-[#b8962e] transition-all">
             COMENZAR GRATIS
           </Link>
         </div>
       </section>
 
-      <footer className="py-12 text-center text-gray-600 text-[10px] tracking-widest">
+      <footer className="py-12 text-center text-gray-600 text-[10px] tracking-[0.3em] uppercase">
         <p>© 2026 HOMVI. ELEVANDO EL ESTÁNDAR INMOBILIARIO.</p>
       </footer>
     </div>
   )
-}
 }
