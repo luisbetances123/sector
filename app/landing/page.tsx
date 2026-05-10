@@ -8,9 +8,9 @@ export default function Page() {
       <nav className="flex justify-between items-center p-6 max-w-7xl mx-auto border-b border-white/5">
         <div className="text-2xl font-bold tracking-tighter text-[#d4af37]">HOMVI</div>
         <div className="hidden md:flex gap-8 text-sm uppercase tracking-[0.2em] text-gray-400">
-          <a href="#" className="hover:text-white transition-colors text-xs">Producto</a>
-          <a href="#" className="hover:text-white transition-colors text-xs">Precios</a>
-          <a href="#" className="hover:text-white transition-colors text-xs">Contacto</a>
+          <span className="hover:text-white cursor-pointer transition-colors text-[10px]">Producto</span>
+          <span className="hover:text-white cursor-pointer transition-colors text-[10px]">Precios</span>
+          <span className="hover:text-white cursor-pointer transition-colors text-[10px]">Contacto</span>
         </div>
         <Link href="/today" className="bg-[#d4af37] text-black px-6 py-2 rounded-full text-xs font-bold hover:bg-[#b8962e] transition-all">
           COMENZAR
@@ -37,84 +37,62 @@ export default function Page() {
         </div>
       </section>
 
-      {/* Visual Pipeline Preview */}
+      {/* Stats Section */}
       <section className="py-20 px-6 max-w-6xl mx-auto">
-        <div className="bg-[#0a0a0a] border border-white/10 rounded-3xl p-8 shadow-2xl shadow-[#d4af37]/5">
-          <h3 className="text-[#d4af37] text-xs uppercase tracking-widest mb-8 text-center">Pipeline de Clientes</h3>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {['Lead', 'Buscando', 'En Oferta', 'Cierre'].map((step) => (
-              <div key={step} className="bg-white/5 p-4 rounded-xl border border-white/5">
-                <p className="text-[10px] uppercase tracking-tighter text-gray-500 mb-3">{step}</p>
-                <div className="space-y-2">
-                  <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden">
-                    <div className="h-full bg-[#d4af37] w-2/3"></div>
-                  </div>
-                  <p className="text-xs text-gray-300">Gestionando activos...</p>
-                </div>
-              </div>
-            ))}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 py-10 border-y border-white/5">
+          <div className="text-center">
+            <p className="text-4xl font-light mb-2">2,400+</p>
+            <p className="text-gray-500 text-[10px] uppercase tracking-widest">Agentes activos</p>
           </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 pt-8 border-t border-white/5">
-            <div className="text-center">
-              <p className="text-3xl font-light">2,400+</p>
-              <p className="text-gray-500 text-[10px] uppercase tracking-widest mt-2">Agentes activos</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-light">$18B</p>
-              <p className="text-gray-500 text-[10px] uppercase tracking-widest mt-2">Propiedades gestionadas</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-light">34%</p>
-              <p className="text-gray-500 text-[10px] uppercase tracking-widest mt-2">Más cierres</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-light">99%</p>
-              <p className="text-gray-500 text-[10px] uppercase tracking-widest mt-2">Satisfacción</p>
-            </div>
+          <div className="text-center">
+            <p className="text-4xl font-light mb-2">$18B</p>
+            <p className="text-gray-500 text-[10px] uppercase tracking-widest">Propiedades</p>
+          </div>
+          <div className="text-center">
+            <p className="text-4xl font-light mb-2">34%</p>
+            <p className="text-gray-500 text-[10px] uppercase tracking-widest">Más cierres</p>
+          </div>
+          <div className="text-center">
+            <p className="text-4xl font-light mb-2">99%</p>
+            <p className="text-gray-500 text-[10px] uppercase tracking-widest">Satisfacción</p>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Features */}
       <section className="py-24 px-6 max-w-5xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-light mb-4">Todo lo que necesita un agente de alto nivel</h2>
-          <p className="text-gray-500 italic">Diseñado para los que operan con excelencia</p>
-        </div>
-        <div className="grid md:grid-cols-3 gap-12">
-          {[
-            { n: "01", t: "Pipeline Visual", d: "Visualiza el estado de cada cliente en tiempo real. De lead a cierre, sin fricción." },
-            { n: "02", t: "Follow-ups Precisos", d: "Nunca pierda un seguimiento. Recordatorios, historial y priorización automática." },
-            { n: "03", t: "Catálogo de Propiedades", d: "Conecta clientes con propiedades. Filtra por zona, precio y características al instante." }
-          ].map((feat) => (
-            <div key={feat.n} className="space-y-4">
-              <span className="text-[#d4af37] font-serif italic text-4xl">{feat.n}</span>
-              <h4 className="text-xl font-medium">{feat.t}</h4>
-              <p className="text-gray-500 text-sm leading-relaxed">{feat.d}</p>
-            </div>
-          ))}
+        <div className="grid md:grid-cols-3 gap-16">
+          <div className="space-y-4">
+            <div className="text-[#d4af37] text-3xl font-serif">01</div>
+            <h3 className="text-xl">Pipeline Visual</h3>
+            <p className="text-gray-500 text-sm leading-relaxed">Visualiza el estado de cada cliente en tiempo real. De lead a cierre, sin fricción.</p>
+          </div>
+          <div className="space-y-4">
+            <div className="text-[#d4af37] text-3xl font-serif">02</div>
+            <h3 className="text-xl">Follow-ups Precisos</h3>
+            <p className="text-gray-500 text-sm leading-relaxed">Nunca pierda un seguimiento. Recordatorios, historial y priorización automática.</p>
+          </div>
+          <div className="space-y-4">
+            <div className="text-[#d4af37] text-3xl font-serif">03</div>
+            <h3 className="text-xl">Catálogo</h3>
+            <p className="text-gray-500 text-sm leading-relaxed">Conecta clientes con propiedades. Filtra por zona y precio al instante.</p>
+          </div>
         </div>
       </section>
 
-      {/* CTA Final */}
-      <section className="py-24 px-6 text-center bg-[#d4af37]/5 border-y border-[#d4af37]/10">
-        <h2 className="text-4xl font-light mb-4">Empieza a cerrar más. Hoy.</h2>
-        <p className="text-gray-400 mb-8">Sin tarjeta de crédito. Configura en 5 minutos.</p>
-        <div className="max-w-md mx-auto flex flex-col md:flex-row gap-2">
-          <input 
-            type="email" 
-            placeholder="tu@email.com" 
-            className="flex-1 bg-black border border-white/10 rounded-full px-6 py-3 text-sm focus:border-[#d4af37] outline-none"
-          />
-          <button className="bg-[#d4af37] text-black px-8 py-3 rounded-full text-sm font-bold hover:bg-[#b8962e] transition-all">
+      {/* CTA */}
+      <section className="py-24 px-6 text-center bg-[#d4af37]/5">
+        <h2 className="text-4xl font-light mb-4 text-[#d4af37]">Empieza a cerrar más. Hoy.</h2>
+        <p className="text-gray-400 mb-8 max-w-md mx-auto">Sin tarjeta de crédito. Configura en 5 minutos.</p>
+        <div className="max-w-md mx-auto">
+          <Link href="/today" className="inline-block bg-[#d4af37] text-black px-12 py-4 rounded-full font-bold hover:bg-[#b8962e] transition-all">
             COMENZAR GRATIS
-          </button>
+          </Link>
         </div>
       </section>
 
-      <footer className="py-12 text-center text-gray-600 text-[10px] tracking-widest uppercase">
-        <p>© 2026 Homvi. Elevando el estándar inmobiliario.</p>
+      <footer className="py-12 text-center text-gray-600 text-[10px] tracking-widest">
+        <p>© 2026 HOMVI. ELEVANDO EL ESTÁNDAR INMOBILIARIO.</p>
       </footer>
     </div>
   )
