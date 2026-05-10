@@ -53,8 +53,10 @@ export default function LandingPage() {
       </section>
 
       <footer className="py-12 border-t border-white/5 text-center text-gray-600 text-sm italic">
-        <p>© 2025 Homvi. Elevando el estándar inmobiliario.</p>
+        <p>© 2026 Homvi. Elevando el estándar inmobiliario.</p>
       </footer>
     </div>
+  )
+}
   )
 }
