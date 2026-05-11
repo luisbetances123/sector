@@ -1,5 +1,6 @@
 'use client'
 import React, { useState } from 'react'
+import Link from 'next/link' // Importante para la navegación
 
 export default function PropertiesPage() {
   const [search, setSearch] = useState('')
@@ -21,20 +22,23 @@ export default function PropertiesPage() {
 
   return (
     <div className="min-h-screen bg-[#050505] text-white p-6 md:p-12">
-      <header className="mb-10">
+      <header className="mb-10 flex justify-between items-center">
         <h1 className="text-3xl font-light italic">Catálogo <span className="text-[#d4af37] not-italic font-bold">Homvi</span></h1>
+        <Link href="/" className="text-[10px] uppercase tracking-widest text-gray-500 hover:text-white transition-all">
+          Ir al Inicio
+        </Link>
       </header>
 
       {/* Controles */}
       <div className="flex flex-col md:flex-row gap-4 mb-10">
         <input 
           type="text"
-          placeholder="Buscar..."
+          placeholder="Buscar propiedad o ubicación..."
           className="bg-[#0a0a0a] border border-white/10 p-4 rounded-xl flex-1 outline-none focus:border-[#d4af37] transition-all"
           onChange={(e) => setSearch(e.target.value)}
         />
         <div className="flex gap-2">
-          {['Todos', 'Villa', 'Penthouse'].map(cat => (
+          {['Todos', 'Villa', 'Penthouse', 'Apartamento'].map(cat => (
             <button 
               key={cat}
               onClick={() => setFilter(cat)}
@@ -48,18 +52,27 @@ export default function PropertiesPage() {
         </div>
       </div>
 
-      {/* Rejilla */}
+      {/* Rejilla de Propiedades */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredProperties.map(prop => (
-          <div key={prop.id} className="bg-[#0a0a0a] border border-white/5 p-6 rounded-[2rem] hover:border-[#d4af37]/30 transition-all">
-            <div className="flex justify-between items-start mb-4">
-              <h3 className="font-bold uppercase tracking-tighter">{prop.name}</h3>
-              <span className="text-[#d4af37] font-mono">{prop.price}</span>
+          <div key={prop.id} className="bg-[#0a0a0a] border border-white/5 p-6 rounded-[2rem] hover:border-[#d4af37]/30 transition-all group flex flex-col justify-between">
+            <div>
+              <div className="flex justify-between items-start mb-4">
+                <h3 className="font-bold uppercase tracking-tighter text-sm">{prop.name}</h3>
+                <span className="text-[#d4af37] font-mono text-sm">{prop.price}</span>
+              </div>
+              <p className="text-gray-500 text-[10px] italic mb-4">{prop.loc} • {prop.area}</p>
+              <div className="text-[9px] uppercase tracking-widest text-[#d4af37] bg-[#d4af37]/10 w-fit px-3 py-1 rounded-full border border-[#d4af37]/20 mb-8">
+                {prop.type}
+              </div>
             </div>
-            <p className="text-gray-500 text-xs italic mb-4">{prop.loc}</p>
-            <div className="text-[9px] uppercase tracking-widest text-[#d4af37] bg-[#d4af37]/10 w-fit px-3 py-1 rounded-full border border-[#d4af37]/20">
-              {prop.type}
-            </div>
+
+            {/* ESTE ES EL BOTÓN QUE CONECTA CON LA FICHA TÉCNICA */}
+            <Link href={`/properties/${prop.id}`}>
+              <button className="w-full py-4 rounded-2xl border border-white/10 bg-white/5 text-[9px] uppercase tracking-[0.2em] font-bold hover:bg-white hover:text-black transition-all">
+                Ver Detalles
+              </button>
+            </Link>
           </div>
         ))}
       </div>
