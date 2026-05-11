@@ -9,13 +9,15 @@ export default function PropertyDetail() {
 
   // Datos con las mismas fotos del catálogo
   const propertyData = {
-    "1": { 
-      name: 'Penthouse Bella Vista', 
-      loc: 'Piantini, SD', 
-      price: '$1.2M', 
-      area: '450m²', 
-      rooms: 4, 
-      image: 'https://images.unsplash.com/photo-1567496898905-af4139885fe7?auto=format&fit=crop&q=80&w=800' 
+    { 
+  id: 1, 
+  name: 'Penthouse Bella Vista', 
+  loc: 'Piantini, SD', 
+  price: '$1.2M', 
+  area: '450m²', 
+  type: 'Penthouse',
+  image: 'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?q=80&w=800&auto=format&fit=crop'
+},
     },
     "2": { 
       name: 'Villa Mar Azul', 
