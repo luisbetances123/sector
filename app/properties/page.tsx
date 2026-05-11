@@ -1,80 +1,95 @@
 'use client'
-import Link from 'next/link'
+import { useState } from 'react'
 
 export default function PropertiesPage() {
-  const properties = [
-    { id: 1, name: 'Penthouse Bella Vista', loc: 'Piantini, SD', price: '$1.2M', status: 'Disponible', area: '450m²' },
-    { id: 2, name: 'Villa Mar Azul', loc: 'Punta Cana', price: '$3.5M', status: 'En Oferta', area: '1,200m²' },
-    { id: 3, name: 'Mansión Los Lagos', loc: 'Casa de Campo', price: '$5.2M', status: 'Vendido', area: '2,500m²' },
+  const [search, setSearch] = useState('')
+  const [filter, setFilter] = useState('Todos')
+
+  const allProperties = [
+    { id: 1, name: 'Penthouse Bella Vista', loc: 'Piantini, SD', price: '$1.2M', status: 'Disponible', area: '450m²', type: 'Penthouse' },
+    { id: 2, name: 'Villa Mar Azul', loc: 'Punta Cana', price: '$3.5M', status: 'En Oferta', area: '1,200m²', type: 'Villa' },
+    { id: 3, name: 'Mansión Los Lagos', loc: 'Casa de Campo', price: '$5.2M', status: 'Vendido', area: '2,500m²', type: 'Villa' },
+    { id: 4, name: 'Sky Loft Central', loc: 'Naco, SD', price: '$750k', status: 'Disponible', area: '280m²', type: 'Apartamento' },
   ]
 
+  // Lógica de filtrado en tiempo real
+  const filteredProperties = allProperties.filter(prop => {
+    const matchesSearch = prop.name.toLowerCase().includes(search.toLowerCase()) || 
+                          prop.loc.toLowerCase().includes(search.toLowerCase())
+    const matchesFilter = filter === 'Todos' || prop.type === filter
+    return matchesSearch && matchesFilter
+  })
+
   return (
-    <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-[#d4af37]/30">
-      {/* Navegación */}
-      <nav className="flex justify-between items-center p-6 max-w-7xl mx-auto border-b border-white/5">
-        <div className="flex items-center gap-8">
-          <div className="text-[#d4af37] text-xl font-bold tracking-tighter uppercase italic">Homvi</div>
-          <div className="hidden md:flex gap-6 text-[10px] uppercase tracking-widest text-gray-500 font-bold">
-            <Link href="/dashboard" className="hover:text-white transition-colors">Dashboard</Link>
-            <Link href="/properties" className="text-[#d4af37]">Propiedades</Link>
-          </div>
-        </div>
-        <div className="flex items-center gap-4">
-          <span className="text-[10px] text-gray-500 tracking-widest uppercase font-medium">Luis Betances</span>
-          <div className="w-8 h-8 bg-[#d4af37] rounded-full flex items-center justify-center text-black text-xs font-bold">LB</div>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-[#050505] text-white p-8 md:p-12">
+      <header className="mb-12">
+        <h1 className="text-4xl font-light tracking-tight italic">
+          Catálogo <span className="not-italic text-[#d4af37]">Exclusivo</span>
+        </h1>
+        <p className="text-gray-500 text-sm mt-2 italic font-light">
+          Gestiona y filtra tus activos inmobiliarios de alta gama.
+        </p>
+      </header>
 
-      <main className="max-w-7xl mx-auto p-6 md:p-12">
-        <header className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-          <div>
-            <h1 className="text-4xl font-light tracking-tight italic text-white">
-              Catálogo de <span className="not-italic text-[#d4af37]">Propiedades</span>
-            </h1>
-            <p className="text-gray-500 text-sm mt-2 font-light italic">Curaduría exclusiva de activos inmobiliarios.</p>
-          </div>
-          <button className="bg-white text-black px-8 py-3 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-[#d4af37] transition-all shadow-lg shadow-white/5">
-            + Añadir Inmueble
-          </button>
-        </header>
+      {/* BARRA DE BÚSQUEDA Y FILTROS */}
+      <div className="flex flex-col md:flex-row gap-6 mb-12 items-center">
+        <div className="relative w-full md:w-1/2">
+          <input 
+            type="text"
+            placeholder="Buscar por nombre o ubicación..."
+            className="w-full bg-[#0a0a0a] border border-white/10 py-4 px-6 rounded-2xl text-sm focus:border-[#d4af37] outline-none transition-all"
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <span className="absolute right-6 top-4 text-gray-600 italic text-xs">BUSCAR</span>
+        </div>
 
-        {/* Rejilla de Propiedades */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {properties.map((prop) => (
-            <div key={prop.id} className="bg-[#0a0a0a] border border-white/5 rounded-[2.5rem] overflow-hidden group hover:border-[#d4af37]/30 transition-all shadow-2xl">
-              <div className="h-64 bg-neutral-900 relative">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-                <span className={`absolute top-6 right-6 px-4 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest border ${
-                  prop.status === 'Disponible' ? 'bg-green-500/10 text-green-500 border-green-500/20' : 
-                  prop.status === 'En Oferta' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' : 
-                  'bg-red-500/10 text-red-500 border-red-500/20'
-                }`}>
-                  {prop.status}
-                </span>
-              </div>
-              
-              <div className="p-8">
-                <div className="flex justify-between items-start mb-6">
-                  <div>
-                    <h3 className="text-lg font-bold group-hover:text-[#d4af37] transition-colors uppercase tracking-tight">{prop.name}</h3>
-                    <p className="text-gray-500 text-xs italic mt-1">{prop.loc} • {prop.area}</p>
-                  </div>
-                  <span className="text-[#d4af37] font-bold text-xl tracking-tighter">{prop.price}</span>
-                </div>
-                
-                <div className="pt-6 border-t border-white/5 flex gap-3">
-                  <button className="flex-1 text-[9px] font-bold uppercase tracking-[0.2em] py-4 rounded-2xl border border-white/10 hover:bg-white hover:text-black transition-all">
-                    Detalles
-                  </button>
-                  <button className="flex-1 text-[9px] font-bold uppercase tracking-[0.2em] py-4 rounded-2xl bg-[#d4af37]/10 text-[#d4af37] border border-[#d4af37]/20 hover:bg-[#d4af37] hover:text-black transition-all">
-                    Editar
-                  </button>
-                </div>
-              </div>
-            </div>
+        <div className="flex gap-2 overflow-x-auto pb-2 w-full md:w-auto">
+          {['Todos', 'Villa', 'Penthouse', 'Apartamento'].map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setFilter(cat)}
+              className={`px-6 py-3 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all border ${
+                filter === cat 
+                ? 'bg-[#d4af37] text-black border-[#d4af37]' 
+                : 'bg-transparent text-gray-500 border-white/10 hover:border-white/30'
+              }`}
+            >
+              {cat}
+            </button>
           ))}
         </div>
-      </main>
+      </div>
+
+      {/* GRID DE RESULTADOS */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {filteredProperties.length > 0 ? (
+          filteredProperties.map((prop) => (
+            <div key={prop.id} className="bg-[#0a0a0a] border border-white/5 rounded-[2.5rem] overflow-hidden group hover:border-[#d4af37]/30 transition-all">
+              <div className="h-48 bg-neutral-900 relative">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                <div className="absolute bottom-4 left-6">
+                  <span className="text-[10px] text-[#d4af37] font-bold uppercase tracking-widest">{prop.type}</span>
+                </div>
+              </div>
+              <div className="p-8">
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="text-lg font-bold group-hover:text-[#d4af37] transition-colors uppercase">{prop.name}</h3>
+                  <span className="text-[#d4af37] font-bold">{prop.price}</span>
+                </div>
+                <p className="text-gray-500 text-xs italic mb-6">{prop.loc} • {prop.area}</p>
+                <button className="w-full py-4 rounded-2xl border border-white/5 bg-white/5 text-[9px] uppercase tracking-[0.2em] font-bold hover:bg-white hover:text-black transition-all">
+                  Ver Detalles
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="col-span-full py-20 text-center border border-dashed border-white/10 rounded-[2.5rem]">
+            <p className="text-gray-500 italic">No se encontraron propiedades que coincidan con tu búsqueda.</p>
+          </div>
+        )}
+      </div>
     </div>
   )
+}
 }
