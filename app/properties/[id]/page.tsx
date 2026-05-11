@@ -7,17 +7,14 @@ export default function PropertyDetail() {
   const { id } = useParams()
   const [sent, setSent] = useState(false)
 
-  // Datos con las mismas fotos del catálogo
   const propertyData = {
-    { 
-  id: 1, 
-  name: 'Penthouse Bella Vista', 
-  loc: 'Piantini, SD', 
-  price: '$1.2M', 
-  area: '450m²', 
-  type: 'Penthouse',
-  image: 'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?q=80&w=800&auto=format&fit=crop'
-},
+    "1": { 
+      name: 'Penthouse Bella Vista', 
+      loc: 'Piantini, SD', 
+      price: '$1.2M', 
+      area: '450m²', 
+      rooms: 4, 
+      image: 'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?q=80&w=800&auto=format&fit=crop' 
     },
     "2": { 
       name: 'Villa Mar Azul', 
@@ -66,7 +63,6 @@ export default function PropertyDetail() {
             {prop.name}
           </h1>
 
-          {/* FOTO REAL CARGADA DINÁMICAMENTE */}
           <div className="w-full h-[500px] mb-12 overflow-hidden rounded-[3rem] border border-white/10">
             <img 
               src={prop.image} 
