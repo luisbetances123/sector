@@ -125,15 +125,26 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
 
       {/* Header */}
       <div className="p-6 border-b border-white/5 flex items-center gap-4">
-        <button onClick={() => router.push('/dashboard')} className="text-xs uppercase tracking-widest text-gray-500 hover:text-white transition-colors font-bold">
-          ← Dashboard
-        </button>
-        <div className="flex-1" />
-        <span className={`text-xs px-3 py-1 rounded-full font-bold border uppercase tracking-widest ${etapaColor[cliente.etapa]}`}>
-          {cliente.etapa}
-        </span>
-      </div>
-
+  <button onClick={() => router.push('/dashboard')} className="text-xs uppercase tracking-widest text-gray-500 hover:text-white transition-colors font-bold">
+    ← Dashboard
+  </button>
+  <div className="flex-1" />
+  <button
+    onClick={() => {
+      const guardados = localStorage.getItem('homvi_clientes')
+      if (!guardados) return
+      const clientes = JSON.parse(guardados).filter((c: Cliente) => c.id !== id)
+      localStorage.setItem('homvi_clientes', JSON.stringify(clientes))
+      router.push('/dashboard')
+    }}
+    className="text-xs uppercase tracking-widest text-red-400/60 hover:text-red-400 transition-colors font-bold"
+  >
+    Eliminar cliente
+  </button>
+  <span className={`text-xs px-3 py-1 rounded-full font-bold border uppercase tracking-widest ${etapaColor[cliente.etapa]}`}>
+    {cliente.etapa}
+  </span>
+</div>
       {/* Perfil */}
       <div className="p-6 border-b border-white/5 flex items-center gap-4">
         <div className="w-12 h-12 rounded-full bg-[#d4af37] flex items-center justify-center text-black font-bold text-lg flex-shrink-0">
