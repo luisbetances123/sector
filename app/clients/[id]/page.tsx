@@ -21,6 +21,13 @@ interface Cliente {
   notas: string
 }
 
+interface Comunicacion {
+  id: string
+  tipo: 'whatsapp' | 'email' | 'llamada' | 'nota'
+  texto: string
+  fecha: string
+}
+
 const etapaColor: Record<Stage, string> = {
   LEAD: 'text-blue-400 bg-blue-400/10 border-blue-400/30',
   BUSCANDO: 'text-[#d4af37] bg-[#d4af37]/10 border-[#d4af37]/30',
@@ -38,6 +45,20 @@ const plantillas = [
   { id: 'p5', label: 'Negociación', icono: '🤝', mensaje: (n: string) => `Hola ${n}, he hablado con el vendedor y tenemos margen para negociar. ¿Podemos hablar hoy para coordinar los siguientes pasos?` },
   { id: 'p6', label: 'Cierre próximo', icono: '🎉', mensaje: (n: string) => `${n}, estamos muy cerca del cierre. Solo necesito confirmar algunos detalles finales. ¿Tienes disponibilidad esta semana?` },
 ]
+
+const tipoIcono: Record<string, string> = {
+  whatsapp: '💬',
+  email: '✉️',
+  llamada: '📞',
+  nota: '📝',
+}
+
+const tipoColor: Record<string, string> = {
+  whatsapp: 'text-green-400 bg-green-400/10 border-green-400/20',
+  email: 'text-blue-400 bg-blue-400/10 border-blue-400/20',
+  llamada: 'text-[#d4af37] bg-[#d4af37]/10 border-[#d4af37]/20',
+  nota: 'text-gray-400 bg-white/5 border-white/10',
+}
 
 function initiales(nombre: string) {
   return nombre.split(' ').slice(0, 2).map((n) => n[0]).join('').toUpperCase()
@@ -68,6 +89,11 @@ function generarMensajeAuto(cliente: Cliente): string {
   return opciones[Math.floor(Math.random() * opciones.length)]
 }
 
+function formatFecha(iso: string) {
+  const d = new Date(iso)
+  return d.toLocaleDateString('es-DO', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+}
+
 export default function ClienteDetalle({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
   const { id } = use(params)
@@ -76,6 +102,8 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
   const [mostrarCopilot, setMostrarCopilot] = useState(false)
   const [copiado, setCopiado] = useState(false)
   const [tabActivo, setTabActivo] = useState<'auto' | 'plantillas'>('auto')
+  const [historial, setHistorial] = useState<Comunicacion[]>([])
+  const [nuevaNota, setNuevaNota] = useState('')
 
   useEffect(() => {
     const guardados = localStorage.getItem('homvi_clientes')
@@ -84,7 +112,21 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
       const encontrado = clientes.find((c) => c.id === id)
       if (encontrado) setCliente(encontrado)
     }
+    const hist = localStorage.getItem(`homvi_historial_${id}`)
+    if (hist) setHistorial(JSON.parse(hist))
   }, [id])
+
+  const registrarComunicacion = (tipo: Comunicacion['tipo'], texto: string) => {
+    const nueva: Comunicacion = {
+      id: Date.now().toString(),
+      tipo,
+      texto,
+      fecha: new Date().toISOString(),
+    }
+    const actualizado = [nueva, ...historial]
+    setHistorial(actualizado)
+    localStorage.setItem(`homvi_historial_${id}`, JSON.stringify(actualizado))
+  }
 
   const cambiarEtapa = (nuevaEtapa: Stage) => {
     if (!cliente) return
@@ -111,7 +153,26 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
   const abrirWhatsApp = () => {
     if (!cliente?.telefono || !mensaje) return
     const numero = cliente.telefono.replace(/\D/g, '')
+    registrarComunicacion('whatsapp', mensaje)
     window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`, '_blank')
+  }
+
+  const abrirEmail = () => {
+    if (!cliente?.email) return
+    registrarComunicacion('email', `Email enviado a ${cliente.email}`)
+    window.open(`mailto:${cliente.email}`, '_blank')
+  }
+
+  const abrirLlamada = () => {
+    if (!cliente?.telefono) return
+    registrarComunicacion('llamada', `Llamada a ${cliente.telefono}`)
+    window.open(`tel:${cliente.telefono}`, '_blank')
+  }
+
+  const agregarNota = () => {
+    if (!nuevaNota.trim()) return
+    registrarComunicacion('nota', nuevaNota.trim())
+    setNuevaNota('')
   }
 
   if (!cliente) return (
@@ -125,33 +186,35 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
 
       {/* Header */}
       <div className="p-6 border-b border-white/5 flex items-center gap-4">
-  <button onClick={() => router.push('/dashboard')} className="text-xs uppercase tracking-widest text-gray-500 hover:text-white transition-colors font-bold">
-    ← Dashboard
-  </button>
-  <div className="flex-1" />
-  <button
-    onClick={() => {
-      const guardados = localStorage.getItem('homvi_clientes')
-      if (!guardados) return
-      const clientes = JSON.parse(guardados).filter((c: Cliente) => c.id !== id)
-      localStorage.setItem('homvi_clientes', JSON.stringify(clientes))
-      router.push('/dashboard')
-    }}
-    className="text-xs uppercase tracking-widest text-red-400/60 hover:text-red-400 transition-colors font-bold"
-  >
-    Eliminar cliente
-  </button>
-  <span className={`text-xs px-3 py-1 rounded-full font-bold border uppercase tracking-widest ${etapaColor[cliente.etapa]}`}>
-    {cliente.etapa}
-  </span>
-</div>
+        <button onClick={() => router.push('/dashboard')} className="text-xs uppercase tracking-widest text-gray-500 hover:text-white transition-colors font-bold">
+          ← Dashboard
+        </button>
+        <div className="flex-1" />
+        <button
+          onClick={() => {
+            const guardados = localStorage.getItem('homvi_clientes')
+            if (!guardados) return
+            const clientes = JSON.parse(guardados).filter((c: Cliente) => c.id !== id)
+            localStorage.setItem('homvi_clientes', JSON.stringify(clientes))
+            router.push('/dashboard')
+          }}
+          className="text-xs uppercase tracking-widest text-red-400/60 hover:text-red-400 transition-colors font-bold"
+        >
+          Eliminar cliente
+        </button>
+        <span className={`text-xs px-3 py-1 rounded-full font-bold border uppercase tracking-widest ${etapaColor[cliente.etapa]}`}>
+          {cliente.etapa}
+        </span>
+      </div>
+
       {/* Perfil */}
       <div className="p-6 border-b border-white/5 flex items-center gap-4">
         <div className="w-12 h-12 rounded-full bg-[#d4af37] flex items-center justify-center text-black font-bold text-lg flex-shrink-0">
           {initiales(cliente.nombre)}
         </div>
         <div className="flex-1">
-<h1 className="text-xl font-bold text-white">{cliente.nombre.split(' ').map((n) => n.charAt(0).toUpperCase() + n.slice(1)).join(' ')}</h1>          <p className="text-gray-500 text-sm mt-0.5">{cliente.telefono}{cliente.telefono && cliente.email && ' · '}{cliente.email}</p>
+          <h1 className="text-xl font-bold text-white">{cliente.nombre.split(' ').map((n) => n.charAt(0).toUpperCase() + n.slice(1)).join(' ')}</h1>
+          <p className="text-gray-500 text-sm mt-0.5">{cliente.telefono}{cliente.telefono && cliente.email && ' · '}{cliente.email}</p>
         </div>
         <div className="flex gap-2 flex-wrap justify-end">
           <button onClick={() => { seleccionarMensaje(generarMensajeAuto(cliente)); setTabActivo('auto') }}
@@ -163,19 +226,19 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
             📋 Plantillas
           </button>
           {cliente.telefono && (
-            <button onClick={() => window.open(`https://wa.me/${cliente.telefono.replace(/\D/g,'')}`, '_blank')}
+            <button onClick={() => { abrirWhatsApp() }}
               className="bg-green-400/10 border border-green-400/30 text-green-400 px-4 py-2 rounded-xl text-xs font-bold hover:bg-green-400/20 transition-all">
               WhatsApp →
             </button>
           )}
           {cliente.email && (
-            <button onClick={() => window.open(`mailto:${cliente.email}`, '_blank')}
+            <button onClick={abrirEmail}
               className="bg-blue-400/10 border border-blue-400/30 text-blue-400 px-4 py-2 rounded-xl text-xs font-bold hover:bg-blue-400/20 transition-all">
               Email →
             </button>
           )}
           {cliente.telefono && (
-            <button onClick={() => window.open(`tel:${cliente.telefono}`, '_blank')}
+            <button onClick={abrirLlamada}
               className="bg-white/5 border border-white/10 text-gray-300 px-4 py-2 rounded-xl text-xs font-bold hover:bg-white/10 transition-all">
               Llamar →
             </button>
@@ -329,6 +392,49 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
           </div>
         </div>
       </div>
+
+      {/* Historial de comunicaciones */}
+      <div className="p-6 border-t border-white/5 mt-4">
+        <h3 className="text-xs uppercase tracking-[0.2em] text-gray-500 font-bold mb-6">Historial de Comunicaciones</h3>
+
+        {/* Añadir nota manual */}
+        <div className="flex gap-3 mb-6">
+          <input
+            type="text"
+            value={nuevaNota}
+            onChange={(e) => setNuevaNota(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && agregarNota()}
+            placeholder="Añadir nota manual..."
+            className="flex-1 bg-[#0a0a0a] border border-white/10 rounded-2xl px-5 py-3 text-sm text-white placeholder-gray-600 outline-none focus:border-[#d4af37]/50 transition-all"
+          />
+          <button onClick={agregarNota}
+            className="bg-[#d4af37]/10 border border-[#d4af37]/30 text-[#d4af37] px-5 py-3 rounded-2xl text-xs font-bold hover:bg-[#d4af37]/20 transition-all">
+            + Nota
+          </button>
+        </div>
+
+        {/* Lista de historial */}
+        {historial.length === 0 ? (
+          <div className="text-center py-10 text-gray-600 text-sm">
+            Sin comunicaciones registradas aún.
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {historial.map((h) => (
+              <div key={h.id} className="flex gap-4 items-start">
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-sm flex-shrink-0 border ${tipoColor[h.tipo]}`}>
+                  {tipoIcono[h.tipo]}
+                </div>
+                <div className="flex-1 bg-[#0a0a0a] border border-white/5 rounded-2xl px-4 py-3">
+                  <p className="text-sm text-gray-300 leading-relaxed">{h.texto}</p>
+                  <p className="text-xs text-gray-600 mt-1">{formatFecha(h.fecha)}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
     </div>
   )
 }
