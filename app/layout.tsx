@@ -1,4 +1,4 @@
-'use client' // <--- ESTA LÍNEA ES LA CLAVE
+'use client'
 
 import './globals.css'
 import Sidebar from './components/Sidebar'
@@ -10,13 +10,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className="bg-black antialiased">
+      <body className="bg-black antialiased text-white">
         <div className="flex min-h-screen">
-          {/* El Sidebar ahora funcionará porque el Layout es 'use client' */}
+          {/* El Sidebar debe tener sus propias reglas de 'hidden lg:block' adentro */}
           <Sidebar /> 
           
-          {/* ml-64 asegura que el contenido no empiece debajo del sidebar */}
-          <main className="flex-1 ml-64 bg-[#050505] min-h-screen">
+          {/* 
+              ml-0: En móvil no hay margen izquierdo.
+              lg:ml-64: Solo en pantallas grandes (Desktop) se aplica el margen.
+          */}
+          <main className="flex-1 ml-0 lg:ml-64 bg-[#050505] min-h-screen w-full">
             {children}
           </main>
         </div>
