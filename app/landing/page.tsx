@@ -29,7 +29,7 @@ export default function Page() {
           <Link href="/today" className="bg-white text-black px-8 py-4 rounded-full font-medium hover:bg-gray-200 transition-all">
             EMPIEZA GRATIS
           </Link>
-          <button className="border border-white/20 px-8 py-4 rounded-full font-medium hover:bg-white/5 transition-all text-sm">
+          <button className="border border-white/50 px-8 py-4 rounded-full font-medium hover:bg-white/5 transition-all text-sm">
             VER DEMO
           </button>
         </div>
