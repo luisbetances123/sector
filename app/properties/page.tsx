@@ -1,16 +1,48 @@
 'use client'
 import React, { useState } from 'react'
-import Link from 'next/link' // Importante para la navegación
+import Link from 'next/link'
 
 export default function PropertiesPage() {
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('Todos')
 
   const allProperties = [
-    { id: 1, name: 'Penthouse Bella Vista', loc: 'Piantini, SD', price: '$1.2M', status: 'Disponible', area: '450m²', type: 'Penthouse' },
-    { id: 2, name: 'Villa Mar Azul', loc: 'Punta Cana', price: '$3.5M', status: 'En Oferta', area: '1,200m²', type: 'Villa' },
-    { id: 3, name: 'Mansión Los Lagos', loc: 'Casa de Campo', price: '$5.2M', status: 'Vendido', area: '2,500m²', type: 'Villa' },
-    { id: 4, name: 'Sky Loft Central', loc: 'Naco, SD', price: '$750k', status: 'Disponible', area: '280m²', type: 'Apartamento' },
+    { 
+      id: 1, 
+      name: 'Penthouse Bella Vista', 
+      loc: 'Piantini, SD', 
+      price: '$1.2M', 
+      area: '450m²', 
+      type: 'Penthouse',
+      image: 'https://images.unsplash.com/photo-1600607687940-4e2a27690a17?auto=format&fit=crop&q=80&w=800'
+    },
+    { 
+      id: 2, 
+      name: 'Villa Mar Azul', 
+      loc: 'Punta Cana', 
+      price: '$3.5M', 
+      area: '1,200m²', 
+      type: 'Villa',
+      image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&q=80&w=800'
+    },
+    { 
+      id: 3, 
+      name: 'Mansión Los Lagos', 
+      loc: 'Casa de Campo', 
+      price: '$5.2M', 
+      area: '2,500m²', 
+      type: 'Villa',
+      image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=800'
+    },
+    { 
+      id: 4, 
+      name: 'Sky Loft Central', 
+      loc: 'Naco, SD', 
+      price: '$750k', 
+      area: '280m²', 
+      type: 'Apartamento',
+      image: 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&q=80&w=800'
+    },
   ]
 
   const filteredProperties = allProperties.filter(prop => {
@@ -55,24 +87,35 @@ export default function PropertiesPage() {
       {/* Rejilla de Propiedades */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredProperties.map(prop => (
-          <div key={prop.id} className="bg-[#0a0a0a] border border-white/5 p-6 rounded-[2rem] hover:border-[#d4af37]/30 transition-all group flex flex-col justify-between">
-            <div>
-              <div className="flex justify-between items-start mb-4">
-                <h3 className="font-bold uppercase tracking-tighter text-sm">{prop.name}</h3>
-                <span className="text-[#d4af37] font-mono text-sm">{prop.price}</span>
-              </div>
-              <p className="text-gray-500 text-[10px] italic mb-4">{prop.loc} • {prop.area}</p>
-              <div className="text-[9px] uppercase tracking-widest text-[#d4af37] bg-[#d4af37]/10 w-fit px-3 py-1 rounded-full border border-[#d4af37]/20 mb-8">
+          <div key={prop.id} className="bg-[#0a0a0a] border border-white/5 p-4 rounded-[2.5rem] hover:border-[#d4af37]/30 transition-all group flex flex-col">
+            
+            {/* Contenedor de la Imagen con Zoom */}
+            <div className="h-64 w-full mb-6 overflow-hidden rounded-[2rem] relative">
+              <img 
+                src={prop.image} 
+                alt={prop.name} 
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+              />
+              <div className="absolute top-4 left-4 text-[9px] uppercase tracking-widest text-white bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
                 {prop.type}
               </div>
             </div>
 
-            {/* ESTE ES EL BOTÓN QUE CONECTA CON LA FICHA TÉCNICA */}
-            <Link href={`/properties/${prop.id}`}>
-              <button className="w-full py-4 rounded-2xl border border-white/10 bg-white/5 text-[9px] uppercase tracking-[0.2em] font-bold hover:bg-white hover:text-black transition-all">
-                Ver Detalles
-              </button>
-            </Link>
+            <div className="px-2 flex flex-col flex-1">
+              <div className="flex justify-between items-start mb-2">
+                <h3 className="font-bold uppercase tracking-tighter text-sm">{prop.name}</h3>
+                <span className="text-[#d4af37] font-mono text-sm">{prop.price}</span>
+              </div>
+              
+              <p className="text-gray-500 text-[10px] italic mb-6">{prop.loc} • {prop.area}</p>
+
+              {/* Botón Detalles */}
+              <Link href={`/properties/${prop.id}`} className="mt-auto">
+                <button className="w-full py-4 rounded-2xl border border-white/10 bg-white/5 text-[9px] uppercase tracking-[0.2em] font-bold hover:bg-white hover:text-black transition-all">
+                  Ver Detalles
+                </button>
+              </Link>
+            </div>
           </div>
         ))}
       </div>
