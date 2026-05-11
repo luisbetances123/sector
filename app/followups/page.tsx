@@ -1,28 +1,39 @@
 'use client'
-
-import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 const followups = [
-  { id: '1', cliente: 'María R.', tipo: 'llamada', titulo: 'Llamada de seguimiento', detalle: 'Confirmar visita a Polanco 34', fecha: 'Hoy', hora: '10:00 am', urgencia: 'alta', hecho: false },
-  { id: '2', cliente: 'Carlos M.', tipo: 'visita', titulo: 'Visita a propiedad', detalle: 'Anatole France 78, Polanco', fecha: 'Hoy', hora: '12:30 pm', urgencia: 'alta', hecho: false },
-  { id: '3', cliente: 'Ana P.', tipo: 'documento', titulo: 'Enviar carta oferta', detalle: 'Condiciones acordadas la semana pasada', fecha: 'Hoy', hora: '3:00 pm', urgencia: 'media', hecho: false },
-  { id: '4', cliente: 'José L.', tipo: 'llamada', titulo: 'Llamada inicial', detalle: 'Primer contacto, entender necesidades', fecha: 'Mañana', hora: '9:00 am', urgencia: 'baja', hecho: false },
-  { id: '5', cliente: 'Carmen V.', tipo: 'documento', titulo: 'Revisión de contrato', detalle: 'Enviar al notario para revisión', fecha: 'Mañana', hora: '11:00 am', urgencia: 'media', hecho: false },
-  { id: '6', cliente: 'Pedro A.', tipo: 'visita', titulo: '2ª visita', detalle: 'Revisitar con esposa', fecha: 'Vie 9 mayo', hora: '4:00 pm', urgencia: 'baja', hecho: false },
+  { id: '1', cliente: 'María R.', tipo: 'llamada', titulo: 'Llamada de seguimiento', detalle: 'Confirmar visita a Polanco 34', fecha: 'Hoy', hora: '10:00 AM', urgencia: 'alta', hecho: false },
+  { id: '2', cliente: 'Carlos M.', tipo: 'visita', titulo: 'Visita a propiedad', detalle: 'Anatole France 78, Polanco', fecha: 'Hoy', hora: '12:30 PM', urgencia: 'alta', hecho: false },
+  { id: '3', cliente: 'Ana P.', tipo: 'documento', titulo: 'Enviar carta oferta', detalle: 'Condiciones acordadas la semana pasada', fecha: 'Hoy', hora: '3:00 PM', urgencia: 'media', hecho: false },
+  { id: '4', cliente: 'José L.', tipo: 'llamada', titulo: 'Llamada inicial', detalle: 'Primer contacto, entender necesidades', fecha: 'Mañana', hora: '9:00 AM', urgencia: 'baja', hecho: false },
+  { id: '5', cliente: 'Carmen V.', tipo: 'documento', titulo: 'Revisión de contrato', detalle: 'Enviar al notario para revisión', fecha: 'Mañana', hora: '11:00 AM', urgencia: 'media', hecho: false },
+  { id: '6', cliente: 'Pedro A.', tipo: 'visita', titulo: '2ª visita', detalle: 'Revisitar con esposa', fecha: 'Vie 9 mayo', hora: '4:00 PM', urgencia: 'baja', hecho: false },
 ]
 
 const tipoIcono: Record<string, string> = { llamada: '📞', visita: '🏠', documento: '📄', otro: '📌' }
-const tipoBg: Record<string, string> = { llamada: '#1a2a3a', visita: '#2a1a2a', documento: '#1a2a1a', otro: '#22223a' }
-const tipoColor: Record<string, string> = { llamada: '#4a90e8', visita: '#c060e0', documento: '#4ecb71', otro: '#9999cc' }
-const urgenciaBadge: Record<string, { bg: string; color: string; label: string }> = {
-  alta: { bg: '#2a1a1a', color: '#e8514a', label: 'Urgente' },
-  media: { bg: '#2a2a1a', color: '#f0c040', label: 'Esta semana' },
-  baja: { bg: '#1a2a1a', color: '#4ecb71', label: 'Sin prisa' },
+
+const tipoColor: Record<string, string> = {
+  llamada: 'text-blue-400 bg-blue-400/10 border-blue-400/20',
+  visita: 'text-purple-400 bg-purple-400/10 border-purple-400/20',
+  documento: 'text-green-400 bg-green-400/10 border-green-400/20',
+  otro: 'text-gray-400 bg-white/5 border-white/10',
 }
 
+const urgenciaColor: Record<string, string> = {
+  alta: 'text-red-400 bg-red-400/10 border-red-400/20',
+  media: 'text-[#d4af37] bg-[#d4af37]/10 border-[#d4af37]/20',
+  baja: 'text-green-400 bg-green-400/10 border-green-400/20',
+}
+
+const urgenciaLabel: Record<string, string> = {
+  alta: 'Urgente',
+  media: 'Esta semana',
+  baja: 'Sin prisa',
+}
+
+const dias = ['Hoy', 'Mañana', 'Vie 9 mayo']
+
 export default function FollowUps() {
-  const router = useRouter()
   const [items, setItems] = useState(followups)
   const [filtro, setFiltro] = useState('todos')
 
@@ -37,65 +48,94 @@ export default function FollowUps() {
 
   const hechos = items.filter((f) => f.hecho).length
   const total = items.length
+  const progreso = Math.round((hechos / total) * 100)
 
   return (
-    <div style={{ background: '#0f0f1a', minHeight: '100vh', color: '#e8e8f0', fontFamily: 'system-ui, sans-serif' }}>
+    <div className="min-h-screen bg-[#050505] text-white font-sans">
+      <main className="max-w-3xl mx-auto p-8">
 
-      <div style={{ background: '#1a1a2e', padding: '14px 20px', display: 'flex', alignItems: 'center', gap: 12, borderBottom: '1px solid #2a2a3e' }}>
-        <button onClick={() => router.push('/')} style={{ background: '#2a2a3e', border: 'none', color: '#8888aa', padding: '6px 12px', borderRadius: 6, fontSize: 12, cursor: 'pointer' }}>← Dashboard</button>
-        <span style={{ fontWeight: 700, fontSize: 15, marginRight: 'auto' }}>H Homvi</span>
-        <span style={{ fontSize: 13, color: '#8888aa' }}>{hechos}/{total} completados</span>
-      </div>
-
-      <div style={{ maxWidth: 700, margin: '0 auto', padding: 24 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: '#fff', margin: 0 }}>Follow-ups</h1>
-          <div style={{ display: 'flex', gap: 8 }}>
+        {/* Header */}
+        <header className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-light tracking-tight">Follow<span className="text-[#d4af37] italic">-ups</span></h1>
+            <p className="text-gray-500 text-sm mt-2 font-light">{hechos} de {total} completados hoy</p>
+          </div>
+          <div className="flex gap-2">
             {['todos', 'hoy', 'pendientes'].map((f) => (
-              <button key={f} onClick={() => setFiltro(f)} style={{ padding: '6px 14px', borderRadius: 20, fontSize: 12, cursor: 'pointer', border: `1px solid ${filtro === f ? '#e8514a' : '#2a2a3e'}`, background: filtro === f ? '#2a1a1a' : '#0f0f1a', color: filtro === f ? '#e8514a' : '#6666aa', textTransform: 'capitalize' as const }}>
+              <button key={f} onClick={() => setFiltro(f)}
+                className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all capitalize ${
+                  filtro === f ? 'bg-[#d4af37] text-black border-[#d4af37]' : 'border-white/10 text-gray-500 hover:border-white/30'
+                }`}>
                 {f}
               </button>
             ))}
           </div>
-        </div>
+        </header>
 
-        <div style={{ background: '#1a1a2e', borderRadius: 10, padding: '4px 16px', marginBottom: 24, border: '1px solid #2a2a3e' }}>
-          <div style={{ height: 6, background: '#2a2a3e', borderRadius: 3, margin: '12px 0' }}>
-            <div style={{ height: 6, background: '#4ecb71', borderRadius: 3, width: `${(hechos / total) * 100}%`, transition: 'width 0.3s' }} />
+        {/* Barra de progreso */}
+        <div className="bg-[#0a0a0a] border border-white/5 rounded-2xl p-5 mb-8">
+          <div className="flex justify-between items-center mb-3">
+            <span className="text-xs text-gray-500 uppercase tracking-widest">Progreso del día</span>
+            <span className="text-xs font-bold text-[#d4af37]">{progreso}%</span>
           </div>
-          <div style={{ fontSize: 11, color: '#6666aa', marginBottom: 12 }}>{hechos} de {total} follow-ups completados hoy</div>
+          <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-[#d4af37] rounded-full transition-all duration-500"
+              style={{ width: `${progreso}%` }}
+            />
+          </div>
         </div>
 
-        {['Hoy', 'Mañana', 'Vie 9 mayo'].map((dia) => {
+        {/* Lista por día */}
+        {dias.map((dia) => {
           const delDia = filtrados.filter((f) => f.fecha === dia)
           if (delDia.length === 0) return null
           return (
-            <div key={dia} style={{ marginBottom: 24 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase' as const, color: '#5555aa', marginBottom: 12 }}>{dia}</div>
-              {delDia.map((f) => (
-                <div key={f.id} onClick={() => toggle(f.id)} style={{ background: '#1a1a2e', borderRadius: 10, padding: '14px 16px', marginBottom: 8, border: `1px solid ${f.hecho ? '#1a2a1a' : '#2a2a3e'}`, display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', opacity: f.hecho ? 0.5 : 1, transition: 'opacity 0.2s' }}>
-                  <div style={{ width: 20, height: 20, borderRadius: '50%', border: `2px solid ${f.hecho ? '#4ecb71' : '#3a3a5a'}`, background: f.hecho ? '#4ecb71' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 11, color: '#fff' }}>
-                    {f.hecho ? '✓' : ''}
-                  </div>
-                  <div style={{ width: 32, height: 32, borderRadius: 8, background: tipoBg[f.tipo], color: tipoColor[f.tipo], display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, flexShrink: 0 }}>
-                    {tipoIcono[f.tipo]}
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: f.hecho ? '#5555aa' : '#ccccee', marginBottom: 2, textDecoration: f.hecho ? 'line-through' : 'none' }}>{f.titulo}</div>
-                    <div style={{ fontSize: 11, color: '#6666aa' }}>{f.cliente} · {f.detalle}</div>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column' as const, alignItems: 'flex-end', gap: 4 }}>
-                    <div style={{ fontSize: 11, color: '#8888aa' }}>{f.hora}</div>
-                    <div style={{ padding: '2px 8px', borderRadius: 10, fontSize: 10, background: urgenciaBadge[f.urgencia].bg, color: urgenciaBadge[f.urgencia].color }}>
-                      {urgenciaBadge[f.urgencia].label}
+            <div key={dia} className="mb-8">
+              <h3 className="text-xs uppercase tracking-[0.2em] text-gray-500 font-bold mb-4">{dia}</h3>
+              <div className="space-y-3">
+                {delDia.map((f) => (
+                  <div
+                    key={f.id}
+                    onClick={() => toggle(f.id)}
+                    className={`bg-[#0a0a0a] border rounded-2xl p-5 flex items-center gap-4 cursor-pointer transition-all hover:border-[#d4af37]/30 ${
+                      f.hecho ? 'border-white/5 opacity-50' : 'border-white/5'
+                    }`}
+                  >
+                    {/* Checkbox */}
+                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
+                      f.hecho ? 'bg-green-400 border-green-400' : 'border-white/20'
+                    }`}>
+                      {f.hecho && <span className="text-black text-[10px] font-bold">✓</span>}
+                    </div>
+
+                    {/* Icono tipo */}
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-base flex-shrink-0 border ${tipoColor[f.tipo]}`}>
+                      {tipoIcono[f.tipo]}
+                    </div>
+
+                    {/* Info */}
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-sm font-bold ${f.hecho ? 'line-through text-gray-600' : 'text-white'}`}>
+                        {f.titulo}
+                      </p>
+                      <p className="text-gray-500 text-xs mt-0.5 truncate">{f.cliente} · {f.detalle}</p>
+                    </div>
+
+                    {/* Hora y urgencia */}
+                    <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                      <span className="text-xs text-[#d4af37] font-mono">{f.hora}</span>
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full border font-bold ${urgenciaColor[f.urgencia]}`}>
+                        {urgenciaLabel[f.urgencia]}
+                      </span>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )
         })}
-      </div>
+      </main>
     </div>
   )
 }
