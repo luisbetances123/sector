@@ -14,7 +14,8 @@ export default function PropertiesPage() {
       price: '$1.2M', 
       area: '450m²', 
       type: 'Penthouse',
-      image: 'https://images.unsplash.com/photo-1567496898905-af4139885fe7?auto=format&fit=crop&q=80&w=800'
+      // ESTA ES LA FOTO QUE YA FUNCIONA EN DETALLES:
+      image: 'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?q=80&w=800&auto=format&fit=crop'
     },
     { 
       id: 2, 
