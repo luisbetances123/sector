@@ -1,19 +1,28 @@
 'use client'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
+
+interface Cliente {
+  id: string
+  nombre: string
+  etapa: string
+  tipoPropiedad: string[]
+  presupuestoMin: string
+}
 
 export default function Dashboard() {
-  const pipeline = [
-    { nombre: 'María González', etapa: 'Negociación', propiedad: 'Apto. Piantini', valor: '$285K' },
-    { nombre: 'Carlos Reyes', etapa: 'Visita', propiedad: 'Casa Arroyo Hondo', valor: '$520K' },
-    { nombre: 'Ana Martínez', etapa: 'Lead', propiedad: 'PH Naco', valor: '$890K' },
-    { nombre: 'Roberto Díaz', etapa: 'Cierre', propiedad: 'Villa Cacicazgos', valor: '$1.2M' },
-  ]
+  const [clientes, setClientes] = useState<Cliente[]>([])
+
+  useEffect(() => {
+    const guardados = localStorage.getItem('homvi_clientes')
+    if (guardados) setClientes(JSON.parse(guardados))
+  }, [])
 
   const etapaColor: Record<string, string> = {
-    'Lead': 'text-gray-400 bg-white/5',
-    'Visita': 'text-blue-400 bg-blue-400/10',
-    'Negociación': 'text-[#d4af37] bg-[#d4af37]/10',
-    'Cierre': 'text-green-400 bg-green-400/10',
+    'LEAD': 'text-gray-400 bg-white/5',
+    'BUSCANDO': 'text-blue-400 bg-blue-400/10',
+    'EN OFERTA': 'text-[#d4af37] bg-[#d4af37]/10',
+    'CIERRE': 'text-green-400 bg-green-400/10',
   }
 
   const citas = [
@@ -51,8 +60,8 @@ export default function Dashboard() {
             </div>
           </Link>
           <div className="bg-[#0a0a0a] p-8 rounded-[2rem] border border-white/5">
-            <p className="text-gray-500 text-xs uppercase tracking-[0.2em] mb-2">Nuevos Leads</p>
-            <h2 className="text-3xl font-bold">+12</h2>
+            <p className="text-gray-500 text-xs uppercase tracking-[0.2em] mb-2">Clientes Activos</p>
+            <h2 className="text-3xl font-bold">{clientes.length > 0 ? `+${clientes.length}` : '0'}</h2>
           </div>
         </div>
 
@@ -61,25 +70,38 @@ export default function Dashboard() {
           {/* Pipeline */}
           <div className="lg:col-span-2 bg-[#0a0a0a] rounded-[2rem] border border-white/5 p-8">
             <h3 className="text-xs uppercase tracking-[0.2em] text-gray-500 font-bold mb-6">Pipeline de Clientes</h3>
-            <div className="space-y-4">
-              {pipeline.map((c, i) => (
-                <div key={i} className="flex items-center justify-between py-3 border-b border-white/5 last:border-0">
-                  <div className="flex items-center gap-4">
-                    <div className="w-8 h-8 rounded-full bg-[#d4af37]/20 flex items-center justify-center text-[#d4af37] text-xs font-bold">
-                      {c.nombre.charAt(0)}
+            {clientes.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-gray-600 text-sm">No hay clientes aún.</p>
+                <Link href="/clients/new" className="mt-4 inline-block text-xs text-[#d4af37] uppercase tracking-widest hover:text-white transition-colors">
+                  + Registrar primer cliente
+                </Link>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {clientes.map((c) => (
+                  <Link key={c.id} href={`/clients/${c.id}`}>
+                    <div className="flex items-center justify-between py-3 border-b border-white/5 last:border-0 hover:bg-white/2 transition-all cursor-pointer group">
+                      <div className="flex items-center gap-4">
+                        <div className="w-8 h-8 rounded-full bg-[#d4af37]/20 flex items-center justify-center text-[#d4af37] text-xs font-bold">
+                          {c.nombre.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium group-hover:text-[#d4af37] transition-colors">{c.nombre}</p>
+                          <p className="text-gray-500 text-xs">{c.tipoPropiedad?.[0] || '—'}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <span className={`text-xs px-3 py-1 rounded-full font-medium ${etapaColor[c.etapa] || 'text-gray-400 bg-white/5'}`}>
+                          {c.etapa}
+                        </span>
+                        <span className="text-sm font-bold text-[#d4af37]">{c.presupuestoMin || '—'}</span>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-medium">{c.nombre}</p>
-                      <p className="text-gray-500 text-xs">{c.propiedad}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span className={`text-xs px-3 py-1 rounded-full font-medium ${etapaColor[c.etapa]}`}>{c.etapa}</span>
-                    <span className="text-sm font-bold text-[#d4af37]">{c.valor}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Citas de hoy */}
@@ -118,4 +140,3 @@ export default function Dashboard() {
     </div>
   )
 }
-
