@@ -21,11 +21,11 @@ interface Cliente {
   notas: string
 }
 
-const etapaColor: Record<Stage, { bg: string; text: string; border: string }> = {
-  LEAD: { bg: '#1a1f2a', text: '#4a90e8', border: '#4a90e8' },
-  BUSCANDO: { bg: '#2a1a0a', text: '#f0a040', border: '#f0a040' },
-  'EN OFERTA': { bg: '#1a2a1a', text: '#4ecb71', border: '#4ecb71' },
-  CIERRE: { bg: '#2a1a2a', text: '#c060e0', border: '#c060e0' },
+const etapaColor: Record<Stage, string> = {
+  LEAD: 'text-blue-400 bg-blue-400/10 border-blue-400/30',
+  BUSCANDO: 'text-[#d4af37] bg-[#d4af37]/10 border-[#d4af37]/30',
+  'EN OFERTA': 'text-green-400 bg-green-400/10 border-green-400/30',
+  CIERRE: 'text-purple-400 bg-purple-400/10 border-purple-400/30',
 }
 
 const etapas: Stage[] = ['LEAD', 'BUSCANDO', 'EN OFERTA', 'CIERRE']
@@ -115,66 +115,87 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
   }
 
   if (!cliente) return (
-    <div style={{ background: '#0f0f1a', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8888aa', fontFamily: 'system-ui' }}>
-      Cargando...
+    <div className="min-h-screen bg-[#050505] flex items-center justify-center text-gray-500 font-sans">
+      Cargando cliente...
     </div>
   )
 
-  const etapa = etapaColor[cliente.etapa]
-
   return (
-    <div style={{ background: '#0f0f1a', minHeight: '100vh', color: '#e8e8f0', fontFamily: 'system-ui, sans-serif' }}>
+    <div className="min-h-screen bg-[#050505] text-white font-sans">
 
-      <div style={{ background: '#1a1a2e', padding: '14px 20px', display: 'flex', alignItems: 'center', gap: 12, borderBottom: '1px solid #2a2a3e' }}>
-        <button onClick={() => router.push('/dashboard')} style={{ background: '#2a2a3e', border: 'none', color: '#8888aa', padding: '6px 12px', borderRadius: 6, fontSize: 12, cursor: 'pointer' }}>← Pipeline</button>
-        <span style={{ fontWeight: 700, fontSize: 15, marginRight: 'auto' }}>H Homvi</span>
-        <span style={{ padding: '4px 12px', borderRadius: 20, fontSize: 11, fontWeight: 700, letterSpacing: '.5px', textTransform: 'uppercase', background: etapa.bg, color: etapa.text, border: `1px solid ${etapa.border}` }}>
+      {/* Header */}
+      <div className="p-6 border-b border-white/5 flex items-center gap-4">
+        <button onClick={() => router.push('/dashboard')} className="text-xs uppercase tracking-widest text-gray-500 hover:text-white transition-colors font-bold">
+          ← Dashboard
+        </button>
+        <div className="flex-1" />
+        <span className={`text-xs px-3 py-1 rounded-full font-bold border uppercase tracking-widest ${etapaColor[cliente.etapa]}`}>
           {cliente.etapa}
         </span>
       </div>
 
-      <div style={{ background: '#1a1a2e', padding: '20px', display: 'flex', alignItems: 'center', gap: 16, borderBottom: '1px solid #2a2a3e' }}>
-        <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'linear-gradient(135deg, #e8514a, #f06a2a)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 18, color: '#fff', flexShrink: 0 }}>
+      {/* Perfil */}
+      <div className="p-6 border-b border-white/5 flex items-center gap-4">
+        <div className="w-12 h-12 rounded-full bg-[#d4af37] flex items-center justify-center text-black font-bold text-lg flex-shrink-0">
           {initiales(cliente.nombre)}
         </div>
-        <div>
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: '#fff', marginBottom: 2 }}>{cliente.nombre}</h1>
-          <p style={{ fontSize: 13, color: '#8888aa' }}>{cliente.telefono}{cliente.telefono && cliente.email && ' · '}{cliente.email}</p>
+        <div className="flex-1">
+          <h1 className="text-xl font-bold text-white">{cliente.nombre}</h1>
+          <p className="text-gray-500 text-sm mt-0.5">{cliente.telefono}{cliente.telefono && cliente.email && ' · '}{cliente.email}</p>
         </div>
-        <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
-          <button onClick={() => { seleccionarMensaje(generarMensajeAuto(cliente)); setTabActivo('auto') }} style={{ background: '#2a1a3a', border: '1px solid #6030a0', color: '#c060e0', padding: '8px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+        <div className="flex gap-2 flex-wrap justify-end">
+          <button onClick={() => { seleccionarMensaje(generarMensajeAuto(cliente)); setTabActivo('auto') }}
+            className="bg-[#d4af37]/10 border border-[#d4af37]/30 text-[#d4af37] px-4 py-2 rounded-xl text-xs font-bold hover:bg-[#d4af37]/20 transition-all">
             ✨ Generar mensaje
           </button>
-          <button onClick={() => { setMostrarCopilot(true); setTabActivo('plantillas'); setMensaje('') }} style={{ background: '#1a2a3a', border: '1px solid #4a90e8', color: '#4a90e8', padding: '8px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+          <button onClick={() => { setMostrarCopilot(true); setTabActivo('plantillas'); setMensaje('') }}
+            className="bg-white/5 border border-white/10 text-gray-300 px-4 py-2 rounded-xl text-xs font-bold hover:bg-white/10 transition-all">
             📋 Plantillas
           </button>
           {cliente.telefono && (
-            <button onClick={() => window.open(`https://wa.me/${cliente.telefono.replace(/\D/g,'')}`, '_blank')} style={{ background: '#1a2a1a', border: '1px solid #4ecb71', color: '#4ecb71', padding: '8px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
-              WhatsApp
+            <button onClick={() => window.open(`https://wa.me/${cliente.telefono.replace(/\D/g,'')}`, '_blank')}
+              className="bg-green-400/10 border border-green-400/30 text-green-400 px-4 py-2 rounded-xl text-xs font-bold hover:bg-green-400/20 transition-all">
+              WhatsApp →
+            </button>
+          )}
+          {cliente.email && (
+            <button onClick={() => window.open(`mailto:${cliente.email}`, '_blank')}
+              className="bg-blue-400/10 border border-blue-400/30 text-blue-400 px-4 py-2 rounded-xl text-xs font-bold hover:bg-blue-400/20 transition-all">
+              Email →
+            </button>
+          )}
+          {cliente.telefono && (
+            <button onClick={() => window.open(`tel:${cliente.telefono}`, '_blank')}
+              className="bg-white/5 border border-white/10 text-gray-300 px-4 py-2 rounded-xl text-xs font-bold hover:bg-white/10 transition-all">
+              Llamar →
             </button>
           )}
         </div>
       </div>
 
+      {/* Panel de mensajes */}
       {mostrarCopilot && (
-        <div style={{ background: '#12112a', border: '1px solid #3a2a5a', margin: '16px', borderRadius: 10, padding: 16 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <div style={{ display: 'flex', gap: 0 }}>
-              <button onClick={() => setTabActivo('auto')} style={{ padding: '6px 14px', fontSize: 12, cursor: 'pointer', background: tabActivo === 'auto' ? '#2a1a3a' : 'transparent', color: tabActivo === 'auto' ? '#c060e0' : '#6666aa', border: '1px solid #3a2a5a', borderRadius: '6px 0 0 6px', borderRight: 'none' }}>
+        <div className="mx-6 mt-4 bg-[#0a0a0a] border border-[#d4af37]/20 rounded-[1.5rem] p-5">
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex">
+              <button onClick={() => setTabActivo('auto')}
+                className={`px-4 py-2 text-xs font-bold rounded-l-xl border transition-all ${tabActivo === 'auto' ? 'bg-[#d4af37]/10 border-[#d4af37]/30 text-[#d4af37]' : 'bg-transparent border-white/10 text-gray-500'}`}>
                 ✨ Auto
               </button>
-              <button onClick={() => setTabActivo('plantillas')} style={{ padding: '6px 14px', fontSize: 12, cursor: 'pointer', background: tabActivo === 'plantillas' ? '#1a2a3a' : 'transparent', color: tabActivo === 'plantillas' ? '#4a90e8' : '#6666aa', border: '1px solid #3a2a5a', borderRadius: '0 6px 6px 0' }}>
+              <button onClick={() => setTabActivo('plantillas')}
+                className={`px-4 py-2 text-xs font-bold rounded-r-xl border-t border-r border-b transition-all ${tabActivo === 'plantillas' ? 'bg-blue-400/10 border-blue-400/30 text-blue-400' : 'bg-transparent border-white/10 text-gray-500'}`}>
                 📋 Plantillas
               </button>
             </div>
-            <button onClick={() => setMostrarCopilot(false)} style={{ background: 'none', border: 'none', color: '#6666aa', cursor: 'pointer', fontSize: 16 }}>✕</button>
+            <button onClick={() => setMostrarCopilot(false)} className="text-gray-600 hover:text-white transition-colors text-lg">✕</button>
           </div>
 
           {tabActivo === 'plantillas' && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: mensaje ? 12 : 0 }}>
+            <div className="grid grid-cols-3 gap-2 mb-4">
               {plantillas.map((p) => (
-                <button key={p.id} onClick={() => seleccionarMensaje(p.mensaje(cliente.nombre.split(' ')[0]))} style={{ background: '#0f0f1a', border: '1px solid #2a2a3e', borderRadius: 8, padding: '10px 12px', color: '#ccccee', fontSize: 12, cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontSize: 16 }}>{p.icono}</span>
+                <button key={p.id} onClick={() => seleccionarMensaje(p.mensaje(cliente.nombre.split(' ')[0]))}
+                  className="bg-[#050505] border border-white/5 rounded-xl p-3 text-gray-300 text-xs text-left flex items-center gap-2 hover:border-[#d4af37]/30 hover:text-white transition-all">
+                  <span className="text-base">{p.icono}</span>
                   <span>{p.label}</span>
                 </button>
               ))}
@@ -187,19 +208,22 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
                 value={mensaje}
                 onChange={(e) => setMensaje(e.target.value)}
                 rows={3}
-                style={{ width: '100%', background: '#0f0f1a', border: '1px solid #2a2a3e', borderRadius: 8, padding: '10px 12px', color: '#e8e8f0', fontSize: 13, outline: 'none', resize: 'vertical', fontFamily: 'system-ui', boxSizing: 'border-box' }}
+                className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-[#d4af37]/50 resize-none transition-all"
               />
-              <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
+              <div className="flex gap-2 mt-3">
                 {tabActivo === 'auto' && (
-                  <button onClick={() => seleccionarMensaje(generarMensajeAuto(cliente))} style={{ background: '#2a1a3a', border: '1px solid #6030a0', color: '#c060e0', padding: '8px 14px', borderRadius: 8, fontSize: 12, cursor: 'pointer' }}>
+                  <button onClick={() => seleccionarMensaje(generarMensajeAuto(cliente))}
+                    className="bg-[#d4af37]/10 border border-[#d4af37]/30 text-[#d4af37] px-4 py-2 rounded-xl text-xs font-bold hover:bg-[#d4af37]/20 transition-all">
                     Otro mensaje
                   </button>
                 )}
-                <button onClick={copiar} style={{ background: copiado ? '#1a2a1a' : '#1a2a3a', border: `1px solid ${copiado ? '#4ecb71' : '#4a90e8'}`, color: copiado ? '#4ecb71' : '#4a90e8', padding: '8px 14px', borderRadius: 8, fontSize: 12, cursor: 'pointer' }}>
+                <button onClick={copiar}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all ${copiado ? 'bg-green-400/10 border-green-400/30 text-green-400' : 'bg-blue-400/10 border-blue-400/30 text-blue-400'}`}>
                   {copiado ? '✓ Copiado' : 'Copiar'}
                 </button>
                 {cliente.telefono && (
-                  <button onClick={abrirWhatsApp} style={{ background: '#1a2a1a', border: '1px solid #4ecb71', color: '#4ecb71', padding: '8px 14px', borderRadius: 8, fontSize: 12, cursor: 'pointer', marginLeft: 'auto' }}>
+                  <button onClick={abrirWhatsApp}
+                    className="ml-auto bg-green-400/10 border border-green-400/30 text-green-400 px-4 py-2 rounded-xl text-xs font-bold hover:bg-green-400/20 transition-all">
                     Enviar por WhatsApp →
                   </button>
                 )}
@@ -209,46 +233,93 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 }}>
-        <div style={{ padding: 16, borderRight: '1px solid #2a2a3e' }}>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', color: '#5555aa', marginBottom: 12 }}>Perfil de busqueda</div>
-          <div style={{ background: '#1a1a2e', borderRadius: 10, padding: 14, marginBottom: 12, border: '1px solid #2a2a3e' }}>
-            {cliente.presupuestoMin && <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #2a2a3e' }}><span style={{ fontSize: 12, color: '#6666aa' }}>Presupuesto</span><span style={{ fontSize: 13, color: '#4ecb71', fontWeight: 700 }}>${cliente.presupuestoMin} - ${cliente.presupuestoMax}</span></div>}
-            {cliente.tipoPropiedad?.length > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #2a2a3e' }}><span style={{ fontSize: 12, color: '#6666aa' }}>Tipo</span><span style={{ fontSize: 13, color: '#ccccee' }}>{cliente.tipoPropiedad.join(' · ')}</span></div>}
-            {cliente.recamaras && <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #2a2a3e' }}><span style={{ fontSize: 12, color: '#6666aa' }}>Recamaras</span><span style={{ fontSize: 13, color: '#ccccee' }}>{cliente.recamaras}</span></div>}
-            {cliente.plazo && <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #2a2a3e' }}><span style={{ fontSize: 12, color: '#6666aa' }}>Plazo</span><span style={{ fontSize: 13, color: '#ccccee' }}>{cliente.plazo}</span></div>}
-            {cliente.financiamiento && <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0' }}><span style={{ fontSize: 12, color: '#6666aa' }}>Financiamiento</span><span style={{ fontSize: 13, color: '#ccccee' }}>{cliente.financiamiento}</span></div>}
+      {/* Contenido principal */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-0 mt-4">
+        {/* Perfil de búsqueda */}
+        <div className="p-6 border-r border-white/5">
+          <h3 className="text-xs uppercase tracking-[0.2em] text-gray-500 font-bold mb-4">Perfil de Búsqueda</h3>
+          <div className="bg-[#0a0a0a] rounded-2xl border border-white/5 overflow-hidden mb-4">
+            {cliente.presupuestoMin && (
+              <div className="flex justify-between items-center px-4 py-3 border-b border-white/5">
+                <span className="text-xs text-gray-500">Presupuesto</span>
+                <span className="text-sm text-green-400 font-bold">${cliente.presupuestoMin} – ${cliente.presupuestoMax}</span>
+              </div>
+            )}
+            {cliente.tipoPropiedad?.length > 0 && (
+              <div className="flex justify-between items-center px-4 py-3 border-b border-white/5">
+                <span className="text-xs text-gray-500">Tipo</span>
+                <span className="text-sm text-white">{cliente.tipoPropiedad.join(' · ')}</span>
+              </div>
+            )}
+            {cliente.recamaras && (
+              <div className="flex justify-between items-center px-4 py-3 border-b border-white/5">
+                <span className="text-xs text-gray-500">Recámaras</span>
+                <span className="text-sm text-white">{cliente.recamaras}</span>
+              </div>
+            )}
+            {cliente.plazo && (
+              <div className="flex justify-between items-center px-4 py-3 border-b border-white/5">
+                <span className="text-xs text-gray-500">Plazo</span>
+                <span className="text-sm text-white">{cliente.plazo}</span>
+              </div>
+            )}
+            {cliente.financiamiento && (
+              <div className="flex justify-between items-center px-4 py-3">
+                <span className="text-xs text-gray-500">Financiamiento</span>
+                <span className="text-sm text-white">{cliente.financiamiento}</span>
+              </div>
+            )}
           </div>
-          {cliente.zonas?.length > 0 && <>
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', color: '#5555aa', marginBottom: 12, marginTop: 4 }}>Zonas de interes</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
-              {cliente.zonas.map((zona) => <span key={zona} style={{ background: '#22223a', padding: '4px 9px', borderRadius: 5, fontSize: 11, color: '#9999cc', border: '1px solid #33335a' }}>{zona}</span>)}
-            </div>
-          </>}
-          {cliente.notas && <>
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', color: '#5555aa', marginBottom: 12 }}>Notas</div>
-            <div style={{ background: '#1a1a2e', borderRadius: 8, padding: '10px 12px', border: '1px solid #2a2a3e', fontSize: 12, color: '#8888aa', lineHeight: 1.6, fontStyle: 'italic' }}>{cliente.notas}</div>
-          </>}
+
+          {cliente.zonas?.length > 0 && (
+            <>
+              <h3 className="text-xs uppercase tracking-[0.2em] text-gray-500 font-bold mb-3">Zonas de Interés</h3>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {cliente.zonas.map((zona) => (
+                  <span key={zona} className="bg-white/5 border border-white/10 px-3 py-1 rounded-full text-xs text-gray-400">{zona}</span>
+                ))}
+              </div>
+            </>
+          )}
+
+          {cliente.notas && (
+            <>
+              <h3 className="text-xs uppercase tracking-[0.2em] text-gray-500 font-bold mb-3">Notas</h3>
+              <div className="bg-[#d4af37]/5 border border-[#d4af37]/10 rounded-2xl p-4 text-sm text-gray-400 italic leading-relaxed">
+                {cliente.notas}
+              </div>
+            </>
+          )}
         </div>
 
-        <div style={{ padding: 16 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', color: '#5555aa', marginBottom: 12 }}>Cambiar etapa</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 24 }}>
+        {/* Etapa y acciones */}
+        <div className="p-6">
+          <h3 className="text-xs uppercase tracking-[0.2em] text-gray-500 font-bold mb-4">Etapa del Pipeline</h3>
+          <div className="flex flex-col gap-2 mb-6">
             {etapas.map((e) => (
-              <button key={e} onClick={() => cambiarEtapa(e)} style={{ padding: '12px 16px', borderRadius: 8, border: `1px solid ${cliente.etapa === e ? etapaColor[e].border : '#2a2a3e'}`, background: cliente.etapa === e ? etapaColor[e].bg : '#1a1a2e', color: etapaColor[e].text, fontSize: 13, fontWeight: cliente.etapa === e ? 700 : 400, cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ width: 8, height: 8, borderRadius: '50%', background: cliente.etapa === e ? etapaColor[e].text : '#3a3a5a', flexShrink: 0 }} />
+              <button key={e} onClick={() => cambiarEtapa(e)}
+                className={`px-4 py-3 rounded-2xl border text-sm font-bold text-left flex items-center gap-3 transition-all ${cliente.etapa === e ? etapaColor[e] : 'bg-[#0a0a0a] border-white/5 text-gray-500 hover:border-white/20'}`}>
+                <span className={`w-2 h-2 rounded-full flex-shrink-0 ${cliente.etapa === e ? 'bg-current' : 'bg-white/20'}`} />
                 {e}
-                {cliente.etapa === e && <span style={{ marginLeft: 'auto', fontSize: 11 }}>actual</span>}
+                {cliente.etapa === e && <span className="ml-auto text-xs font-normal opacity-60">actual</span>}
               </button>
             ))}
           </div>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', color: '#5555aa', marginBottom: 12 }}>Acciones rapidas</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <button onClick={() => router.push('/followups')} style={{ padding: '12px 16px', borderRadius: 8, border: '1px solid #2a2a3e', background: '#1a1a2e', color: '#ccccee', fontSize: 13, cursor: 'pointer', textAlign: 'left' }}>Ver follow-ups</button>
-            <button onClick={() => router.push('/properties')} style={{ padding: '12px 16px', borderRadius: 8, border: '1px solid #2a2a3e', background: '#1a1a2e', color: '#ccccee', fontSize: 13, cursor: 'pointer', textAlign: 'left' }}>Ver propiedades</button>
+
+          <h3 className="text-xs uppercase tracking-[0.2em] text-gray-500 font-bold mb-4">Acciones Rápidas</h3>
+          <div className="flex flex-col gap-2">
+            <button onClick={() => router.push('/properties')}
+              className="px-4 py-3 rounded-2xl bg-[#0a0a0a] border border-white/5 text-sm text-gray-300 text-left hover:border-[#d4af37]/30 hover:text-white transition-all">
+              Ver propiedades →
+            </button>
+            <button onClick={() => router.push('/today')}
+              className="px-4 py-3 rounded-2xl bg-[#0a0a0a] border border-white/5 text-sm text-gray-300 text-left hover:border-[#d4af37]/30 hover:text-white transition-all">
+              Agendar cita →
+            </button>
           </div>
         </div>
       </div>
     </div>
   )
 }
+  
