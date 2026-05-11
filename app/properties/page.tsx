@@ -14,7 +14,6 @@ export default function PropertiesPage() {
       price: '$1.2M', 
       area: '450m²', 
       type: 'Penthouse',
-      // ESTA ES LA FOTO QUE YA FUNCIONA EN DETALLES:
       image: 'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?q=80&w=800&auto=format&fit=crop'
     },
     { 
@@ -44,6 +43,24 @@ export default function PropertiesPage() {
       type: 'Apartamento',
       image: 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&q=80&w=800'
     },
+    { 
+      id: 5, 
+      name: 'Residencia Tropical', 
+      loc: 'Santiago, RD', 
+      price: '$1.8M', 
+      area: '800m²', 
+      type: 'Villa',
+      image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=800'
+    },
+    { 
+      id: 6, 
+      name: 'Apartamento Serenity', 
+      loc: 'Evaristo Morales, SD', 
+      price: '$420k', 
+      area: '180m²', 
+      type: 'Apartamento',
+      image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&q=80&w=800'
+    },
   ]
 
   const filteredProperties = allProperties.filter(prop => {
@@ -57,8 +74,8 @@ export default function PropertiesPage() {
     <div className="min-h-screen bg-[#050505] text-white p-6 md:p-12">
       <header className="mb-10 flex justify-between items-center">
         <h1 className="text-3xl font-light italic">Catálogo <span className="text-[#d4af37] not-italic font-bold">Homvi</span></h1>
-        <Link href="/" className="text-[10px] uppercase tracking-widest text-gray-500 hover:text-white transition-all">
-          Ir al Inicio
+        <Link href="/dashboard" className="text-xs uppercase tracking-widest text-gray-500 hover:text-white transition-all">
+          ← Dashboard
         </Link>
       </header>
 
@@ -74,7 +91,7 @@ export default function PropertiesPage() {
             <button 
               key={cat}
               onClick={() => setFilter(cat)}
-              className={`px-4 py-2 rounded-xl text-[10px] uppercase font-bold border transition-all ${
+              className={`px-4 py-2 rounded-xl text-xs uppercase font-bold border transition-all ${
                 filter === cat ? 'bg-[#d4af37] text-black border-[#d4af37]' : 'border-white/10 text-gray-500'
               }`}
             >
@@ -104,9 +121,9 @@ export default function PropertiesPage() {
                 <h3 className="font-bold uppercase tracking-tighter text-sm">{prop.name}</h3>
                 <span className="text-[#d4af37] font-mono text-sm">{prop.price}</span>
               </div>
-              <p className="text-gray-500 text-[10px] italic mb-6">{prop.loc} • {prop.area}</p>
+              <p className="text-gray-500 text-xs italic mb-6">{prop.loc} • {prop.area}</p>
               <Link href={`/properties/${prop.id}`} className="mt-auto">
-                <button className="w-full py-4 rounded-2xl border border-white/10 bg-white/5 text-[9px] uppercase tracking-[0.2em] font-bold hover:bg-white hover:text-black transition-all">
+                <button className="w-full py-4 rounded-2xl bg-[#d4af37]/10 border border-[#d4af37]/30 text-[#d4af37] text-xs uppercase tracking-[0.2em] font-bold hover:bg-[#d4af37] hover:text-black transition-all">
                   Ver Detalles
                 </button>
               </Link>
@@ -116,4 +133,5 @@ export default function PropertiesPage() {
       </div>
     </div>
   )
+}
 }
