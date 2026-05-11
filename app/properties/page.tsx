@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import React, { useState } from 'react'
 
 export default function PropertiesPage() {
   const [search, setSearch] = useState('')
@@ -12,7 +12,6 @@ export default function PropertiesPage() {
     { id: 4, name: 'Sky Loft Central', loc: 'Naco, SD', price: '$750k', status: 'Disponible', area: '280m²', type: 'Apartamento' },
   ]
 
-  // Lógica de filtrado en tiempo real
   const filteredProperties = allProperties.filter(prop => {
     const matchesSearch = prop.name.toLowerCase().includes(search.toLowerCase()) || 
                           prop.loc.toLowerCase().includes(search.toLowerCase())
@@ -21,37 +20,26 @@ export default function PropertiesPage() {
   })
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white p-8 md:p-12">
-      <header className="mb-12">
-        <h1 className="text-4xl font-light tracking-tight italic">
-          Catálogo <span className="not-italic text-[#d4af37]">Exclusivo</span>
-        </h1>
-        <p className="text-gray-500 text-sm mt-2 italic font-light">
-          Gestiona y filtra tus activos inmobiliarios de alta gama.
-        </p>
+    <div className="min-h-screen bg-[#050505] text-white p-6 md:p-12">
+      <header className="mb-10">
+        <h1 className="text-3xl font-light italic">Catálogo <span className="text-[#d4af37] not-italic font-bold">Homvi</span></h1>
       </header>
 
-      {/* BARRA DE BÚSQUEDA Y FILTROS */}
-      <div className="flex flex-col md:flex-row gap-6 mb-12 items-center">
-        <div className="relative w-full md:w-1/2">
-          <input 
-            type="text"
-            placeholder="Buscar por nombre o ubicación..."
-            className="w-full bg-[#0a0a0a] border border-white/10 py-4 px-6 rounded-2xl text-sm focus:border-[#d4af37] outline-none transition-all"
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <span className="absolute right-6 top-4 text-gray-600 italic text-xs">BUSCAR</span>
-        </div>
-
-        <div className="flex gap-2 overflow-x-auto pb-2 w-full md:w-auto">
-          {['Todos', 'Villa', 'Penthouse', 'Apartamento'].map((cat) => (
-            <button
+      {/* Controles */}
+      <div className="flex flex-col md:flex-row gap-4 mb-10">
+        <input 
+          type="text"
+          placeholder="Buscar..."
+          className="bg-[#0a0a0a] border border-white/10 p-4 rounded-xl flex-1 outline-none focus:border-[#d4af37] transition-all"
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <div className="flex gap-2">
+          {['Todos', 'Villa', 'Penthouse'].map(cat => (
+            <button 
               key={cat}
               onClick={() => setFilter(cat)}
-              className={`px-6 py-3 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all border ${
-                filter === cat 
-                ? 'bg-[#d4af37] text-black border-[#d4af37]' 
-                : 'bg-transparent text-gray-500 border-white/10 hover:border-white/30'
+              className={`px-4 py-2 rounded-xl text-[10px] uppercase font-bold border transition-all ${
+                filter === cat ? 'bg-[#d4af37] text-black border-[#d4af37]' : 'border-white/10 text-gray-500'
               }`}
             >
               {cat}
@@ -60,36 +48,21 @@ export default function PropertiesPage() {
         </div>
       </div>
 
-      {/* GRID DE RESULTADOS */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {filteredProperties.length > 0 ? (
-          filteredProperties.map((prop) => (
-            <div key={prop.id} className="bg-[#0a0a0a] border border-white/5 rounded-[2.5rem] overflow-hidden group hover:border-[#d4af37]/30 transition-all">
-              <div className="h-48 bg-neutral-900 relative">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
-                <div className="absolute bottom-4 left-6">
-                  <span className="text-[10px] text-[#d4af37] font-bold uppercase tracking-widest">{prop.type}</span>
-                </div>
-              </div>
-              <div className="p-8">
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-lg font-bold group-hover:text-[#d4af37] transition-colors uppercase">{prop.name}</h3>
-                  <span className="text-[#d4af37] font-bold">{prop.price}</span>
-                </div>
-                <p className="text-gray-500 text-xs italic mb-6">{prop.loc} • {prop.area}</p>
-                <button className="w-full py-4 rounded-2xl border border-white/5 bg-white/5 text-[9px] uppercase tracking-[0.2em] font-bold hover:bg-white hover:text-black transition-all">
-                  Ver Detalles
-                </button>
-              </div>
+      {/* Rejilla */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredProperties.map(prop => (
+          <div key={prop.id} className="bg-[#0a0a0a] border border-white/5 p-6 rounded-[2rem] hover:border-[#d4af37]/30 transition-all">
+            <div className="flex justify-between items-start mb-4">
+              <h3 className="font-bold uppercase tracking-tighter">{prop.name}</h3>
+              <span className="text-[#d4af37] font-mono">{prop.price}</span>
             </div>
-          ))
-        ) : (
-          <div className="col-span-full py-20 text-center border border-dashed border-white/10 rounded-[2.5rem]">
-            <p className="text-gray-500 italic">No se encontraron propiedades que coincidan con tu búsqueda.</p>
+            <p className="text-gray-500 text-xs italic mb-4">{prop.loc}</p>
+            <div className="text-[9px] uppercase tracking-widest text-[#d4af37] bg-[#d4af37]/10 w-fit px-3 py-1 rounded-full border border-[#d4af37]/20">
+              {prop.type}
+            </div>
           </div>
-        )}
+        ))}
       </div>
     </div>
   )
-}
 }
