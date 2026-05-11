@@ -43,15 +43,15 @@ export default function Page() {
           </div>
           <div className="text-center">
             <p className="text-4xl font-light mb-2">$18B</p>
-            <p className="text-gray-500 text-[10px] uppercase tracking-widest">Propiedades</p>
+            <p className="text-gray-500 text-xs uppercase tracking-widest">Propiedades</p>
           </div>
           <div className="text-center">
             <p className="text-4xl font-light mb-2">34%</p>
-            <p className="text-gray-500 text-[10px] uppercase tracking-widest">Más cierres</p>
+            <p className="text-gray-500 text-xs uppercase tracking-widest">Más cierres</p>
           </div>
           <div className="text-center">
             <p className="text-4xl font-light mb-2">99%</p>
-            <p className="text-gray-500 text-[10px] uppercase tracking-widest">Satisfacción</p>
+            <p className="text-gray-500 text-xs uppercase tracking-widest">Satisfacción</p>
           </div>
         </div>
       </section>
