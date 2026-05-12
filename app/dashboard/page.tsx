@@ -20,9 +20,46 @@ interface Recordatorio {
   clienteNombre?: string
 }
 
+interface Metricas {
+  clientesPorEtapa: Record<string, number>
+  actividadMes: { tipo: string; total: number }[]
+  recordatoriosPendientes: number
+  recordatoriosCompletadosMes: number
+  totalComunicacionesMes: number
+}
+
+const etapaColor: Record<string, string> = {
+  'LEAD': 'text-gray-400 bg-white/5',
+  'BUSCANDO': 'text-blue-400 bg-blue-400/10',
+  'EN OFERTA': 'text-[#d4af37] bg-[#d4af37]/10',
+  'CIERRE': 'text-green-400 bg-green-400/10',
+}
+
+const etapaBarColor: Record<string, string> = {
+  'LEAD': 'bg-gray-400',
+  'BUSCANDO': 'bg-blue-400',
+  'EN OFERTA': 'bg-[#d4af37]',
+  'CIERRE': 'bg-green-400',
+}
+
+const tipoIcono: Record<string, string> = {
+  whatsapp: '💬',
+  email: '✉️',
+  llamada: '📞',
+  nota: '📝',
+}
+
+const tipoLabel: Record<string, string> = {
+  whatsapp: 'WhatsApp',
+  email: 'Email',
+  llamada: 'Llamadas',
+  nota: 'Notas',
+}
+
 export default function Dashboard() {
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [recordatorios, setRecordatorios] = useState<Recordatorio[]>([])
+  const [metricas, setMetricas] = useState<Metricas | null>(null)
 
   useEffect(() => {
     const cargar = async () => {
@@ -32,20 +69,59 @@ export default function Dashboard() {
         .order('created_at', { ascending: false })
 
       if (data) {
-        setClientes(data.map((c) => ({
+        const mapped = data.map((c) => ({
           id: c.id,
           nombre: c.nombre,
           etapa: c.etapa,
           tipoPropiedad: c.tipo_propiedad || [],
           presupuestoMin: c.presupuesto_min || '',
-        })))
+        }))
+        setClientes(mapped)
+
+        // Clientes por etapa
+        const porEtapa: Record<string, number> = { LEAD: 0, BUSCANDO: 0, 'EN OFERTA': 0, CIERRE: 0 }
+        mapped.forEach((c) => { if (porEtapa[c.etapa] !== undefined) porEtapa[c.etapa]++ })
+
+        // Actividad del mes
+        const inicioMes = new Date()
+        inicioMes.setDate(1)
+        inicioMes.setHours(0, 0, 0, 0)
+
+        const { data: historial } = await supabase
+          .from('historial')
+          .select('tipo')
+          .gte('fecha', inicioMes.toISOString())
+
+        const conteo: Record<string, number> = {}
+        historial?.forEach((h) => { conteo[h.tipo] = (conteo[h.tipo] || 0) + 1 })
+        const actividadMes = Object.entries(conteo).map(([tipo, total]) => ({ tipo, total }))
+        const totalComunicaciones = historial?.length || 0
+
+        // Recordatorios completados este mes
+        const { data: recCompletados } = await supabase
+          .from('recordatorios')
+          .select('id')
+          .eq('completado', true)
+          .gte('created_at', inicioMes.toISOString())
+
+        // Recordatorios pendientes
+        const { data: recPendientes } = await supabase
+          .from('recordatorios')
+          .select('id')
+          .eq('completado', false)
+
+        setMetricas({
+          clientesPorEtapa: porEtapa,
+          actividadMes,
+          recordatoriosPendientes: recPendientes?.length || 0,
+          recordatoriosCompletadosMes: recCompletados?.length || 0,
+          totalComunicacionesMes: totalComunicaciones,
+        })
       }
     }
 
     const cargarRecordatorios = async () => {
-      const hoy = new Date().toISOString().split('T')[0]
       const en7dias = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-
       const { data } = await supabase
         .from('recordatorios')
         .select('*, clientes(nombre)')
@@ -72,13 +148,13 @@ export default function Dashboard() {
   const completarRecordatorio = async (id: string) => {
     await supabase.from('recordatorios').update({ completado: true }).eq('id', id)
     setRecordatorios((prev) => prev.filter((r) => r.id !== id))
-  }
-
-  const etapaColor: Record<string, string> = {
-    'LEAD': 'text-gray-400 bg-white/5',
-    'BUSCANDO': 'text-blue-400 bg-blue-400/10',
-    'EN OFERTA': 'text-[#d4af37] bg-[#d4af37]/10',
-    'CIERRE': 'text-green-400 bg-green-400/10',
+    if (metricas) {
+      setMetricas({
+        ...metricas,
+        recordatoriosPendientes: Math.max(0, metricas.recordatoriosPendientes - 1),
+        recordatoriosCompletadosMes: metricas.recordatoriosCompletadosMes + 1,
+      })
+    }
   }
 
   function formatFechaRecordatorio(fecha: string) {
@@ -87,14 +163,11 @@ export default function Dashboard() {
     if (fecha === hoy) return { label: 'Hoy', color: 'text-red-400' }
     if (fecha === manana) return { label: 'Mañana', color: 'text-[#d4af37]' }
     const d = new Date(fecha + 'T12:00:00')
-    return {
-      label: d.toLocaleDateString('es-DO', { day: 'numeric', month: 'short' }),
-      color: 'text-gray-400'
-    }
+    return { label: d.toLocaleDateString('es-DO', { day: 'numeric', month: 'short' }), color: 'text-gray-400' }
   }
 
-  const recordatoriosHoy = recordatorios.filter(r => r.fecha === new Date().toISOString().split('T')[0])
-  const recordatoriosProximos = recordatorios.filter(r => r.fecha !== new Date().toISOString().split('T')[0])
+  const totalClientes = clientes.length
+  const maxEtapa = metricas ? Math.max(...Object.values(metricas.clientesPorEtapa), 1) : 1
 
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans">
@@ -119,18 +192,16 @@ export default function Dashboard() {
             <div className="bg-[#0a0a0a] p-8 rounded-[2rem] border border-white/5 group-hover:border-[#d4af37]/50 transition-all cursor-pointer relative overflow-hidden">
               <p className="text-gray-500 text-xs uppercase tracking-[0.2em] mb-2">Propiedades Activas</p>
               <h2 className="text-3xl font-bold group-hover:text-[#d4af37] transition-colors">24 Unidades</h2>
-              <div className="absolute right-8 bottom-8 text-[#d4af37] opacity-0 group-hover:opacity-100 transition-opacity">
-                Ver catálogo →
-              </div>
+              <div className="absolute right-8 bottom-8 text-[#d4af37] opacity-0 group-hover:opacity-100 transition-opacity">Ver catálogo →</div>
             </div>
           </Link>
           <div className="bg-[#0a0a0a] p-8 rounded-[2rem] border border-white/5">
             <p className="text-gray-500 text-xs uppercase tracking-[0.2em] mb-2">Clientes Activos</p>
-            <h2 className="text-3xl font-bold">{clientes.length > 0 ? `+${clientes.length}` : '0'}</h2>
+            <h2 className="text-3xl font-bold">{totalClientes > 0 ? `+${totalClientes}` : '0'}</h2>
           </div>
         </div>
 
-        {/* Recordatorios */}
+        {/* Recordatorios pendientes */}
         {recordatorios.length > 0 && (
           <div className="mb-10">
             <div className="flex items-center justify-between mb-4">
@@ -141,7 +212,6 @@ export default function Dashboard() {
                 </span>
               </h3>
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {recordatorios.map((r) => {
                 const { label, color } = formatFechaRecordatorio(r.fecha)
@@ -149,7 +219,7 @@ export default function Dashboard() {
                   <div key={r.id} className="bg-[#0a0a0a] border border-white/5 rounded-2xl p-4 flex items-start gap-3 hover:border-[#d4af37]/20 transition-all group">
                     <button
                       onClick={() => completarRecordatorio(r.id)}
-                      className="w-5 h-5 rounded-full border border-white/20 flex-shrink-0 mt-0.5 hover:border-green-400 hover:bg-green-400/10 transition-all flex items-center justify-center group-hover:border-[#d4af37]/50"
+                      className="w-5 h-5 rounded-full border border-white/20 flex-shrink-0 mt-0.5 hover:border-green-400 hover:bg-green-400/10 transition-all"
                       title="Marcar como completado"
                     />
                     <div className="flex-1 min-w-0">
@@ -200,7 +270,7 @@ export default function Dashboard() {
                           {c.etapa}
                         </span>
                         <span className="text-sm font-bold text-[#d4af37]">
-                          {c.presupuestoMin ? `$${Number(c.presupuestoMin.replace(/\D/g,'')).toLocaleString()}` : '—'}
+                          {c.presupuestoMin ? `$${Number(c.presupuestoMin.replace(/\D/g, '')).toLocaleString()}` : '—'}
                         </span>
                       </div>
                     </div>
@@ -233,6 +303,127 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* ── REPORTES Y MÉTRICAS ── */}
+        {metricas && (
+          <div className="mb-10">
+            <h3 className="text-xs uppercase tracking-[0.2em] text-gray-500 font-bold mb-6">Reportes del Mes</h3>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+              {/* Clientes por etapa */}
+              <div className="bg-[#0a0a0a] rounded-[2rem] border border-white/5 p-6">
+                <h4 className="text-xs uppercase tracking-[0.2em] text-gray-500 font-bold mb-5">Clientes por Etapa</h4>
+                <div className="space-y-4">
+                  {['LEAD', 'BUSCANDO', 'EN OFERTA', 'CIERRE'].map((etapa) => {
+                    const count = metricas.clientesPorEtapa[etapa] || 0
+                    const pct = totalClientes > 0 ? Math.round((count / totalClientes) * 100) : 0
+                    return (
+                      <div key={etapa}>
+                        <div className="flex justify-between items-center mb-1.5">
+                          <span className="text-xs text-gray-400 font-bold">{etapa}</span>
+                          <span className="text-xs text-gray-500">{count} cliente{count !== 1 ? 's' : ''}</span>
+                        </div>
+                        <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full transition-all duration-700 ${etapaBarColor[etapa]}`}
+                            style={{ width: `${pct}%` }}
+                          />
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+                <div className="mt-5 pt-4 border-t border-white/5 flex justify-between">
+                  <span className="text-xs text-gray-600">Total</span>
+                  <span className="text-xs font-bold text-white">{totalClientes} clientes</span>
+                </div>
+              </div>
+
+              {/* Actividad del mes */}
+              <div className="bg-[#0a0a0a] rounded-[2rem] border border-white/5 p-6">
+                <h4 className="text-xs uppercase tracking-[0.2em] text-gray-500 font-bold mb-5">Actividad del Mes</h4>
+                {metricas.actividadMes.length === 0 ? (
+                  <div className="flex-1 flex items-center justify-center py-8">
+                    <p className="text-gray-600 text-sm text-center">Sin actividad registrada este mes</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {metricas.actividadMes.map(({ tipo, total }) => {
+                      const maxTotal = Math.max(...metricas.actividadMes.map(a => a.total), 1)
+                      const pct = Math.round((total / maxTotal) * 100)
+                      return (
+                        <div key={tipo} className="flex items-center gap-3">
+                          <span className="text-lg w-7 flex-shrink-0">{tipoIcono[tipo] || '📌'}</span>
+                          <div className="flex-1">
+                            <div className="flex justify-between mb-1">
+                              <span className="text-xs text-gray-400">{tipoLabel[tipo] || tipo}</span>
+                              <span className="text-xs font-bold text-white">{total}</span>
+                            </div>
+                            <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                              <div className="h-full bg-[#d4af37] rounded-full" style={{ width: `${pct}%` }} />
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+                <div className="mt-5 pt-4 border-t border-white/5 flex justify-between">
+                  <span className="text-xs text-gray-600">Total interacciones</span>
+                  <span className="text-xs font-bold text-[#d4af37]">{metricas.totalComunicacionesMes}</span>
+                </div>
+              </div>
+
+              {/* Recordatorios */}
+              <div className="bg-[#0a0a0a] rounded-[2rem] border border-white/5 p-6">
+                <h4 className="text-xs uppercase tracking-[0.2em] text-gray-500 font-bold mb-5">Recordatorios</h4>
+                <div className="space-y-4">
+                  {/* Donut visual simple */}
+                  <div className="flex items-center justify-center py-4">
+                    <div className="relative w-28 h-28">
+                      <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+                        <circle cx="18" cy="18" r="15.9" fill="none" stroke="#ffffff08" strokeWidth="3.5" />
+                        {(() => {
+                          const total = metricas.recordatoriosPendientes + metricas.recordatoriosCompletadosMes
+                          const pct = total > 0 ? (metricas.recordatoriosCompletadosMes / total) * 100 : 0
+                          const dash = (pct / 100) * 100
+                          return (
+                            <circle
+                              cx="18" cy="18" r="15.9"
+                              fill="none"
+                              stroke="#d4af37"
+                              strokeWidth="3.5"
+                              strokeDasharray={`${dash} ${100 - dash}`}
+                              strokeLinecap="round"
+                            />
+                          )
+                        })()}
+                      </svg>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <span className="text-2xl font-bold text-white">{metricas.recordatoriosCompletadosMes}</span>
+                        <span className="text-[10px] text-gray-500 uppercase tracking-wider">completados</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-white/3 rounded-2xl p-3 text-center border border-white/5">
+                      <p className="text-2xl font-bold text-green-400">{metricas.recordatoriosCompletadosMes}</p>
+                      <p className="text-[10px] text-gray-500 mt-1 uppercase tracking-wider">Completados</p>
+                    </div>
+                    <div className="bg-white/3 rounded-2xl p-3 text-center border border-white/5">
+                      <p className="text-2xl font-bold text-red-400">{metricas.recordatoriosPendientes}</p>
+                      <p className="text-[10px] text-gray-500 mt-1 uppercase tracking-wider">Pendientes</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        )}
+
+        {/* Acciones rápidas */}
         <section>
           <h3 className="text-gray-500 text-xs uppercase tracking-[0.2em] mb-6 font-bold">Acciones Rápidas</h3>
           <div className="flex flex-wrap gap-4">
