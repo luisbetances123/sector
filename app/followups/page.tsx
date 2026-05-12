@@ -21,7 +21,7 @@ const tipoColor: Record<string, string> = {
   llamada: 'text-blue-400 bg-blue-400/10 border-blue-400/20',
   visita: 'text-purple-400 bg-purple-400/10 border-purple-400/20',
   documento: 'text-green-400 bg-green-400/10 border-green-400/20',
-  otro: 'text-gray-400 bg-white/5 border-white/10',
+  otro: 'text-gray-300 bg-white/5 border-white/10',
 }
 const urgenciaColor: Record<string, string> = {
   alta: 'text-red-400 bg-red-400/10 border-red-400/20',
@@ -99,7 +99,7 @@ export default function FollowUps() {
         <header className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-light tracking-tight">Follow<span className="text-[#d4af37] italic">-ups</span></h1>
-            <p className="text-gray-400 text-sm mt-2 font-light">
+            <p className="text-gray-300 text-sm mt-2 font-light">
               {cargando ? 'Cargando...' : `${hechos} de ${total} completados`}
             </p>
           </div>
@@ -107,7 +107,7 @@ export default function FollowUps() {
             {['pendientes', 'hoy', 'hechos', 'todos'].map((f) => (
               <button key={f} onClick={() => setFiltro(f)}
                 className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all capitalize ${
-                  filtro === f ? 'bg-[#d4af37] text-black border-[#d4af37]' : 'border-white/10 text-gray-400 hover:border-white/30'
+                  filtro === f ? 'bg-[#d4af37] text-black border-[#d4af37]' : 'border-white/10 text-gray-300 hover:border-white/30'
                 }`}>
                 {f}
               </button>
@@ -119,7 +119,7 @@ export default function FollowUps() {
         {total > 0 && (
           <div className="bg-[#0a0a0a] border border-white/5 rounded-2xl p-5 mb-8">
             <div className="flex justify-between items-center mb-3">
-              <span className="text-xs text-gray-400 uppercase tracking-widest">Progreso total</span>
+              <span className="text-xs text-gray-300 uppercase tracking-widest">Progreso total</span>
               <span className="text-xs font-bold text-[#d4af37]">{progreso}%</span>
             </div>
             <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
@@ -131,7 +131,7 @@ export default function FollowUps() {
         {/* Estado vacío */}
         {!cargando && filtrados.length === 0 && (
           <div className="text-center py-20">
-            <p className="text-gray-400 text-sm mb-2">
+            <p className="text-gray-300 text-sm mb-2">
               {filtro === 'pendientes' ? 'No hay follow-ups pendientes 🎉' : 'No hay follow-ups en esta vista'}
             </p>
             <p className="text-gray-700 text-xs">Créalos desde el perfil de cada cliente</p>
@@ -144,7 +144,7 @@ export default function FollowUps() {
           if (delDia.length === 0) return null
           return (
             <div key={fecha} className="mb-8">
-              <h3 className="text-xs uppercase tracking-[0.2em] text-gray-400 font-bold mb-4">
+              <h3 className="text-xs uppercase tracking-[0.2em] text-gray-300 font-bold mb-4">
                 {formatFechaLabel(fecha)}
               </h3>
               <div className="space-y-3">
@@ -172,7 +172,7 @@ export default function FollowUps() {
 
                     {/* Info */}
                     <div className="flex-1 min-w-0">
-                      <p className={`text-sm font-bold ${f.hecho ? 'line-through text-gray-400' : 'text-white'}`}>
+                      <p className={`text-sm font-bold ${f.hecho ? 'line-through text-gray-300' : 'text-white'}`}>
                         {f.titulo}
                       </p>
                       <div className="flex items-center gap-2 mt-0.5">
@@ -183,7 +183,7 @@ export default function FollowUps() {
                             {f.clienteNombre.split(' ').map((n: string) => n.charAt(0).toUpperCase() + n.slice(1)).join(' ')}
                           </Link>
                         )}
-                        {f.detalle && <span className="text-gray-400 text-xs truncate">· {f.detalle}</span>}
+                        {f.detalle && <span className="text-gray-300 text-xs truncate">· {f.detalle}</span>}
                       </div>
                     </div>
 

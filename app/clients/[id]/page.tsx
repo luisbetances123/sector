@@ -92,7 +92,7 @@ const tipoColor: Record<string, string> = {
   whatsapp: 'text-green-400 bg-green-400/10 border-green-400/20',
   email: 'text-blue-400 bg-blue-400/10 border-blue-400/20',
   llamada: 'text-[#d4af37] bg-[#d4af37]/10 border-[#d4af37]/20',
-  nota: 'text-gray-400 bg-white/5 border-white/10',
+  nota: 'text-gray-300 bg-white/5 border-white/10',
 }
 
 function initiales(nombre: string) {
@@ -417,7 +417,7 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
   )
 
   if (!cliente) return (
-    <div className="min-h-screen bg-[#050505] flex items-center justify-center text-gray-400 font-sans">
+    <div className="min-h-screen bg-[#050505] flex items-center justify-center text-gray-300 font-sans">
       Cargando cliente...
     </div>
   )
@@ -427,7 +427,7 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
 
       {/* Header */}
       <div className="p-6 border-b border-white/5 flex items-center gap-4">
-        <button onClick={() => router.push('/dashboard')} className="text-xs uppercase tracking-widest text-gray-400 hover:text-white transition-colors font-bold">
+        <button onClick={() => router.push('/dashboard')} className="text-xs uppercase tracking-widest text-gray-300 hover:text-white transition-colors font-bold">
           ← Dashboard
         </button>
         <div className="flex-1" />
@@ -446,7 +446,7 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
         </div>
         <div className="flex-1">
           <h1 className="text-xl font-bold text-white">{cliente.nombre.split(' ').map((n) => n.charAt(0).toUpperCase() + n.slice(1)).join(' ')}</h1>
-          <p className="text-gray-400 text-sm mt-0.5">{cliente.telefono}{cliente.telefono && cliente.email && ' · '}{cliente.email}</p>
+          <p className="text-gray-300 text-sm mt-0.5">{cliente.telefono}{cliente.telefono && cliente.email && ' · '}{cliente.email}</p>
         </div>
         <div className="flex gap-2 flex-wrap justify-end">
           <button onClick={() => { seleccionarMensaje(generarMensajeAuto(cliente)); setTabActivo('auto') }}
@@ -488,15 +488,15 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
           <div className="flex justify-between items-center mb-4">
             <div className="flex">
               <button onClick={() => setTabActivo('auto')}
-                className={`px-4 py-2 text-xs font-bold rounded-l-xl border transition-all ${tabActivo === 'auto' ? 'bg-[#d4af37]/10 border-[#d4af37]/30 text-[#d4af37]' : 'bg-transparent border-white/10 text-gray-400'}`}>
+                className={`px-4 py-2 text-xs font-bold rounded-l-xl border transition-all ${tabActivo === 'auto' ? 'bg-[#d4af37]/10 border-[#d4af37]/30 text-[#d4af37]' : 'bg-transparent border-white/10 text-gray-300'}`}>
                 ✨ Auto
               </button>
               <button onClick={() => setTabActivo('plantillas')}
-                className={`px-4 py-2 text-xs font-bold rounded-r-xl border-t border-r border-b transition-all ${tabActivo === 'plantillas' ? 'bg-blue-400/10 border-blue-400/30 text-blue-400' : 'bg-transparent border-white/10 text-gray-400'}`}>
+                className={`px-4 py-2 text-xs font-bold rounded-r-xl border-t border-r border-b transition-all ${tabActivo === 'plantillas' ? 'bg-blue-400/10 border-blue-400/30 text-blue-400' : 'bg-transparent border-white/10 text-gray-300'}`}>
                 📋 Plantillas
               </button>
             </div>
-            <button onClick={() => setMostrarCopilot(false)} className="text-gray-400 hover:text-white transition-colors text-lg">✕</button>
+            <button onClick={() => setMostrarCopilot(false)} className="text-gray-300 hover:text-white transition-colors text-lg">✕</button>
           </div>
 
           {tabActivo === 'plantillas' && (
@@ -545,35 +545,35 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
       {/* Contenido principal */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-0 mt-4">
         <div className="p-6 border-r border-white/5">
-          <h3 className="text-xs uppercase tracking-[0.2em] text-gray-400 font-bold mb-4">Perfil de Búsqueda</h3>
+          <h3 className="text-xs uppercase tracking-[0.2em] text-gray-300 font-bold mb-4">Perfil de Búsqueda</h3>
           <div className="bg-[#0a0a0a] rounded-2xl border border-white/5 overflow-hidden mb-4">
             {cliente.presupuestoMin && (
               <div className="flex justify-between items-center px-4 py-3 border-b border-white/5">
-                <span className="text-xs text-gray-400">Presupuesto</span>
+                <span className="text-xs text-gray-300">Presupuesto</span>
                 <span className="text-sm text-green-400 font-bold">${cliente.presupuestoMin} – ${cliente.presupuestoMax}</span>
               </div>
             )}
             {cliente.tipoPropiedad?.length > 0 && (
               <div className="flex justify-between items-center px-4 py-3 border-b border-white/5">
-                <span className="text-xs text-gray-400">Tipo</span>
+                <span className="text-xs text-gray-300">Tipo</span>
                 <span className="text-sm text-white">{cliente.tipoPropiedad.join(' · ')}</span>
               </div>
             )}
             {cliente.recamaras && (
               <div className="flex justify-between items-center px-4 py-3 border-b border-white/5">
-                <span className="text-xs text-gray-400">Recámaras</span>
+                <span className="text-xs text-gray-300">Recámaras</span>
                 <span className="text-sm text-white">{cliente.recamaras}</span>
               </div>
             )}
             {cliente.plazo && (
               <div className="flex justify-between items-center px-4 py-3 border-b border-white/5">
-                <span className="text-xs text-gray-400">Plazo</span>
+                <span className="text-xs text-gray-300">Plazo</span>
                 <span className="text-sm text-white">{cliente.plazo}</span>
               </div>
             )}
             {cliente.financiamiento && (
               <div className="flex justify-between items-center px-4 py-3">
-                <span className="text-xs text-gray-400">Financiamiento</span>
+                <span className="text-xs text-gray-300">Financiamiento</span>
                 <span className="text-sm text-white">{cliente.financiamiento}</span>
               </div>
             )}
@@ -581,10 +581,10 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
 
           {cliente.zonas?.length > 0 && (
             <>
-              <h3 className="text-xs uppercase tracking-[0.2em] text-gray-400 font-bold mb-3">Zonas de Interés</h3>
+              <h3 className="text-xs uppercase tracking-[0.2em] text-gray-300 font-bold mb-3">Zonas de Interés</h3>
               <div className="flex flex-wrap gap-2 mb-4">
                 {cliente.zonas.map((zona) => (
-                  <span key={zona} className="bg-white/5 border border-white/10 px-3 py-1 rounded-full text-xs text-gray-400">{zona}</span>
+                  <span key={zona} className="bg-white/5 border border-white/10 px-3 py-1 rounded-full text-xs text-gray-300">{zona}</span>
                 ))}
               </div>
             </>
@@ -592,8 +592,8 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
 
           {cliente.notas && (
             <>
-              <h3 className="text-xs uppercase tracking-[0.2em] text-gray-400 font-bold mb-3">Notas</h3>
-              <div className="bg-[#d4af37]/5 border border-[#d4af37]/10 rounded-2xl p-4 text-sm text-gray-400 italic leading-relaxed">
+              <h3 className="text-xs uppercase tracking-[0.2em] text-gray-300 font-bold mb-3">Notas</h3>
+              <div className="bg-[#d4af37]/5 border border-[#d4af37]/10 rounded-2xl p-4 text-sm text-gray-300 italic leading-relaxed">
                 {cliente.notas}
               </div>
             </>
@@ -601,11 +601,11 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
         </div>
 
         <div className="p-6">
-          <h3 className="text-xs uppercase tracking-[0.2em] text-gray-400 font-bold mb-4">Etapa del Pipeline</h3>
+          <h3 className="text-xs uppercase tracking-[0.2em] text-gray-300 font-bold mb-4">Etapa del Pipeline</h3>
           <div className="flex flex-col gap-2 mb-6">
             {etapas.map((e) => (
               <button key={e} onClick={() => cambiarEtapa(e)}
-                className={`px-4 py-3 rounded-2xl border text-sm font-bold text-left flex items-center gap-3 transition-all ${cliente.etapa === e ? etapaColor[e] : 'bg-[#0a0a0a] border-white/5 text-gray-400 hover:border-white/20'}`}>
+                className={`px-4 py-3 rounded-2xl border text-sm font-bold text-left flex items-center gap-3 transition-all ${cliente.etapa === e ? etapaColor[e] : 'bg-[#0a0a0a] border-white/5 text-gray-300 hover:border-white/20'}`}>
                 <span className={`w-2 h-2 rounded-full flex-shrink-0 ${cliente.etapa === e ? 'bg-current' : 'bg-white/20'}`} />
                 {e}
                 {cliente.etapa === e && <span className="ml-auto text-xs font-normal opacity-60">actual</span>}
@@ -613,7 +613,7 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
             ))}
           </div>
 
-          <h3 className="text-xs uppercase tracking-[0.2em] text-gray-400 font-bold mb-4">Acciones Rápidas</h3>
+          <h3 className="text-xs uppercase tracking-[0.2em] text-gray-300 font-bold mb-4">Acciones Rápidas</h3>
           <div className="flex flex-col gap-2">
             <button onClick={() => setModalPropiedades(true)}
               className="px-4 py-3 rounded-2xl bg-[#d4af37]/5 border border-[#d4af37]/20 text-sm text-[#d4af37] text-left hover:bg-[#d4af37]/10 transition-all font-bold">
@@ -636,7 +636,7 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
           {/* Follow-ups del cliente */}
           {followups.length > 0 && (
             <div className="mt-4">
-              <h3 className="text-xs uppercase tracking-[0.2em] text-gray-400 font-bold mb-3">
+              <h3 className="text-xs uppercase tracking-[0.2em] text-gray-300 font-bold mb-3">
                 Follow-ups Pendientes
                 <span className="ml-2 bg-blue-400/10 text-blue-400 border border-blue-400/30 px-2 py-0.5 rounded-full text-xs">
                   {followups.length}
@@ -664,7 +664,7 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
           {/* Recordatorios del cliente */}
           {recordatorios.length > 0 && (
             <div className="mt-6">
-              <h3 className="text-xs uppercase tracking-[0.2em] text-gray-400 font-bold mb-3">
+              <h3 className="text-xs uppercase tracking-[0.2em] text-gray-300 font-bold mb-3">
                 Recordatorios
                 <span className="ml-2 bg-[#d4af37]/10 text-[#d4af37] border border-[#d4af37]/30 px-2 py-0.5 rounded-full text-xs">
                   {recordatorios.length}
@@ -694,7 +694,7 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
       {/* Propiedades asignadas */}
       <div className="px-6 pb-2 mt-2">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xs uppercase tracking-[0.2em] text-gray-400 font-bold">
+          <h3 className="text-xs uppercase tracking-[0.2em] text-gray-300 font-bold">
             Propiedades de Interés
             {propiedadesAsignadas.length > 0 && (
               <span className="ml-2 bg-[#d4af37]/10 text-[#d4af37] border border-[#d4af37]/30 px-2 py-0.5 rounded-full text-xs">
@@ -709,7 +709,7 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
 
         {propiedadesAsignadas.length === 0 ? (
           <div className="bg-[#0a0a0a] border border-white/5 border-dashed rounded-2xl py-8 text-center">
-            <p className="text-gray-400 text-sm">Sin propiedades asignadas</p>
+            <p className="text-gray-300 text-sm">Sin propiedades asignadas</p>
             <button onClick={() => setModalPropiedades(true)} className="mt-3 text-xs text-[#d4af37] hover:underline">
               Asignar una propiedad →
             </button>
@@ -730,7 +730,7 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
                 </div>
                 <div className="p-3">
                   <p className="text-sm font-bold text-white truncate">{prop.nombre}</p>
-                  <p className="text-xs text-gray-400 mt-0.5">{prop.ubicacion}</p>
+                  <p className="text-xs text-gray-300 mt-0.5">{prop.ubicacion}</p>
                   <p className="text-xs text-[#d4af37] font-bold mt-1">{prop.precio} · {prop.area}</p>
                 </div>
               </div>
@@ -746,19 +746,19 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
             <div className="p-6 border-b border-white/5 flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-bold text-white">Nuevo Follow-up</h2>
-                <p className="text-xs text-gray-400 mt-1">Para {cliente.nombre.split(' ')[0]}</p>
+                <p className="text-xs text-gray-300 mt-1">Para {cliente.nombre.split(' ')[0]}</p>
               </div>
               <button onClick={() => setModalFollowup(false)}
-                className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-all">✕</button>
+                className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-300 hover:text-white transition-all">✕</button>
             </div>
             <div className="p-6 flex flex-col gap-4">
               {/* Tipo */}
               <div>
-                <label className="text-xs uppercase tracking-widest text-gray-400 font-bold mb-2 block">Tipo</label>
+                <label className="text-xs uppercase tracking-widest text-gray-300 font-bold mb-2 block">Tipo</label>
                 <div className="flex gap-2">
                   {[{ v: 'llamada', i: '📞' }, { v: 'visita', i: '🏠' }, { v: 'documento', i: '📄' }, { v: 'otro', i: '📌' }].map((t) => (
                     <button key={t.v} onClick={() => setFuTipo(t.v)}
-                      className={`flex-1 py-2 rounded-xl text-sm border transition-all ${fuTipo === t.v ? 'bg-blue-400/10 border-blue-400/30 text-blue-400' : 'border-white/10 text-gray-400'}`}>
+                      className={`flex-1 py-2 rounded-xl text-sm border transition-all ${fuTipo === t.v ? 'bg-blue-400/10 border-blue-400/30 text-blue-400' : 'border-white/10 text-gray-300'}`}>
                       {t.i}
                     </button>
                   ))}
@@ -766,7 +766,7 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
               </div>
               {/* Título */}
               <div>
-                <label className="text-xs uppercase tracking-widest text-gray-400 font-bold mb-2 block">Tarea</label>
+                <label className="text-xs uppercase tracking-widest text-gray-300 font-bold mb-2 block">Tarea</label>
                 <input type="text" value={fuTitulo} onChange={(e) => setFuTitulo(e.target.value)}
                   placeholder="ej: Llamar para confirmar visita"
                   className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 outline-none focus:border-blue-400/50 transition-all"
@@ -774,18 +774,18 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
               </div>
               {/* Detalle */}
               <div>
-                <label className="text-xs uppercase tracking-widest text-gray-400 font-bold mb-2 block">Detalle (opcional)</label>
+                <label className="text-xs uppercase tracking-widest text-gray-300 font-bold mb-2 block">Detalle (opcional)</label>
                 <input type="text" value={fuDetalle} onChange={(e) => setFuDetalle(e.target.value)}
                   placeholder="ej: Confirmar horario de la tarde"
                   className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 outline-none focus:border-blue-400/50 transition-all" />
               </div>
               {/* Fecha */}
               <div>
-                <label className="text-xs uppercase tracking-widest text-gray-400 font-bold mb-2 block">¿Cuándo?</label>
+                <label className="text-xs uppercase tracking-widest text-gray-300 font-bold mb-2 block">¿Cuándo?</label>
                 <div className="flex gap-2 mb-3 flex-wrap">
                   {diasRapidosFollowup.map((d) => (
                     <button key={d.dias} onClick={() => setDiaRapidoFu(d.dias)}
-                      className="px-3 py-1.5 rounded-xl text-xs font-bold border border-white/10 text-gray-400 hover:border-blue-400/30 hover:text-blue-400 transition-all">
+                      className="px-3 py-1.5 rounded-xl text-xs font-bold border border-white/10 text-gray-300 hover:border-blue-400/30 hover:text-blue-400 transition-all">
                       {d.label}
                     </button>
                   ))}
@@ -799,13 +799,13 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
               </div>
               {/* Urgencia */}
               <div>
-                <label className="text-xs uppercase tracking-widest text-gray-400 font-bold mb-2 block">Urgencia</label>
+                <label className="text-xs uppercase tracking-widest text-gray-300 font-bold mb-2 block">Urgencia</label>
                 <div className="flex gap-2">
                   {[{ v: 'alta', l: 'Urgente', c: 'text-red-400 border-red-400/30 bg-red-400/10' },
                     { v: 'media', l: 'Esta semana', c: 'text-[#d4af37] border-[#d4af37]/30 bg-[#d4af37]/10' },
                     { v: 'baja', l: 'Sin prisa', c: 'text-green-400 border-green-400/30 bg-green-400/10' }].map((u) => (
                     <button key={u.v} onClick={() => setFuUrgencia(u.v)}
-                      className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all ${fuUrgencia === u.v ? u.c : 'border-white/10 text-gray-400'}`}>
+                      className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all ${fuUrgencia === u.v ? u.c : 'border-white/10 text-gray-300'}`}>
                       {u.l}
                     </button>
                   ))}
@@ -828,17 +828,17 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
             <div className="p-6 border-b border-white/5 flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-bold text-white">Nuevo Recordatorio</h2>
-                <p className="text-xs text-gray-400 mt-1">Para {cliente.nombre.split(' ')[0]}</p>
+                <p className="text-xs text-gray-300 mt-1">Para {cliente.nombre.split(' ')[0]}</p>
               </div>
               <button onClick={() => setModalRecordatorio(false)}
-                className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-all">
+                className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-300 hover:text-white transition-all">
                 ✕
               </button>
             </div>
 
             <div className="p-6 flex flex-col gap-4">
               <div>
-                <label className="text-xs uppercase tracking-widest text-gray-400 font-bold mb-2 block">¿Qué hacer?</label>
+                <label className="text-xs uppercase tracking-widest text-gray-300 font-bold mb-2 block">¿Qué hacer?</label>
                 <input
                   type="text"
                   value={textoRecordatorio}
@@ -850,11 +850,11 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
               </div>
 
               <div>
-                <label className="text-xs uppercase tracking-widest text-gray-400 font-bold mb-2 block">¿Cuándo?</label>
+                <label className="text-xs uppercase tracking-widest text-gray-300 font-bold mb-2 block">¿Cuándo?</label>
                 <div className="flex gap-2 mb-3 flex-wrap">
                   {diasRapidos.map((d) => (
                     <button key={d.dias} onClick={() => setDiaRapido(d.dias)}
-                      className="px-3 py-1.5 rounded-xl text-xs font-bold border border-white/10 text-gray-400 hover:border-[#d4af37]/30 hover:text-[#d4af37] transition-all">
+                      className="px-3 py-1.5 rounded-xl text-xs font-bold border border-white/10 text-gray-300 hover:border-[#d4af37]/30 hover:text-[#d4af37] transition-all">
                       {d.label}
                     </button>
                   ))}
@@ -885,10 +885,10 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
             <div className="p-6 border-b border-white/5 flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-bold text-white">Asignar Propiedad</h2>
-                <p className="text-xs text-gray-400 mt-1">Selecciona propiedades de interés para {cliente.nombre.split(' ')[0]}</p>
+                <p className="text-xs text-gray-300 mt-1">Selecciona propiedades de interés para {cliente.nombre.split(' ')[0]}</p>
               </div>
               <button onClick={() => { setModalPropiedades(false); setSearchProp('') }}
-                className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-all">
+                className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-300 hover:text-white transition-all">
                 ✕
               </button>
             </div>
@@ -906,7 +906,7 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
 
             <div className="overflow-y-auto flex-1 p-4">
               {propiedadesFiltradas.length === 0 ? (
-                <div className="text-center py-10 text-gray-400 text-sm">
+                <div className="text-center py-10 text-gray-300 text-sm">
                   {todasPropiedades.length === propiedadesAsignadas.length
                     ? 'Todas las propiedades ya están asignadas'
                     : 'No se encontraron propiedades'}
@@ -918,7 +918,7 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
                       <img src={prop.imagen} alt={prop.nombre} className="w-16 h-16 rounded-xl object-cover flex-shrink-0" />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-bold text-white truncate">{prop.nombre}</p>
-                        <p className="text-xs text-gray-400">{prop.ubicacion} · {prop.tipo}</p>
+                        <p className="text-xs text-gray-300">{prop.ubicacion} · {prop.tipo}</p>
                         <p className="text-xs text-[#d4af37] font-bold mt-0.5">{prop.precio} · {prop.area}</p>
                       </div>
                       <button
@@ -935,7 +935,7 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
 
             {propiedadesAsignadas.length > 0 && (
               <div className="p-4 border-t border-white/5">
-                <p className="text-xs text-gray-400 text-center">
+                <p className="text-xs text-gray-300 text-center">
                   {propiedadesAsignadas.length} propiedad{propiedadesAsignadas.length !== 1 ? 'es' : ''} asignada{propiedadesAsignadas.length !== 1 ? 's' : ''} a {cliente.nombre.split(' ')[0]}
                 </p>
               </div>
@@ -946,7 +946,7 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
 
       {/* Historial */}
       <div className="p-6 border-t border-white/5 mt-4">
-        <h3 className="text-xs uppercase tracking-[0.2em] text-gray-400 font-bold mb-6">Historial de Comunicaciones</h3>
+        <h3 className="text-xs uppercase tracking-[0.2em] text-gray-300 font-bold mb-6">Historial de Comunicaciones</h3>
         <div className="flex gap-3 mb-6">
           <input
             type="text"
@@ -962,7 +962,7 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
           </button>
         </div>
         {historial.length === 0 ? (
-          <div className="text-center py-10 text-gray-400 text-sm">Sin comunicaciones registradas aún.</div>
+          <div className="text-center py-10 text-gray-300 text-sm">Sin comunicaciones registradas aún.</div>
         ) : (
           <div className="space-y-3">
             {historial.map((h) => (
@@ -972,7 +972,7 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
                 </div>
                 <div className="flex-1 bg-[#0a0a0a] border border-white/5 rounded-2xl px-4 py-3">
                   <p className="text-sm text-gray-300 leading-relaxed">{h.texto}</p>
-                  <p className="text-xs text-gray-400 mt-1">{formatFecha(h.fecha)}</p>
+                  <p className="text-xs text-gray-300 mt-1">{formatFecha(h.fecha)}</p>
                 </div>
               </div>
             ))}

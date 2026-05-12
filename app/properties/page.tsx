@@ -74,7 +74,7 @@ export default function PropertiesPage() {
     <div className="min-h-screen bg-[#050505] text-white p-6 md:p-12">
       <header className="mb-10 flex justify-between items-center">
         <h1 className="text-3xl font-light italic">Catálogo <span className="text-[#d4af37] not-italic font-bold">Homvi</span></h1>
-        <Link href="/dashboard" className="text-xs uppercase tracking-widest text-gray-400 hover:text-white transition-all">
+        <Link href="/dashboard" className="text-xs uppercase tracking-widest text-gray-300 hover:text-white transition-all">
           ← Dashboard
         </Link>
       </header>
@@ -92,7 +92,7 @@ export default function PropertiesPage() {
               key={cat}
               onClick={() => setFilter(cat)}
               className={`px-4 py-2 rounded-xl text-xs uppercase font-bold border transition-all ${
-                filter === cat ? 'bg-[#d4af37] text-black border-[#d4af37]' : 'border-white/10 text-gray-400'
+                filter === cat ? 'bg-[#d4af37] text-black border-[#d4af37]' : 'border-white/10 text-gray-300'
               }`}
             >
               {cat}
@@ -121,7 +121,7 @@ export default function PropertiesPage() {
                 <h3 className="font-bold uppercase tracking-tighter text-sm">{prop.name}</h3>
                 <span className="text-[#d4af37] font-mono text-sm">{prop.price}</span>
               </div>
-              <p className="text-gray-400 text-xs italic mb-6">{prop.loc} • {prop.area}</p>
+              <p className="text-gray-300 text-xs italic mb-6">{prop.loc} • {prop.area}</p>
               <Link href={`/properties/${prop.id}`} className="mt-auto">
                 <button className="w-full py-4 rounded-2xl bg-[#d4af37]/10 border border-[#d4af37]/30 text-[#d4af37] text-xs uppercase tracking-[0.2em] font-bold hover:bg-[#d4af37] hover:text-black transition-all">
                   Ver Detalles

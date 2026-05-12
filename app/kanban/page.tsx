@@ -17,7 +17,7 @@ interface Cliente {
 const etapas = ['LEAD', 'BUSCANDO', 'EN OFERTA', 'CIERRE']
 
 const etapaColor: Record<string, string> = {
-  'LEAD': 'text-gray-400 border-gray-400/30',
+  'LEAD': 'text-gray-300 border-gray-400/30',
   'BUSCANDO': 'text-blue-400 border-blue-400/30',
   'EN OFERTA': 'text-[#d4af37] border-[#d4af37]/30',
   'CIERRE': 'text-green-400 border-green-400/30',
@@ -86,7 +86,7 @@ export default function KanbanPage() {
         <header className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-light tracking-tight">Pipeline <span className="text-[#d4af37] italic">Kanban</span></h1>
-            <p className="text-gray-400 text-sm mt-2 font-light">Arrastra los clientes entre etapas</p>
+            <p className="text-gray-300 text-sm mt-2 font-light">Arrastra los clientes entre etapas</p>
           </div>
           <Link href="/clients/new" className="bg-[#d4af37] text-black px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-white transition-all">
             + Nuevo Cliente
@@ -107,13 +107,13 @@ export default function KanbanPage() {
                   <span className={`text-xs font-bold uppercase tracking-widest ${etapaColor[etapa]}`}>
                     {etapa}
                   </span>
-                  <span className="text-xs text-gray-400 bg-white/5 px-2 py-0.5 rounded-full">
+                  <span className="text-xs text-gray-300 bg-white/5 px-2 py-0.5 rounded-full">
                     {clientesEtapa.length}
                   </span>
                 </div>
 
                 {clientesEtapa.length > 0 && (
-                  <div className="text-xs text-gray-400 mb-4 pb-3 border-b border-white/5">
+                  <div className="text-xs text-gray-300 mb-4 pb-3 border-b border-white/5">
                     Total: <span className="text-[#d4af37]">
                       ${clientesEtapa.reduce((acc, c) => {
                         const num = Number(c.presupuestoMin?.replace(/\D/g, '') || 0)
@@ -144,7 +144,7 @@ export default function KanbanPage() {
                         </p>
                       </div>
                       <div className="space-y-1">
-                        <p className="text-xs text-gray-400 truncate">{c.tipoPropiedad?.[0] || '—'}</p>
+                        <p className="text-xs text-gray-300 truncate">{c.tipoPropiedad?.[0] || '—'}</p>
                         <p className="text-sm font-bold text-[#d4af37]">
                           {c.presupuestoMin ? `$${Number(c.presupuestoMin.replace(/\D/g,'')).toLocaleString()}` : '—'}
                         </p>
