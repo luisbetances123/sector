@@ -1,7 +1,8 @@
 'use client'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { supabase } from '../../app/lib/supabase'type Stage = 'LEAD' | 'BUSCANDO' | 'EN OFERTA' | 'CIERRE'
+import { supabase } from '../../app/lib/supabase
+  'type Stage = 'LEAD' | 'BUSCANDO' | 'EN OFERTA' | 'CIERRE'
 
 export default function NewClientPage() {
   const router = useRouter()
