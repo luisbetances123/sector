@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { supabase } from '../app/lib/supabase'
 
 interface Cliente {
   id: string
@@ -39,16 +40,33 @@ export default function KanbanPage() {
   const [arrastrando, setArrastrando] = useState<string | null>(null)
 
   useEffect(() => {
-    const guardados = localStorage.getItem('homvi_clientes')
-    if (guardados) setClientes(JSON.parse(guardados))
+    const cargar = async () => {
+      const { data } = await supabase
+        .from('clientes')
+        .select('id, nombre, email, telefono, etapa, presupuesto_min, tipo_propiedad')
+        .order('created_at', { ascending: false })
+
+      if (data) {
+        setClientes(data.map((c) => ({
+          id: c.id,
+          nombre: c.nombre,
+          email: c.email || '',
+          telefono: c.telefono || '',
+          etapa: c.etapa,
+          presupuestoMin: c.presupuesto_min || '',
+          tipoPropiedad: c.tipo_propiedad || [],
+        })))
+      }
+    }
+    cargar()
   }, [])
 
-  const moverCliente = (id: string, nuevaEtapa: string) => {
+  const moverCliente = async (id: string, nuevaEtapa: string) => {
     const actualizados = clientes.map((c) =>
       c.id === id ? { ...c, etapa: nuevaEtapa } : c
     )
     setClientes(actualizados)
-    localStorage.setItem('homvi_clientes', JSON.stringify(actualizados))
+    await supabase.from('clientes').update({ etapa: nuevaEtapa }).eq('id', id)
   }
 
   const onDragStart = (id: string) => setArrastrando(id)
@@ -75,7 +93,6 @@ export default function KanbanPage() {
           </Link>
         </header>
 
-        {/* Tablero */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {etapas.map((etapa) => {
             const clientesEtapa = clientes.filter((c) => c.etapa === etapa)
@@ -86,7 +103,6 @@ export default function KanbanPage() {
                 onDragOver={onDragOver}
                 className={`bg-[#0a0a0a] border border-white/5 border-t-2 ${etapaHeader[etapa]} rounded-2xl p-4 min-h-[500px] transition-all`}
               >
-                {/* Header columna */}
                 <div className="flex items-center justify-between mb-4">
                   <span className={`text-xs font-bold uppercase tracking-widest ${etapaColor[etapa]}`}>
                     {etapa}
@@ -96,7 +112,6 @@ export default function KanbanPage() {
                   </span>
                 </div>
 
-                {/* Valor total de la columna */}
                 {clientesEtapa.length > 0 && (
                   <div className="text-xs text-gray-600 mb-4 pb-3 border-b border-white/5">
                     Total: <span className="text-[#d4af37]">
@@ -108,7 +123,6 @@ export default function KanbanPage() {
                   </div>
                 )}
 
-                {/* Tarjetas */}
                 <div className="space-y-3">
                   {clientesEtapa.map((c) => (
                     <div
@@ -138,7 +152,6 @@ export default function KanbanPage() {
                     </div>
                   ))}
 
-                  {/* Zona de drop vacía */}
                   {clientesEtapa.length === 0 && (
                     <div className="border border-dashed border-white/10 rounded-xl p-6 text-center text-gray-700 text-xs">
                       Sin clientes
