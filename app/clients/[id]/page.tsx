@@ -46,6 +46,23 @@ interface Recordatorio {
   completado: boolean
 }
 
+interface FollowUp {
+  id: string
+  tipo: string
+  titulo: string
+  detalle: string
+  fecha: string
+  hora: string
+  urgencia: string
+  hecho: boolean
+}
+
+const diasRapidosFollowup = [
+  { label: 'Mañana', dias: 1 },
+  { label: '3 días', dias: 3 },
+  { label: '1 semana', dias: 7 },
+]
+
 const etapaColor: Record<Stage, string> = {
   LEAD: 'text-blue-400 bg-blue-400/10 border-blue-400/30',
   BUSCANDO: 'text-[#d4af37] bg-[#d4af37]/10 border-[#d4af37]/30',
@@ -144,6 +161,17 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
   const [fechaRecordatorio, setFechaRecordatorio] = useState('')
   const [guardandoRecordatorio, setGuardandoRecordatorio] = useState(false)
 
+  // Follow-ups
+  const [followups, setFollowups] = useState<FollowUp[]>([])
+  const [modalFollowup, setModalFollowup] = useState(false)
+  const [fuTipo, setFuTipo] = useState('llamada')
+  const [fuTitulo, setFuTitulo] = useState('')
+  const [fuDetalle, setFuDetalle] = useState('')
+  const [fuFecha, setFuFecha] = useState('')
+  const [fuHora, setFuHora] = useState('')
+  const [fuUrgencia, setFuUrgencia] = useState('media')
+  const [guardandoFu, setGuardandoFu] = useState(false)
+
   useEffect(() => {
     const cargarCliente = async () => {
       const { data, error } = await supabase
@@ -219,11 +247,22 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
       if (data) setRecordatorios(data)
     }
 
+    const cargarFollowups = async () => {
+      const { data } = await supabase
+        .from('followups')
+        .select('*')
+        .eq('cliente_id', id)
+        .eq('hecho', false)
+        .order('fecha', { ascending: true })
+      if (data) setFollowups(data)
+    }
+
     cargarCliente()
     cargarHistorial()
     cargarPropiedadesAsignadas()
     cargarTodasPropiedades()
     cargarRecordatorios()
+    cargarFollowups()
   }, [id])
 
   function mapProp(p: Record<string, string>): Propiedad {
@@ -259,6 +298,27 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
       .eq('cliente_id', id)
       .eq('propiedad_id', propId)
     setPropiedadesAsignadas((prev) => prev.filter((p) => p.id !== propId))
+  }
+
+  const guardarFollowup = async () => {
+    if (!fuTitulo.trim() || !fuFecha) return
+    setGuardandoFu(true)
+    const { data, error } = await supabase
+      .from('followups')
+      .insert({ cliente_id: id, tipo: fuTipo, titulo: fuTitulo.trim(), detalle: fuDetalle.trim(), fecha: fuFecha, hora: fuHora, urgencia: fuUrgencia })
+      .select()
+      .single()
+    if (!error && data) {
+      setFollowups((prev) => [...prev, data])
+      await registrarComunicacion('nota', `Follow-up creado: ${fuTitulo}`)
+      setFuTitulo(''); setFuDetalle(''); setFuFecha(''); setFuHora(''); setFuTipo('llamada'); setFuUrgencia('media')
+      setModalFollowup(false)
+    }
+    setGuardandoFu(false)
+  }
+
+  const setDiaRapidoFu = (dias: number) => {
+    setFuFecha(new Date(Date.now() + dias * 86400000).toISOString().split('T')[0])
   }
 
   const guardarRecordatorio = async () => {
@@ -559,6 +619,10 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
               className="px-4 py-3 rounded-2xl bg-[#d4af37]/5 border border-[#d4af37]/20 text-sm text-[#d4af37] text-left hover:bg-[#d4af37]/10 transition-all font-bold">
               🏠 Asignar propiedad
             </button>
+            <button onClick={() => setModalFollowup(true)}
+              className="px-4 py-3 rounded-2xl bg-blue-400/5 border border-blue-400/20 text-sm text-blue-400 text-left hover:bg-blue-400/10 transition-all font-bold">
+              📋 Crear follow-up
+            </button>
             <button onClick={() => setModalRecordatorio(true)}
               className="px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm text-gray-300 text-left hover:border-[#d4af37]/30 hover:text-white transition-all">
               🔔 Crear recordatorio
@@ -568,6 +632,34 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
               Agendar cita →
             </button>
           </div>
+
+          {/* Follow-ups del cliente */}
+          {followups.length > 0 && (
+            <div className="mt-4">
+              <h3 className="text-xs uppercase tracking-[0.2em] text-gray-500 font-bold mb-3">
+                Follow-ups Pendientes
+                <span className="ml-2 bg-blue-400/10 text-blue-400 border border-blue-400/30 px-2 py-0.5 rounded-full text-xs">
+                  {followups.length}
+                </span>
+              </h3>
+              <div className="flex flex-col gap-2">
+                {followups.map((f) => (
+                  <div key={f.id} className="flex items-start gap-3 bg-[#0a0a0a] border border-white/5 rounded-2xl px-4 py-3">
+                    <span className="text-base flex-shrink-0 mt-0.5">
+                      {f.tipo === 'llamada' ? '📞' : f.tipo === 'visita' ? '🏠' : f.tipo === 'documento' ? '📄' : '📌'}
+                    </span>
+                    <div className="flex-1">
+                      <p className="text-sm text-white font-bold">{f.titulo}</p>
+                      <p className="text-xs text-blue-400 mt-0.5">
+                        {new Date(f.fecha + 'T12:00:00').toLocaleDateString('es-DO', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        {f.hora && ` · ${f.hora}`}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Recordatorios del cliente */}
           {recordatorios.length > 0 && (
@@ -646,6 +738,88 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
           </div>
         )}
       </div>
+
+      {/* Modal follow-up */}
+      {modalFollowup && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#0a0a0a] border border-white/10 rounded-[2rem] w-full max-w-md">
+            <div className="p-6 border-b border-white/5 flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-bold text-white">Nuevo Follow-up</h2>
+                <p className="text-xs text-gray-500 mt-1">Para {cliente.nombre.split(' ')[0]}</p>
+              </div>
+              <button onClick={() => setModalFollowup(false)}
+                className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-all">✕</button>
+            </div>
+            <div className="p-6 flex flex-col gap-4">
+              {/* Tipo */}
+              <div>
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold mb-2 block">Tipo</label>
+                <div className="flex gap-2">
+                  {[{ v: 'llamada', i: '📞' }, { v: 'visita', i: '🏠' }, { v: 'documento', i: '📄' }, { v: 'otro', i: '📌' }].map((t) => (
+                    <button key={t.v} onClick={() => setFuTipo(t.v)}
+                      className={`flex-1 py-2 rounded-xl text-sm border transition-all ${fuTipo === t.v ? 'bg-blue-400/10 border-blue-400/30 text-blue-400' : 'border-white/10 text-gray-500'}`}>
+                      {t.i}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {/* Título */}
+              <div>
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold mb-2 block">Tarea</label>
+                <input type="text" value={fuTitulo} onChange={(e) => setFuTitulo(e.target.value)}
+                  placeholder="ej: Llamar para confirmar visita"
+                  className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 outline-none focus:border-blue-400/50 transition-all"
+                  autoFocus />
+              </div>
+              {/* Detalle */}
+              <div>
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold mb-2 block">Detalle (opcional)</label>
+                <input type="text" value={fuDetalle} onChange={(e) => setFuDetalle(e.target.value)}
+                  placeholder="ej: Confirmar horario de la tarde"
+                  className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 outline-none focus:border-blue-400/50 transition-all" />
+              </div>
+              {/* Fecha */}
+              <div>
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold mb-2 block">¿Cuándo?</label>
+                <div className="flex gap-2 mb-3 flex-wrap">
+                  {diasRapidosFollowup.map((d) => (
+                    <button key={d.dias} onClick={() => setDiaRapidoFu(d.dias)}
+                      className="px-3 py-1.5 rounded-xl text-xs font-bold border border-white/10 text-gray-400 hover:border-blue-400/30 hover:text-blue-400 transition-all">
+                      {d.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <input type="date" value={fuFecha} onChange={(e) => setFuFecha(e.target.value)}
+                    className="flex-1 bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-blue-400/50 transition-all" />
+                  <input type="time" value={fuHora} onChange={(e) => setFuHora(e.target.value)}
+                    className="w-32 bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-blue-400/50 transition-all" />
+                </div>
+              </div>
+              {/* Urgencia */}
+              <div>
+                <label className="text-xs uppercase tracking-widest text-gray-500 font-bold mb-2 block">Urgencia</label>
+                <div className="flex gap-2">
+                  {[{ v: 'alta', l: 'Urgente', c: 'text-red-400 border-red-400/30 bg-red-400/10' },
+                    { v: 'media', l: 'Esta semana', c: 'text-[#d4af37] border-[#d4af37]/30 bg-[#d4af37]/10' },
+                    { v: 'baja', l: 'Sin prisa', c: 'text-green-400 border-green-400/30 bg-green-400/10' }].map((u) => (
+                    <button key={u.v} onClick={() => setFuUrgencia(u.v)}
+                      className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all ${fuUrgencia === u.v ? u.c : 'border-white/10 text-gray-500'}`}>
+                      {u.l}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <button onClick={guardarFollowup}
+                disabled={!fuTitulo.trim() || !fuFecha || guardandoFu}
+                className="w-full py-3 rounded-2xl bg-blue-400 text-black text-xs font-bold uppercase tracking-widest hover:bg-blue-300 transition-all disabled:opacity-40 disabled:cursor-not-allowed mt-2">
+                {guardandoFu ? 'Guardando...' : 'Guardar Follow-up'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal recordatorio */}
       {modalRecordatorio && (
