@@ -226,8 +226,11 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
             📋 Plantillas
           </button>
           {cliente.telefono && (
-            <button onClick={() => { abrirWhatsApp() }}
-              className="bg-green-400/10 border border-green-400/30 text-green-400 px-4 py-2 rounded-xl text-xs font-bold hover:bg-green-400/20 transition-all">
+onClick={() => {
+  const numero = cliente.telefono.replace(/\D/g, '')
+  registrarComunicacion('whatsapp', `WhatsApp abierto con ${cliente.nombre}`)
+  window.open(`https://wa.me/${numero}`, '_blank')
+}}              className="bg-green-400/10 border border-green-400/30 text-green-400 px-4 py-2 rounded-xl text-xs font-bold hover:bg-green-400/20 transition-all">
               WhatsApp →
             </button>
           )}
