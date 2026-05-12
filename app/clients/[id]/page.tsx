@@ -225,15 +225,16 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
             className="bg-white/5 border border-white/10 text-gray-300 px-4 py-2 rounded-xl text-xs font-bold hover:bg-white/10 transition-all">
             📋 Plantillas
           </button>
-          {cliente.telefono && (
-onClick={() => {
-  const numero = cliente.telefono.replace(/\D/g, '')
-  registrarComunicacion('whatsapp', `WhatsApp abierto con ${cliente.nombre}`)
-  window.open(`https://wa.me/${numero}`, '_blank')
-}}              className="bg-green-400/10 border border-green-400/30 text-green-400 px-4 py-2 rounded-xl text-xs font-bold hover:bg-green-400/20 transition-all">
-              WhatsApp →
-            </button>
-          )}
+         {cliente.telefono && (
+  <button onClick={() => {
+    const numero = cliente.telefono.replace(/\D/g, '')
+    registrarComunicacion('whatsapp', `WhatsApp abierto con ${cliente.nombre}`)
+    window.open(`https://wa.me/${numero}`, '_blank')
+  }}
+    className="bg-green-400/10 border border-green-400/30 text-green-400 px-4 py-2 rounded-xl text-xs font-bold hover:bg-green-400/20 transition-all">
+    WhatsApp →
+  </button>
+)}
           {cliente.email && (
             <button onClick={abrirEmail}
               className="bg-blue-400/10 border border-blue-400/30 text-blue-400 px-4 py-2 rounded-xl text-xs font-bold hover:bg-blue-400/20 transition-all">
