@@ -1,12 +1,14 @@
 'use client'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { supabase } from '../../lib/supabase'
 
 type Stage = 'LEAD' | 'BUSCANDO' | 'EN OFERTA' | 'CIERRE'
 
 export default function NewClientPage() {
   const router = useRouter()
   const [isSaving, setIsSaving] = useState(false)
+  const [error, setError] = useState('')
   const [nombre, setNombre] = useState('')
   const [telefono, setTelefono] = useState('')
   const [email, setEmail] = useState('')
@@ -15,9 +17,10 @@ export default function NewClientPage() {
   const [etapa, setEtapa] = useState<Stage>('LEAD')
   const [notas, setNotas] = useState('')
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!nombre.trim()) return
     setIsSaving(true)
+    setError('')
 
     const nuevoCliente = {
       id: Date.now().toString(),
@@ -25,9 +28,9 @@ export default function NewClientPage() {
       telefono,
       email,
       etapa,
-      presupuestoMin: presupuesto,
-      presupuestoMax: '',
-      tipoPropiedad: propiedad ? [propiedad] : [],
+      presupuesto_min: presupuesto,
+      presupuesto_max: '',
+      tipo_propiedad: propiedad ? [propiedad] : [],
       recamaras: '',
       plazo: '',
       financiamiento: '',
@@ -35,14 +38,15 @@ export default function NewClientPage() {
       notas,
     }
 
-    const guardados = localStorage.getItem('homvi_clientes')
-    const clientes = guardados ? JSON.parse(guardados) : []
-    clientes.push(nuevoCliente)
-    localStorage.setItem('homvi_clientes', JSON.stringify(clientes))
+    const { error } = await supabase.from('clientes').insert(nuevoCliente)
 
-    setTimeout(() => {
-      router.push(`/clients/${nuevoCliente.id}`)
-    }, 1500)
+    if (error) {
+      setError('Error al guardar. Intenta de nuevo.')
+      setIsSaving(false)
+      return
+    }
+
+    router.push(`/clients/${nuevoCliente.id}`)
   }
 
   return (
@@ -134,6 +138,10 @@ export default function NewClientPage() {
               className="w-full bg-black border border-white/10 rounded-2xl px-5 py-4 text-sm focus:border-[#d4af37] outline-none transition-all placeholder:text-gray-700 text-white resize-none h-24" 
             />
           </div>
+
+          {error && (
+            <p className="text-red-400 text-xs text-center">{error}</p>
+          )}
 
           <div className="pt-4">
             <button 
