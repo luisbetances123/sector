@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, use } from 'react'
 import Link from 'next/link'
-import { supabase } from '@/app/lib/supabase'
+import { supabase } from '../../app/lib/supabase'
 
 interface Propiedad {
   id: string
