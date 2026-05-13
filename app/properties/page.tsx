@@ -1,4 +1,3 @@
-cat > app/properties/page.tsx << 'EOF'
 'use client'
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
@@ -23,8 +22,6 @@ export default function PropertiesPage() {
   const [modal, setModal] = useState(false)
   const [editando, setEditando] = useState<Propiedad | null>(null)
   const [guardando, setGuardando] = useState(false)
-
-  // Form state
   const [nombre, setNombre] = useState('')
   const [ubicacion, setUbicacion] = useState('')
   const [precio, setPrecio] = useState('')
@@ -55,15 +52,12 @@ export default function PropertiesPage() {
   const guardar = async () => {
     if (!nombre.trim() || !ubicacion.trim() || !precio.trim()) return
     setGuardando(true)
-
     const datos = { nombre, ubicacion, precio, area, tipo, imagen }
-
     if (editando) {
       await supabase.from('propiedades').update(datos).eq('id', editando.id)
     } else {
       await supabase.from('propiedades').insert({ ...datos, id: Date.now().toString() })
     }
-
     await cargar()
     setModal(false)
     setGuardando(false)
@@ -116,7 +110,9 @@ export default function PropertiesPage() {
       {filtradas.length === 0 ? (
         <div className="text-center py-20">
           <p className="text-gray-600 text-sm mb-4">No hay propiedades aún</p>
-          <button onClick={abrirNueva} className="text-[#d4af37] text-xs hover:underline">+ Agregar primera propiedad</button>
+          <button onClick={abrirNueva} className="text-[#d4af37] text-xs hover:underline">
+            + Agregar primera propiedad
+          </button>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -160,14 +156,15 @@ export default function PropertiesPage() {
         </div>
       )}
 
-      {/* Modal nueva/editar propiedad */}
       {modal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-[#0a0a0a] border border-white/10 rounded-[2rem] w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-white/5 flex items-center justify-between">
               <h2 className="text-lg font-bold text-white">{editando ? 'Editar Propiedad' : 'Nueva Propiedad'}</h2>
               <button onClick={() => setModal(false)}
-                className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-all">✕</button>
+                className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-all">
+                ✕
+              </button>
             </div>
             <div className="p-6 flex flex-col gap-4">
               <div>
@@ -216,9 +213,11 @@ export default function PropertiesPage() {
                   className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 outline-none focus:border-[#d4af37]/50 transition-all" />
               </div>
               {imagen && (
-                <img src={imagen} alt="preview" className="w-full h-32 object-cover rounded-xl" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                <img src={imagen} alt="preview" className="w-full h-32 object-cover rounded-xl"
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }} />
               )}
-              <button onClick={guardar} disabled={!nombre.trim() || !ubicacion.trim() || !precio.trim() || guardando}
+              <button onClick={guardar}
+                disabled={!nombre.trim() || !ubicacion.trim() || !precio.trim() || guardando}
                 className="w-full py-3 rounded-2xl bg-[#d4af37] text-black text-xs font-bold uppercase tracking-widest hover:bg-[#d4af37]/90 transition-all disabled:opacity-40 disabled:cursor-not-allowed mt-2">
                 {guardando ? 'Guardando...' : editando ? 'Guardar Cambios' : 'Agregar Propiedad'}
               </button>
@@ -228,7 +227,4 @@ export default function PropertiesPage() {
       )}
     </div>
   )
-}
-EOF
-git add . && git commit -m "feat: agregar y editar propiedades desde la app" && git push origin main
 }
