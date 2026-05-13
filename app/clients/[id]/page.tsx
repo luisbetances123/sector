@@ -1,4 +1,5 @@
 'use client'
+import React from 'react'
 
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, use } from 'react'
@@ -135,6 +136,58 @@ const diasRapidos = [
   { label: '1 semana', dias: 7 },
   { label: '2 semanas', dias: 14 },
 ]
+
+
+function ResumenAI({ cliente, comunicaciones, propiedades }: { cliente: any, comunicaciones: any[], propiedades: any[] }) {
+  const [resumen, setResumen] = React.useState("")
+  const [cargando, setCargando] = React.useState(true)
+
+  React.useEffect(() => {
+    const generar = async () => {
+      setCargando(true)
+      const contexto = [
+        `Cliente: ${cliente.nombre}`,
+        `Etapa: ${cliente.etapa}`,
+        `Presupuesto: ${cliente.presupuestoMin} - ${cliente.presupuestoMax}`,
+        `Tipo propiedad: ${(cliente.tipoPropiedad || []).join(", ")}`,
+        `Zonas: ${(cliente.zonas || []).join(", ")}`,
+        `Recamaras: ${cliente.recamaras}`,
+        `Financiamiento: ${cliente.financiamiento}`,
+        `Notas: ${cliente.notas}`,
+        `Propiedades asignadas: ${propiedades.map((p: any) => p.nombre).join(", ") || "ninguna"}`,
+        `Ultimas comunicaciones: ${comunicaciones.slice(0, 3).map((c: any) => c.texto).join(" | ") || "ninguna"}`,
+      ].join("\n")
+
+      try {
+        const res = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "claude-sonnet-4-20250514",
+            max_tokens: 120,
+            messages: [{ role: "user", content: `Basado en este perfil de cliente inmobiliario, genera UN resumen ejecutivo de máximo 2 líneas en español. Incluye qué busca, presupuesto y estado actual. Sin bullets, sin títulos, directo al punto:\n\n${contexto}` }]
+          })
+        })
+        const data = await res.json()
+        setResumen(data.content?.[0]?.text || "No se pudo generar el resumen.")
+      } catch {
+        setResumen("No se pudo generar el resumen.")
+      }
+      setCargando(false)
+    }
+    if (cliente?.nombre) generar()
+  }, [cliente?.id])
+
+  return (
+    <div className="mx-6 mt-4 p-4 rounded-2xl border border-[#d4af37]/20 bg-[#d4af37]/5">
+      <div className="flex items-center gap-2 mb-2">
+        <span className="text-[10px] uppercase tracking-widest text-[#d4af37] font-bold">✨ Resumen AI</span>
+        {cargando && <span className="text-[10px] text-gray-500 animate-pulse">Generando...</span>}
+      </div>
+      <p className="text-sm text-gray-300 leading-relaxed">{cargando ? "" : resumen}</p>
+    </div>
+  )
+}
 
 export default function ClienteDetalle({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
@@ -441,6 +494,9 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
           {cliente.etapa}
         </span>
       </div>
+
+      {/* Resumen AI */}
+      <ResumenAI cliente={cliente} comunicaciones={comunicaciones} propiedades={propiedadesAsignadas} />
 
       {/* Perfil */}
       <div className="p-6 border-b border-white/5 flex items-center gap-4">
