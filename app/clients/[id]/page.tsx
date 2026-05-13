@@ -547,9 +547,6 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
         <TagSelector clienteId={id} tags={cliente.tags || []} onUpdate={(nuevos) => setCliente({ ...cliente, tags: nuevos })} />
       </div>
 
-      {/* Resumen AI */}
-      <ResumenAI cliente={cliente} comunicaciones={comunicaciones} propiedades={propiedadesAsignadas} />
-
       {/* Perfil */}
       <div className="p-6 border-b border-white/5 flex items-center gap-4">
         <div className="w-12 h-12 rounded-full bg-[#d4af37] flex items-center justify-center text-black font-bold text-lg flex-shrink-0">
