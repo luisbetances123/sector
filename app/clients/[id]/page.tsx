@@ -21,6 +21,7 @@ interface Cliente {
   financiamiento: string
   zonas: string[]
   notas: string
+  tags: string[]
 }
 
 interface Comunicacion {
@@ -138,6 +139,39 @@ const diasRapidos = [
 ]
 
 
+
+const TAGS_DISPONIBLES = ['🔥 Hot', '❄️ Frío', '💰 Investor', '👑 Luxury', '🌎 Foreign', '✅ Pre-aprobado', '🤝 Referido', '🏢 Comercial']
+
+function TagSelector({ clienteId, tags, onUpdate }: { clienteId: string, tags: string[], onUpdate: (tags: string[]) => void }) {
+  const [abierto, setAbierto] = React.useState(false)
+
+  const toggle = async (tag: string) => {
+    const nuevos = tags.includes(tag) ? tags.filter(t => t !== tag) : [...tags, tag]
+    await supabase.from('clientes').update({ tags: nuevos }).eq('id', clienteId)
+    onUpdate(nuevos)
+  }
+
+  return (
+    <div className="relative">
+      <button onClick={() => setAbierto(!abierto)}
+        className="text-[11px] px-3 py-1 rounded-full border border-dashed border-[#d4af37]/40 text-[#d4af37]/60 hover:border-[#d4af37] hover:text-[#d4af37] transition-all">
+        + Tag
+      </button>
+      {abierto && (
+        <div className="absolute top-8 left-0 z-50 bg-[#111] border border-white/10 rounded-2xl p-3 flex flex-wrap gap-2 w-64 shadow-2xl">
+          {TAGS_DISPONIBLES.map(tag => (
+            <button key={tag} onClick={() => toggle(tag)}
+              className={`text-[11px] px-3 py-1 rounded-full border font-bold transition-all ${tags.includes(tag) ? 'bg-[#d4af37] text-black border-[#d4af37]' : 'border-white/10 text-gray-400 hover:border-white/30'}`}>
+              {tag}
+            </button>
+          ))}
+          <button onClick={() => setAbierto(false)} className="w-full text-[10px] text-gray-600 hover:text-gray-400 mt-1">Cerrar</button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 function ResumenAI({ cliente, comunicaciones, propiedades }: { cliente: any, comunicaciones: any[], propiedades: any[] }) {
   const [resumen, setResumen] = React.useState("")
   const [cargando, setCargando] = React.useState(true)
@@ -234,6 +268,7 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
         .single()
 
       if (data && !error) {
+        setTags(data.tags || [])
         setCliente({
           id: data.id,
           nombre: data.nombre,
@@ -248,6 +283,7 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
           financiamiento: data.financiamiento || '',
           zonas: data.zonas || [],
           notas: data.notas || '',
+          tags: data.tags || [],
         })
       }
     }
@@ -497,6 +533,22 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
 
       {/* Resumen AI */}
       <ResumenAI cliente={cliente} comunicaciones={comunicaciones} propiedades={propiedadesAsignadas} />
+
+
+      {/* Tags */}
+      <div className="mx-6 mt-3 flex flex-wrap gap-2 items-center">
+        {(cliente.tags || []).map((tag: string) => (
+          <span key={tag} className="flex items-center gap-1 text-[11px] px-3 py-1 rounded-full font-bold border border-white/10 bg-white/5 text-gray-300">
+            {tag}
+            <button onClick={async () => {
+              const nuevos = (cliente.tags || []).filter((t: string) => t !== tag)
+              await supabase.from('clientes').update({ tags: nuevos }).eq('id', id)
+              setCliente({ ...cliente, tags: nuevos })
+            }} className="ml-1 text-gray-500 hover:text-red-400 transition-colors">×</button>
+          </span>
+        ))}
+        <TagSelector clienteId={id} tags={cliente.tags || []} onUpdate={(nuevos) => setCliente({ ...cliente, tags: nuevos })} />
+      </div>
 
       {/* Perfil */}
       <div className="p-6 border-b border-white/5 flex items-center gap-4">
