@@ -431,6 +431,9 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
           ← Dashboard
         </button>
         <div className="flex-1" />
+        <button onClick={() => router.push(`/clients/${id}/edit`)} className="text-xs uppercase tracking-widest text-gray-400 hover:text-white transition-colors font-bold">
+          Editar cliente
+        </button>
         <button onClick={eliminarCliente} className="text-xs uppercase tracking-widest text-red-400/60 hover:text-red-400 transition-colors font-bold">
           Eliminar cliente
         </button>
