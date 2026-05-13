@@ -49,7 +49,6 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
   }
 
   const etapaColor: Record<string, string> = { LEAD: '#3b82f6', BUSCANDO: '#d4af37', 'EN OFERTA': '#10b981', CIERRE: '#a855f7' }
-
   const fotos = propiedad?.imagen ? propiedad.imagen.split(',').map(f => f.trim()).filter(Boolean) : []
   const fotoAnterior = () => setFotoActual(f => (f - 1 + fotos.length) % fotos.length)
   const fotoSiguiente = () => setFotoActual(f => (f + 1) % fotos.length)
@@ -60,76 +59,55 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
   return (
     <div style={{ minHeight: '100vh', background: '#0a0a0a', color: '#fff', fontFamily: 'system-ui, sans-serif' }}>
 
-      {/* HERO con carrusel */}
-      <div style={{ position: 'relative', height: '100vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-
-        {/* Fotos con transición */}
+      {/* FOTO — sin overlay, botones flotantes encima */}
+      <div style={{ position: 'relative', height: '70vh', overflow: 'hidden', background: '#111' }}>
         {fotos.length > 0 ? (
-          <div style={{ position: 'absolute', inset: 0, transition: 'opacity 0.5s ease', background: `url(${fotos[fotoActual]}) center/cover no-repeat` }} />
+          <img key={fotoActual} src={fotos[fotoActual]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
         ) : (
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg,#1a1a2e,#2d2d5e)' }} />
+          <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg,#1a1a2e,#2d2d5e)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '64px', opacity: 0.3 }}>🏠</div>
         )}
 
-        {/* Overlay */}
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom,rgba(0,0,0,0.4) 0%,rgba(0,0,0,0.05) 35%,rgba(0,0,0,0.65) 65%,rgba(0,0,0,0.97) 100%)' }} />
-
-        {/* Header */}
-        <div style={{ position: 'relative', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px' }}>
-          <button onClick={() => router.push('/properties')} style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '50px', color: '#fff', padding: '10px 18px', cursor: 'pointer', fontSize: '13px', fontWeight: 500 }}>← Catálogo</button>
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <button onClick={() => setEditando(!editando)} style={{ background: editando ? 'rgba(212,175,55,0.9)' : 'rgba(0,0,0,0.45)', backdropFilter: 'blur(12px)', border: `1px solid ${editando ? '#d4af37' : 'rgba(255,255,255,0.2)'}`, borderRadius: '50px', color: editando ? '#000' : '#fff', padding: '10px 18px', cursor: 'pointer', fontSize: '13px', fontWeight: 600 }}>{editando ? '✕ Cancelar' : '✏️ Editar'}</button>
-            {!editando && <button onClick={() => setConfirmEliminar(true)} style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(12px)', border: '1px solid rgba(239,68,68,0.4)', borderRadius: '50px', color: '#ef4444', padding: '10px 16px', cursor: 'pointer', fontSize: '14px' }}>🗑️</button>}
+        {/* Header botones — fondo solo detrás de ellos */}
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px' }}>
+          <button onClick={() => router.push('/properties')} style={{ background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '50px', color: '#fff', padding: '9px 16px', cursor: 'pointer', fontSize: '13px', fontWeight: 500 }}>← Catálogo</button>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button onClick={() => setEditando(!editando)} style={{ background: editando ? 'rgba(212,175,55,0.9)' : 'rgba(0,0,0,0.55)', backdropFilter: 'blur(12px)', border: `1px solid ${editando ? '#d4af37' : 'rgba(255,255,255,0.2)'}`, borderRadius: '50px', color: editando ? '#000' : '#fff', padding: '9px 16px', cursor: 'pointer', fontSize: '13px', fontWeight: 600 }}>{editando ? '✕ Cancelar' : '✏️ Editar'}</button>
+            {!editando && <button onClick={() => setConfirmEliminar(true)} style={{ background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(12px)', border: '1px solid rgba(239,68,68,0.4)', borderRadius: '50px', color: '#ef4444', padding: '9px 14px', cursor: 'pointer', fontSize: '14px' }}>🗑️</button>}
           </div>
         </div>
 
-        {/* Badges */}
-        <div style={{ position: 'relative', zIndex: 10, padding: '0 24px', display: 'flex', gap: '8px' }}>
-          <div style={{ background: 'rgba(212,175,55,0.9)', color: '#000', padding: '5px 14px', borderRadius: '20px', fontSize: '11px', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase' }}>{propiedad.tipo || 'Propiedad'}</div>
-          {propiedad.estado && <div style={{ background: propiedad.estado === 'Disponible' ? 'rgba(16,185,129,0.9)' : 'rgba(239,68,68,0.85)', color: '#fff', padding: '5px 14px', borderRadius: '20px', fontSize: '11px', fontWeight: 600 }}>{propiedad.estado}</div>}
+        {/* Badges tipo/estado */}
+        <div style={{ position: 'absolute', bottom: '16px', left: '20px', zIndex: 10, display: 'flex', gap: '8px' }}>
+          <div style={{ background: 'rgba(212,175,55,0.9)', color: '#000', padding: '5px 12px', borderRadius: '20px', fontSize: '11px', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase' }}>{propiedad.tipo || 'Propiedad'}</div>
+          {propiedad.estado && <div style={{ background: propiedad.estado === 'Disponible' ? 'rgba(16,185,129,0.9)' : 'rgba(239,68,68,0.85)', color: '#fff', padding: '5px 12px', borderRadius: '20px', fontSize: '11px', fontWeight: 600 }}>{propiedad.estado}</div>}
         </div>
 
-        {/* Flechas carrusel — solo si hay más de 1 foto */}
-        {fotos.length > 1 && (
-          <>
-            <button onClick={fotoAnterior} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', zIndex: 10, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '50%', width: '44px', height: '44px', color: '#fff', fontSize: '18px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>‹</button>
-            <button onClick={fotoSiguiente} style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', zIndex: 10, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '50%', width: '44px', height: '44px', color: '#fff', fontSize: '18px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>›</button>
-          </>
-        )}
-
-        <div style={{ flex: 1 }} />
-
-        {/* Puntos de navegación */}
-        {fotos.length > 1 && (
-          <div style={{ position: 'relative', zIndex: 10, display: 'flex', justifyContent: 'center', gap: '6px', paddingBottom: '12px' }}>
-            {fotos.map((_, i) => (
-              <button key={i} onClick={() => setFotoActual(i)} style={{ width: i === fotoActual ? '20px' : '6px', height: '6px', borderRadius: '3px', background: i === fotoActual ? '#d4af37' : 'rgba(255,255,255,0.4)', border: 'none', cursor: 'pointer', padding: 0, transition: 'all 0.3s ease' }} />
-            ))}
+        {/* Flechas carrusel */}
+        {fotos.length > 1 && <>
+          <button onClick={fotoAnterior} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', zIndex: 10, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '50%', width: '42px', height: '42px', color: '#fff', fontSize: '20px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>‹</button>
+          <button onClick={fotoSiguiente} style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', zIndex: 10, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '50%', width: '42px', height: '42px', color: '#fff', fontSize: '20px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>›</button>
+          <div style={{ position: 'absolute', bottom: '16px', right: '20px', zIndex: 10, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '20px', padding: '4px 10px', fontSize: '12px', color: '#fff' }}>{fotoActual + 1} / {fotos.length}</div>
+          <div style={{ position: 'absolute', bottom: '52px', left: '50%', transform: 'translateX(-50%)', zIndex: 10, display: 'flex', gap: '6px' }}>
+            {fotos.map((_, i) => <button key={i} onClick={() => setFotoActual(i)} style={{ width: i === fotoActual ? '20px' : '6px', height: '6px', borderRadius: '3px', background: i === fotoActual ? '#d4af37' : 'rgba(255,255,255,0.5)', border: 'none', cursor: 'pointer', padding: 0, transition: 'all 0.3s' }} />)}
           </div>
-        )}
+        </>}
+      </div>
 
-        {/* Contador fotos */}
-        {fotos.length > 1 && (
-          <div style={{ position: 'absolute', top: '80px', right: '24px', zIndex: 10, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '20px', padding: '4px 12px', fontSize: '12px', color: '#fff' }}>
-            {fotoActual + 1} / {fotos.length}
-          </div>
-        )}
-
-        {/* Info anclada al fondo */}
-        <div style={{ position: 'relative', zIndex: 10, padding: '0 24px 36px' }}>
-          <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.55)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '8px' }}>📍 {propiedad.ubicacion}</div>
-          <div style={{ fontSize: 'clamp(28px,5vw,52px)', fontWeight: 800, lineHeight: 1.05, marginBottom: '20px' }}>{propiedad.nombre}</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-            <div style={{ background: 'rgba(212,175,55,0.15)', backdropFilter: 'blur(10px)', border: '1px solid rgba(212,175,55,0.45)', borderRadius: '50px', padding: '10px 22px', fontSize: '20px', fontWeight: 800, color: '#d4af37' }}>{propiedad.precio}</div>
-            {propiedad.area && <div style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '50px', padding: '10px 18px', fontSize: '13px', fontWeight: 600 }}>{propiedad.area} m²</div>}
-            {propiedad.recamaras != null && <div style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '50px', padding: '10px 18px', fontSize: '13px', fontWeight: 600 }}>🛏 {propiedad.recamaras} Rec.</div>}
-            {propiedad.banos != null && <div style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '50px', padding: '10px 18px', fontSize: '13px', fontWeight: 600 }}>🚿 {propiedad.banos} Baños</div>}
-            {propiedad.estacionamientos != null && <div style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '50px', padding: '10px 18px', fontSize: '13px', fontWeight: 600 }}>🚗 {propiedad.estacionamientos} Est.</div>}
-          </div>
+      {/* INFO — debajo de la foto, sin overlay */}
+      <div style={{ background: '#0a0a0a', padding: '24px 24px 0' }}>
+        <div style={{ fontSize: '12px', color: '#888', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '6px' }}>📍 {propiedad.ubicacion}</div>
+        <div style={{ fontSize: 'clamp(24px,4vw,42px)', fontWeight: 800, lineHeight: 1.1, marginBottom: '16px' }}>{propiedad.nombre}</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', paddingBottom: '24px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+          <div style={{ background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.4)', borderRadius: '50px', padding: '10px 20px', fontSize: '20px', fontWeight: 800, color: '#d4af37' }}>{propiedad.precio}</div>
+          {propiedad.area && <div style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '50px', padding: '10px 16px', fontSize: '13px', fontWeight: 600 }}>{propiedad.area} m²</div>}
+          {propiedad.recamaras != null && <div style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '50px', padding: '10px 16px', fontSize: '13px', fontWeight: 600 }}>🛏 {propiedad.recamaras} Rec.</div>}
+          {propiedad.banos != null && <div style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '50px', padding: '10px 16px', fontSize: '13px', fontWeight: 600 }}>🚿 {propiedad.banos} Baños</div>}
+          {propiedad.estacionamientos != null && <div style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '50px', padding: '10px 16px', fontSize: '13px', fontWeight: 600 }}>🚗 {propiedad.estacionamientos} Est.</div>}
         </div>
       </div>
 
-      {/* Contenido debajo */}
-      <div style={{ padding: '32px 24px', maxWidth: '700px', margin: '0 auto' }}>
+      {/* Contenido */}
+      <div style={{ padding: '24px', maxWidth: '700px', margin: '0 auto' }}>
         {!editando ? (
           <>
             {propiedad.descripcion && <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '20px', marginBottom: '16px' }}><div style={{ fontSize: '11px', color: '#d4af37', letterSpacing: '2px', marginBottom: '10px' }}>DESCRIPCIÓN</div><div style={{ fontSize: '15px', color: '#ccc', lineHeight: '1.7' }}>{propiedad.descripcion}</div></div>}
@@ -162,8 +140,8 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
             ))}
             <div style={{ marginBottom: '14px' }}>
               <label style={{ display: 'block', fontSize: '11px', color: '#888', marginBottom: '5px', textTransform: 'uppercase', letterSpacing: '1px' }}>Fotos (URLs separadas por coma)</label>
-              <textarea value={form.imagen || ''} onChange={e => setForm({ ...form, imagen: e.target.value })} rows={3} placeholder="https://foto1.jpg, https://foto2.jpg, https://foto3.jpg" style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '10px', color: '#fff', padding: '11px 14px', fontSize: '14px', outline: 'none', resize: 'vertical', boxSizing: 'border-box' }} />
-              <div style={{ fontSize: '11px', color: '#666', marginTop: '4px' }}>Separa múltiples fotos con comas para crear un carrusel</div>
+              <textarea value={form.imagen || ''} onChange={e => setForm({ ...form, imagen: e.target.value })} rows={3} placeholder="https://foto1.jpg, https://foto2.jpg" style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '10px', color: '#fff', padding: '11px 14px', fontSize: '14px', outline: 'none', resize: 'vertical', boxSizing: 'border-box' }} />
+              <div style={{ fontSize: '11px', color: '#555', marginTop: '4px' }}>Separa múltiples fotos con comas para el carrusel</div>
             </div>
             <div style={{ marginBottom: '14px' }}>
               <label style={{ display: 'block', fontSize: '11px', color: '#888', marginBottom: '5px', textTransform: 'uppercase', letterSpacing: '1px' }}>Descripción</label>
