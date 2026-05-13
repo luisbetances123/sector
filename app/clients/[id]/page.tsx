@@ -532,21 +532,6 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
       </div>
 
 
-      {/* Tags */}
-      <div className="px-6 pt-3 flex flex-wrap gap-2 items-center">
-        {(cliente.tags || []).map((tag: string) => (
-          <span key={tag} className="flex items-center gap-1 text-[11px] px-3 py-1 rounded-full font-bold border border-white/10 bg-white/5 text-gray-300">
-            {tag}
-            <button onClick={async () => {
-              const nuevos = (cliente.tags || []).filter((t: string) => t !== tag)
-              await supabase.from('clientes').update({ tags: nuevos }).eq('id', id)
-              setCliente({ ...cliente, tags: nuevos })
-            }} className="ml-1 text-gray-500 hover:text-red-400 transition-colors">×</button>
-          </span>
-        ))}
-        <TagSelector clienteId={id} tags={cliente.tags || []} onUpdate={(nuevos) => setCliente({ ...cliente, tags: nuevos })} />
-      </div>
-
       {/* Perfil */}
       <div className="p-6 border-b border-white/5 flex items-center gap-4">
         <div className="w-12 h-12 rounded-full bg-[#d4af37] flex items-center justify-center text-black font-bold text-lg flex-shrink-0">
