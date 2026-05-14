@@ -66,7 +66,7 @@ export default function Dashboard() {
     const cargar = async () => {
       const { data } = await supabase
         .from('clientes')
-        .select('id, nombre, etapa, tipo_propiedad, presupuesto_min')
+        .select('id, nombre, etapa, tipo_propiedad, presupuesto_min, proxima_accion')
         
 
       if (data) {
@@ -76,6 +76,7 @@ export default function Dashboard() {
           etapa: c.etapa,
           tipoPropiedad: c.tipo_propiedad || [],
           presupuestoMin: c.presupuesto_min || '',
+          proximaAccion: c.proxima_accion || '',
           proximaAccion: c.proxima_accion || '',
         }))
         setClientes(mapped)
