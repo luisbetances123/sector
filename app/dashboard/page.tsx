@@ -9,6 +9,7 @@ interface Cliente {
   etapa: string
   tipoPropiedad: string[]
   presupuestoMin: string
+  proximaAccion?: string
 }
 
 interface Recordatorio {
