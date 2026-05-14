@@ -1,146 +1,70 @@
 'use client'
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { supabase } from '../app/lib/supabase'
+import React from 'react';
+import ImportButton from './import-button';
+import { UserPlus, Search } from 'lucide-react';
 
-interface Cliente {
-  id: string
-  nombre: string
-  telefono: string
-  email: string
-  etapa: string
-  presupuestoMin: string
-  tipoPropiedad: string[]
-}
-
-const etapaColor: Record<string, string> = {
-  'LEAD': 'text-gray-400 bg-white/5 border-white/10',
-  'BUSCANDO': 'text-blue-400 bg-blue-400/10 border-blue-400/30',
-  'EN OFERTA': 'text-[#d4af37] bg-[#d4af37]/10 border-[#d4af37]/30',
-  'CIERRE': 'text-green-400 bg-green-400/10 border-green-400/30',
-}
-
-const etapas = ['Todos', 'LEAD', 'BUSCANDO', 'EN OFERTA', 'CIERRE']
-
-function capitalizarNombre(nombre: string) {
-  return nombre.split(' ').map((n) => n.charAt(0).toUpperCase() + n.slice(1)).join(' ')
-}
-
-export default function ClientesPage() {
-  const router = useRouter()
-  const [clientes, setClientes] = useState<Cliente[]>([])
-  const [search, setSearch] = useState('')
-  const [filtro, setFiltro] = useState('Todos')
-
-  useEffect(() => {
-    const cargar = async () => {
-      const { data } = await supabase
-        .from('clientes')
-        .select('id, nombre, telefono, email, etapa, presupuesto_min, tipo_propiedad')
-        .order('created_at', { ascending: false })
-
-      if (data) {
-        setClientes(data.map((c) => ({
-          id: c.id,
-          nombre: c.nombre,
-          telefono: c.telefono || '',
-          email: c.email || '',
-          etapa: c.etapa,
-          presupuestoMin: c.presupuesto_min || '',
-          tipoPropiedad: c.tipo_propiedad || [],
-        })))
-      }
-    }
-    cargar()
-  }, [])
-
-  const filtrados = clientes.filter((c) => {
-    const matchSearch = c.nombre.toLowerCase().includes(search.toLowerCase()) ||
-      c.email?.toLowerCase().includes(search.toLowerCase()) ||
-      c.telefono?.includes(search)
-    const matchFiltro = filtro === 'Todos' || c.etapa === filtro
-    return matchSearch && matchFiltro
-  })
+export default function ClientsPage() {
+  const clients = [
+    { id: '1', name: 'King Betances', email: 'betancesluis@live.com', status: 'LEAD', type: 'Penthouse', price: '$500,000', initial: 'K' },
+    { id: '2', name: 'Jean Luis Betances', email: 'betancesluis@live.com', status: 'CIERRE', type: 'Casa', price: '$69,000', initial: 'J' },
+    { id: '3', name: 'Lizmarie Betances', email: 'betancesluis@live.com', status: 'EN OFERTA', type: 'En 1er piso.', price: '$65,000', initial: 'L' },
+    { id: '4', name: 'Maria Nunez', email: 'betancesluis@live.com', status: 'BUSCANDO', type: 'Apartamento', price: '$60,000', initial: 'M' },
+    { id: '5', name: 'Luis Betances', email: 'betancesluis@live.com', status: 'BUSCANDO', type: 'Terrazas de Boca Chica', price: '$61,000', initial: 'L' },
+  ];
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white font-sans">
-      <main className="p-8 max-w-7xl mx-auto">
-        <header className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-light tracking-tight">Mis <span className="text-[#d4af37] italic">Clientes</span></h1>
-            <p className="text-gray-500 text-sm mt-2 font-light">{clientes.length} cliente{clientes.length !== 1 ? 's' : ''} en cartera</p>
-          </div>
-          <Link href="/clients/new" className="bg-[#d4af37] text-black px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-white transition-all">
-            + Nuevo Cliente
-          </Link>
-        </header>
-
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
-          <input
-            type="text"
-            placeholder="Buscar por nombre, email o teléfono..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 bg-[#0a0a0a] border border-white/10 rounded-2xl px-5 py-3 text-sm text-white placeholder-gray-600 outline-none focus:border-[#d4af37]/50 transition-all"
-          />
-          <div className="flex gap-2 flex-wrap">
-            {etapas.map((e) => (
-              <button
-                key={e}
-                onClick={() => setFiltro(e)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all ${
-                  filtro === e ? 'bg-[#d4af37] text-black border-[#d4af37]' : 'border-white/10 text-gray-500 hover:border-white/30'
-                }`}
-              >
-                {e}
-              </button>
-            ))}
-          </div>
+    <div className="p-8 ml-64 bg-black min-h-screen text-white">
+      <div className="flex justify-between items-start mb-8">
+        <div>
+          <h1 className="text-3xl font-bold italic tracking-tighter">Mis Clientes</h1>
+          <p className="text-zinc-500 text-sm mt-1">{clients.length} clientes en cartera</p>
         </div>
+        <div className="flex gap-3">
+          <ImportButton />
+          <button className="bg-amber-500 hover:bg-amber-600 text-black px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2">
+            <UserPlus className="w-4 h-4" /> + NUEVO CLIENTE
+          </button>
+        </div>
+      </div>
 
-        {filtrados.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-gray-600 text-sm mb-4">{clientes.length === 0 ? 'No hay clientes aún.' : 'No hay resultados.'}</p>
-            {clientes.length === 0 && (
-              <Link href="/clients/new" className="text-xs text-[#d4af37] uppercase tracking-widest hover:text-white transition-colors">
-                + Registrar primer cliente
-              </Link>
-            )}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filtrados.map((c) => (
-              <div
-                key={c.id}
-                onClick={() => router.push(`/clients/${c.id}`)}
-                className="bg-[#0a0a0a] border border-white/5 rounded-[2rem] p-6 hover:border-[#d4af37]/30 transition-all cursor-pointer group"
-              >
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-[#d4af37]/20 flex items-center justify-center text-[#d4af37] text-sm font-bold flex-shrink-0">
-                    {c.nombre.charAt(0).toUpperCase()}
-                  </div>
-                  <div className="flex-1 overflow-hidden">
-                    <p className="text-sm font-bold group-hover:text-[#d4af37] transition-colors truncate">
-                      {capitalizarNombre(c.nombre)}
-                    </p>
-                    <p className="text-gray-500 text-xs truncate">{c.email || c.telefono || '—'}</p>
-                  </div>
-                  <span className={`text-xs px-3 py-1 rounded-full font-bold border flex-shrink-0 ${etapaColor[c.etapa] || 'text-gray-400 bg-white/5 border-white/10'}`}>
-                    {c.etapa}
-                  </span>
+      <div className="relative mb-6">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 w-4 h-4" />
+        <input 
+          type="text" 
+          placeholder="Buscar por nombre, email o teléfono..." 
+          className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:border-amber-500/50 transition-all"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {clients.map((client) => (
+          <div key={client.id} className="bg-zinc-900/50 border border-zinc-800 p-6 rounded-2xl hover:border-amber-500/30 transition-all group">
+            <div className="flex justify-between items-start mb-4">
+              <div className="flex gap-4 items-center">
+                <div className="w-12 h-12 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-amber-500 font-bold text-lg group-hover:border-amber-500/50 transition-colors">
+                  {client.initial}
                 </div>
-                <div className="flex justify-between items-center pt-3 border-t border-white/5">
-                  <span className="text-xs text-gray-500">{c.tipoPropiedad?.[0] || '—'}</span>
-                  <span className="text-sm font-bold text-[#d4af37]">
-                    {c.presupuestoMin ? `$${Number(c.presupuestoMin.replace(/\D/g,'')).toLocaleString()}` : '—'}
-                  </span>
+                <div>
+                  <h3 className="font-bold text-lg leading-tight group-hover:text-amber-500 transition-colors">{client.name}</h3>
+                  <p className="text-zinc-500 text-xs">{client.email}</p>
                 </div>
               </div>
-            ))}
+              <span className={`text-[10px] font-bold px-2 py-1 rounded border ${
+                client.status === 'CIERRE' ? 'text-green-500 border-green-500/30 bg-green-500/5' :
+                client.status === 'LEAD' ? 'text-zinc-400 border-zinc-700 bg-zinc-800' :
+                client.status === 'EN OFERTA' ? 'text-amber-500 border-amber-500/30 bg-amber-500/5' :
+                'text-blue-500 border-blue-500/30 bg-blue-500/5'
+              }`}>
+                {client.status}
+              </span>
+            </div>
+            <div className="flex justify-between items-center mt-6 pt-4 border-t border-zinc-800/50">
+              <span className="text-zinc-500 text-sm">{client.type}</span>
+              <span className="text-amber-500 font-bold">{client.price}</span>
+            </div>
           </div>
-        )}
-      </main>
+        ))}
+      </div>
     </div>
-  )
+  );
 }
