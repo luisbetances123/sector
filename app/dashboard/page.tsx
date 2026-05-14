@@ -66,7 +66,7 @@ export default function Dashboard() {
     const cargar = async () => {
       const { data } = await supabase
         .from('clientes')
-        .select('id, nombre, etapa, tipo_propiedad, presupuesto_min, proxima_accion')
+        .select('id, nombre, etapa, tipo_propiedad, presupuesto_min')
         
 
       if (data) {
