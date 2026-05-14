@@ -160,9 +160,9 @@ function TagSelector({ clienteId, tags, onUpdate }: { clienteId: string, tags: s
       {abierto && (
         <div className="absolute top-8 left-0 z-50 bg-[#111] border border-white/10 rounded-2xl p-3 flex flex-wrap gap-2 w-64 shadow-2xl">
           {TAGS_DISPONIBLES.map(tag => (
-            <button key=<span className={`px-2 py-0.5 rounded-full border text-xs font-medium transition-all ${getTagStyle(tag)}`}>{tag}</span> onClick={() => toggle(tag)}
+            <button key=<span className={`px-2 py-0.5 rounded-full border text-xs font-medium transition-all ${getTagStyle(tag)}`}><span className={`px-2 py-0.5 rounded-full border text-xs font-medium ${getTagStyle(tag)}`}>{tag}</span></span> onClick={() => toggle(tag)}
               className={`text-[11px] px-3 py-1 rounded-full border font-bold transition-all ${tags.includes(tag) ? 'bg-[#d4af37] text-black border-[#d4af37]' : 'border-white/10 text-gray-400 hover:border-white/30'}`}>
-              <span className={`px-2 py-0.5 rounded-full border text-xs font-medium transition-all ${getTagStyle(tag)}`}>{tag}</span>
+              <span className={`px-2 py-0.5 rounded-full border text-xs font-medium transition-all ${getTagStyle(tag)}`}><span className={`px-2 py-0.5 rounded-full border text-xs font-medium ${getTagStyle(tag)}`}>{tag}</span></span>
             </button>
           ))}
           <button onClick={() => setAbierto(false)} className="w-full text-[10px] text-gray-600 hover:text-gray-400 mt-1">Cerrar</button>
@@ -553,8 +553,8 @@ export default function ClienteDetalle({ params }: { params: Promise<{ id: strin
           <p className="text-gray-300 text-sm mt-0.5">{cliente.telefono}{cliente.telefono && cliente.email && ' · '}{cliente.email}</p>
           <div className="flex flex-wrap gap-1.5 mt-2">
             {(cliente.tags || []).map((tag: string) => (
-              <span key=<span className={`px-2 py-0.5 rounded-full border text-xs font-medium transition-all ${getTagStyle(tag)}`}>{tag}</span> className="flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full font-bold border border-white/10 bg-white/5 text-gray-300">
-                <span className={`px-2 py-0.5 rounded-full border text-xs font-medium transition-all ${getTagStyle(tag)}`}>{tag}</span>
+              <span key=<span className={`px-2 py-0.5 rounded-full border text-xs font-medium transition-all ${getTagStyle(tag)}`}><span className={`px-2 py-0.5 rounded-full border text-xs font-medium ${getTagStyle(tag)}`}>{tag}</span></span> className="flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full font-bold border border-white/10 bg-white/5 text-gray-300">
+                <span className={`px-2 py-0.5 rounded-full border text-xs font-medium transition-all ${getTagStyle(tag)}`}><span className={`px-2 py-0.5 rounded-full border text-xs font-medium ${getTagStyle(tag)}`}>{tag}</span></span>
                 <button onClick={async () => {
                   const nuevos = (cliente.tags || []).filter((t: string) => t !== tag)
                   await supabase.from('clientes').update({ tags: nuevos }).eq('id', id)
