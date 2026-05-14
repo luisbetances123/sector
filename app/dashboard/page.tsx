@@ -67,7 +67,7 @@ export default function Dashboard() {
       const { data } = await supabase
         .from('clientes')
         .select('id, nombre, etapa, tipo_propiedad, presupuesto_min, proxima_accion')
-        .order('created_at', { ascending: false })
+        
 
       if (data) {
         const mapped = data.map((c) => ({
