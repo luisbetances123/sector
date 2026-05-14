@@ -274,6 +274,12 @@ export default function Dashboard() {
                           {c.presupuestoMin ? `$${Number(c.presupuestoMin.replace(/\D/g, '')).toLocaleString()}` : '—'}
                         </span>
                       </div>
+                      {c.proximaAccion && (
+                        <div className="flex items-center gap-1 mt-1 px-1">
+                          <span className="text-xs">⏰</span>
+                          <span className="text-xs text-[#d4af37] truncate">{c.proximaAccion}</span>
+                        </div>
+                      )}
                     </div>
                   </Link>
                 ))}
