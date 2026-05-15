@@ -1,7 +1,19 @@
 'use client'
+import { supabase } from '../../lib/supabase'
+import { useState } from 'react'
 import Link from 'next/link'
 
-export default function Page() {
+export default function Page() {const [email, setEmail] = useState('')
+  const [enviado, setEnviado] = useState(false)
+  const [cargando, setCargando] = useState(false)
+
+  const guardarEmail = async () => {
+    if (!email.trim()) return
+    setCargando(true)
+    await supabase.from('beta_emails').insert({ email: email.trim() })
+    setEnviado(true)
+    setCargando(false)
+  }
   return (
     <div className="min-h-screen bg-[#050505] text-white selection:bg-[#d4af37]/30 font-sans">
       <nav className="flex justify-between items-center p-6 max-w-7xl mx-auto border-b border-white/5">
@@ -80,11 +92,12 @@ export default function Page() {
           <input 
             type="email" 
             placeholder="tu@email.com" 
-            className="bg-black border border-white/10 rounded-full px-6 py-4 text-sm focus:border-[#d4af37] outline-none transition-colors"
-          />
-          <Link href="/today" className="bg-[#d4af37] text-black px-8 py-4 rounded-full text-sm font-bold hover:bg-[#b8962e] transition-all">
-            COMENZAR GRATIS
-          </Link>
+            className="bg-black border border-white/10 rounded-full px-6 py-4 text-sm focus:border-[#d4af37] outline-none transition-colors"value={email}
+              onChange={(e) => setEmail(e.target.value)}
+          <button onClick={guardarEmail} disabled={cargando || enviado}
+              className="bg-[#d4af37] text-black px-8 py-4 rounded-full text-sm font-bold hover:bg-[#b8962e] transition-all disabled:opacity-50">
+              {enviado ? '✓ ¡Apuntado!' : cargando ? 'Guardando...' : 'COMENZAR GRATIS'}
+            </button>
         </div>
       </section>
 
