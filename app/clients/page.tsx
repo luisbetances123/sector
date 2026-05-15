@@ -1,6 +1,6 @@
 'use client'
 import React from 'react';
-import { UserPlus, Upload } from 'lucide-react';
+
 
 export default function ClientsPage() {
   const clients = [
