@@ -85,19 +85,21 @@ export default function Page() {const [email, setEmail] = useState('')
         </div>
       </section>
 
-      <section className="py-16 px-6 text-center bg-[#d4af37]/5 border-t border-[#d4af37]/10">
+<section className="py-16 px-6 text-center bg-[#d4af37]/5 border-t border-[#d4af37]/10">
         <h2 className="text-4xl font-light mb-4">Empieza a cerrar más. Hoy.</h2>
         <p className="text-gray-400 mb-10 max-w-md mx-auto text-sm">Sin tarjeta de crédito. Configura en 5 minutos.</p>
         <div className="max-w-md mx-auto flex flex-col gap-4">
-          <input 
-            type="email" 
-            placeholder="tu@email.com" 
-            className="bg-black border border-white/10 rounded-full px-6 py-4 text-sm focus:border-[#d4af37] outline-none transition-colors"value={email}
-              onChange={(e) => setEmail(e.target.value)}
+          <input
+            type="email"
+            placeholder="tu@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="bg-black border border-white/10 rounded-full px-6 py-4 text-sm focus:border-[#d4af37] outline-none transition-colors"
+          />
           <button onClick={guardarEmail} disabled={cargando || enviado}
-              className="bg-[#d4af37] text-black px-8 py-4 rounded-full text-sm font-bold hover:bg-[#b8962e] transition-all disabled:opacity-50">
-              {enviado ? '✓ ¡Apuntado!' : cargando ? 'Guardando...' : 'COMENZAR GRATIS'}
-            </button>
+            className="bg-[#d4af37] text-black px-8 py-4 rounded-full text-sm font-bold hover:bg-[#b8962e] transition-all disabled:opacity-50">
+            {enviado ? '✓ ¡Apuntado!' : cargando ? 'Guardando...' : 'COMENZAR GRATIS'}
+          </button>
         </div>
       </section>
 
