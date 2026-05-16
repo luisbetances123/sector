@@ -64,19 +64,12 @@ export default function PropertyPage() {
     for (const file of Array.from(files)) {
       const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
       const path = `${id}_${fileName}`
-      const { error: uploadError } = await supabase.storage.from('properties').upload(path, file, { upsert: true })
-      if (uploadError) {
-        setUploadError(uploadError.message)
-        continue
-      }
+      const { error: upErr } = await supabase.storage.from('properties').upload(path, file, { upsert: true })
+      if (upErr) { setUploadError(upErr.message); continue }
       const { data } = supabase.storage.from('properties').getPublicUrl(path)
       await supabase.from('property_images').insert([{ property_id: id, image_url: data.publicUrl }])
-      if (!property?.image_url) {
-        await supabase.from('properties').update({ image_url: data.publicUrl }).eq('id', id)
-      }
     }
     fetchImages()
-    fetchProperty()
     setUploading(false)
   }
 
@@ -99,10 +92,9 @@ export default function PropertyPage() {
 
   return (
     <div className="p-8 max-w-5xl">
-      <button onClick={() => router.push('/properties')} className="text-zinc-500 hover:text-amber-500 text-sm mb-6 flex items-center gap-2 transition-all">
+      <button onClick={() => router.push('/properties')} className="text-zinc-500 hover:text-amber-500 text-sm mb-6">
         Volver a Propiedades
       </button>
-
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div>
           <div className="relative rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800">
@@ -113,18 +105,16 @@ export default function PropertyPage() {
             )}
             {allImages.length > 1 && (
               <>
-                <button onClick={() => setActiveIndex(i => (i - 1 + allImages.length) % allImages.length)} className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/60 text-white w-9 h-9 rounded-full flex items-center justify-center text-lg hover:bg-black">&#8249;</button>
-                <button onClick={() => setActiveIndex(i => (i + 1) % allImages.length)} className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/60 text-white w-9 h-9 rounded-full flex items-center justify-center text-lg hover:bg-black">&#8250;</button>
+                <button onClick={() => setActiveIndex(i => (i - 1 + allImages.length) % allImages.length)} className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/60 text-white w-9 h-9 rounded-full flex items-center justify-center hover:bg-black">&#8249;</button>
+                <button onClick={() => setActiveIndex(i => (i + 1) % allImages.length)} className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/60 text-white w-9 h-9 rounded-full flex items-center justify-center hover:bg-black">&#8250;</button>
               </>
             )}
           </div>
-
           {uploadError && <div className="mt-2 text-red-400 text-xs">{uploadError}</div>}
-
           <div className="flex gap-2 mt-3 overflow-x-auto pb-1">
             {allImages.map((img, i) => (
               <div key={img.id} className="relative flex-shrink-0 group">
-                <img src={img.image_url} onClick={() => setActiveIndex(i)} className={`w-20 h-20 object-cover rounded-xl cursor-pointer border-2 transition-all ${i === activeIndex ? 'border-amber-500' : 'border-zinc-700'}`} />
+                <img src={img.image_url} onClick={() => setActiveIndex(i)} className={`w-20 h-20 object-cover rounded-xl cursor-pointer border-2 ${i === activeIndex ? 'border-amber-500' : 'border-zinc-700'}`} />
                 {img.id !== 'main' && (
                   <button onClick={() => deleteImage(img.id)} className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full w-5 h-5 items-center justify-center text-xs hidden group-hover:flex">x</button>
                 )}
@@ -137,7 +127,6 @@ export default function PropertyPage() {
             </label>
           </div>
         </div>
-
         <div>
           <div className="flex items-start justify-between mb-4">
             <div>
@@ -146,9 +135,7 @@ export default function PropertyPage() {
             </div>
             <span className={`text-xs px-3 py-1 rounded-full font-bold ${statusColors[property.status]}`}>{property.status}</span>
           </div>
-
           <div className="text-3xl font-black text-amber-500 mb-6">{property.price}</div>
-
           <div className="grid grid-cols-2 gap-4 mb-6">
             {property.location && (
               <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 col-span-2">
@@ -169,7 +156,6 @@ export default function PropertyPage() {
               </div>
             )}
           </div>
-
           <button onClick={deleteProperty} className="w-full bg-red-900 text-red-300 py-3 rounded-xl text-sm hover:bg-red-800 transition-all">Eliminar Propiedad</button>
         </div>
       </div>
