@@ -18,11 +18,11 @@ export default function RootLayout({
       <body className="bg-black antialiased text-white">
         <div className="flex min-h-screen">
           {!isLanding && <Sidebar />}
-          <main className={`flex-1 bg-[#050505] min-h-screen w-full ${!isLanding ? 'ml-0 lg:ml-64 pb-20 lg:pb-0' : ''}`}>
+          <main className="flex-1 bg-[#050505] min-h-screen">
             {children}
           </main>
-          {!isLanding && <MobileNav />}
         </div>
+        {!isLanding && <MobileNav />}
       </body>
     </html>
   )
