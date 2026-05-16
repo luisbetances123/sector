@@ -29,17 +29,21 @@ const statusColors: Record<string, string> = {
 }
 
 export default function PropertyPage() {
-  const { id } = useParams()
+  const params = useParams()
+  const id = params.id as string
   const router = useRouter()
   const [property, setProperty] = useState<Property | null>(null)
   const [images, setImages] = useState<PropertyImage[]>([])
   const [activeIndex, setActiveIndex] = useState(0)
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState('')
 
   useEffect(() => {
-    fetchProperty()
-    fetchImages()
+    if (id) {
+      fetchProperty()
+      fetchImages()
+    }
   }, [id])
 
   async function fetchProperty() {
@@ -54,22 +58,29 @@ export default function PropertyPage() {
   }
 
   async function handleUpload(files: FileList | null) {
-    if (!files || !property) return
+    if (!files || !id) return
     setUploading(true)
+    setUploadError('')
     for (const file of Array.from(files)) {
-      const path = `${property.id}/${Date.now()}-${file.name}`
-      const { error } = await supabase.storage.from('properties').upload(path, file, { upsert: true })
-      if (!error) {
-        const { data } = supabase.storage.from('properties').getPublicUrl(path)
-        await supabase.from('property_images').insert([{ property_id: property.id, image_url: data.publicUrl }])
+      const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
+      const path = `${id}_${fileName}`
+      const { error: uploadError } = await supabase.storage.from('properties').upload(path, file, { upsert: true })
+      if (uploadError) {
+        setUploadError(uploadError.message)
+        continue
+      }
+      const { data } = supabase.storage.from('properties').getPublicUrl(path)
+      await supabase.from('property_images').insert([{ property_id: id, image_url: data.publicUrl }])
+      if (!property?.image_url) {
+        await supabase.from('properties').update({ image_url: data.publicUrl }).eq('id', id)
       }
     }
     fetchImages()
+    fetchProperty()
     setUploading(false)
   }
 
   async function deleteImage(imageId: string) {
-    if (!confirm('Eliminar esta foto?')) return
     await supabase.from('property_images').delete().eq('id', imageId)
     setActiveIndex(0)
     fetchImages()
@@ -84,7 +95,7 @@ export default function PropertyPage() {
   if (loading) return <div className="p-8 text-zinc-500">Cargando...</div>
   if (!property) return <div className="p-8 text-zinc-500">Propiedad no encontrada.</div>
 
-  const allImages = images.length > 0 ? images : (property.image_url ? [{ id: 'main', property_id: property.id, image_url: property.image_url }] : [])
+  const allImages = images.length > 0 ? images : (property.image_url ? [{ id: 'main', property_id: id, image_url: property.image_url }] : [])
 
   return (
     <div className="p-8 max-w-5xl">
@@ -102,11 +113,13 @@ export default function PropertyPage() {
             )}
             {allImages.length > 1 && (
               <>
-                <button onClick={() => setActiveIndex(i => (i - 1 + allImages.length) % allImages.length)} className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/60 text-white w-9 h-9 rounded-full flex items-center justify-center text-lg hover:bg-black">‹</button>
-                <button onClick={() => setActiveIndex(i => (i + 1) % allImages.length)} className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/60 text-white w-9 h-9 rounded-full flex items-center justify-center text-lg hover:bg-black">›</button>
+                <button onClick={() => setActiveIndex(i => (i - 1 + allImages.length) % allImages.length)} className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/60 text-white w-9 h-9 rounded-full flex items-center justify-center text-lg hover:bg-black">&#8249;</button>
+                <button onClick={() => setActiveIndex(i => (i + 1) % allImages.length)} className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/60 text-white w-9 h-9 rounded-full flex items-center justify-center text-lg hover:bg-black">&#8250;</button>
               </>
             )}
           </div>
+
+          {uploadError && <div className="mt-2 text-red-400 text-xs">{uploadError}</div>}
 
           <div className="flex gap-2 mt-3 overflow-x-auto pb-1">
             {allImages.map((img, i) => (
@@ -117,10 +130,10 @@ export default function PropertyPage() {
                 )}
               </div>
             ))}
-            <label className="w-20 h-20 flex-shrink-0 border-2 border-dashed border-zinc-700 hover:border-amber-500 rounded-xl flex flex-col items-center justify-center cursor-pointer text-zinc-500 hover:text-amber-500 transition-all">
+            <label className={`w-20 h-20 flex-shrink-0 border-2 border-dashed border-zinc-700 hover:border-amber-500 rounded-xl flex flex-col items-center justify-center cursor-pointer text-zinc-500 hover:text-amber-500 transition-all ${uploading ? 'opacity-50 pointer-events-none' : ''}`}>
               <span className="text-2xl">+</span>
               <span className="text-xs">{uploading ? '...' : 'Foto'}</span>
-              <input type="file" accept="image/*" multiple className="hidden" onChange={e => handleUpload(e.target.files)} disabled={uploading} />
+              <input type="file" accept="image/*" multiple className="hidden" onChange={e => handleUpload(e.target.files)} />
             </label>
           </div>
         </div>
