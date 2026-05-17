@@ -66,11 +66,10 @@ export default function PropertyPage() {
       const formData = new FormData()
       formData.append('file', file)
       formData.append('path', path)
+      formData.append('property_id', id)
       const res = await fetch('/api/upload', { method: 'POST', body: formData })
       const data = await res.json()
-      if (data.url) {
-        await supabase.from('property_images').insert([{ property_id: id, image_url: data.url }])
-      } else {
+      if (!data.url) {
         setUploadError(data.error || 'Error subiendo imagen')
       }
     }
