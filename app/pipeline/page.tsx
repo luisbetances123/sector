@@ -29,9 +29,15 @@ const badgeColors: Record<string, string> = {
   CIERRE: 'bg-green-900 text-green-300',
 }
 
+const emptyForm = { name: '', email: '', phone: '', type: '', price: '', initial: '', status: 'LEAD' }
+
 export default function PipelinePage() {
   const [clients, setClients] = useState<Client[]>([])
   const [loading, setLoading] = useState(true)
+  const [showForm, setShowForm] = useState(false)
+  const [form, setForm] = useState(emptyForm)
+  const [saving, setSaving] = useState(false)
+  const [formError, setFormError] = useState<string | null>(null)
 
   useEffect(() => { fetchClients() }, [])
 
@@ -45,11 +51,40 @@ export default function PipelinePage() {
     const { destination, source, draggableId } = result
     if (!destination) return
     if (destination.droppableId === source.droppableId) return
-
     const newStatus = destination.droppableId
     setClients(prev => prev.map(c => c.id === draggableId ? { ...c, status: newStatus } : c))
     await supabase.from('clients').update({ status: newStatus }).eq('id', draggableId)
   }
+
+  async function handleAddClient(e: React.FormEvent) {
+    e.preventDefault()
+    if (!form.name.trim()) return
+    setSaving(true)
+    setFormError(null)
+
+    const { data: { user } } = await supabase.auth.getUser()
+
+    const { data, error } = await supabase.from('clients').insert({
+      name:     form.name.trim(),
+      email:    form.email    || null,
+      phone:    form.phone    || null,
+      type:     form.type     || null,
+      price:    form.price    || null,
+      initial:  form.initial  || form.name.slice(0, 2).toUpperCase(),
+      status:   form.status,
+      owner_id: user?.id,
+    }).select().single()
+
+    setSaving(false)
+    if (error) { setFormError(error.message); return }
+    if (data) setClients(prev => [data, ...prev])
+    setForm(emptyForm)
+    setShowForm(false)
+  }
+
+  const set = (field: string) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+      setForm(prev => ({ ...prev, [field]: e.target.value }))
 
   const byStatus = (status: string) => clients.filter(c => c.status === status)
 
@@ -57,11 +92,71 @@ export default function PipelinePage() {
 
   return (
     <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-4xl font-black italic text-amber-500 tracking-tighter uppercase">PIPELINE</h1>
-        <p className="text-zinc-500 text-xs mt-1 uppercase tracking-widest">{clients.length} CLIENTES EN TOTAL</p>
+
+      {/* HEADER */}
+      <div className="mb-8 flex items-end justify-between">
+        <div>
+          <h1 className="text-4xl font-black italic text-amber-500 tracking-tighter uppercase">PIPELINE</h1>
+          <p className="text-zinc-500 text-xs mt-1 uppercase tracking-widest">{clients.length} CLIENTES EN TOTAL</p>
+        </div>
+        <button
+          onClick={() => setShowForm(v => !v)}
+          className="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-400 text-black font-bold text-sm rounded-xl transition-all uppercase tracking-wide"
+        >
+          {showForm ? '✕ Cancelar' : '+ Nuevo cliente'}
+        </button>
       </div>
 
+      {/* FORMULARIO */}
+      {showForm && (
+        <form onSubmit={handleAddClient} className="bg-zinc-900 border border-zinc-700 rounded-2xl p-6 mb-8">
+          <h2 className="text-white font-bold text-sm uppercase tracking-widest mb-4">Nuevo cliente</h2>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
+            <div>
+              <label className="text-zinc-400 text-xs uppercase tracking-wider block mb-1">Nombre *</label>
+              <input required value={form.name} onChange={set('name')} placeholder="Juan García"
+                className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-500" />
+            </div>
+            <div>
+              <label className="text-zinc-400 text-xs uppercase tracking-wider block mb-1">Email</label>
+              <input type="email" value={form.email} onChange={set('email')} placeholder="juan@email.com"
+                className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-500" />
+            </div>
+            <div>
+              <label className="text-zinc-400 text-xs uppercase tracking-wider block mb-1">Teléfono</label>
+              <input value={form.phone} onChange={set('phone')} placeholder="+52 55 0000 0000"
+                className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-500" />
+            </div>
+            <div>
+              <label className="text-zinc-400 text-xs uppercase tracking-wider block mb-1">Tipo</label>
+              <input value={form.type} onChange={set('type')} placeholder="Comprador, Arrendatario..."
+                className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-500" />
+            </div>
+            <div>
+              <label className="text-zinc-400 text-xs uppercase tracking-wider block mb-1">Precio</label>
+              <input value={form.price} onChange={set('price')} placeholder="$2,500,000"
+                className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-500" />
+            </div>
+            <div>
+              <label className="text-zinc-400 text-xs uppercase tracking-wider block mb-1">Etapa inicial</label>
+              <select value={form.status} onChange={set('status')}
+                className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-500">
+                {COLUMNS.map(col => <option key={col} value={col}>{col}</option>)}
+              </select>
+            </div>
+          </div>
+
+          {formError && <p className="text-red-400 text-xs mb-3">{formError}</p>}
+
+          <button type="submit" disabled={saving}
+            className="px-6 py-2 bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black font-bold text-sm rounded-xl uppercase tracking-wide transition-all">
+            {saving ? 'Guardando...' : 'Guardar cliente'}
+          </button>
+        </form>
+      )}
+
+      {/* KANBAN */}
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {COLUMNS.map(col => (

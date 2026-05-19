@@ -35,13 +35,17 @@ export default function ClientsPage() {
     if (!form.name.trim()) return
     setSaving(true)
     const initial = form.name.trim()[0].toUpperCase()
-    const { error } = await supabase.from('clients').insert([{ ...form, initial }])
+    const { data: { user } } = await supabase.auth.getUser()
+    const { error } = await supabase.from('clients').insert([{ ...form, initial, owner_id: user?.id }])
     if (!error) {
       setForm({ name: '', email: '', phone: '', status: 'LEAD', type: '', price: '' })
       setShowForm(false)
       fetchClients()
+    } else {
+      alert('Error: ' + error.message)
     }
     setSaving(false)
+  
   }
 
   async function updateClient() {
