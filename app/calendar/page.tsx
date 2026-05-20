@@ -12,7 +12,6 @@ interface FollowUp {
   hora: string
   urgencia: string
   hecho: boolean
-  clienteNombre?: string
 }
 
 const tipoIcono: Record<string, string> = { llamada: '📞', visita: '🏠', documento: '📄', otro: '📌' }
@@ -22,7 +21,7 @@ const urgenciaColor: Record<string, string> = {
   baja: 'bg-green-900 text-green-300',
 }
 const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
-const DIAS = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb']
+const DIAS = ['Dom','Lun','Mar','Mie','Jue','Vie','Sab']
 
 export default function CalendarPage() {
   const hoy = new Date()
@@ -39,8 +38,8 @@ export default function CalendarPage() {
   useEffect(() => { fetchFollowups(); fetchClientes() }, [])
 
   async function fetchFollowups() {
-    const { data } = await supabase.from('followups').select('*, clientes(name)').order('fecha').order('hora')
-    if (data) setFollowups(data.map(f => ({ id: f.id, cliente_id: f.cliente_id, tipo: f.tipo, titulo: f.titulo, detalle: f.detalle || '', fecha: f.fecha, hora: f.hora || '', urgencia: f.urgencia, hecho: f.hecho, clienteNombre: f.clientes?.name || '' })))
+    const { data } = await supabase.from('followups').select('*').order('fecha').order('hora')
+    if (data) setFollowups(data)
   }
 
   async function fetchClientes() {
@@ -52,8 +51,13 @@ export default function CalendarPage() {
     if (!form.titulo.trim()) return
     setSaving(true)
     const { error } = await supabase.from('followups').insert([{ ...form, hecho: false }])
-    if (!error) { setForm({ cliente_id: '', tipo: 'llamada', titulo: '', detalle: '', fecha: diaSeleccionado || hoyStr, hora: '09:00', urgencia: 'media' }); setShowForm(false); fetchFollowups() }
-    else alert('Error: ' + error.message)
+    if (!error) {
+      setForm({ cliente_id: '', tipo: 'llamada', titulo: '', detalle: '', fecha: diaSeleccionado || hoyStr, hora: '09:00', urgencia: 'media' })
+      setShowForm(false)
+      fetchFollowups()
+    } else {
+      alert('Error: ' + error.message)
+    }
     setSaving(false)
   }
 
@@ -65,10 +69,14 @@ export default function CalendarPage() {
   const primerDia = new Date(anio, mes, 1).getDay()
   const diasEnMes = new Date(anio, mes + 1, 0).getDate()
   const celdas = Array(primerDia).fill(null).concat(Array.from({ length: diasEnMes }, (_, i) => i + 1))
-  const eventosDelDia = (dia: number) => { const f = `${anio}-${String(mes+1).padStart(2,'0')}-${String(dia).padStart(2,'0')}`; return followups.filter(fu => fu.fecha === f) }
+  const eventosDelDia = (dia: number) => {
+    const f = `${anio}-${String(mes+1).padStart(2,'0')}-${String(dia).padStart(2,'0')}`
+    return followups.filter(fu => fu.fecha === f)
+  }
   const eventosDiaSeleccionado = diaSeleccionado ? followups.filter(f => f.fecha === diaSeleccionado) : []
   const pendientes = followups.filter(f => !f.hecho).length
   const completados = followups.filter(f => f.hecho).length
+  const nombreCliente = (id: string) => clientes.find(c => c.id === id)?.name || ''
 
   return (
     <div className="p-8">
@@ -91,9 +99,9 @@ export default function CalendarPage() {
         <div className="flex-1">
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
             <div className="flex justify-between items-center mb-6">
-              <button onClick={() => { if (mes === 0) { setMes(11); setAnio(a => a-1) } else setMes(m => m-1) }} className="text-zinc-400 hover:text-white text-xl px-2">‹</button>
+              <button onClick={() => { if (mes === 0) { setMes(11); setAnio(a => a-1) } else setMes(m => m-1) }} className="text-zinc-400 hover:text-white text-xl px-2">&#8249;</button>
               <h2 className="text-white font-black uppercase tracking-wider">{MESES[mes]} {anio}</h2>
-              <button onClick={() => { if (mes === 11) { setMes(0); setAnio(a => a+1) } else setMes(m => m+1) }} className="text-zinc-400 hover:text-white text-xl px-2">›</button>
+              <button onClick={() => { if (mes === 11) { setMes(0); setAnio(a => a+1) } else setMes(m => m+1) }} className="text-zinc-400 hover:text-white text-xl px-2">&#8250;</button>
             </div>
             <div className="grid grid-cols-7 mb-2">{DIAS.map(d => <div key={d} className="text-center text-zinc-500 text-xs uppercase tracking-wider py-2">{d}</div>)}</div>
             <div className="grid grid-cols-7 gap-1">
@@ -115,8 +123,8 @@ export default function CalendarPage() {
         </div>
         <div className="w-80">
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
-            <h3 className="text-white font-black uppercase text-sm tracking-wider mb-4">{diaSeleccionado ? new Date(diaSeleccionado + 'T12:00:00').toLocaleDateString('es-DO', { weekday: 'long', day: 'numeric', month: 'long' }) : 'Selecciona un día'}</h3>
-            {eventosDiaSeleccionado.length === 0 ? <p className="text-zinc-500 text-sm text-center py-8">Sin eventos este día</p> : (
+            <h3 className="text-white font-black uppercase text-sm tracking-wider mb-4">{diaSeleccionado ? new Date(diaSeleccionado + 'T12:00:00').toLocaleDateString('es-DO', { weekday: 'long', day: 'numeric', month: 'long' }) : 'Selecciona un dia'}</h3>
+            {eventosDiaSeleccionado.length === 0 ? <p className="text-zinc-500 text-sm text-center py-8">Sin eventos este dia</p> : (
               <div className="flex flex-col gap-3">
                 {eventosDiaSeleccionado.sort((a,b) => a.hora.localeCompare(b.hora)).map(f => (
                   <div key={f.id} className={`border rounded-xl p-3 transition-all ${f.hecho ? 'border-zinc-800 opacity-50' : 'border-zinc-700'}`}>
@@ -125,7 +133,7 @@ export default function CalendarPage() {
                       <button onClick={() => toggleHecho(f.id, f.hecho)} className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${f.hecho ? 'bg-green-400 border-green-400' : 'border-zinc-500 hover:border-green-400'}`}>{f.hecho && <span className="text-black text-[10px] font-bold">✓</span>}</button>
                     </div>
                     {f.hora && <p className="text-amber-500 text-xs font-mono mt-1">{f.hora}</p>}
-                    {f.clienteNombre && <p className="text-zinc-400 text-xs mt-1">👤 {f.clienteNombre}</p>}
+                    {f.cliente_id && nombreCliente(f.cliente_id) && <p className="text-zinc-400 text-xs mt-1">👤 {nombreCliente(f.cliente_id)}</p>}
                     {f.detalle && <p className="text-zinc-500 text-xs mt-1">{f.detalle}</p>}
                     <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold mt-2 inline-block ${urgenciaColor[f.urgencia] || urgenciaColor.media}`}>{f.urgencia}</span>
                   </div>
@@ -141,7 +149,7 @@ export default function CalendarPage() {
           <div className="bg-zinc-900 border border-zinc-700 rounded-2xl p-8 w-full max-w-md">
             <h2 className="text-xl font-black text-amber-500 uppercase mb-6">Nuevo Evento</h2>
             <div className="flex flex-col gap-4">
-              <input placeholder="Título *" value={form.titulo} onChange={e => setForm({...form, titulo: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none" />
+              <input placeholder="Titulo *" value={form.titulo} onChange={e => setForm({...form, titulo: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none" />
               <select value={form.cliente_id} onChange={e => setForm({...form, cliente_id: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none">
                 <option value="">Sin cliente</option>
                 {clientes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
