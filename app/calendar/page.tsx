@@ -1,3 +1,12 @@
-export default function Calendar() {
-  return <div className="p-8 text-white"><h1 className="text-3xl font-bold text-amber-500">CALENDARIO</h1><p className="text-zinc-400 mt-2">Próximamente</p></div>
+'use client'
+import { useEffect, useState } from 'react'
+import { supabase } from '../lib/supabase'
+
+export default function CalendarPage() {
+  return (
+    <div className="p-8">
+      <h1 className="text-4xl font-black italic text-amber-500 tracking-tighter uppercase">CALENDARIO</h1>
+      <p className="text-white mt-4">Cargando...</p>
+    </div>
+  )
 }
