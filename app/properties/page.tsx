@@ -75,7 +75,7 @@ export default function PropertiesPage() {
           <p className="text-zinc-500 text-xs mt-1 uppercase tracking-widest">{properties.length} UNIDADES EN TOTAL</p>
         </div>
         <button onClick={() => setShowForm(v => !v)}
-          className="bg-amber-500 text-black px-6 py-3 rounded-xl font-black text-xs uppercase hover:bg-white transition-all">
+          className="bg-amber-500 text-black px-3 py-2 md:px-6 md:py-3 rounded-xl font-black text-xs uppercase hover:bg-white transition-all">
           {showForm ? '✕ Cancelar' : '+ Nueva Propiedad'}
         </button>
       </div>
