@@ -74,25 +74,25 @@ export default function ClientsPage() {
   }
 
   return (
-    <div className="p-8">
-      <div className="flex justify-between items-center mb-10 bg-zinc-900/50 p-6 rounded-2xl border border-zinc-800">
+    <div className="p-4 md:p-8">
+      <div className="flex justify-between items-center mb-6 bg-zinc-900/50 p-4 md:p-6 rounded-2xl border border-zinc-800">
         <div>
-          <h1 className="text-4xl font-black italic text-amber-500 tracking-tighter uppercase">MIS CLIENTES</h1>
+          <h1 className="text-2xl md:text-4xl font-black italic text-amber-500 tracking-tighter uppercase">MIS CLIENTES</h1>
           <p className="text-zinc-500 text-xs mt-1 uppercase tracking-widest">{clients.length} REGISTROS</p>
         </div>
-        <div className="flex gap-4">
-          <button className="flex items-center gap-2 bg-white text-black px-3 py-2 md:px-6 md:py-3 rounded-xl font-black text-xs uppercase hover:bg-amber-500 transition-all">
+        <div className="flex gap-2">
+          <button className="hidden md:flex items-center gap-2 bg-white text-black px-4 py-2 rounded-xl font-black text-xs uppercase hover:bg-amber-500 transition-all">
             Importar Excel
           </button>
-          <button onClick={() => setShowForm(true)} className="bg-amber-500 text-black px-3 py-2 md:px-6 md:py-3 rounded-xl font-black text-xs uppercase hover:bg-white transition-all">
-            + Nuevo Cliente
+          <button onClick={() => setShowForm(true)} className="bg-amber-500 text-black px-3 py-2 rounded-xl font-black text-xs uppercase hover:bg-white transition-all">
+            + Nuevo
           </button>
         </div>
       </div>
 
       {showForm && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-          <div className="bg-zinc-900 border border-zinc-700 rounded-2xl p-8 w-full max-w-md">
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="bg-zinc-900 border border-zinc-700 rounded-2xl p-6 w-full max-w-md">
             <h2 className="text-xl font-black text-amber-500 uppercase mb-6">Nuevo Cliente</h2>
             <div className="flex flex-col gap-4">
               <input placeholder="Nombre *" value={form.name} onChange={e => setForm({...form, name: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none" />
@@ -118,17 +118,17 @@ export default function ClientsPage() {
       )}
 
       <div className="flex gap-6">
-        <div className={`grid gap-6 transition-all ${selected ? 'grid-cols-1 md:grid-cols-2 flex-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full'}`}>
+        <div className={`grid gap-4 transition-all ${selected ? 'grid-cols-1 flex-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full'}`}>
           {loading ? (
-            <div className="text-zinc-500 text-center py-20 col-span-3">Cargando clientes...</div>
+            <div className="text-zinc-500 text-center py-20">Cargando clientes...</div>
           ) : (
             clients.map((c) => (
-              <div key={c.id} onClick={() => { setSelected(c); setEditing(false) }} className={`bg-zinc-900/40 border p-6 rounded-2xl hover:border-amber-500 transition-all cursor-pointer ${selected?.id === c.id ? 'border-amber-500' : 'border-zinc-800'}`}>
-                <div className="flex items-start mb-4">
-                  <div className="w-10 h-10 rounded-full bg-amber-500 text-black flex items-center justify-center font-bold mr-3">{c.initial}</div>
-                  <div>
-                    <div className="font-bold text-white">{c.name}</div>
-                    <div className="text-zinc-500 text-xs">{c.email}</div>
+              <div key={c.id} onClick={() => { setSelected(c); setEditing(false) }} className={`bg-zinc-900/40 border p-4 rounded-2xl hover:border-amber-500 transition-all cursor-pointer ${selected?.id === c.id ? 'border-amber-500' : 'border-zinc-800'}`}>
+                <div className="flex items-start mb-3">
+                  <div className="w-10 h-10 rounded-full bg-amber-500 text-black flex items-center justify-center font-bold mr-3 flex-shrink-0">{c.initial}</div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-bold text-white truncate">{c.name}</div>
+                    <div className="text-zinc-500 text-xs truncate">{c.email}</div>
                   </div>
                 </div>
                 <div className="flex justify-between items-center">
@@ -142,12 +142,11 @@ export default function ClientsPage() {
         </div>
 
         {selected && (
-          <div className="w-80 bg-zinc-900 border border-zinc-700 rounded-2xl p-6 h-fit sticky top-8">
+          <div className="hidden md:block w-80 bg-zinc-900 border border-zinc-700 rounded-2xl p-6 h-fit sticky top-8">
             <div className="flex justify-between items-start mb-6">
               <div className="w-14 h-14 rounded-full bg-amber-500 text-black flex items-center justify-center text-xl font-black">{selected.initial}</div>
               <button onClick={() => setSelected(null)} className="text-zinc-500 hover:text-white text-xl">✕</button>
             </div>
-
             {!editing ? (
               <>
                 <h2 className="text-xl font-black text-white mb-1">{selected.name}</h2>
