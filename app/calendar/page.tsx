@@ -87,7 +87,7 @@ export default function CalendarPage() {
         </div>
         <button onClick={() => { setShowForm(true); setForm(f => ({ ...f, fecha: diaSeleccionado || hoyStr })) }} className="bg-amber-500 text-black px-6 py-3 rounded-xl font-black text-xs uppercase hover:bg-white transition-all">+ Nuevo evento</button>
       </div>
-      <div className="grid grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {[{ label: 'Total', value: followups.length, color: 'text-white' },{ label: 'Pendientes', value: pendientes, color: 'text-amber-500' },{ label: 'Completados', value: completados, color: 'text-green-400' },{ label: 'Hoy', value: followups.filter(f => f.fecha === hoyStr).length, color: 'text-blue-400' }].map(s => (
           <div key={s.label} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
             <p className="text-zinc-500 text-xs uppercase tracking-wider mb-1">{s.label}</p>
@@ -95,7 +95,7 @@ export default function CalendarPage() {
           </div>
         ))}
       </div>
-      <div className="flex gap-6">
+      <div className="flex flex-col md:flex-row gap-6">
         <div className="flex-1">
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
             <div className="flex justify-between items-center mb-6">
@@ -121,7 +121,7 @@ export default function CalendarPage() {
             </div>
           </div>
         </div>
-        <div className="w-80">
+        <div className="w-full md:w-80">
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
             <h3 className="text-white font-black uppercase text-sm tracking-wider mb-4">{diaSeleccionado ? new Date(diaSeleccionado + 'T12:00:00').toLocaleDateString('es-DO', { weekday: 'long', day: 'numeric', month: 'long' }) : 'Selecciona un dia'}</h3>
             {eventosDiaSeleccionado.length === 0 ? <p className="text-zinc-500 text-sm text-center py-8">Sin eventos este dia</p> : (
