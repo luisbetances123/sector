@@ -60,7 +60,7 @@ export default function ClientsPage() {
   }
 
   async function deleteClient(id: string) {
-    if (!confirm('¿Eliminar este cliente?')) return
+    if (!confirm('Eliminar este cliente?')) return
     await supabase.from('clients').delete().eq('id', id)
     setSelected(null)
     fetchClients()
@@ -97,7 +97,7 @@ export default function ClientsPage() {
             <div className="flex flex-col gap-4">
               <input placeholder="Nombre *" value={form.name} onChange={e => setForm({...form, name: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none" />
               <input placeholder="Email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none" />
-              <input placeholder="Teléfono" value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none" />
+              <input placeholder="Telefono" value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none" />
               <input placeholder="Tipo de propiedad (Casa, Apto...)" value={form.type} onChange={e => setForm({...form, type: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none" />
               <input placeholder="Precio (ej: $80,000)" value={form.price} onChange={e => setForm({...form, price: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none" />
               <select value={form.status} onChange={e => setForm({...form, status: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none">
@@ -123,19 +123,39 @@ export default function ClientsPage() {
             <div className="text-zinc-500 text-center py-20">Cargando clientes...</div>
           ) : (
             clients.map((c) => (
-              <div key={c.id} onClick={() => { setSelected(c); setEditing(false) }} className={`bg-zinc-900/40 border p-4 rounded-2xl hover:border-amber-500 transition-all cursor-pointer ${selected?.id === c.id ? 'border-amber-500' : 'border-zinc-800'}`}>
-                <div className="flex items-start mb-3">
+              <div key={c.id} className={`bg-zinc-900/40 border p-4 rounded-2xl transition-all ${selected?.id === c.id ? 'border-amber-500' : 'border-zinc-800'}`}>
+                <div className="flex items-start mb-3 cursor-pointer" onClick={() => { setSelected(c); setEditing(false) }}>
                   <div className="w-10 h-10 rounded-full bg-amber-500 text-black flex items-center justify-center font-bold mr-3 flex-shrink-0">{c.initial}</div>
                   <div className="flex-1 min-w-0">
                     <div className="font-bold text-white truncate">{c.name}</div>
                     <div className="text-zinc-500 text-xs truncate">{c.email}</div>
                   </div>
                 </div>
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center mb-3">
                   <span className={`text-xs px-2 py-1 rounded ${statusColors[c.status] || 'bg-zinc-700 text-zinc-300'}`}>{c.status}</span>
                   <span className="text-amber-500 font-bold text-sm">{c.price}</span>
                 </div>
-                {c.type && <div className="text-zinc-500 text-xs mt-2">{c.type}</div>}
+                {c.type && <div className="text-zinc-500 text-xs mb-3">{c.type}</div>}
+                <div className="flex gap-2 pt-3 border-t border-zinc-800">
+                  {c.phone && (
+                    <a href={`tel:${c.phone}`} onClick={e => e.stopPropagation()}
+                      className="flex-1 flex items-center justify-center gap-1 bg-zinc-800 hover:bg-blue-900 text-white py-2 rounded-lg text-xs font-bold transition-all">
+                      📞 Llamar
+                    </a>
+                  )}
+                  {c.phone && (
+                    <a href={`https://wa.me/${c.phone.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()}
+                      className="flex-1 flex items-center justify-center gap-1 bg-zinc-800 hover:bg-green-900 text-white py-2 rounded-lg text-xs font-bold transition-all">
+                      💬 WhatsApp
+                    </a>
+                  )}
+                  {c.email && (
+                    <a href={`mailto:${c.email}`} onClick={e => e.stopPropagation()}
+                      className="flex-1 flex items-center justify-center gap-1 bg-zinc-800 hover:bg-amber-900 text-white py-2 rounded-lg text-xs font-bold transition-all">
+                      ✉️ Email
+                    </a>
+                  )}
+                </div>
               </div>
             ))
           )}
@@ -153,11 +173,16 @@ export default function ClientsPage() {
                 <span className={`text-xs px-2 py-1 rounded ${statusColors[selected.status] || 'bg-zinc-700 text-zinc-300'}`}>{selected.status}</span>
                 <div className="mt-4 flex flex-col gap-3 text-sm">
                   {selected.email && <div><span className="text-zinc-500">Email</span><div className="text-white">{selected.email}</div></div>}
-                  {selected.phone && <div><span className="text-zinc-500">Teléfono</span><div className="text-white">{selected.phone}</div></div>}
+                  {selected.phone && <div><span className="text-zinc-500">Telefono</span><div className="text-white">{selected.phone}</div></div>}
                   {selected.type && <div><span className="text-zinc-500">Propiedad</span><div className="text-white">{selected.type}</div></div>}
                   {selected.price && <div><span className="text-zinc-500">Precio</span><div className="text-amber-500 font-bold">{selected.price}</div></div>}
                 </div>
-                <div className="flex gap-2 mt-6">
+                <div className="flex gap-2 mt-4">
+                  {selected.phone && <a href={`tel:${selected.phone}`} className="flex-1 flex items-center justify-center bg-zinc-800 hover:bg-blue-900 text-white py-2 rounded-xl text-xs font-bold transition-all">📞</a>}
+                  {selected.phone && <a href={`https://wa.me/${selected.phone.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="flex-1 flex items-center justify-center bg-zinc-800 hover:bg-green-900 text-white py-2 rounded-xl text-xs font-bold transition-all">💬</a>}
+                  {selected.email && <a href={`mailto:${selected.email}`} className="flex-1 flex items-center justify-center bg-zinc-800 hover:bg-amber-900 text-white py-2 rounded-xl text-xs font-bold transition-all">✉️</a>}
+                </div>
+                <div className="flex gap-2 mt-3">
                   <button onClick={() => { setEditing(true); setEditForm(selected) }} className="flex-1 bg-amber-500 text-black py-2 rounded-xl font-black text-xs uppercase hover:bg-white transition-all">Editar</button>
                   <button onClick={() => deleteClient(selected.id)} className="bg-red-900 text-red-300 px-3 py-2 rounded-xl text-xs hover:bg-red-800 transition-all">Eliminar</button>
                 </div>
@@ -168,7 +193,7 @@ export default function ClientsPage() {
                 <div className="flex flex-col gap-3">
                   <input value={editForm?.name} onChange={e => setEditForm({...editForm!, name: e.target.value})} className="bg-zinc-800 text-white px-3 py-2 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none text-sm" />
                   <input placeholder="Email" value={editForm?.email} onChange={e => setEditForm({...editForm!, email: e.target.value})} className="bg-zinc-800 text-white px-3 py-2 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none text-sm" />
-                  <input placeholder="Teléfono" value={editForm?.phone} onChange={e => setEditForm({...editForm!, phone: e.target.value})} className="bg-zinc-800 text-white px-3 py-2 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none text-sm" />
+                  <input placeholder="Telefono" value={editForm?.phone} onChange={e => setEditForm({...editForm!, phone: e.target.value})} className="bg-zinc-800 text-white px-3 py-2 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none text-sm" />
                   <input placeholder="Tipo" value={editForm?.type} onChange={e => setEditForm({...editForm!, type: e.target.value})} className="bg-zinc-800 text-white px-3 py-2 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none text-sm" />
                   <input placeholder="Precio" value={editForm?.price} onChange={e => setEditForm({...editForm!, price: e.target.value})} className="bg-zinc-800 text-white px-3 py-2 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none text-sm" />
                   <select value={editForm?.status} onChange={e => setEditForm({...editForm!, status: e.target.value})} className="bg-zinc-800 text-white px-3 py-2 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none text-sm">
