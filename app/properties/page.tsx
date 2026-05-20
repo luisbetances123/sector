@@ -1,3 +1,4 @@
+cat > /Users/luisbetances/homvi/app/properties/page.tsx << 'ENDOFFILE'
 'use client'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -65,24 +66,24 @@ export default function PropertiesPage() {
     setSelected(null)
   }
 
-  if (loading) return <div className="p-8 text-zinc-500">Cargando propiedades...</div>
+  if (loading) return <div className="p-4 text-zinc-500">Cargando propiedades...</div>
 
   return (
-    <div className="p-8">
-      <div className="flex justify-between items-center mb-8">
+    <div className="p-4 md:p-8">
+      <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-4xl font-black italic text-amber-500 tracking-tighter uppercase">PROPIEDADES</h1>
+          <h1 className="text-2xl md:text-4xl font-black italic text-amber-500 tracking-tighter uppercase">PROPIEDADES</h1>
           <p className="text-zinc-500 text-xs mt-1 uppercase tracking-widest">{properties.length} UNIDADES EN TOTAL</p>
         </div>
         <button onClick={() => setShowForm(v => !v)}
-          className="bg-amber-500 text-black px-3 py-2 md:px-6 md:py-3 rounded-xl font-black text-xs uppercase hover:bg-white transition-all">
-          {showForm ? '✕ Cancelar' : '+ Nueva Propiedad'}
+          className="bg-amber-500 text-black px-3 py-2 rounded-xl font-black text-xs uppercase hover:bg-white transition-all">
+          {showForm ? '✕' : '+ Nueva'}
         </button>
       </div>
 
       {showForm && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-          <div className="bg-zinc-900 border border-zinc-700 rounded-2xl p-8 w-full max-w-md">
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="bg-zinc-900 border border-zinc-700 rounded-2xl p-6 w-full max-w-md">
             <h2 className="text-xl font-black text-amber-500 uppercase mb-6">Nueva Propiedad</h2>
             <div className="flex flex-col gap-4">
               <input placeholder="Título *" value={form.title} onChange={e => setForm({...form, title: e.target.value})}
@@ -113,19 +114,19 @@ export default function PropertiesPage() {
       )}
 
       <div className="flex gap-6">
-        <div className={`grid gap-6 transition-all ${selected ? 'grid-cols-1 md:grid-cols-2 flex-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full'}`}>
+        <div className={`grid gap-4 transition-all ${selected ? 'grid-cols-1 flex-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full'}`}>
           {properties.length === 0 ? (
-            <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-8 text-center text-zinc-500 col-span-3">
+            <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-8 text-center text-zinc-500">
               No hay propiedades registradas aún.
             </div>
           ) : (
             properties.map((p) => (
               <div key={p.id} onClick={() => { setSelected(p); setEditing(false) }}
-                className={`bg-zinc-900 border rounded-2xl p-5 cursor-pointer transition-all ${selected?.id === p.id ? 'border-amber-500' : 'border-zinc-800 hover:border-zinc-600'}`}>
-                <h3 className="text-white font-bold text-lg mb-1">{p.title}</h3>
+                className={`bg-zinc-900 border rounded-2xl p-4 cursor-pointer transition-all ${selected?.id === p.id ? 'border-amber-500' : 'border-zinc-800 hover:border-zinc-600'}`}>
+                <h3 className="text-white font-bold text-base mb-1">{p.title}</h3>
                 <p className="text-zinc-400 text-xs mb-3">{p.location}</p>
-                <div className="flex justify-between items-center mt-4 pt-4 border-t border-zinc-800">
-                  <span className="text-amber-500 font-black text-lg">{p.price}</span>
+                <div className="flex justify-between items-center mt-3 pt-3 border-t border-zinc-800">
+                  <span className="text-amber-500 font-black">{p.price}</span>
                   <span className="text-zinc-500 text-xs uppercase tracking-wider bg-zinc-800 px-2 py-1 rounded">{p.type}</span>
                 </div>
               </div>
@@ -134,12 +135,11 @@ export default function PropertiesPage() {
         </div>
 
         {selected && (
-          <div className="w-80 bg-zinc-900 border border-zinc-700 rounded-2xl p-6 h-fit sticky top-8">
+          <div className="hidden md:block w-80 bg-zinc-900 border border-zinc-700 rounded-2xl p-6 h-fit sticky top-8">
             <div className="flex justify-between items-start mb-4">
               <h2 className="text-lg font-black text-amber-500 uppercase">Detalle</h2>
               <button onClick={() => setSelected(null)} className="text-zinc-500 hover:text-white text-xl">✕</button>
             </div>
-
             {!editing ? (
               <>
                 <h3 className="text-xl font-black text-white mb-1">{selected.title}</h3>
@@ -196,3 +196,4 @@ export default function PropertiesPage() {
     </div>
   )
 }
+ENDOFFILE
