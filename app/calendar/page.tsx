@@ -85,7 +85,7 @@ export default function CalendarPage() {
           <h1 className="text-4xl font-black italic text-amber-500 tracking-tighter uppercase">CALENDARIO</h1>
           <p className="text-zinc-500 text-xs mt-1 uppercase tracking-widest">{pendientes} pendientes · {completados} completados</p>
         </div>
-        <button onClick={() => { setShowForm(true); setForm(f => ({ ...f, fecha: diaSeleccionado || hoyStr })) }} className="bg-amber-500 text-black px-6 py-3 rounded-xl font-black text-xs uppercase hover:bg-white transition-all">+ Nuevo evento</button>
+        <button onClick={() => { setShowForm(true); setForm(f => ({ ...f, fecha: diaSeleccionado || hoyStr })) }} className="bg-amber-500 text-black px-3 py-2 md:px-6 md:py-3 rounded-xl font-black text-xs uppercase hover:bg-white transition-all">+ Nuevo evento</button>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {[{ label: 'Total', value: followups.length, color: 'text-white' },{ label: 'Pendientes', value: pendientes, color: 'text-amber-500' },{ label: 'Completados', value: completados, color: 'text-green-400' },{ label: 'Hoy', value: followups.filter(f => f.fecha === hoyStr).length, color: 'text-blue-400' }].map(s => (
