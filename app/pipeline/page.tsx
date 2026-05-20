@@ -61,20 +61,17 @@ export default function PipelinePage() {
     if (!form.name.trim()) return
     setSaving(true)
     setFormError(null)
-
     const { data: { user } } = await supabase.auth.getUser()
-
     const { data, error } = await supabase.from('clients').insert({
-      name:     form.name.trim(),
-      email:    form.email    || null,
-      phone:    form.phone    || null,
-      type:     form.type     || null,
-      price:    form.price    || null,
-      initial:  form.initial  || form.name.slice(0, 2).toUpperCase(),
-      status:   form.status,
+      name: form.name.trim(),
+      email: form.email || null,
+      phone: form.phone || null,
+      type: form.type || null,
+      price: form.price || null,
+      initial: form.initial || form.name.slice(0, 2).toUpperCase(),
+      status: form.status,
       owner_id: user?.id,
     }).select().single()
-
     setSaving(false)
     if (error) { setFormError(error.message); return }
     if (data) setClients(prev => [data, ...prev])
@@ -88,75 +85,58 @@ export default function PipelinePage() {
 
   const byStatus = (status: string) => clients.filter(c => c.status === status)
 
-  if (loading) return <div className="p-8 text-zinc-500">Cargando pipeline...</div>
+  if (loading) return <div className="p-4 text-zinc-500">Cargando pipeline...</div>
 
   return (
-    <div className="p-8">
-
-      {/* HEADER */}
-      <div className="mb-8 flex items-end justify-between">
+    <div className="p-4 md:p-8">
+      <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-black italic text-amber-500 tracking-tighter uppercase">PIPELINE</h1>
+          <h1 className="text-2xl md:text-4xl font-black italic text-amber-500 tracking-tighter uppercase">PIPELINE</h1>
           <p className="text-zinc-500 text-xs mt-1 uppercase tracking-widest">{clients.length} CLIENTES EN TOTAL</p>
         </div>
-        <button
-          onClick={() => setShowForm(v => !v)}
-          className="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-400 text-black font-bold text-sm rounded-xl transition-all uppercase tracking-wide"
-        >
-          {showForm ? '✕ Cancelar' : '+ Nuevo cliente'}
+        <button onClick={() => setShowForm(v => !v)} className="px-3 py-2 bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs rounded-xl transition-all uppercase">
+          {showForm ? 'X' : '+ Nuevo'}
         </button>
       </div>
 
-      {/* FORMULARIO */}
       {showForm && (
-        <form onSubmit={handleAddClient} className="bg-zinc-900 border border-zinc-700 rounded-2xl p-6 mb-8">
+        <form onSubmit={handleAddClient} className="bg-zinc-900 border border-zinc-700 rounded-2xl p-4 mb-6">
           <h2 className="text-white font-bold text-sm uppercase tracking-widest mb-4">Nuevo cliente</h2>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
             <div>
               <label className="text-zinc-400 text-xs uppercase tracking-wider block mb-1">Nombre *</label>
-              <input required value={form.name} onChange={set('name')} placeholder="Juan García"
-                className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-500" />
+              <input required value={form.name} onChange={set('name')} placeholder="Juan Garcia" className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-500" />
             </div>
             <div>
               <label className="text-zinc-400 text-xs uppercase tracking-wider block mb-1">Email</label>
-              <input type="email" value={form.email} onChange={set('email')} placeholder="juan@email.com"
-                className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-500" />
+              <input type="email" value={form.email} onChange={set('email')} placeholder="juan@email.com" className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-500" />
             </div>
             <div>
-              <label className="text-zinc-400 text-xs uppercase tracking-wider block mb-1">Teléfono</label>
-              <input value={form.phone} onChange={set('phone')} placeholder="+52 55 0000 0000"
-                className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-500" />
+              <label className="text-zinc-400 text-xs uppercase tracking-wider block mb-1">Telefono</label>
+              <input value={form.phone} onChange={set('phone')} placeholder="+1 809 000 0000" className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-500" />
             </div>
             <div>
               <label className="text-zinc-400 text-xs uppercase tracking-wider block mb-1">Tipo</label>
-              <input value={form.type} onChange={set('type')} placeholder="Comprador, Arrendatario..."
-                className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-500" />
+              <input value={form.type} onChange={set('type')} placeholder="Comprador..." className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-500" />
             </div>
             <div>
               <label className="text-zinc-400 text-xs uppercase tracking-wider block mb-1">Precio</label>
-              <input value={form.price} onChange={set('price')} placeholder="$2,500,000"
-                className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-500" />
+              <input value={form.price} onChange={set('price')} placeholder="$80,000" className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-500" />
             </div>
             <div>
-              <label className="text-zinc-400 text-xs uppercase tracking-wider block mb-1">Etapa inicial</label>
-              <select value={form.status} onChange={set('status')}
-                className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-500">
+              <label className="text-zinc-400 text-xs uppercase tracking-wider block mb-1">Etapa</label>
+              <select value={form.status} onChange={set('status')} className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-500">
                 {COLUMNS.map(col => <option key={col} value={col}>{col}</option>)}
               </select>
             </div>
           </div>
-
           {formError && <p className="text-red-400 text-xs mb-3">{formError}</p>}
-
-          <button type="submit" disabled={saving}
-            className="px-6 py-2 bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black font-bold text-sm rounded-xl uppercase tracking-wide transition-all">
-            {saving ? 'Guardando...' : 'Guardar cliente'}
+          <button type="submit" disabled={saving} className="px-4 py-2 bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black font-bold text-sm rounded-xl uppercase transition-all">
+            {saving ? 'Guardando...' : 'Guardar'}
           </button>
         </form>
       )}
 
-      {/* KANBAN */}
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {COLUMNS.map(col => (
@@ -167,20 +147,12 @@ export default function PipelinePage() {
               </div>
               <Droppable droppableId={col}>
                 {(provided, snapshot) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                    className={`min-h-32 rounded-xl transition-all ${snapshot.isDraggingOver ? 'bg-zinc-800/50' : ''}`}
-                  >
+                  <div ref={provided.innerRef} {...provided.droppableProps} className={`min-h-32 rounded-xl transition-all ${snapshot.isDraggingOver ? 'bg-zinc-800/50' : ''}`}>
                     {byStatus(col).map((c, index) => (
                       <Draggable key={c.id} draggableId={c.id} index={index}>
                         {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            className={`bg-zinc-900 border border-zinc-800 rounded-xl p-4 mb-3 cursor-grab transition-all ${snapshot.isDragging ? 'shadow-lg shadow-amber-500/20 border-amber-500' : 'hover:border-zinc-600'}`}
-                          >
+                          <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}
+                            className={`bg-zinc-900 border border-zinc-800 rounded-xl p-4 mb-3 cursor-grab transition-all ${snapshot.isDragging ? 'shadow-lg shadow-amber-500/20 border-amber-500' : 'hover:border-zinc-600'}`}>
                             <div className="flex items-center gap-3 mb-2">
                               <div className="w-8 h-8 rounded-full bg-amber-500 text-black flex items-center justify-center font-bold text-sm">{c.initial}</div>
                               <div className="font-bold text-white text-sm">{c.name}</div>
