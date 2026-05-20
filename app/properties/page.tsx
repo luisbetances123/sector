@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { supabase } from '../lib/supabase'
 
 type Property = {
@@ -21,6 +22,7 @@ export default function PropertiesPage() {
   const [selected, setSelected] = useState<Property | null>(null)
   const [editing, setEditing] = useState(false)
   const [editForm, setEditForm] = useState<Property | null>(null)
+  const router = useRouter()
 
   useEffect(() => { fetchProperties() }, [])
 
@@ -146,11 +148,17 @@ export default function PropertiesPage() {
                   {selected.location && <div><span className="text-zinc-500">Ubicación</span><div className="text-white">{selected.location}</div></div>}
                   {selected.price && <div><span className="text-zinc-500">Precio</span><div className="text-amber-500 font-bold">{selected.price}</div></div>}
                 </div>
-                <div className="flex gap-2 mt-6">
-                  <button onClick={() => { setEditing(true); setEditForm(selected) }}
-                    className="flex-1 bg-amber-500 text-black py-2 rounded-xl font-black text-xs uppercase hover:bg-white transition-all">Editar</button>
-                  <button onClick={() => deleteProperty(selected.id)}
-                    className="bg-red-900 text-red-300 px-3 py-2 rounded-xl text-xs hover:bg-red-800 transition-all">Eliminar</button>
+                <div className="flex flex-col gap-2 mt-6">
+                  <button onClick={() => router.push(`/properties/${selected.id}`)}
+                    className="w-full bg-zinc-700 text-white py-2 rounded-xl font-black text-xs uppercase hover:bg-zinc-600 transition-all">
+                    Ver detalle + fotos
+                  </button>
+                  <div className="flex gap-2">
+                    <button onClick={() => { setEditing(true); setEditForm(selected) }}
+                      className="flex-1 bg-amber-500 text-black py-2 rounded-xl font-black text-xs uppercase hover:bg-white transition-all">Editar</button>
+                    <button onClick={() => deleteProperty(selected.id)}
+                      className="bg-red-900 text-red-300 px-3 py-2 rounded-xl text-xs hover:bg-red-800 transition-all">Eliminar</button>
+                  </div>
                 </div>
               </>
             ) : (
