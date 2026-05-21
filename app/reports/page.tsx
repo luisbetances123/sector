@@ -3,21 +3,18 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 
 export default function ReportsPage() {
-  const [clients, setClients] = useState<any[]>([])
+  const [clientes, setClientes] = useState<any[]>([])
   const [properties, setProperties] = useState<any[]>([])
-  const [followups, setFollowups] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function fetchAll() {
-      const [c, p, f] = await Promise.all([
-        supabase.from('clients').select('*'),
+      const [c, p] = await Promise.all([
+        supabase.from('clientes').select('*'),
         supabase.from('properties').select('*'),
-        supabase.from('followups').select('*'),
       ])
-      if (c.data) setClients(c.data)
+      if (c.data) setClientes(c.data)
       if (p.data) setProperties(p.data)
-      if (f.data) setFollowups(f.data)
       setLoading(false)
     }
     fetchAll()
@@ -25,159 +22,102 @@ export default function ReportsPage() {
 
   if (loading) return <div className="p-8 text-zinc-500">Cargando reportes...</div>
 
-  const clientesPorEtapa = ['LEAD','BUSCANDO','EN OFERTA','CIERRE'].map(e => ({ etapa: e, total: clients.filter(c => c.status === e).length }))
-  const propiedadesPorEstado = ['DISPONIBLE','RESERVADA','VENDIDA'].map(e => ({ estado: e, total: properties.filter(p => p.status === e).length }))
-  const propiedadesPorTipo = [...new Set(properties.map(p => p.type))].map(t => ({ tipo: t, total: properties.filter(p => p.type === t).length }))
-  const followupsPendientes = followups.filter(f => !f.hecho).length
-  const followupsHechos = followups.filter(f => f.hecho).length
-  const followupsPorTipo = ['llamada','visita','documento','otro'].map(t => ({ tipo: t, total: followups.filter(f => f.tipo === t).length }))
-  const progreso = followups.length > 0 ? Math.round((followupsHechos / followups.length) * 100) : 0
-
-  const etapaColors: Record<string, string> = {
-    LEAD: 'bg-zinc-700', BUSCANDO: 'bg-blue-700', 'EN OFERTA': 'bg-amber-600', CIERRE: 'bg-green-600'
-  }
-  const estadoColors: Record<string, string> = {
-    DISPONIBLE: 'bg-green-600', RESERVADA: 'bg-amber-600', VENDIDA: 'bg-zinc-600'
-  }
-  const tipoColors: Record<string, string> = {
-    llamada: 'bg-blue-600', visita: 'bg-purple-600', documento: 'bg-green-600', otro: 'bg-zinc-600'
-  }
-
+  const etapas = ['LEAD', 'BUSCANDO', 'EN OFERTA', 'CIERRE']
+  const etapaColors: Record<string, string> = { LEAD: 'bg-zinc-600', BUSCANDO: 'bg-blue-600', 'EN OFERTA': 'bg-amber-500', CIERRE: 'bg-green-500' }
+  const etapaDots: Record<string, string> = { LEAD: 'bg-zinc-400', BUSCANDO: 'bg-blue-400', 'EN OFERTA': 'bg-amber-400', CIERRE: 'bg-green-400' }
+  const clientesPorEtapa = etapas.map(e => ({ etapa: e, total: clientes.filter(c => (c.etapa || '').toUpperCase() === e).length }))
   const maxClientes = Math.max(...clientesPorEtapa.map(e => e.total), 1)
-  const maxFollowups = Math.max(...followupsPorTipo.map(t => t.total), 1)
+
+  const sectores = ['Piantini','Naco','Bella Vista','Evaristo Morales','Serralles','Los Cacicazgos','Arroyo Hondo','Viejo Arroyo Hondo','La Esperilla','El Millón','Mirador Norte','Mirador Sur']
+  const sectorColors = ['bg-amber-500','bg-blue-500','bg-purple-500','bg-green-500','bg-pink-500','bg-cyan-500','bg-orange-500','bg-teal-500','bg-red-500','bg-indigo-500','bg-yellow-500','bg-emerald-500']
+  const propsPorSector = sectores.map((s, i) => ({ sector: s, total: properties.filter(p => (p.sector || '').toLowerCase() === s.toLowerCase()).length, color: sectorColors[i] })).filter(s => s.total > 0).sort((a, b) => b.total - a.total)
+  const otrosSector = properties.filter(p => p.sector && !sectores.map(s => s.toLowerCase()).includes(p.sector.toLowerCase())).length
+  if (otrosSector > 0) propsPorSector.push({ sector: 'Otros', total: otrosSector, color: 'bg-zinc-500' })
+  const maxProps = Math.max(...propsPorSector.map(s => s.total), 1)
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-4xl font-black italic text-amber-500 tracking-tighter uppercase">REPORTES</h1>
-        <p className="text-zinc-500 text-xs mt-1 uppercase tracking-widest">Resumen general de HOMVI</p>
-      </div>
-
-      {/* STATS PRINCIPALES */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        {[
-          { label: 'Clientes', value: clients.length, color: 'text-amber-500' },
-          { label: 'Propiedades', value: properties.length, color: 'text-blue-400' },
-          { label: 'Follow-ups', value: followups.length, color: 'text-purple-400' },
-          { label: 'Completados', value: followupsHechos, color: 'text-green-400' },
-        ].map(s => (
-          <div key={s.label} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
-            <p className="text-zinc-500 text-xs uppercase tracking-wider mb-2">{s.label}</p>
-            <p className={`text-4xl font-black ${s.color}`}>{s.value}</p>
-          </div>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-
-        {/* CLIENTES POR ETAPA */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-          <h2 className="text-white font-black uppercase text-sm tracking-wider mb-5">Clientes por etapa</h2>
-          <div className="flex flex-col gap-3">
-            {clientesPorEtapa.map(e => (
-              <div key={e.etapa}>
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-zinc-400 text-xs uppercase tracking-wide">{e.etapa}</span>
-                  <span className="text-white font-black text-sm">{e.total}</span>
-                </div>
-                <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
-                  <div className={`h-full rounded-full transition-all ${etapaColors[e.etapa]}`} style={{ width: `${(e.total / maxClientes) * 100}%` }} />
-                </div>
-              </div>
-            ))}
-          </div>
+    <div className="min-h-screen bg-black text-white p-4 md:p-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="mb-8 border-b border-zinc-800 pb-6">
+          <h1 className="text-4xl font-black italic text-amber-500 tracking-tighter uppercase">REPORTES</h1>
+          <p className="text-zinc-500 text-xs mt-1 uppercase tracking-widest">Resumen general de HOMVI</p>
         </div>
 
-        {/* PROPIEDADES POR ESTADO */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-          <h2 className="text-white font-black uppercase text-sm tracking-wider mb-5">Propiedades por estado</h2>
-          <div className="flex flex-col gap-4">
-            {propiedadesPorEstado.map(e => (
-              <div key={e.estado} className="flex items-center gap-4">
-                <div className={`w-3 h-3 rounded-full ${estadoColors[e.estado]}`} />
-                <div className="flex-1">
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-zinc-400 text-xs uppercase tracking-wide">{e.estado}</span>
-                    <span className="text-white font-black text-sm">{e.total}</span>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          {[
+            { label: 'Clientes totales', value: clientes.length, color: 'text-amber-500' },
+            { label: 'En cierre', value: clientes.filter(c => (c.etapa || '').toUpperCase() === 'CIERRE').length, color: 'text-green-400' },
+            { label: 'Propiedades', value: properties.length, color: 'text-blue-400' },
+            { label: 'Disponibles', value: properties.filter(p => (p.status || '').toLowerCase() === 'disponible').length, color: 'text-purple-400' },
+          ].map(s => (
+            <div key={s.label} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
+              <p className="text-zinc-500 text-xs uppercase tracking-wider mb-2">{s.label}</p>
+              <p className={`text-4xl font-black ${s.color}`}>{s.value}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+            <h2 className="text-white font-black uppercase text-sm tracking-wider mb-6">Pipeline — Clientes por etapa</h2>
+            <div className="flex flex-col gap-4">
+              {clientesPorEtapa.map(e => (
+                <div key={e.etapa}>
+                  <div className="flex justify-between items-center mb-1.5">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-2.5 h-2.5 rounded-full ${etapaDots[e.etapa]}`} />
+                      <span className="text-zinc-400 text-xs uppercase tracking-wider">{e.etapa}</span>
+                    </div>
+                    <span className="text-white font-black">{e.total}</span>
                   </div>
-                  <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
-                    <div className={`h-full rounded-full ${estadoColors[e.estado]}`} style={{ width: `${properties.length > 0 ? (e.total / properties.length) * 100 : 0}%` }} />
+                  <div className="h-2.5 bg-zinc-800 rounded-full overflow-hidden">
+                    <div className={`h-full rounded-full transition-all duration-700 ${etapaColors[e.etapa]}`} style={{ width: `${(e.total / maxClientes) * 100}%` }} />
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-          <div className="mt-4 pt-4 border-t border-zinc-800">
-            <h3 className="text-zinc-500 text-xs uppercase tracking-wider mb-3">Por tipo</h3>
-            <div className="flex flex-wrap gap-2">
-              {propiedadesPorTipo.map(t => (
-                <span key={t.tipo} className="bg-zinc-800 text-zinc-300 text-xs px-3 py-1 rounded-full font-bold">
-                  {t.tipo} <span className="text-amber-500">{t.total}</span>
-                </span>
               ))}
             </div>
-          </div>
-        </div>
-
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-        {/* FOLLOW-UPS */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-          <h2 className="text-white font-black uppercase text-sm tracking-wider mb-5">Follow-ups</h2>
-          <div className="mb-4">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-zinc-400 text-xs uppercase tracking-wide">Progreso general</span>
-              <span className="text-amber-500 font-black text-sm">{progreso}%</span>
-            </div>
-            <div className="h-3 bg-zinc-800 rounded-full overflow-hidden">
-              <div className="h-full bg-amber-500 rounded-full transition-all" style={{ width: `${progreso}%` }} />
-            </div>
-            <div className="flex justify-between mt-2">
-              <span className="text-zinc-500 text-xs">{followupsPendientes} pendientes</span>
-              <span className="text-green-400 text-xs">{followupsHechos} completados</span>
-            </div>
-          </div>
-          <h3 className="text-zinc-500 text-xs uppercase tracking-wider mb-3 mt-5">Por tipo</h3>
-          <div className="flex flex-col gap-3">
-            {followupsPorTipo.map(t => (
-              <div key={t.tipo}>
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-zinc-400 text-xs uppercase tracking-wide">{t.tipo}</span>
-                  <span className="text-white font-black text-sm">{t.total}</span>
-                </div>
-                <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
-                  <div className={`h-full rounded-full ${tipoColors[t.tipo]}`} style={{ width: `${(t.total / maxFollowups) * 100}%` }} />
-                </div>
+            <div className="mt-6 pt-5 border-t border-zinc-800">
+              <p className="text-zinc-500 text-xs uppercase tracking-wider mb-3">Distribución</p>
+              <div className="flex gap-3 flex-wrap">
+                {clientesPorEtapa.filter(e => e.total > 0).map(e => (
+                  <div key={e.etapa} className="flex items-center gap-1.5">
+                    <div className={`w-2 h-2 rounded-full ${etapaDots[e.etapa]}`} />
+                    <span className="text-zinc-400 text-xs">{e.etapa}</span>
+                    <span className="text-white text-xs font-bold">{clientes.length > 0 ? Math.round((e.total / clientes.length) * 100) : 0}%</span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* RESUMEN GENERAL */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-          <h2 className="text-white font-black uppercase text-sm tracking-wider mb-5">Resumen ejecutivo</h2>
-          <div className="flex flex-col gap-4">
-            <div className="bg-zinc-800/50 rounded-xl p-4">
-              <p className="text-zinc-500 text-xs uppercase tracking-wider mb-1">Pipeline activo</p>
-              <p className="text-white font-bold text-lg">{clients.filter(c => c.status !== 'CIERRE').length} clientes en proceso</p>
-            </div>
-            <div className="bg-zinc-800/50 rounded-xl p-4">
-              <p className="text-zinc-500 text-xs uppercase tracking-wider mb-1">Propiedades disponibles</p>
-              <p className="text-white font-bold text-lg">{properties.filter(p => p.status === 'DISPONIBLE').length} de {properties.length} unidades</p>
-            </div>
-            <div className="bg-zinc-800/50 rounded-xl p-4">
-              <p className="text-zinc-500 text-xs uppercase tracking-wider mb-1">Tasa de completado</p>
-              <p className="text-white font-bold text-lg">{progreso}% de follow-ups resueltos</p>
-            </div>
-            <div className="bg-zinc-800/50 rounded-xl p-4">
-              <p className="text-zinc-500 text-xs uppercase tracking-wider mb-1">Clientes en cierre</p>
-              <p className="text-green-400 font-bold text-lg">{clients.filter(c => c.status === 'CIERRE').length} negocio(s) cerrado(s)</p>
             </div>
           </div>
-        </div>
 
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+            <h2 className="text-white font-black uppercase text-sm tracking-wider mb-6">Propiedades por sector</h2>
+            {propsPorSector.length === 0 ? (
+              <p className="text-zinc-500 text-sm text-center py-8">No hay propiedades con sector asignado</p>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {propsPorSector.map(s => (
+                  <div key={s.sector}>
+                    <div className="flex justify-between items-center mb-1.5">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2.5 h-2.5 rounded-full ${s.color}`} />
+                        <span className="text-zinc-400 text-xs">{s.sector}</span>
+                      </div>
+                      <span className="text-white font-black text-sm">{s.total}</span>
+                    </div>
+                    <div className="h-2.5 bg-zinc-800 rounded-full overflow-hidden">
+                      <div className={`h-full rounded-full transition-all duration-700 ${s.color}`} style={{ width: `${(s.total / maxProps) * 100}%` }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="mt-5 pt-4 border-t border-zinc-800 flex justify-between text-xs text-zinc-500">
+              <span>{propsPorSector.length} sectores activos</span>
+              <span>{properties.length} propiedades en total</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )
