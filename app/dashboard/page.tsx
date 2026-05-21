@@ -3,6 +3,8 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 
+const SECTORES = ['Piantini','Naco','Bella Vista','Evaristo Morales','Serralles','Los Cacicazgos','Arroyo Hondo','Viejo Arroyo Hondo','La Esperilla','El Millon','Mirador Norte','Mirador Sur']
+
 export default function Dashboard() {
   const [clients, setClients] = useState<any[]>([])
   const [properties, setProperties] = useState<any[]>([])
@@ -50,7 +52,6 @@ export default function Dashboard() {
 
   const AlertasSection = () => (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-      {/* LEADS SIN RESPONDER */}
       <div className="bg-red-950 border border-red-800 rounded-2xl p-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
@@ -83,7 +84,6 @@ export default function Dashboard() {
         {leadsSimResponder.length > 3 && <Link href="/clients" className="block text-center text-red-400 text-xs mt-2">Ver {leadsSimResponder.length - 3} mas →</Link>}
       </div>
 
-      {/* SEGUIMIENTOS HOY */}
       <div className="bg-amber-950/50 border border-amber-800/50 rounded-2xl p-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
@@ -113,7 +113,6 @@ export default function Dashboard() {
         {followupsHoy.length > 3 && <Link href="/calendar" className="block text-center text-amber-400 text-xs mt-2">Ver {followupsHoy.length - 3} mas →</Link>}
       </div>
 
-      {/* CLIENTES ACTIVOS */}
       <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
@@ -148,6 +147,23 @@ export default function Dashboard() {
     </div>
   )
 
+  const SectoresWidget = () => (
+    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 mb-8">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-white font-black uppercase text-sm tracking-wider">🏘️ Buscar por sector</h3>
+        <Link href="/properties" className="text-amber-500 text-xs hover:text-white transition-colors uppercase tracking-wider">Ver todas →</Link>
+      </div>
+      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+        {SECTORES.map(s => (
+          <Link key={s} href={`/properties?sector=${encodeURIComponent(s)}`}
+            className="bg-zinc-800 hover:bg-amber-500 hover:text-black text-zinc-300 text-center py-3 px-2 rounded-xl text-xs font-black uppercase tracking-wide transition-all">
+            {s}
+          </Link>
+        ))}
+      </div>
+    </div>
+  )
+
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto">
 
@@ -158,6 +174,7 @@ export default function Dashboard() {
           <p className="text-zinc-400 text-xs mt-1">{new Date().toLocaleDateString('es-DO', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
         </header>
         <AlertasSection />
+        <SectoresWidget />
         <div className="grid grid-cols-2 gap-3">
           <Link href="/clients" className="bg-amber-500 text-black py-3 rounded-2xl font-black text-xs uppercase text-center">+ Nuevo cliente</Link>
           <Link href="/calendar" className="bg-zinc-800 text-white py-3 rounded-2xl font-black text-xs uppercase text-center">+ Evento</Link>
@@ -189,6 +206,8 @@ export default function Dashboard() {
             <h2 className="text-4xl font-black text-purple-400">{followupsPendientes}</h2>
           </div>
         </div>
+
+        <SectoresWidget />
 
         <div className="grid grid-cols-3 gap-6 mb-8">
           <div className="col-span-2 bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
