@@ -1,40 +1,36 @@
 'use client'
 import './globals.css'
 import { usePathname, useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { supabase } from './lib/supabase'
 import Sidebar from './components/Sidebar'
 import MobileNav from './components/MobileNav'
+import { useEffect, useState } from 'react'
+import { supabase } from './lib/supabase'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
-  const [loading, setLoading] = useState(true)
+  const [checking, setChecking] = useState(true)
 
   const publicRoutes = ['/login', '/register', '/landing', '/listings']
   const isPublic = publicRoutes.some(r => pathname.startsWith(r))
+  const isLanding = pathname === '/landing' || pathname === '/'
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session && !isPublic) {
-        router.push('/login')
-      }
-      setLoading(false)
+    if (isPublic) { setChecking(false); return }
+    supabase.auth.getSession().then(({ data }) => {
+      if (!data.session) router.push('/login')
+      else setChecking(false)
     })
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!session && !isPublic) {
-        router.push('/login')
-      }
+    const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') router.push('/login')
     })
-
-    return () => subscription.unsubscribe()
+    return () => listener.subscription.unsubscribe()
   }, [pathname])
 
-  if (loading && !isPublic) return (
+  if (!isPublic && checking) return (
     <html lang="es">
-      <body className="bg-black text-white flex items-center justify-center min-h-screen">
-        <p className="text-zinc-500 text-sm uppercase tracking-widest animate-pulse">Cargando...</p>
+      <body className="bg-black flex items-center justify-center min-h-screen">
+        <p className="text-amber-500 font-black text-xl animate-pulse">HOMVI</p>
       </body>
     </html>
   )
@@ -43,12 +39,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="es">
       <body className="bg-black antialiased text-white overflow-x-hidden">
         <div className="flex min-h-screen">
-          {!isPublic && <Sidebar />}
-          <main className={`flex-1 bg-[#050505] min-h-screen ${!isPublic ? 'pb-16 md:pb-0' : ''}`}>
+          {!isLanding && !isPublic && <Sidebar />}
+          <main className={`flex-1 bg-[#050505] min-h-screen ${!isLanding && !isPublic ? 'pb-16 md:pb-0' : ''}`}>
             {children}
           </main>
         </div>
-        {!isPublic && <MobileNav />}
+        {!isLanding && !isPublic && <MobileNav />}
       </body>
     </html>
   )
