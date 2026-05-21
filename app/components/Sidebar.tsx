@@ -1,9 +1,10 @@
 import React from 'react';
+import NotificationBell from './NotificationBell';
 import Link from 'next/link';
 export default function Sidebar() {
   return (
     <div className="hidden md:flex w-56 bg-zinc-950 border-r border-zinc-800 flex-col h-screen p-4 sticky top-0">
-      <div className="text-amber-500 font-bold text-xl mb-8 px-2">HOMVI</div>
+      <div className="flex items-center justify-between mb-8 px-2"><span className="text-amber-500 font-bold text-xl">HOMVI</span><NotificationBell /></div>
       <nav className="flex flex-col space-y-1">
         <Link href="/dashboard" className="block p-2 hover:bg-zinc-900 rounded text-zinc-400 font-medium">Dashboard</Link>
         <Link href="/clients" className="block p-2 hover:bg-zinc-900 rounded text-white font-medium">Clientes</Link>
