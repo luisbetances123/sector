@@ -12,7 +12,7 @@ export default function RootLayout({
   const isLanding = pathname === '/landing'
   return (
     <html lang="es">
-      <body className="bg-black antialiased text-white">
+      <body className="bg-black antialiased text-white overflow-x-hidden">
         <div className="flex min-h-screen">
           {!isLanding && <Sidebar />}
           <main className="flex-1 bg-[#050505] min-h-screen pb-16 md:pb-0">
