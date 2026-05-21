@@ -112,7 +112,7 @@ export default function CalendarPage() {
                 const esHoy = fechaStr === hoyStr
                 const esSel = fechaStr === diaSeleccionado
                 return (
-                  <button key={i} onClick={() => setDiaSeleccionado(fechaStr)} className={`relative p-1 rounded-lg text-xs font-bold transition-all min-h-[40px] flex flex-col items-center ${esSel ? 'bg-amber-500 text-black' : esHoy ? 'bg-zinc-700 text-white' : 'text-zinc-400 hover:bg-zinc-800'}`}>
+                  <button key={i} onClick={() => setDiaSeleccionado(fechaStr)} className={`relative p-1 rounded-lg text-xs font-bold transition-all min-h-[44px] flex flex-col items-center ${esSel ? 'bg-amber-500 text-black' : esHoy ? 'bg-zinc-700 text-white' : 'text-zinc-400 hover:bg-zinc-800'}`}>
                     <span>{dia}</span>
                     {eventos.length > 0 && <div className="flex gap-0.5 mt-0.5 flex-wrap justify-center">{eventos.slice(0,3).map((e,ei) => <div key={ei} className={`w-1 h-1 rounded-full ${esSel ? 'bg-black' : e.urgencia === 'alta' ? 'bg-red-400' : e.urgencia === 'media' ? 'bg-amber-400' : 'bg-green-400'}`} />)}</div>}
                   </button>
@@ -146,7 +146,7 @@ export default function CalendarPage() {
       </div>
       {showForm && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="bg-zinc-900 border border-zinc-700 rounded-2xl p-6 w-full max-w-md">
+          <div className="bg-zinc-900 border border-zinc-700 rounded-2xl p-6 w-full ">
             <h2 className="text-xl font-black text-amber-500 uppercase mb-6">Nuevo Evento</h2>
             <div className="flex flex-col gap-4">
               <input placeholder="Titulo *" value={form.titulo} onChange={e => setForm({...form, titulo: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none" />
@@ -154,7 +154,7 @@ export default function CalendarPage() {
                 <option value="">Sin cliente</option>
                 {clientes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-2">
                 <select value={form.tipo} onChange={e => setForm({...form, tipo: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none">
                   <option value="llamada">📞 Llamada</option>
                   <option value="visita">🏠 Visita</option>
@@ -167,7 +167,7 @@ export default function CalendarPage() {
                   <option value="baja">🟢 Baja</option>
                 </select>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-2">
                 <input type="date" value={form.fecha} onChange={e => setForm({...form, fecha: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none" />
                 <input type="time" value={form.hora} onChange={e => setForm({...form, hora: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none" />
               </div>
