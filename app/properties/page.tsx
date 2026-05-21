@@ -69,7 +69,7 @@ function PropertiesContent() {
     <div className="p-4 md:p-8">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl md:text-4xl font-black italic text-amber-500 tracking-tighter uppercase">PROPIEDADES</h1>
+          <h1 className="text-2xl md:text-4xl font-black italic text-amber-500 tracking-tighter uppercase">PROPIEDADES</h1><a href="/listings" target="_blank" className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-amber-500 text-zinc-300 hover:text-black rounded-xl text-xs font-bold uppercase tracking-wider transition-all"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>Ver vitrina</a>
           <p className="text-zinc-500 text-xs mt-1 uppercase tracking-widest">
             {sectorActivo ? `${propiedadesFiltradas.length} en ${sectorActivo}` : `${properties.length} UNIDADES EN TOTAL`}
           </p>
