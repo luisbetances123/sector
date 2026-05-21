@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '../lib/supabase'
 
@@ -16,16 +16,20 @@ const emptyForm = { title: '', price: '', location: '', type: 'APARTAMENTO', sec
 
 const SECTORES = ['Piantini','Naco','Bella Vista','Evaristo Morales','Serralles','Los Cacicazgos','Arroyo Hondo','Viejo Arroyo Hondo','La Esperilla','El Millon','Mirador Norte','Mirador Sur']
 
-export default function PropertiesPage() {
+function PropertiesContent() {
   const [properties, setProperties] = useState<Property[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState(emptyForm)
   const [saving, setSaving] = useState(false)
+  const [sectorActivo, setSectorActivo] = useState('')
   const router = useRouter()
   const searchParams = useSearchParams()
-  const sectorFiltro = searchParams.get('sector') || ''
-  const [sectorActivo, setSectorActivo] = useState(sectorFiltro)
+
+  useEffect(() => {
+    const s = searchParams.get('sector') || ''
+    setSectorActivo(s)
+  }, [searchParams])
 
   useEffect(() => { fetchProperties() }, [])
 
@@ -75,7 +79,6 @@ export default function PropertiesPage() {
         </button>
       </div>
 
-      {/* FILTRO DE SECTORES */}
       <div className="flex gap-2 flex-wrap mb-6">
         <button onClick={() => setSectorActivo('')}
           className={`px-3 py-1.5 rounded-xl text-xs font-black uppercase transition-all ${!sectorActivo ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'}`}>
@@ -137,5 +140,13 @@ export default function PropertiesPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function PropertiesPage() {
+  return (
+    <Suspense fallback={<div className="p-4 text-zinc-500">Cargando...</div>}>
+      <PropertiesContent />
+    </Suspense>
   )
 }
