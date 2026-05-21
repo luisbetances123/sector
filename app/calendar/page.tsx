@@ -97,7 +97,7 @@ export default function CalendarPage() {
       </div>
       <div className="flex flex-col gap-4 w-full">
         <div className="w-full min-w-0">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-3 md:p-6 w-full">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-3 md:p-6 w-full overflow-hidden">
             <div className="flex justify-between items-center mb-4">
               <button onClick={() => { if (mes === 0) { setMes(11); setAnio(a => a-1) } else setMes(m => m-1) }} className="text-zinc-400 hover:text-white text-xl px-2">&#8249;</button>
               <h2 className="text-white font-black uppercase tracking-wider text-sm md:text-base">{MESES[mes]} {anio}</h2>
