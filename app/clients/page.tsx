@@ -54,7 +54,7 @@ export default function ClientesPage() {
       .from('cliente_properties')
       .select('id, property_id, properties(*)')
       .eq('cliente_id', cliente.id)
-    if (data) setPropiedadesAsignadas(data as unknown as ClientePropiedad[])
+    if (data) setPropiedadesAsignadas(data.map((r: any) => ({ id: r.id, property_id: r.property_id, properties: r.properties as Propiedad })))
   }
 
   const abrirModalAsignar = async () => {
@@ -73,7 +73,8 @@ export default function ClientesPage() {
       .select('id, property_id, properties(*)')
       .single()
     if (data) {
-      setPropiedadesAsignadas(prev => [...prev, data as ClientePropiedad])
+      const rel = { id: (data as any).id, property_id: (data as any).property_id, properties: (data as any).properties as Propiedad }
+      setPropiedadesAsignadas(prev => [...prev, rel])
       setShowAsignarModal(false)
     }
   }
