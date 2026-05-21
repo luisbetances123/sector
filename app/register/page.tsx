@@ -4,19 +4,24 @@ import { supabase } from '../lib/supabase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
-export default function LoginPage() {
+export default function RegisterPage() {
+  const [nombre, setNombre] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
 
-  const handleLogin = async () => {
+  const handleRegister = async () => {
     setLoading(true)
     setError('')
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { nombre } }
+    })
     if (error) {
-      setError('Email o contraseña incorrectos')
+      setError(error.message)
       setLoading(false)
     } else {
       router.push('/dashboard')
@@ -31,13 +36,22 @@ export default function LoginPage() {
           <p className="text-zinc-500 text-sm mt-1">CRM Inmobiliario · Santo Domingo</p>
         </div>
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-          <h2 className="text-white font-black uppercase text-sm tracking-wider mb-6">Iniciar Sesión</h2>
+          <h2 className="text-white font-black uppercase text-sm tracking-wider mb-6">Crear Cuenta</h2>
           {error && (
             <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-3 rounded-xl mb-4">
               {error}
             </div>
           )}
           <div className="flex flex-col gap-4">
+            <div>
+              <label className="text-zinc-500 text-xs uppercase tracking-wider mb-1.5 block">Nombre</label>
+              <input
+                value={nombre}
+                onChange={e => setNombre(e.target.value)}
+                placeholder="Tu nombre"
+                className="w-full bg-zinc-800 text-white px-4 py-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500 border border-transparent"
+              />
+            </div>
             <div>
               <label className="text-zinc-500 text-xs uppercase tracking-wider mb-1.5 block">Email</label>
               <input
@@ -54,22 +68,21 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleLogin()}
-                placeholder="••••••••"
+                placeholder="Mínimo 6 caracteres"
                 className="w-full bg-zinc-800 text-white px-4 py-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500 border border-transparent"
               />
             </div>
             <button
-              onClick={handleLogin}
-              disabled={loading || !email || !password}
+              onClick={handleRegister}
+              disabled={loading || !email || !password || !nombre}
               className="w-full bg-amber-500 text-black py-3 rounded-xl font-black text-sm uppercase tracking-wider hover:bg-white transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
-              {loading ? 'Entrando...' : 'Entrar'}
+              {loading ? 'Creando cuenta...' : 'Crear Cuenta'}
             </button>
           </div>
           <p className="text-zinc-500 text-xs text-center mt-4">
-            ¿No tienes cuenta?{' '}
-            <Link href="/register" className="text-amber-500 hover:underline font-bold">Regístrate</Link>
+            ¿Ya tienes cuenta?{' '}
+            <Link href="/login" className="text-amber-500 hover:underline font-bold">Inicia sesión</Link>
           </p>
         </div>
       </div>
