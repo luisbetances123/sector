@@ -87,7 +87,7 @@ export default function CalendarPage() {
         </div>
         <button onClick={() => { setShowForm(true); setForm(f => ({ ...f, fecha: diaSeleccionado || hoyStr })) }} className="bg-amber-500 text-black px-3 py-2 rounded-xl font-black text-xs uppercase hover:bg-white transition-all">+ Evento</button>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 w-full">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-6">
         {[{ label: 'Total', value: followups.length, color: 'text-white' },{ label: 'Pendientes', value: pendientes, color: 'text-amber-500' },{ label: 'Completados', value: completados, color: 'text-green-400' },{ label: 'Hoy', value: followups.filter(f => f.fecha === hoyStr).length, color: 'text-blue-400' }].map(s => (
           <div key={s.label} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-3">
             <p className="text-zinc-500 text-xs uppercase tracking-wider mb-1">{s.label}</p>
@@ -95,8 +95,8 @@ export default function CalendarPage() {
           </div>
         ))}
       </div>
-      <div className="flex flex-col gap-6">
-        <div className="w-full">
+      <div className="flex flex-col gap-4 w-full">
+        <div className="w-full min-w-0">
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-3 md:p-6">
             <div className="flex justify-between items-center mb-4">
               <button onClick={() => { if (mes === 0) { setMes(11); setAnio(a => a-1) } else setMes(m => m-1) }} className="text-zinc-400 hover:text-white text-xl px-2">&#8249;</button>
@@ -121,7 +121,7 @@ export default function CalendarPage() {
             </div>
           </div>
         </div>
-        <div className="w-full">
+        <div className="w-full min-w-0">
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
             <h3 className="text-white font-black uppercase text-sm tracking-wider mb-4">{diaSeleccionado ? new Date(diaSeleccionado + 'T12:00:00').toLocaleDateString('es-DO', { weekday: 'long', day: 'numeric', month: 'long' }) : 'Selecciona un dia'}</h3>
             {eventosDiaSeleccionado.length === 0 ? <p className="text-zinc-500 text-sm text-center py-6">Sin eventos este dia</p> : (
