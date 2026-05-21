@@ -10,21 +10,31 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [mensaje, setMensaje] = useState('')
   const router = useRouter()
 
   const handleRegister = async () => {
     setLoading(true)
     setError('')
-    const { error } = await supabase.auth.signUp({
+    setMensaje('')
+
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: { data: { nombre } }
     })
+
     if (error) {
       setError(error.message)
       setLoading(false)
-    } else {
+      return
+    }
+
+    if (data.session) {
       router.push('/dashboard')
+    } else {
+      setMensaje('Revisa tu email y confirma tu cuenta para continuar.')
+      setLoading(false)
     }
   }
 
@@ -37,11 +47,19 @@ export default function RegisterPage() {
         </div>
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
           <h2 className="text-white font-black uppercase text-sm tracking-wider mb-6">Crear Cuenta</h2>
+
           {error && (
             <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-3 rounded-xl mb-4">
               {error}
             </div>
           )}
+
+          {mensaje && (
+            <div className="bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm px-4 py-3 rounded-xl mb-4">
+              {mensaje}
+            </div>
+          )}
+
           <div className="flex flex-col gap-4">
             <div>
               <label className="text-zinc-500 text-xs uppercase tracking-wider mb-1.5 block">Nombre</label>
