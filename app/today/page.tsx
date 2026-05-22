@@ -26,8 +26,7 @@ export default function TodayPage() {
     const hoy = new Date().toISOString().split('T')[0]
     const { data: fups } = await supabase
       .from('followups')
-      .select('*, clientes(nombre)')
-      .eq('fecha', hoy)
+.select('*')      .eq('fecha', hoy)
       .order('hora', { ascending: true })
 
     if (fups) setFollowups(fups)
