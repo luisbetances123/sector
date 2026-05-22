@@ -11,7 +11,7 @@ export default function Sidebar() {
       </div>
       <nav className="flex flex-col space-y-1">
         <Link href="/dashboard" className="block p-2 hover:bg-zinc-900 rounded text-zinc-400 font-medium">Dashboard</Link>
-        <Link href="/today" className="block p-2 hover:bg-zinc-900 rounded text-zinc-400 font-medium">Hoy</Link>
+        <Link href="/hoy" className="block p-2 hover:bg-zinc-900 rounded text-zinc-400 font-medium">Hoy</Link>
         <Link href="/clients" className="block p-2 hover:bg-zinc-900 rounded text-white font-medium">Clientes</Link>
         <Link href="/properties" className="block p-2 hover:bg-zinc-900 rounded text-zinc-400 font-medium">Propiedades</Link>
         <Link href="/pipeline" className="block p-2 hover:bg-zinc-900 rounded text-zinc-400 font-medium">Pipeline</Link>
