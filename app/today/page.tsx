@@ -23,18 +23,15 @@ export default function TodayPage() {
     const { data: { user } } = await supabase.auth.getUser()
     if (user?.user_metadata?.nombre) setUserName(user.user_metadata.nombre)
 
-    // Followups de hoy
     const hoy = new Date().toISOString().split('T')[0]
     const { data: fups } = await supabase
       .from('followups')
       .select('*, clientes(nombre)')
-      .gte('fecha', hoy + 'T00:00:00')
-      .lte('fecha', hoy + 'T23:59:59')
-      .order('fecha', { ascending: true })
+      .eq('fecha', hoy)
+      .order('hora', { ascending: true })
 
     if (fups) setFollowups(fups)
 
-    // Notas
     const { data: nts } = await supabase
       .from('notas')
       .select('*')
@@ -60,11 +57,6 @@ export default function TodayPage() {
     setNotas(notas.filter(n => n.id !== id))
   }
 
-  const formatHora = (fecha: string) => {
-    if (!fecha) return ''
-    return new Date(fecha).toLocaleTimeString('es-DO', { hour: '2-digit', minute: '2-digit' })
-  }
-
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-[#d4af37]/30">
       <main className="max-w-7xl mx-auto p-6 md:p-12">
@@ -78,7 +70,6 @@ export default function TodayPage() {
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Followups de hoy */}
           <div className="md:col-span-2 space-y-4">
             <h3 className="text-[#d4af37] text-xs uppercase tracking-[0.2em] font-bold mb-6">Próximas Citas</h3>
             {followups.length === 0 && (
@@ -88,12 +79,12 @@ export default function TodayPage() {
               <div key={item.id} className="bg-[#0a0a0a] border border-white/5 p-6 rounded-[2rem] flex items-center justify-between hover:border-[#d4af37]/30 transition-all group">
                 <div className="flex items-center gap-6">
                   <div className="text-[#d4af37] font-mono text-base tracking-tighter w-20">
-                    {formatHora(item.fecha)}
+                    {item.hora || '—'}
                   </div>
                   <div className="w-px h-8 bg-white/10"></div>
                   <div>
                     <h4 className="text-sm font-bold uppercase tracking-widest group-hover:text-[#d4af37] transition-colors">
-                      {item.descripcion || item.tipo}
+                      {item.titulo}
                     </h4>
                     <p className="text-gray-500 text-xs mt-1 italic">
                       Cliente: {item.clientes?.nombre || '—'}
@@ -110,7 +101,6 @@ export default function TodayPage() {
             </button>
           </div>
 
-          {/* Notas */}
           <div className="space-y-4">
             <h3 className="text-gray-500 text-xs uppercase tracking-[0.2em] font-bold mb-6">Notas Rápidas</h3>
             {notas.map((nota) => (
