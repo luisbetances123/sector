@@ -107,7 +107,6 @@ export default function ClientesPage() {
           <span className="ml-auto px-3 py-1 bg-amber-500/20 text-amber-500 rounded-full text-xs font-bold uppercase">{selectedCliente.etapa}</span>
         </div>
 
-        {/* Propiedades asignadas */}
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-white font-black uppercase text-sm tracking-wider flex items-center gap-2">
@@ -140,7 +139,6 @@ export default function ClientesPage() {
           )}
         </div>
 
-        {/* Info del cliente */}
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
           <h2 className="text-white font-black uppercase text-sm tracking-wider mb-4">Perfil del Cliente</h2>
           <div className="grid grid-cols-2 gap-4 text-sm">
@@ -157,7 +155,6 @@ export default function ClientesPage() {
         </div>
       </div>
 
-      {/* Modal asignar propiedad */}
       {showAsignarModal && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-lg max-h-[80vh] flex flex-col">
@@ -197,17 +194,17 @@ export default function ClientesPage() {
   return (
     <div className="min-h-screen bg-black text-white p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
-        <div className="flex justify-between items-start mb-8 border-b border-zinc-800 pb-6">
+        <div className="flex justify-between items-center mb-8 border-b border-zinc-800 pb-6">
           <div>
             <h1 className="text-4xl font-black italic text-amber-500 tracking-tighter uppercase">MIS CLIENTES</h1>
             <p className="text-zinc-500 text-xs mt-1 uppercase tracking-widest">{clientes.length} REGISTROS</p>
           </div>
-          <div className="flex gap-4">
-            <button onClick={() => alert('Importador')} className="flex items-center gap-2 bg-white text-black px-6 py-3 rounded-xl font-black text-xs uppercase hover:bg-amber-500 transition-all">
-              <Upload className="w-4 h-4" /> Importar Excel
+          <div className="flex gap-2">
+            <button onClick={() => alert('Importador')} className="flex items-center gap-1.5 bg-white text-black px-3 py-1.5 rounded-lg font-bold text-xs uppercase hover:bg-amber-500 transition-all">
+              <Upload className="w-3 h-3" /> Importar Excel
             </button>
-            <button className="bg-amber-500 text-black px-6 py-3 rounded-xl font-black text-xs uppercase hover:bg-white transition-all">
-              <UserPlus className="w-4 h-4" /> + Nuevo Cliente
+            <button className="flex items-center gap-1.5 bg-amber-500 text-black px-3 py-1.5 rounded-lg font-bold text-xs uppercase hover:bg-white transition-all">
+              <UserPlus className="w-3 h-3" /> + Nuevo Cliente
             </button>
           </div>
         </div>
