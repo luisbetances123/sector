@@ -8,6 +8,7 @@ export default function TodayPage() {
   const [newNote, setNewNote] = useState('')
   const [userName, setUserName] = useState('Luis')
   const [showModal, setShowModal] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
   const [newFollowup, setNewFollowup] = useState({ titulo: '', hora: '', tipo: 'cita', detalle: '' })
 
   const typeColor: Record<string, string> = {
@@ -22,7 +23,6 @@ export default function TodayPage() {
   const loadData = async () => {
     const { data: { user } } = await supabase.auth.getUser()
     if (user?.user_metadata?.nombre) setUserName(user.user_metadata.nombre)
-
     const hoy = new Date().toISOString().split('T')[0]
     const { data: fups } = await supabase
       .from('followups')
@@ -30,7 +30,6 @@ export default function TodayPage() {
       .eq('fecha', hoy)
       .order('hora', { ascending: true })
     if (fups) setFollowups(fups)
-
     const { data: nts } = await supabase
       .from('notas')
       .select('*')
@@ -55,26 +54,60 @@ export default function TodayPage() {
     setNotas(notas.filter(n => n.id !== id))
   }
 
-  const addFollowup = async () => {
+  const openNew = () => {
+    setEditingId(null)
+    setNewFollowup({ titulo: '', hora: '', tipo: 'cita', detalle: '' })
+    setShowModal(true)
+  }
+
+  const openEdit = (item: any) => {
+    setEditingId(item.id)
+    setNewFollowup({ titulo: item.titulo, hora: item.hora || '', tipo: item.tipo, detalle: item.detalle || '' })
+    setShowModal(true)
+  }
+
+  const saveFollowup = async () => {
     if (!newFollowup.titulo.trim()) return
     const { data: { user } } = await supabase.auth.getUser()
     const hoy = new Date().toISOString().split('T')[0]
-    const { data } = await supabase
-      .from('followups')
-      .insert({
-        titulo: newFollowup.titulo,
-        hora: newFollowup.hora,
-        tipo: newFollowup.tipo,
-        detalle: newFollowup.detalle,
-        fecha: hoy,
-        user_id: user?.id,
-        hecho: false
-      })
-      .select()
-      .single()
-    if (data) setFollowups([...followups, data])
+
+    if (editingId) {
+      const { data } = await supabase
+        .from('followups')
+        .update({
+          titulo: newFollowup.titulo,
+          hora: newFollowup.hora,
+          tipo: newFollowup.tipo,
+          detalle: newFollowup.detalle,
+        })
+        .eq('id', editingId)
+        .select()
+        .single()
+      if (data) setFollowups(followups.map(f => f.id === editingId ? data : f))
+    } else {
+      const { data } = await supabase
+        .from('followups')
+        .insert({
+          titulo: newFollowup.titulo,
+          hora: newFollowup.hora,
+          tipo: newFollowup.tipo,
+          detalle: newFollowup.detalle,
+          fecha: hoy,
+          user_id: user?.id,
+          hecho: false
+        })
+        .select()
+        .single()
+      if (data) setFollowups([...followups, data])
+    }
     setShowModal(false)
+    setEditingId(null)
     setNewFollowup({ titulo: '', hora: '', tipo: 'cita', detalle: '' })
+  }
+
+  const deleteFollowup = async (id: string) => {
+    await supabase.from('followups').delete().eq('id', id)
+    setFollowups(followups.filter(f => f.id !== id))
   }
 
   return (
@@ -101,7 +134,7 @@ export default function TodayPage() {
                 </div>
               )}
               {followups.map((item) => (
-                <div key={item.id} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex items-center justify-between hover:border-amber-500/30 transition-all">
+                <div key={item.id} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex items-center justify-between hover:border-amber-500/30 transition-all group">
                   <div className="flex items-center gap-4">
                     <span className="text-amber-500 font-mono text-sm w-16">{item.hora || '—'}</span>
                     <div className="w-px h-8 bg-zinc-700" />
@@ -110,13 +143,23 @@ export default function TodayPage() {
                       <p className="text-xs text-zinc-500 mt-0.5">{item.detalle || item.tipo}</p>
                     </div>
                   </div>
-                  <span className={`text-[10px] font-bold uppercase px-3 py-1 rounded-full ${typeColor[item.tipo?.toLowerCase()] || 'bg-zinc-800 text-zinc-400'}`}>
-                    {item.tipo}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-[10px] font-bold uppercase px-3 py-1 rounded-full ${typeColor[item.tipo?.toLowerCase()] || 'bg-zinc-800 text-zinc-400'}`}>
+                      {item.tipo}
+                    </span>
+                    <button
+                      onClick={() => openEdit(item)}
+                      className="text-zinc-600 hover:text-amber-500 text-xs opacity-0 group-hover:opacity-100 transition-all px-2"
+                    >✏️</button>
+                    <button
+                      onClick={() => deleteFollowup(item.id)}
+                      className="text-zinc-600 hover:text-red-400 text-xs opacity-0 group-hover:opacity-100 transition-all px-2"
+                    >✕</button>
+                  </div>
                 </div>
               ))}
               <button
-                onClick={() => setShowModal(true)}
+                onClick={openNew}
                 className="w-full border border-dashed border-zinc-800 rounded-2xl p-4 text-zinc-600 text-xs uppercase tracking-widest hover:border-amber-500/40 hover:text-amber-500 transition-all">
                 + Programar nueva actividad
               </button>
@@ -156,7 +199,9 @@ export default function TodayPage() {
       {showModal && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 w-full max-w-md">
-            <h3 className="text-white font-bold uppercase tracking-widest text-sm mb-6">Nueva Actividad</h3>
+            <h3 className="text-white font-bold uppercase tracking-widest text-sm mb-6">
+              {editingId ? 'Editar Actividad' : 'Nueva Actividad'}
+            </h3>
             <div className="space-y-4">
               <div>
                 <label className="text-zinc-500 text-xs uppercase tracking-wider mb-1.5 block">Título</label>
@@ -201,13 +246,13 @@ export default function TodayPage() {
             </div>
             <div className="flex gap-3 mt-6">
               <button
-                onClick={() => setShowModal(false)}
+                onClick={() => { setShowModal(false); setEditingId(null) }}
                 className="flex-1 py-3 rounded-xl border border-zinc-700 text-zinc-400 text-xs uppercase tracking-widest hover:border-zinc-500 transition-all"
               >
                 Cancelar
               </button>
               <button
-                onClick={addFollowup}
+                onClick={saveFollowup}
                 className="flex-1 py-3 rounded-xl bg-amber-500 text-black text-xs uppercase tracking-widest font-bold hover:bg-white transition-all"
               >
                 Guardar
