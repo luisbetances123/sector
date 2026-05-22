@@ -1,7 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { supabase } from '../lib/supabase'
-
+import { supabase } from '@/app/lib/supabase'
 export default function TodayPage() {
   const [notas, setNotas] = useState<any[]>([])
   const [followups, setFollowups] = useState<any[]>([])
