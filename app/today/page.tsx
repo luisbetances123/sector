@@ -23,13 +23,13 @@ export default function TodayPage() {
     const { data: { user } } = await supabase.auth.getUser()
     if (user?.user_metadata?.nombre) setUserName(user.user_metadata.nombre)
 
-    const hoy = new Date().toISOString().split('T')[0]
-    const { data: fups } = await supabase
-      .from('followups')
-.select('*')      .eq('fecha', hoy)
-      .order('hora', { ascending: true })
-
-    if (fups) setFollowups(fups)
+   const hoy = new Date().toISOString().split('T')[0]
+const { data: fups } = await supabase
+  .from('followups')
+  .select('*')
+  .eq('fecha', hoy)
+  .order('hora', { ascending: true })
+if (fups) setFollowups(fups)
 
     const { data: nts } = await supabase
       .from('notas')
