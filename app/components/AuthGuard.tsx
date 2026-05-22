@@ -1,7 +1,7 @@
 'use client'
 import { usePathname, useRouter } from 'next/navigation'
-import Sidebar from '../../components/Sidebar'
-import MobileNav from '../../components/MobileNav'
+import Sidebar from './Sidebar'
+import MobileNav from './MobileNav'
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 
