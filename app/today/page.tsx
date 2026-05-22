@@ -7,6 +7,8 @@ export default function TodayPage() {
   const [followups, setFollowups] = useState<any[]>([])
   const [newNote, setNewNote] = useState('')
   const [userName, setUserName] = useState('Luis')
+  const [showModal, setShowModal] = useState(false)
+  const [newFollowup, setNewFollowup] = useState({ titulo: '', hora: '', tipo: 'cita', detalle: '' })
 
   const typeColor: Record<string, string> = {
     'llamada': 'bg-zinc-800 text-zinc-400',
@@ -53,6 +55,28 @@ export default function TodayPage() {
     setNotas(notas.filter(n => n.id !== id))
   }
 
+  const addFollowup = async () => {
+    if (!newFollowup.titulo.trim()) return
+    const { data: { user } } = await supabase.auth.getUser()
+    const hoy = new Date().toISOString().split('T')[0]
+    const { data } = await supabase
+      .from('followups')
+      .insert({
+        titulo: newFollowup.titulo,
+        hora: newFollowup.hora,
+        tipo: newFollowup.tipo,
+        detalle: newFollowup.detalle,
+        fecha: hoy,
+        user_id: user?.id,
+        hecho: false
+      })
+      .select()
+      .single()
+    if (data) setFollowups([...followups, data])
+    setShowModal(false)
+    setNewFollowup({ titulo: '', hora: '', tipo: 'cita', detalle: '' })
+  }
+
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white p-6 md:p-10">
       <div className="max-w-6xl mx-auto">
@@ -91,7 +115,9 @@ export default function TodayPage() {
                   </span>
                 </div>
               ))}
-              <button className="w-full border border-dashed border-zinc-800 rounded-2xl p-4 text-zinc-600 text-xs uppercase tracking-widest hover:border-amber-500/40 hover:text-amber-500 transition-all">
+              <button
+                onClick={() => setShowModal(true)}
+                className="w-full border border-dashed border-zinc-800 rounded-2xl p-4 text-zinc-600 text-xs uppercase tracking-widest hover:border-amber-500/40 hover:text-amber-500 transition-all">
                 + Programar nueva actividad
               </button>
             </div>
@@ -126,6 +152,70 @@ export default function TodayPage() {
 
         </div>
       </div>
+
+      {showModal && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 w-full max-w-md">
+            <h3 className="text-white font-bold uppercase tracking-widest text-sm mb-6">Nueva Actividad</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="text-zinc-500 text-xs uppercase tracking-wider mb-1.5 block">Título</label>
+                <input
+                  value={newFollowup.titulo}
+                  onChange={e => setNewFollowup({...newFollowup, titulo: e.target.value})}
+                  placeholder="Ej: Llamada de seguimiento"
+                  className="w-full bg-zinc-800 text-white px-4 py-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+              <div>
+                <label className="text-zinc-500 text-xs uppercase tracking-wider mb-1.5 block">Hora</label>
+                <input
+                  type="time"
+                  value={newFollowup.hora}
+                  onChange={e => setNewFollowup({...newFollowup, hora: e.target.value})}
+                  className="w-full bg-zinc-800 text-white px-4 py-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+              <div>
+                <label className="text-zinc-500 text-xs uppercase tracking-wider mb-1.5 block">Tipo</label>
+                <select
+                  value={newFollowup.tipo}
+                  onChange={e => setNewFollowup({...newFollowup, tipo: e.target.value})}
+                  className="w-full bg-zinc-800 text-white px-4 py-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500"
+                >
+                  <option value="cita">Cita</option>
+                  <option value="llamada">Llamada</option>
+                  <option value="urgente">Urgente</option>
+                  <option value="cierre">Cierre</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-zinc-500 text-xs uppercase tracking-wider mb-1.5 block">Detalle</label>
+                <input
+                  value={newFollowup.detalle}
+                  onChange={e => setNewFollowup({...newFollowup, detalle: e.target.value})}
+                  placeholder="Opcional"
+                  className="w-full bg-zinc-800 text-white px-4 py-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setShowModal(false)}
+                className="flex-1 py-3 rounded-xl border border-zinc-700 text-zinc-400 text-xs uppercase tracking-widest hover:border-zinc-500 transition-all"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={addFollowup}
+                className="flex-1 py-3 rounded-xl bg-amber-500 text-black text-xs uppercase tracking-widest font-bold hover:bg-white transition-all"
+              >
+                Guardar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
