@@ -1,7 +1,7 @@
 'use client'
 import { usePathname, useRouter } from 'next/navigation'
-import Sidebar from './Sidebar'
-import MobileNav from './MobileNav'
+import Sidebar from '../../components/Sidebar'
+import MobileNav from '../../components/MobileNav'
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 
@@ -15,10 +15,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const isLanding = pathname === '/landing' || pathname === '/'
 
   useEffect(() => {
-    if (isPublic) {
-      setChecking(false)
-      return
-    }
+    if (isPublic) { setChecking(false); return }
     supabase.auth.getSession().then(({ data }) => {
       if (!data.session) router.push('/login')
       else setChecking(false)
