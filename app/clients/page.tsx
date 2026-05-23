@@ -131,14 +131,12 @@ export default function ClientesPage() {
       })
       .select()
       .single()
-    console.log('INSERT resultado:', { data, error })
     if (data) {
       setClientes(prev => [data, ...prev])
       setShowNuevoModal(false)
       setNuevoCliente(nuevoClienteInicial)
     }
     setGuardando(false)
-  }
   }
 
   const propiedadesFiltradas = todasPropiedades.filter(p =>
@@ -300,7 +298,6 @@ export default function ClientesPage() {
         )}
       </div>
 
-      {/* Modal nuevo cliente */}
       {showNuevoModal && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-lg max-h-[90vh] flex flex-col">
@@ -309,7 +306,6 @@ export default function ClientesPage() {
               <button onClick={() => setShowNuevoModal(false)} className="text-zinc-400 hover:text-white"><X size={20} /></button>
             </div>
             <div className="overflow-y-auto flex-1 p-5 space-y-4">
-
               <div className="grid grid-cols-2 gap-3">
                 <div className="col-span-2">
                   <label className="text-zinc-500 text-xs uppercase tracking-wider mb-1.5 block">Nombre *</label>
