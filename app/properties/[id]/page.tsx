@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '../../lib/supabase'
 
@@ -19,6 +19,13 @@ type Property = {
   imagen_url?: string
   moneda: string
   created_at: string
+}
+
+type PropertyImage = {
+  id: string
+  property_id: string
+  url: string
+  orden: number
 }
 
 const ESTADO_STYLES: Record<string, string> = {
@@ -47,23 +54,82 @@ function formatPrice(price: string, moneda = 'USD') {
 
 export default function PropertyDetailPage({ params }: { params: { id: string } }) {
   const [property, setProperty] = useState<Property | null>(null)
+  const [images, setImages] = useState<PropertyImage[]>([])
+  const [activeImg, setActiveImg] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [uploading, setUploading] = useState(false)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
   useEffect(() => {
     async function load() {
-      const { data, error } = await supabase
-        .from('properties').select('*').eq('id', params.id).single()
-      if (!error && data) setProperty(data)
+      const [{ data: prop }, { data: imgs }] = await Promise.all([
+        supabase.from('properties').select('*').eq('id', params.id).single(),
+        supabase.from('property_images').select('*').eq('property_id', params.id).order('orden'),
+      ])
+      if (prop) setProperty(prop)
+      if (imgs) setImages(imgs)
       setLoading(false)
     }
     load()
   }, [params.id])
 
+  // Todas las imágenes: primero las de property_images, si no hay usa imagen_url
+  const allImages = images.length > 0
+    ? images.map(i => i.url)
+    : property?.imagen_url ? [property.imagen_url] : []
+
+  async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files
+    if (!files || !property) return
+    setUploading(true)
+
+    for (const file of Array.from(files)) {
+      const ext = file.name.split('.').pop()
+      const fileName = `${property.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+
+      const { data: uploaded, error: uploadError } = await supabase.storage
+        .from('property-images')
+        .upload(fileName, file, { cacheControl: '3600', upsert: false })
+
+      if (uploadError) { console.error(uploadError); continue }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('property-images')
+        .getPublicUrl(uploaded.path)
+
+      const { data: imgRecord } = await supabase
+        .from('property_images')
+        .insert({ property_id: property.id, url: publicUrl, orden: images.length })
+        .select()
+        .single()
+
+      if (imgRecord) setImages(prev => [...prev, imgRecord])
+    }
+
+    setUploading(false)
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
+  async function handleDeleteImage(img: PropertyImage) {
+    if (!confirm('¿Eliminar esta foto?')) return
+    setDeletingId(img.id)
+
+    // Extraer path del storage desde la URL
+    const path = img.url.split('/property-images/')[1]
+    if (path) await supabase.storage.from('property-images').remove([path])
+
+    await supabase.from('property_images').delete().eq('id', img.id)
+    setImages(prev => prev.filter(i => i.id !== img.id))
+    setActiveImg(0)
+    setDeletingId(null)
+  }
+
   if (loading) {
     return (
-      <div className="p-8 max-w-2xl animate-pulse space-y-4">
-        <div className="h-64 bg-zinc-800 rounded-2xl" />
+      <div className="p-8 max-w-4xl animate-pulse space-y-4">
+        <div className="h-80 bg-zinc-800 rounded-2xl" />
         <div className="h-8 bg-zinc-800 rounded-xl w-2/3" />
         <div className="h-4 bg-zinc-800 rounded-xl w-1/2" />
       </div>
@@ -82,6 +148,7 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
 
   return (
     <div className="p-4 md:p-8 max-w-4xl">
+      {/* Back */}
       <button onClick={() => router.push('/properties')}
         className="flex items-center gap-2 text-zinc-500 hover:text-amber-400 text-sm font-bold uppercase tracking-wider mb-6 transition-colors">
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -90,19 +157,108 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
         Propiedades
       </button>
 
-      {property.imagen_url ? (
-        <div className="h-64 md:h-80 rounded-2xl overflow-hidden mb-6 border border-zinc-800">
-          <img src={property.imagen_url} alt={property.title} className="w-full h-full object-cover" />
+      {/* Galería */}
+      <div className="mb-6">
+        {/* Imagen principal */}
+        <div className="relative h-64 md:h-96 rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-900 mb-3">
+          {allImages.length > 0 ? (
+            <>
+              <img
+                src={allImages[activeImg]}
+                alt={property.title}
+                className="w-full h-full object-cover"
+              />
+              {/* Botón eliminar foto activa (solo si viene de property_images) */}
+              {images.length > 0 && images[activeImg] && (
+                <button
+                  onClick={() => handleDeleteImage(images[activeImg])}
+                  disabled={deletingId === images[activeImg]?.id}
+                  className="absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1.5 bg-red-500/90 backdrop-blur-sm text-white text-xs font-bold uppercase rounded-xl hover:bg-red-600 transition-all disabled:opacity-50"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  {deletingId === images[activeImg]?.id ? 'Eliminando...' : 'Eliminar foto'}
+                </button>
+              )}
+              {/* Flechas navegación */}
+              {allImages.length > 1 && (
+                <>
+                  <button
+                    onClick={() => setActiveImg(i => (i - 1 + allImages.length) % allImages.length)}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 p-2 bg-black/50 backdrop-blur-sm rounded-xl text-white hover:bg-black/70 transition-all"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => setActiveImg(i => (i + 1) % allImages.length)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-black/50 backdrop-blur-sm rounded-xl text-white hover:bg-black/70 transition-all"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                  {/* Contador */}
+                  <span className="absolute bottom-3 right-3 text-xs text-white bg-black/50 backdrop-blur-sm px-2 py-1 rounded-lg font-bold">
+                    {activeImg + 1} / {allImages.length}
+                  </span>
+                </>
+              )}
+            </>
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <svg className="w-14 h-14 text-zinc-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9.75L12 3l9 6.75V21H3V9.75z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 21V12h6v9" />
+              </svg>
+            </div>
+          )}
         </div>
-      ) : (
-        <div className="h-48 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-6">
-          <svg className="w-14 h-14 text-zinc-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9.75L12 3l9 6.75V21H3V9.75z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 21V12h6v9" />
-          </svg>
-        </div>
-      )}
 
+        {/* Thumbnails + botón agregar */}
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          {images.map((img, i) => (
+            <button
+              key={img.id}
+              onClick={() => setActiveImg(i)}
+              className={`shrink-0 w-20 h-16 rounded-xl overflow-hidden border-2 transition-all ${activeImg === i ? 'border-amber-500' : 'border-zinc-700 hover:border-zinc-500'}`}
+            >
+              <img src={img.url} alt="" className="w-full h-full object-cover" />
+            </button>
+          ))}
+
+          {/* Botón subir foto */}
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="shrink-0 w-20 h-16 rounded-xl border-2 border-dashed border-zinc-700 hover:border-amber-500 flex flex-col items-center justify-center gap-1 transition-all disabled:opacity-50 group"
+          >
+            {uploading ? (
+              <div className="w-4 h-4 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <>
+                <svg className="w-5 h-5 text-zinc-500 group-hover:text-amber-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                <span className="text-zinc-500 group-hover:text-amber-500 text-[10px] uppercase font-bold transition-colors">Foto</span>
+              </>
+            )}
+          </button>
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleUpload}
+            className="hidden"
+          />
+        </div>
+      </div>
+
+      {/* Info */}
       <div className="flex items-start justify-between gap-4 mb-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-black text-white mb-1">{property.title}</h1>
@@ -131,6 +287,7 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
         </span>
       </div>
 
+      {/* Métricas */}
       {(property.recamaras || property.banos || property.estacionamientos || property.m2) && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           {[
@@ -148,6 +305,7 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
         </div>
       )}
 
+      {/* Descripción */}
       {property.descripcion && (
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 mb-6">
           <h2 className="text-xs font-black text-zinc-500 uppercase tracking-widest mb-3">Descripción</h2>
