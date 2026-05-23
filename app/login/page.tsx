@@ -11,15 +11,23 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const router = useRouter()
 
-  const handleLogin = async () => {
+  const handleLogin = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault()
+    if (!email || !password) return
     setLoading(true)
     setError('')
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) {
-      setError('Email o contraseña incorrectos')
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+      console.log('login result:', { data, error })
+      if (error) {
+        setError('Email o contraseña incorrectos: ' + error.message)
+        setLoading(false)
+      } else {
+        router.push('/dashboard')
+      }
+    } catch (e: any) {
+      setError('Error inesperado: ' + e.message)
       setLoading(false)
-    } else {
-      router.push('/dashboard')
     }
   }
 
@@ -37,7 +45,7 @@ export default function LoginPage() {
               {error}
             </div>
           )}
-          <div className="flex flex-col gap-4">
+          <form onSubmit={handleLogin} className="flex flex-col gap-4">
             <div>
               <label className="text-zinc-500 text-xs uppercase tracking-wider mb-1.5 block">Email</label>
               <input
@@ -45,6 +53,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 placeholder="tu@email.com"
+                autoComplete="email"
                 className="w-full bg-zinc-800 text-white px-4 py-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500 border border-transparent"
               />
             </div>
@@ -54,19 +63,19 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleLogin()}
                 placeholder="••••••••"
+                autoComplete="current-password"
                 className="w-full bg-zinc-800 text-white px-4 py-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500 border border-transparent"
               />
             </div>
             <button
-              onClick={handleLogin}
+              type="submit"
               disabled={loading || !email || !password}
               className="w-full bg-amber-500 text-black py-3 rounded-xl font-black text-sm uppercase tracking-wider hover:bg-white transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
               {loading ? 'Entrando...' : 'Entrar'}
             </button>
-          </div>
+          </form>
           <p className="text-zinc-500 text-xs text-center mt-4">
             ¿No tienes cuenta?{' '}
             <Link href="/register" className="text-amber-500 hover:underline font-bold">Regístrate</Link>
