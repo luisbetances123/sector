@@ -113,7 +113,6 @@ export default function Page() {
         <div className="hidden md:flex gap-8 text-xs uppercase tracking-widest text-zinc-500">
           <a href="#features" className="hover:text-white cursor-pointer transition-colors">Funciones</a>
           <a href="#faq" className="hover:text-white cursor-pointer transition-colors">FAQ</a>
-          <a href="#contacto" className="hover:text-white cursor-pointer transition-colors">Contacto</a>
         </div>
         <Link href="/dashboard" className="bg-amber-500 text-black px-5 py-2 rounded-lg text-xs font-bold hover:bg-white transition-all uppercase tracking-wider">
           Comenzar
