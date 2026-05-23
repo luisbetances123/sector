@@ -1,39 +1,9 @@
-'use client'
-import { usePathname, useRouter } from 'next/navigation'
-import Sidebar from './Sidebar'
-import MobileNav from './MobileNav'
-import { useEffect, useState } from 'react'
-import { supabase } from '../lib/supabase'
-
-export default function AuthGuard({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname()
-  const router = useRouter()
-  const [checking, setChecking] = useState(false)
-
-  const publicRoutes = ['/login', '/register', '/landing', '/listings']
-  const isPublic = publicRoutes.some(r => pathname.startsWith(r))
-  const isLanding = pathname === '/landing' || pathname === '/'
-
-  // AUTH DESACTIVADO TEMPORALMENTE
-  // useEffect(() => {
-  //   if (isPublic) { setChecking(false); return }
-  //   supabase.auth.getSession().then(({ data }) => {
-  //     if (!data.session) router.push('/login')
-  //     else setChecking(false)
-  //   })
-  //   const { data: listener } = supabase.auth.onAuthStateChange((event) => {
-  //     if (event === 'SIGNED_OUT') router.push('/login')
-  //   })
-  //   return () => listener.subscription.unsubscribe()
-  // }, [pathname])
-
-  return (
-    <div className="flex min-h-screen">
+return (
+    <div className="flex min-h-screen overflow-x-hidden">
       {!isLanding && !isPublic && <Sidebar />}
-      <main className={`flex-1 bg-[#050505] min-h-screen ${!isLanding && !isPublic ? 'pb-16 md:pb-0' : ''}`}>
+      <main className={`flex-1 min-w-0 bg-[#050505] min-h-screen overflow-x-hidden ${!isLanding && !isPublic ? 'pb-16 md:pb-0' : ''}`}>
         {children}
       </main>
       {!isLanding && !isPublic && <MobileNav />}
     </div>
   )
-}
