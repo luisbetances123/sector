@@ -3,13 +3,12 @@ import { usePathname, useRouter } from 'next/navigation'
 import Sidebar from './Sidebar'
 import MobileNav from './MobileNav'
 import { useEffect, useState } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { supabase } from '../lib/supabase'
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
   const [checking, setChecking] = useState(true)
-  const supabase = createClientComponentClient()
 
   const publicRoutes = ['/login', '/register', '/landing', '/listings']
   const isPublic = publicRoutes.some(r => pathname.startsWith(r))
@@ -23,7 +22,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
       else setChecking(false)
     })
 
-    const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: listener } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_OUT') router.push('/login')
     })
 
