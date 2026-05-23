@@ -52,7 +52,8 @@ function formatPrice(price: string, moneda = 'USD') {
   }).format(num)
 }
 
-export default function PropertyDetailPage({ params }: { params: { id: string } }) {
+export default function PropertyDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const [propertyId, setPropertyId] = useState<string | null>(null)
   const [property, setProperty] = useState<Property | null>(null)
   const [images, setImages] = useState<PropertyImage[]>([])
   const [activeImg, setActiveImg] = useState(0)
@@ -62,20 +63,25 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
+  // Resolver params async (Next.js 15)
   useEffect(() => {
+    params.then(p => setPropertyId(p.id))
+  }, [params])
+
+  useEffect(() => {
+    if (!propertyId) return
     async function load() {
       const [{ data: prop }, { data: imgs }] = await Promise.all([
-        supabase.from('properties').select('*').eq('id', params.id).single(),
-        supabase.from('property_images').select('*').eq('property_id', params.id).order('orden'),
+        supabase.from('properties').select('*').eq('id', propertyId).single(),
+        supabase.from('property_images').select('*').eq('property_id', propertyId).order('orden'),
       ])
       if (prop) setProperty(prop)
       if (imgs) setImages(imgs)
       setLoading(false)
     }
     load()
-  }, [params.id])
+  }, [propertyId])
 
-  // Todas las imágenes: primero las de property_images, si no hay usa imagen_url
   const allImages = images.length > 0
     ? images.map(i => i.url)
     : property?.imagen_url ? [property.imagen_url] : []
@@ -115,11 +121,8 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
   async function handleDeleteImage(img: PropertyImage) {
     if (!confirm('¿Eliminar esta foto?')) return
     setDeletingId(img.id)
-
-    // Extraer path del storage desde la URL
     const path = img.url.split('/property-images/')[1]
     if (path) await supabase.storage.from('property-images').remove([path])
-
     await supabase.from('property_images').delete().eq('id', img.id)
     setImages(prev => prev.filter(i => i.id !== img.id))
     setActiveImg(0)
@@ -148,7 +151,6 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
 
   return (
     <div className="p-4 md:p-8 max-w-4xl">
-      {/* Back */}
       <button onClick={() => router.push('/properties')}
         className="flex items-center gap-2 text-zinc-500 hover:text-amber-400 text-sm font-bold uppercase tracking-wider mb-6 transition-colors">
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -159,16 +161,10 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
 
       {/* Galería */}
       <div className="mb-6">
-        {/* Imagen principal */}
         <div className="relative h-64 md:h-96 rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-900 mb-3">
           {allImages.length > 0 ? (
             <>
-              <img
-                src={allImages[activeImg]}
-                alt={property.title}
-                className="w-full h-full object-cover"
-              />
-              {/* Botón eliminar foto activa (solo si viene de property_images) */}
+              <img src={allImages[activeImg]} alt={property.title} className="w-full h-full object-cover" />
               {images.length > 0 && images[activeImg] && (
                 <button
                   onClick={() => handleDeleteImage(images[activeImg])}
@@ -181,7 +177,6 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
                   {deletingId === images[activeImg]?.id ? 'Eliminando...' : 'Eliminar foto'}
                 </button>
               )}
-              {/* Flechas navegación */}
               {allImages.length > 1 && (
                 <>
                   <button
@@ -200,7 +195,6 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </button>
-                  {/* Contador */}
                   <span className="absolute bottom-3 right-3 text-xs text-white bg-black/50 backdrop-blur-sm px-2 py-1 rounded-lg font-bold">
                     {activeImg + 1} / {allImages.length}
                   </span>
@@ -217,7 +211,7 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
           )}
         </div>
 
-        {/* Thumbnails + botón agregar */}
+        {/* Thumbnails + subir */}
         <div className="flex gap-2 overflow-x-auto pb-1">
           {images.map((img, i) => (
             <button
@@ -228,8 +222,6 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
               <img src={img.url} alt="" className="w-full h-full object-cover" />
             </button>
           ))}
-
-          {/* Botón subir foto */}
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
@@ -246,15 +238,7 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
               </>
             )}
           </button>
-
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={handleUpload}
-            className="hidden"
-          />
+          <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleUpload} className="hidden" />
         </div>
       </div>
 
@@ -287,7 +271,6 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
         </span>
       </div>
 
-      {/* Métricas */}
       {(property.recamaras || property.banos || property.estacionamientos || property.m2) && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           {[
@@ -305,7 +288,6 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
         </div>
       )}
 
-      {/* Descripción */}
       {property.descripcion && (
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 mb-6">
           <h2 className="text-xs font-black text-zinc-500 uppercase tracking-widest mb-3">Descripción</h2>
