@@ -52,8 +52,7 @@ function formatPrice(price: string, moneda = 'USD') {
   }).format(num)
 }
 
-export default function PropertyDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const [propertyId, setPropertyId] = useState<string | null>(null)
+export default function PropertyDetailPage({ params }: { params: any }) {
   const [property, setProperty] = useState<Property | null>(null)
   const [images, setImages] = useState<PropertyImage[]>([])
   const [activeImg, setActiveImg] = useState(0)
@@ -63,24 +62,19 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
   const fileInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
-  // Resolver params async (Next.js 15)
   useEffect(() => {
-    params.then(p => setPropertyId(p.id))
-  }, [params])
-
-  useEffect(() => {
-    if (!propertyId) return
     async function load() {
+      const id = typeof params.id === 'string' ? params.id : (await params).id
       const [{ data: prop }, { data: imgs }] = await Promise.all([
-        supabase.from('properties').select('*').eq('id', propertyId).single(),
-        supabase.from('property_images').select('*').eq('property_id', propertyId).order('orden'),
+        supabase.from('properties').select('*').eq('id', id).single(),
+        supabase.from('property_images').select('*').eq('property_id', id).order('orden'),
       ])
       if (prop) setProperty(prop)
       if (imgs) setImages(imgs)
       setLoading(false)
     }
     load()
-  }, [propertyId])
+  }, [params])
 
   const allImages = images.length > 0
     ? images.map(i => i.url)
