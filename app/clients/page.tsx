@@ -124,7 +124,7 @@ export default function ClientesPage() {
         etapa: nuevoCliente.etapa,
         presupuesto_min: nuevoCliente.presupuesto_min || null,
         presupuesto_max: nuevoCliente.presupuesto_max || null,
-        zonas_interes: nuevoCliente.zonas_interes,
+        zonas: nuevoCliente.zonas_interes,
         tipo_propiedad: nuevoCliente.tipo_propiedad,
         notas: nuevoCliente.notas || null,
         user_id: user?.id,
