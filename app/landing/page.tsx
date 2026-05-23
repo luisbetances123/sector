@@ -239,6 +239,11 @@ export default function Page() {
       <footer className="py-8 text-center text-zinc-600 text-xs tracking-widest uppercase border-t border-zinc-800">
         <p>© 2026 HOMVI · CRM Inmobiliario · Santo Domingo</p>
       </footer>
+
+      <a href="#" className="fixed bottom-6 right-6 bg-amber-500 text-black w-10 h-10 rounded-full flex items-center justify-center hover:bg-white transition-all shadow-lg z-50 text-lg font-black">
+        ↑
+      </a>
+
     </div>
   )
 }
