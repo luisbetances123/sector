@@ -105,13 +105,27 @@ export default function PropertyDetailPage({ params }: { params: any }) {
         .select()
         .single()
 
-      if (imgRecord) setImages(prev => [...prev, imgRecord])
+      if (imgRecord) {
+        setImages(prev => {
+          const updated = [...prev, imgRecord]
+          // Si es la primera foto, guardarla como imagen_url principal
+          if (updated.length === 1) {
+            supabase
+              .from('properties')
+              .update({ imagen_url: publicUrl })
+              .eq('id', property.id)
+              .then(() => {
+                setProperty(p => p ? { ...p, imagen_url: publicUrl } : p)
+              })
+          }
+          return updated
+        })
+      }
     }
 
     setUploading(false)
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
-
   async function handleDeleteImage(img: PropertyImage) {
     if (!confirm('¿Eliminar esta foto?')) return
     setDeletingId(img.id)

@@ -212,7 +212,7 @@ function PropertyModal({ open, initial, onClose, onSave }: ModalProps) {
             </div>
           </div>
 
-          <div>
+         <div>
             <label className={labelCls}>URL de imagen</label>
             <input value={form.imagen_url} onChange={e => set('imagen_url', e.target.value)}
               placeholder="https://..." className={inputCls} />
