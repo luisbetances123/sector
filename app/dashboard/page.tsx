@@ -405,7 +405,7 @@ export default function Dashboard() {
 
       {/* Botón flotante */}
       <Link href="/clients"
-        className="fixed bottom-20 right-4 md:bottom-8 md:right-8 z-50 bg-amber-500 hover:bg-white text-black px-5 py-3.5 rounded-2xl font-black text-sm uppercase shadow-2xl shadow-amber-500/40 transition-all flex items-center gap-2">
+        className="fixed bottom-20 right-4 md:bottom-8 md:right-8 z-50 bg-amber-500 hover:bg-white text-black px-4 py-2.5 rounded-2xl font-black text-xs uppercase shadow-2xl shadow-amber-500/40 transition-all flex items-center gap-2">
         <span className="text-base font-black">+</span>
         Nuevo Lead
       </Link>
