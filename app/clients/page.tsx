@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
-import { UserPlus, Upload, Home, X, Search, Plus, MessageCircle, Phone, Clock } from 'lucide-react'
+import { UserPlus, Home, X, Search, Plus, MessageCircle, Phone, Clock, Pencil } from 'lucide-react'
 
 interface Cliente {
   id: string
@@ -72,10 +72,12 @@ export default function ClientesPage() {
   const [contactos, setContactos] = useState<Contacto[]>([])
   const [contactosCliente, setContactosCliente] = useState<Contacto[]>([])
   const [showAsignarModal, setShowAsignarModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
   const [todasPropiedades, setTodasPropiedades] = useState<Propiedad[]>([])
   const [busqueda, setBusqueda] = useState('')
   const [showNuevoModal, setShowNuevoModal] = useState(false)
   const [nuevoCliente, setNuevoCliente] = useState(nuevoClienteInicial)
+  const [editForm, setEditForm] = useState(nuevoClienteInicial)
   const [guardando, setGuardando] = useState(false)
 
   useEffect(() => {
@@ -130,6 +132,57 @@ export default function ClientesPage() {
     if (cts) setContactosCliente(cts)
   }
 
+  const abrirEditar = () => {
+    if (!selectedCliente) return
+    setEditForm({
+      nombre: selectedCliente.nombre || '',
+      email: selectedCliente.email || '',
+      telefono: selectedCliente.telefono || '',
+      etapa: selectedCliente.etapa || 'Lead',
+      presupuesto_min: selectedCliente.presupuesto_min || '',
+      presupuesto_max: selectedCliente.presupuesto_max || '',
+      zonas_interes: selectedCliente.zonas_interes || [],
+      tipo_propiedad: selectedCliente.tipo_propiedad || [],
+      notas: selectedCliente.notas || '',
+    })
+    setShowEditModal(true)
+  }
+
+  const guardarEdicion = async () => {
+    if (!selectedCliente || !editForm.nombre.trim()) return
+    setGuardando(true)
+    const { data, error } = await supabase
+      .from('clientes')
+      .update({
+        nombre: editForm.nombre,
+        email: editForm.email,
+        telefono: editForm.telefono || null,
+        etapa: editForm.etapa,
+        presupuesto_min: editForm.presupuesto_min || null,
+        presupuesto_max: editForm.presupuesto_max || null,
+        zonas_interes: editForm.zonas_interes,
+        tipo_propiedad: editForm.tipo_propiedad,
+        notas: editForm.notas || null,
+      })
+      .eq('id', selectedCliente.id)
+      .select()
+      .single()
+    if (data) {
+      setClientes(prev => prev.map(c => c.id === data.id ? data : c))
+      setSelectedCliente(data)
+      setShowEditModal(false)
+    }
+    setGuardando(false)
+  }
+
+  const eliminarCliente = async () => {
+    if (!selectedCliente) return
+    if (!confirm(`¿Eliminar a ${selectedCliente.nombre}? Esta acción no se puede deshacer.`)) return
+    await supabase.from('clientes').delete().eq('id', selectedCliente.id)
+    setClientes(prev => prev.filter(c => c.id !== selectedCliente.id))
+    setSelectedCliente(null)
+  }
+
   const abrirModalAsignar = async () => {
     const { data } = await supabase.from('properties').select('*').order('created_at', { ascending: false })
     if (data) setTodasPropiedades(data)
@@ -165,6 +218,20 @@ export default function ClientesPage() {
   }))
 
   const toggleTipo = (tipo: string) => setNuevoCliente(prev => ({
+    ...prev,
+    tipo_propiedad: prev.tipo_propiedad.includes(tipo)
+      ? prev.tipo_propiedad.filter(t => t !== tipo)
+      : [...prev.tipo_propiedad, tipo]
+  }))
+
+  const toggleZonaEdit = (zona: string) => setEditForm(prev => ({
+    ...prev,
+    zonas_interes: prev.zonas_interes.includes(zona)
+      ? prev.zonas_interes.filter(z => z !== zona)
+      : [...prev.zonas_interes, zona]
+  }))
+
+  const toggleTipoEdit = (tipo: string) => setEditForm(prev => ({
     ...prev,
     tipo_propiedad: prev.tipo_propiedad.includes(tipo)
       ? prev.tipo_propiedad.filter(t => t !== tipo)
@@ -211,7 +278,100 @@ export default function ClientesPage() {
     'Cierre': 'bg-green-900/80 text-green-300',
   }
 
-  // ── Vista perfil de cliente ──────────────────────────────────────────────────
+  const inputCls = 'w-full bg-zinc-800 text-white px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500'
+  const labelCls = 'text-zinc-500 text-xs uppercase tracking-wider mb-1.5 block'
+
+  // ── Modal editar ─────────────────────────────────────────────────────────────
+  const EditModal = () => (
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-lg max-h-[90vh] flex flex-col">
+        <div className="flex items-center justify-between p-5 border-b border-zinc-800">
+          <h3 className="text-white font-black uppercase text-sm tracking-wider">Editar Cliente</h3>
+          <button onClick={() => setShowEditModal(false)} className="text-zinc-400 hover:text-white"><X size={20} /></button>
+        </div>
+        <div className="overflow-y-auto flex-1 p-5 space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="col-span-2">
+              <label className={labelCls}>Nombre *</label>
+              <input value={editForm.nombre} onChange={e => setEditForm(p => ({...p, nombre: e.target.value}))}
+                className={inputCls} />
+            </div>
+            <div className="col-span-2">
+              <label className={labelCls}>Email</label>
+              <input type="email" value={editForm.email} onChange={e => setEditForm(p => ({...p, email: e.target.value}))}
+                className={inputCls} />
+            </div>
+            <div>
+              <label className={labelCls}>Teléfono</label>
+              <input value={editForm.telefono} onChange={e => setEditForm(p => ({...p, telefono: e.target.value}))}
+                placeholder="809-000-0000" className={inputCls} />
+            </div>
+            <div>
+              <label className={labelCls}>Etapa</label>
+              <select value={editForm.etapa} onChange={e => setEditForm(p => ({...p, etapa: e.target.value}))}
+                className={inputCls}>
+                {ETAPAS.map(e => <option key={e} value={e}>{e}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className={labelCls}>Presupuesto mín.</label>
+              <input value={editForm.presupuesto_min} onChange={e => setEditForm(p => ({...p, presupuesto_min: e.target.value}))}
+                placeholder="$100,000" className={inputCls} />
+            </div>
+            <div>
+              <label className={labelCls}>Presupuesto máx.</label>
+              <input value={editForm.presupuesto_max} onChange={e => setEditForm(p => ({...p, presupuesto_max: e.target.value}))}
+                placeholder="$300,000" className={inputCls} />
+            </div>
+          </div>
+
+          <div>
+            <label className={labelCls}>Tipo de propiedad</label>
+            <div className="flex flex-wrap gap-2">
+              {TIPOS.map(t => (
+                <button key={t} onClick={() => toggleTipoEdit(t)}
+                  className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${editForm.tipo_propiedad.includes(t) ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-zinc-400'}`}>
+                  {t}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className={labelCls}>Zonas de interés</label>
+            <div className="flex flex-wrap gap-2">
+              {ZONAS.map(z => (
+                <button key={z} onClick={() => toggleZonaEdit(z)}
+                  className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${editForm.zonas_interes.includes(z) ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-zinc-400'}`}>
+                  {z}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className={labelCls}>Notas</label>
+            <textarea value={editForm.notas} onChange={e => setEditForm(p => ({...p, notas: e.target.value}))}
+              placeholder="Observaciones del cliente..."
+              className="w-full bg-zinc-800 text-white px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500 resize-none h-20" />
+          </div>
+        </div>
+
+        <div className="flex gap-3 p-5 border-t border-zinc-800">
+          <button onClick={() => setShowEditModal(false)}
+            className="flex-1 py-2.5 rounded-xl border border-zinc-700 text-zinc-400 text-xs uppercase tracking-widest hover:border-zinc-500 transition-all">
+            Cancelar
+          </button>
+          <button onClick={guardarEdicion} disabled={guardando || !editForm.nombre}
+            className="flex-1 py-2.5 rounded-xl bg-amber-500 text-black text-xs uppercase tracking-widest font-black hover:bg-white transition-all disabled:opacity-50">
+            {guardando ? 'Guardando...' : 'Guardar cambios'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+
+  // ── Vista perfil de cliente ───────────────────────────────────────────────────
   if (selectedCliente) {
     const dias = diasSinContacto(contactos, selectedCliente.id)
     const sinContacto = dias === null || dias >= DIAS_ALERTA
@@ -239,25 +399,38 @@ export default function ClientesPage() {
               )}
               {dias === null && <p className="text-zinc-500 text-xs mt-0.5">Sin contactos registrados</p>}
             </div>
-            <span className="px-3 py-1 bg-amber-500/20 text-amber-500 rounded-full text-xs font-bold uppercase shrink-0">
-              {selectedCliente.etapa}
-            </span>
+            <div className="flex flex-col gap-2 shrink-0">
+              <span className="px-3 py-1 bg-amber-500/20 text-amber-500 rounded-full text-xs font-bold uppercase text-center">
+                {selectedCliente.etapa}
+              </span>
+              <button onClick={abrirEditar}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-xl text-xs font-bold uppercase transition-all">
+                <Pencil size={12} /> Editar
+              </button>
+            </div>
           </div>
 
           {/* Botones de contacto */}
           {selectedCliente.telefono && (
             <div className="flex gap-3 mb-6">
-              <button
-                onClick={() => abrirWhatsApp(selectedCliente)}
+              <button onClick={() => abrirWhatsApp(selectedCliente)}
                 className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500 text-white py-3 rounded-2xl font-black text-sm uppercase transition-all">
-                <MessageCircle size={18} />
-                WhatsApp
+                <MessageCircle size={18} /> WhatsApp
               </button>
-              <button
-                onClick={() => abrirLlamada(selectedCliente)}
+              <button onClick={() => abrirLlamada(selectedCliente)}
                 className="flex-1 flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-white py-3 rounded-2xl font-black text-sm uppercase transition-all">
-                <Phone size={18} />
-                Llamar
+                <Phone size={18} /> Llamar
+              </button>
+            </div>
+          )}
+
+          {/* Sin teléfono — aviso */}
+          {!selectedCliente.telefono && (
+            <div className="flex items-center justify-between bg-zinc-900 border border-zinc-700 rounded-2xl px-4 py-3 mb-6">
+              <p className="text-zinc-500 text-sm">Sin teléfono registrado</p>
+              <button onClick={abrirEditar}
+                className="text-amber-500 text-xs font-bold uppercase hover:text-white transition-colors">
+                + Agregar teléfono
               </button>
             </div>
           )}
@@ -321,8 +494,14 @@ export default function ClientesPage() {
           </div>
 
           {/* Perfil */}
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
-            <h2 className="text-white font-black uppercase text-sm tracking-wider mb-4">Perfil del Cliente</h2>
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-white font-black uppercase text-sm tracking-wider">Perfil del Cliente</h2>
+              <button onClick={abrirEditar}
+                className="flex items-center gap-1.5 text-zinc-500 hover:text-amber-400 text-xs uppercase transition-colors">
+                <Pencil size={12} /> Editar
+              </button>
+            </div>
             <div className="grid grid-cols-2 gap-4 text-sm">
               {selectedCliente.telefono && (
                 <div><p className="text-zinc-500 text-xs uppercase">Teléfono</p><p className="text-white">{selectedCliente.telefono}</p></div>
@@ -358,7 +537,15 @@ export default function ClientesPage() {
               )}
             </div>
           </div>
+
+          {/* Eliminar cliente */}
+          <button onClick={eliminarCliente}
+            className="w-full py-3 rounded-2xl border border-red-800/50 text-red-500 hover:bg-red-900/20 text-xs uppercase font-bold tracking-wider transition-all">
+            Eliminar cliente
+          </button>
         </div>
+
+        {showEditModal && <EditModal />}
 
         {/* Modal asignar propiedad */}
         {showAsignarModal && (
@@ -400,7 +587,7 @@ export default function ClientesPage() {
     )
   }
 
-  // ── Vista listado de clientes ────────────────────────────────────────────────
+  // ── Vista listado ─────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-black text-white p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
@@ -409,12 +596,10 @@ export default function ClientesPage() {
             <h1 className="text-4xl font-black italic text-amber-500 tracking-tighter uppercase">MIS CLIENTES</h1>
             <p className="text-zinc-500 text-xs mt-1 uppercase tracking-widest">{clientes.length} REGISTROS</p>
           </div>
-          <div className="flex gap-2">
-            <button onClick={() => setShowNuevoModal(true)}
-              className="flex items-center gap-1.5 bg-amber-500 text-black px-3 py-1.5 rounded-lg font-bold text-xs uppercase hover:bg-white transition-all">
-              <UserPlus className="w-3 h-3" /> + Nuevo Cliente
-            </button>
-          </div>
+          <button onClick={() => setShowNuevoModal(true)}
+            className="flex items-center gap-1.5 bg-amber-500 text-black px-3 py-1.5 rounded-lg font-bold text-xs uppercase hover:bg-white transition-all">
+            <UserPlus className="w-3 h-3" /> + Nuevo Cliente
+          </button>
         </div>
 
         {clientes.length === 0 ? (
@@ -430,7 +615,6 @@ export default function ClientesPage() {
             {clientes.map(c => {
               const dias = diasSinContacto(contactos, c.id)
               const alerta = dias === null || dias >= DIAS_ALERTA
-
               return (
                 <div key={c.id} onClick={() => abrirPerfil(c)}
                   className={`bg-zinc-900/40 border p-5 rounded-2xl cursor-pointer transition-all hover:bg-zinc-900 ${alerta && c.etapa !== 'Cierre' ? 'border-red-800/50 hover:border-red-600' : 'border-zinc-800 hover:border-amber-500'}`}>
@@ -449,7 +633,6 @@ export default function ClientesPage() {
                     </span>
                   </div>
 
-                  {/* Alerta sin contacto */}
                   {alerta && c.etapa !== 'Cierre' && (
                     <div className="flex items-center gap-1.5 bg-red-900/30 border border-red-800/40 rounded-xl px-3 py-1.5 mb-3">
                       <span className="text-xs">🔴</span>
@@ -459,7 +642,6 @@ export default function ClientesPage() {
                     </div>
                   )}
 
-                  {/* Último contacto si está al día */}
                   {!alerta && dias !== null && (
                     <div className="flex items-center gap-1.5 mb-3">
                       <span className="text-xs">✅</span>
@@ -467,16 +649,13 @@ export default function ClientesPage() {
                     </div>
                   )}
 
-                  {/* Botones WhatsApp y llamada */}
                   {c.telefono && (
                     <div className="flex gap-2 mt-3" onClick={e => e.stopPropagation()}>
-                      <button
-                        onClick={() => abrirWhatsApp(c)}
+                      <button onClick={() => abrirWhatsApp(c)}
                         className="flex-1 flex items-center justify-center gap-1.5 bg-green-700 hover:bg-green-600 text-white py-2 rounded-xl text-xs font-black transition-colors">
                         <MessageCircle size={14} /> WhatsApp
                       </button>
-                      <button
-                        onClick={() => abrirLlamada(c)}
+                      <button onClick={() => abrirLlamada(c)}
                         className="flex items-center justify-center gap-1.5 bg-zinc-700 hover:bg-zinc-600 text-white px-3 py-2 rounded-xl text-xs font-black transition-colors">
                         <Phone size={14} />
                       </button>
@@ -508,46 +687,41 @@ export default function ClientesPage() {
             <div className="overflow-y-auto flex-1 p-5 space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div className="col-span-2">
-                  <label className="text-zinc-500 text-xs uppercase tracking-wider mb-1.5 block">Nombre *</label>
+                  <label className={labelCls}>Nombre *</label>
                   <input value={nuevoCliente.nombre} onChange={e => setNuevoCliente(p => ({...p, nombre: e.target.value}))}
-                    placeholder="Nombre completo"
-                    className="w-full bg-zinc-800 text-white px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500" />
+                    placeholder="Nombre completo" className={inputCls} />
                 </div>
                 <div className="col-span-2">
-                  <label className="text-zinc-500 text-xs uppercase tracking-wider mb-1.5 block">Email *</label>
+                  <label className={labelCls}>Email *</label>
                   <input type="email" value={nuevoCliente.email} onChange={e => setNuevoCliente(p => ({...p, email: e.target.value}))}
-                    placeholder="email@ejemplo.com"
-                    className="w-full bg-zinc-800 text-white px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500" />
+                    placeholder="email@ejemplo.com" className={inputCls} />
                 </div>
                 <div>
-                  <label className="text-zinc-500 text-xs uppercase tracking-wider mb-1.5 block">Teléfono</label>
+                  <label className={labelCls}>Teléfono</label>
                   <input value={nuevoCliente.telefono} onChange={e => setNuevoCliente(p => ({...p, telefono: e.target.value}))}
-                    placeholder="809-000-0000"
-                    className="w-full bg-zinc-800 text-white px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500" />
+                    placeholder="809-000-0000" className={inputCls} />
                 </div>
                 <div>
-                  <label className="text-zinc-500 text-xs uppercase tracking-wider mb-1.5 block">Etapa</label>
+                  <label className={labelCls}>Etapa</label>
                   <select value={nuevoCliente.etapa} onChange={e => setNuevoCliente(p => ({...p, etapa: e.target.value}))}
-                    className="w-full bg-zinc-800 text-white px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
+                    className={inputCls}>
                     {ETAPAS.map(e => <option key={e} value={e}>{e}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="text-zinc-500 text-xs uppercase tracking-wider mb-1.5 block">Presupuesto mín.</label>
+                  <label className={labelCls}>Presupuesto mín.</label>
                   <input value={nuevoCliente.presupuesto_min} onChange={e => setNuevoCliente(p => ({...p, presupuesto_min: e.target.value}))}
-                    placeholder="$100,000"
-                    className="w-full bg-zinc-800 text-white px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500" />
+                    placeholder="$100,000" className={inputCls} />
                 </div>
                 <div>
-                  <label className="text-zinc-500 text-xs uppercase tracking-wider mb-1.5 block">Presupuesto máx.</label>
+                  <label className={labelCls}>Presupuesto máx.</label>
                   <input value={nuevoCliente.presupuesto_max} onChange={e => setNuevoCliente(p => ({...p, presupuesto_max: e.target.value}))}
-                    placeholder="$300,000"
-                    className="w-full bg-zinc-800 text-white px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500" />
+                    placeholder="$300,000" className={inputCls} />
                 </div>
               </div>
 
               <div>
-                <label className="text-zinc-500 text-xs uppercase tracking-wider mb-2 block">Tipo de propiedad</label>
+                <label className={labelCls}>Tipo de propiedad</label>
                 <div className="flex flex-wrap gap-2">
                   {TIPOS.map(t => (
                     <button key={t} onClick={() => toggleTipo(t)}
@@ -559,7 +733,7 @@ export default function ClientesPage() {
               </div>
 
               <div>
-                <label className="text-zinc-500 text-xs uppercase tracking-wider mb-2 block">Zonas de interés</label>
+                <label className={labelCls}>Zonas de interés</label>
                 <div className="flex flex-wrap gap-2">
                   {ZONAS.map(z => (
                     <button key={z} onClick={() => toggleZona(z)}
@@ -571,7 +745,7 @@ export default function ClientesPage() {
               </div>
 
               <div>
-                <label className="text-zinc-500 text-xs uppercase tracking-wider mb-1.5 block">Notas</label>
+                <label className={labelCls}>Notas</label>
                 <textarea value={nuevoCliente.notas} onChange={e => setNuevoCliente(p => ({...p, notas: e.target.value}))}
                   placeholder="Observaciones del cliente..."
                   className="w-full bg-zinc-800 text-white px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500 resize-none h-20" />
