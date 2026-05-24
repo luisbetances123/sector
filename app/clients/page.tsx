@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
-import { UserPlus, Home, X, Search, Plus, MessageCircle, Phone, Clock, Pencil } from 'lucide-react'
+import { UserPlus, Home, X, Search, Plus, MessageCircle, Phone, Clock, Pencil, Sparkles } from 'lucide-react'
 
 interface Cliente {
   id: string
@@ -24,6 +24,11 @@ interface Propiedad {
   sector?: string
   type: string
   image_url?: string
+  estado?: string
+  recamaras?: number
+  banos?: number
+  m2?: number
+  moneda?: string
 }
 
 interface ClientePropiedad {
@@ -65,6 +70,43 @@ function formatFecha(fecha: string) {
   })
 }
 
+function formatPrice(price: string, moneda = 'USD') {
+  const num = parseFloat(price?.replace(/[^0-9.]/g, '') || '0')
+  if (isNaN(num) || num === 0) return price || '—'
+  return new Intl.NumberFormat('es-DO', { style: 'currency', currency: moneda, maximumFractionDigits: 0 }).format(num)
+}
+
+function calcularMatch(cliente: Cliente, propiedad: Propiedad): number {
+  let score = 0
+  // Match por zona (40 puntos)
+  if (cliente.zonas_interes && cliente.zonas_interes.length > 0 && propiedad.sector) {
+    const zonaMatch = cliente.zonas_interes.some(z =>
+      propiedad.sector?.toLowerCase().includes(z.toLowerCase()) ||
+      z.toLowerCase().includes(propiedad.sector?.toLowerCase() || '')
+    )
+    if (zonaMatch) score += 40
+  }
+  // Match por tipo (30 puntos)
+  if (cliente.tipo_propiedad && cliente.tipo_propiedad.length > 0 && propiedad.type) {
+    const tipoMatch = cliente.tipo_propiedad.some(t =>
+      propiedad.type?.toLowerCase().includes(t.toLowerCase()) ||
+      t.toLowerCase().includes(propiedad.type?.toLowerCase() || '')
+    )
+    if (tipoMatch) score += 30
+  }
+  // Match por presupuesto (30 puntos)
+  if (cliente.presupuesto_min && cliente.presupuesto_max && propiedad.price) {
+    const precioPropiedad = parseFloat(propiedad.price.replace(/[^0-9.]/g, ''))
+    const min = parseFloat(cliente.presupuesto_min)
+    const max = parseFloat(cliente.presupuesto_max)
+    if (!isNaN(precioPropiedad) && !isNaN(min) && !isNaN(max)) {
+      if (precioPropiedad >= min && precioPropiedad <= max) score += 30
+      else if (precioPropiedad <= max * 1.2) score += 15 // cerca del presupuesto
+    }
+  }
+  return score
+}
+
 export default function ClientesPage() {
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [selectedCliente, setSelectedCliente] = useState<Cliente | null>(null)
@@ -74,6 +116,7 @@ export default function ClientesPage() {
   const [showAsignarModal, setShowAsignarModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [todasPropiedades, setTodasPropiedades] = useState<Propiedad[]>([])
+  const [propiedadesMatch, setPropiedadesMatch] = useState<Propiedad[]>([])
   const [busqueda, setBusqueda] = useState('')
   const [showNuevoModal, setShowNuevoModal] = useState(false)
   const [nuevoCliente, setNuevoCliente] = useState(nuevoClienteInicial)
@@ -104,17 +147,25 @@ export default function ClientesPage() {
     }
   }
 
-  const abrirWhatsApp = async (cliente: Cliente) => {
+  const abrirWhatsApp = async (cliente: Cliente, propiedadTexto?: string) => {
     await registrarContacto(cliente.id, 'whatsapp')
     const numero = cliente.telefono?.replace(/\D/g, '')
-    const etapaMensaje: Record<string, string> = {
-      'Lead': `Hola ${cliente.nombre}, te contacto de HOMVI. Vi que estás interesado en propiedades. ¿Tienes un momento para hablar?`,
-      'Buscando': `Hola ${cliente.nombre}, tengo algunas propiedades nuevas que podrían interesarte. ¿Cuándo podemos hablar?`,
-      'En Oferta': `Hola ${cliente.nombre}, quería darte seguimiento a la oferta. ¿Tienes alguna duda o actualización?`,
-      'Cierre': `Hola ${cliente.nombre}, quería dar seguimiento al proceso de cierre. ¿Todo va bien?`,
-    }
-    const mensaje = etapaMensaje[cliente.etapa] || `Hola ${cliente.nombre}, te contacto de HOMVI.`
+    const mensaje = propiedadTexto || (() => {
+      const etapaMensaje: Record<string, string> = {
+        'Lead': `Hola ${cliente.nombre}, te contacto de HOMVI. Vi que estás interesado en propiedades. ¿Tienes un momento para hablar?`,
+        'Buscando': `Hola ${cliente.nombre}, tengo algunas propiedades nuevas que podrían interesarte. ¿Cuándo podemos hablar?`,
+        'En Oferta': `Hola ${cliente.nombre}, quería darte seguimiento a la oferta. ¿Tienes alguna duda o actualización?`,
+        'Cierre': `Hola ${cliente.nombre}, quería dar seguimiento al proceso de cierre. ¿Todo va bien?`,
+      }
+      return etapaMensaje[cliente.etapa] || `Hola ${cliente.nombre}, te contacto de HOMVI.`
+    })()
     window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`, '_blank')
+  }
+
+  const compartirPropiedad = (cliente: Cliente, propiedad: Propiedad) => {
+    const precio = formatPrice(propiedad.price, propiedad.moneda)
+    const mensaje = `Hola ${cliente.nombre}, encontré una propiedad que podría interesarte:\n\n🏠 *${propiedad.title}*\n📍 ${propiedad.sector || propiedad.location}\n💰 ${precio}\n${propiedad.recamaras ? `🛏 ${propiedad.recamaras} recámaras` : ''}\n\n¿Te gustaría saber más detalles?`
+    abrirWhatsApp(cliente, mensaje)
   }
 
   const abrirLlamada = async (cliente: Cliente) => {
@@ -124,12 +175,21 @@ export default function ClientesPage() {
 
   const abrirPerfil = async (cliente: Cliente) => {
     setSelectedCliente(cliente)
-    const [{ data: props }, { data: cts }] = await Promise.all([
+    const [{ data: props }, { data: cts }, { data: allProps }] = await Promise.all([
       supabase.from('cliente_properties').select('id, property_id, properties(*)').eq('cliente_id', cliente.id),
       supabase.from('contactos_whatsapp').select('*').eq('cliente_id', cliente.id).order('fecha', { ascending: false }),
+      supabase.from('properties').select('*').eq('estado', 'disponible'),
     ])
     if (props) setPropiedadesAsignadas(props.map((r: any) => ({ id: r.id, property_id: r.property_id, properties: r.properties as Propiedad })))
     if (cts) setContactosCliente(cts)
+    if (allProps) {
+      const matches = allProps
+        .map(p => ({ ...p, score: calcularMatch(cliente, p) }))
+        .filter(p => p.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 5)
+      setPropiedadesMatch(matches)
+    }
   }
 
   const abrirEditar = () => {
@@ -342,6 +402,58 @@ export default function ClientesPage() {
             </div>
           )}
 
+          {/* ══ MATCHMAKER ══ */}
+          {propiedadesMatch.length > 0 && (
+            <div className="bg-gradient-to-br from-amber-950/60 to-zinc-900 border-2 border-amber-600/40 rounded-2xl p-5 mb-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Sparkles size={16} className="text-amber-400" />
+                <h2 className="text-amber-400 font-black uppercase text-sm tracking-wider">
+                  {propiedadesMatch.length} Propiedades Sugeridas
+                </h2>
+                <span className="text-xs text-zinc-500">— match automático</span>
+              </div>
+              <div className="flex flex-col gap-3">
+                {propiedadesMatch.map(p => (
+                  <div key={p.id} className="flex items-center gap-3 bg-black/30 border border-amber-800/30 rounded-xl p-3">
+                    {p.image_url ? (
+                      <img src={p.image_url} className="w-16 h-12 object-cover rounded-lg shrink-0" alt={p.title} />
+                    ) : (
+                      <div className="w-16 h-12 bg-zinc-800 rounded-lg flex items-center justify-center shrink-0">
+                        <span className="text-xl">🏠</span>
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white text-sm font-bold truncate">{p.title}</p>
+                      <p className="text-zinc-400 text-xs">{p.sector || p.location}</p>
+                      <p className="text-amber-400 text-xs font-bold">{formatPrice(p.price, p.moneda)}</p>
+                    </div>
+                    {selectedCliente.telefono && (
+                      <button
+                        onClick={() => compartirPropiedad(selectedCliente, p)}
+                        className="shrink-0 flex items-center gap-1.5 bg-green-600 hover:bg-green-500 text-white px-3 py-2 rounded-xl text-xs font-black transition-colors">
+                        <MessageCircle size={12} />
+                        Compartir
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+              {!selectedCliente.zonas_interes?.length && !selectedCliente.tipo_propiedad?.length && (
+                <p className="text-zinc-500 text-xs mt-3 text-center">
+                  Agrega zonas y tipo de propiedad al perfil para mejorar los matches
+                </p>
+              )}
+            </div>
+          )}
+
+          {propiedadesMatch.length === 0 && (
+            <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-4 mb-6 text-center">
+              <Sparkles size={20} className="text-zinc-600 mx-auto mb-2" />
+              <p className="text-zinc-500 text-sm">Sin matches disponibles</p>
+              <p className="text-zinc-600 text-xs mt-1">Agrega zonas y tipo de propiedad al perfil del cliente</p>
+            </div>
+          )}
+
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 mb-6">
             <div className="flex items-center gap-2 mb-4">
               <Clock size={16} className="text-amber-500" />
@@ -448,7 +560,6 @@ export default function ClientesPage() {
           </button>
         </div>
 
-        {/* Modal editar — dentro del return para evitar re-render */}
         {showEditModal && (
           <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-lg max-h-[90vh] flex flex-col">
@@ -460,35 +571,29 @@ export default function ClientesPage() {
                 <div className="grid grid-cols-2 gap-3">
                   <div className="col-span-2">
                     <label className={labelCls}>Nombre *</label>
-                    <input value={editForm.nombre} onChange={e => setEditForm(p => ({...p, nombre: e.target.value}))}
-                      className={inputCls} />
+                    <input value={editForm.nombre} onChange={e => setEditForm(p => ({...p, nombre: e.target.value}))} className={inputCls} />
                   </div>
                   <div className="col-span-2">
                     <label className={labelCls}>Email</label>
-                    <input type="email" value={editForm.email} onChange={e => setEditForm(p => ({...p, email: e.target.value}))}
-                      className={inputCls} />
+                    <input type="email" value={editForm.email} onChange={e => setEditForm(p => ({...p, email: e.target.value}))} className={inputCls} />
                   </div>
                   <div>
                     <label className={labelCls}>Teléfono</label>
-                    <input value={editForm.telefono} onChange={e => setEditForm(p => ({...p, telefono: e.target.value}))}
-                      placeholder="809-000-0000" className={inputCls} />
+                    <input value={editForm.telefono} onChange={e => setEditForm(p => ({...p, telefono: e.target.value}))} placeholder="809-000-0000" className={inputCls} />
                   </div>
                   <div>
                     <label className={labelCls}>Etapa</label>
-                    <select value={editForm.etapa} onChange={e => setEditForm(p => ({...p, etapa: e.target.value}))}
-                      className={inputCls}>
+                    <select value={editForm.etapa} onChange={e => setEditForm(p => ({...p, etapa: e.target.value}))} className={inputCls}>
                       {ETAPAS.map(e => <option key={e} value={e}>{e}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className={labelCls}>Presupuesto mín.</label>
-                    <input value={editForm.presupuesto_min} onChange={e => setEditForm(p => ({...p, presupuesto_min: e.target.value}))}
-                      placeholder="$100,000" className={inputCls} />
+                    <input value={editForm.presupuesto_min} onChange={e => setEditForm(p => ({...p, presupuesto_min: e.target.value}))} placeholder="$100,000" className={inputCls} />
                   </div>
                   <div>
                     <label className={labelCls}>Presupuesto máx.</label>
-                    <input value={editForm.presupuesto_max} onChange={e => setEditForm(p => ({...p, presupuesto_max: e.target.value}))}
-                      placeholder="$300,000" className={inputCls} />
+                    <input value={editForm.presupuesto_max} onChange={e => setEditForm(p => ({...p, presupuesto_max: e.target.value}))} placeholder="$300,000" className={inputCls} />
                   </div>
                 </div>
                 <div>
@@ -534,7 +639,6 @@ export default function ClientesPage() {
           </div>
         )}
 
-        {/* Modal asignar propiedad */}
         {showAsignarModal && (
           <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-lg max-h-[80vh] flex flex-col">
@@ -663,7 +767,6 @@ export default function ClientesPage() {
         )}
       </div>
 
-      {/* Modal nuevo cliente */}
       {showNuevoModal && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-lg max-h-[90vh] flex flex-col">
