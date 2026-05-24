@@ -10,17 +10,20 @@ export default function Dashboard() {
   const [properties, setProperties] = useState<any[]>([])
   const [followups, setFollowups] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [contactos, setContactos] = useState<any[]>([])
 
   useEffect(() => {
     async function fetchAll() {
-      const [c, p, f] = await Promise.all([
+      const [c, p, f, ct] = await Promise.all([
         supabase.from('clientes').select('*'),
         supabase.from('properties').select('*'),
         supabase.from('followups').select('*'),
+        supabase.from('contactos_whatsapp').select('*').order('fecha', { ascending: false }),
       ])
       if (c.data) setClientes(c.data)
       if (p.data) setProperties(p.data)
       if (f.data) setFollowups(f.data)
+      if (ct.data) setContactos(ct.data)
       setLoading(false)
     }
     fetchAll()
@@ -32,6 +35,14 @@ export default function Dashboard() {
   const propiedadesDisponibles = properties.filter(p => p.estado === 'disponible').length
   const leads = clientes.filter(c => c.etapa === 'Lead')
   const clientesActivos = clientes.filter(c => c.etapa === 'Buscando' || c.etapa === 'En Oferta')
+  const sinContactar = clientes.filter(c => {
+    if (c.etapa === 'Cierre') return false
+    const delCliente = contactos.filter(ct => ct.cliente_id === c.id)
+    if (delCliente.length === 0) return true
+    const ultimo = delCliente.sort((a: any, b: any) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())[0]
+    const dias = (Date.now() - new Date(ultimo.fecha).getTime()) / (1000 * 60 * 60 * 24)
+    return dias >= 3
+  })
   const clientesPorEtapa = ['Lead','Buscando','En Oferta','Cierre'].map(e => ({
     etapa: e, total: clientes.filter(c => c.etapa === e).length
   }))
@@ -68,7 +79,7 @@ export default function Dashboard() {
           </h1>
         </header>
 
-        {/* Stats — grid en vez de flex para evitar overflow */}
+        {/* Stats */}
         <div className="grid grid-cols-4 gap-2 mb-8">
           {[
             { label: 'Clientes', value: clientes.length, color: 'text-white', href: '/clients' },
@@ -84,7 +95,7 @@ export default function Dashboard() {
           ))}
         </div>
 
-        {/* ══ 1. LEADS — DOMINANTE ══ */}
+        {/* ══ 1. LEADS ══ */}
         <section className="mb-6">
           <div className={`rounded-3xl p-6 border-2 ${leads.length > 0 ? 'bg-red-950/80 border-red-700/60' : 'bg-zinc-800/40 border-zinc-700/40'}`}>
             <div className="flex items-center justify-between mb-5">
@@ -101,7 +112,6 @@ export default function Dashboard() {
                 Ver →
               </Link>
             </div>
-
             {leads.length === 0 ? (
               <p className="text-zinc-500 text-sm text-center py-4">✅ Sin leads pendientes hoy</p>
             ) : (
@@ -143,7 +153,66 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* ══ 2. AGENDA DE HOY ══ */}
+        {/* ══ 2. CLIENTES SIN CONTACTAR ══ */}
+        {sinContactar.length > 0 && (
+          <section className="mb-6">
+            <div className="bg-orange-950/60 border-2 border-orange-700/50 rounded-3xl p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-orange-500 animate-pulse" />
+                  <span className="text-orange-300 font-black text-sm uppercase tracking-wider">
+                    Clientes sin contactar
+                  </span>
+                  <span className="bg-orange-600 text-white text-xs font-black px-2.5 py-0.5 rounded-full">
+                    {sinContactar.length}
+                  </span>
+                </div>
+                <Link href="/clients" className="text-zinc-500 hover:text-amber-400 text-xs uppercase tracking-wider transition-colors">
+                  Ver →
+                </Link>
+              </div>
+              <div className="flex flex-col gap-2">
+                {sinContactar.slice(0, 4).map((c: any) => {
+                  const delCliente = contactos.filter((ct: any) => ct.cliente_id === c.id)
+                  const dias = delCliente.length === 0 ? null : Math.floor(
+                    (Date.now() - new Date(
+                      delCliente.sort((a: any, b: any) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())[0].fecha
+                    ).getTime()) / (1000 * 60 * 60 * 24)
+                  )
+                  return (
+                    <div key={c.id} className="flex items-center justify-between bg-black/30 border border-orange-900/40 rounded-2xl px-4 py-3 gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-8 h-8 rounded-full bg-amber-500 text-black flex items-center justify-center font-black text-sm shrink-0">
+                          {c.nombre?.[0]?.toUpperCase()}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-white text-sm font-bold truncate">{c.nombre}</p>
+                          <p className="text-orange-400 text-xs">
+                            {dias === null ? 'Sin contacto registrado' : `${dias} días sin contacto`}
+                          </p>
+                        </div>
+                      </div>
+                      {c.telefono && (
+                        <a href={`https://wa.me/${c.telefono.replace(/\D/g, '')}?text=${encodeURIComponent(`Hola ${c.nombre}, te contacto de HOMVI. ¿Tienes un momento?`)}`}
+                          target="_blank" rel="noreferrer"
+                          className="shrink-0 bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded-xl text-xs font-black transition-colors">
+                          💬
+                        </a>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+              {sinContactar.length > 4 && (
+                <Link href="/clients" className="block text-center text-orange-400 text-xs mt-3 hover:text-white transition-colors">
+                  + {sinContactar.length - 4} más sin contactar
+                </Link>
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* ══ 3. AGENDA DE HOY ══ */}
         <section className="mb-6">
           <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-3xl p-6">
             <div className="flex items-center justify-between mb-5">
@@ -181,7 +250,7 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* ══ 3. CLIENTES ACTIVOS + PIPELINE ══ */}
+        {/* ══ 4. CLIENTES ACTIVOS + PIPELINE ══ */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-3xl p-6">
             <div className="flex items-center justify-between mb-5">
@@ -245,7 +314,7 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* ══ 4. ACTIVIDAD RECIENTE ══ */}
+        {/* ══ 5. ACTIVIDAD RECIENTE ══ */}
         <section className="mb-6">
           <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-3xl p-6">
             <div className="flex items-center gap-2 mb-5">
@@ -289,7 +358,7 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* ══ 5. SECTORES ══ */}
+        {/* ══ 6. SECTORES ══ */}
         <section className="mb-6">
           <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-3xl p-6">
             <div className="flex justify-between items-center mb-4">
