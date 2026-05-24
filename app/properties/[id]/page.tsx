@@ -270,13 +270,31 @@ export default function PropertyDetailPage({ params }: { params: any }) {
         </span>
       </div>
 
-      <div className="flex items-center gap-4 mb-6">
+<div className="flex items-center gap-4 mb-6 flex-wrap">
         <span className="text-3xl font-black text-amber-400">
           {formatPrice(property.price, property.moneda)}
         </span>
         <span className="text-zinc-500 text-xs uppercase tracking-wider bg-zinc-800 border border-zinc-700 px-3 py-1 rounded-lg font-bold">
           {property.type}
         </span>
+        <button
+          onClick={() => {
+            const url = `${window.location.origin}/listings/${property.id}`
+            const msg = encodeURIComponent(`🏠 *${property.title}*\n📍 ${property.sector || property.location}\n💰 ${formatPrice(property.price, property.moneda)}\n\nVer ficha completa: ${url}`)
+            window.open(`https://wa.me/?text=${msg}`, '_blank')
+          }}
+          className="flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-xl text-xs font-black uppercase transition-all">
+          💬 Compartir Ficha
+        </button>
+        <button
+          onClick={() => {
+            const url = `${window.location.origin}/listings/${property.id}`
+            navigator.clipboard.writeText(url)
+            alert('Enlace copiado ✅')
+          }}
+          className="flex items-center gap-2 bg-zinc-700 hover:bg-zinc-600 text-white px-4 py-2 rounded-xl text-xs font-black uppercase transition-all">
+          🔗 Copiar enlace
+        </button>
       </div>
 
       {(property.recamaras || property.banos || property.estacionamientos || property.m2) && (
