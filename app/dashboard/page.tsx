@@ -66,7 +66,7 @@ export default function Dashboard() {
   )
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] p-4 md:p-8 pb-28 overflow-x-hidden w-full">
+    <div className="min-h-screen bg-[#0a0a0a] p-4 md:p-8 pb-40 overflow-x-hidden w-full">
       <div className="max-w-5xl mx-auto w-full">
 
         {/* Header */}
@@ -82,14 +82,14 @@ export default function Dashboard() {
         {/* Stats */}
         <div className="grid grid-cols-4 gap-2 mb-8">
           {[
-            { label: 'Clientes', value: clientes.length, color: 'text-white', href: '/clients' },
-            { label: 'Leads', value: leads.length, color: leads.length > 0 ? 'text-red-400' : 'text-zinc-400', href: '/clients' },
-            { label: 'Disponibles', value: propiedadesDisponibles, color: 'text-green-400', href: '/properties' },
-            { label: 'Seguimientos', value: followupsPendientes, color: followupsPendientes > 0 ? 'text-amber-400' : 'text-zinc-400', href: '/hoy' },
+            { label: 'Clientes', icon: '👥', value: clientes.length, color: 'text-white', href: '/clients' },
+            { label: 'Leads', icon: '🔴', value: leads.length, color: leads.length > 0 ? 'text-red-400' : 'text-zinc-400', href: '/clients' },
+            { label: 'Propied.', icon: '🏠', value: propiedadesDisponibles, color: 'text-green-400', href: '/properties' },
+            { label: 'Seguim.', icon: '📅', value: followupsPendientes, color: followupsPendientes > 0 ? 'text-amber-400' : 'text-zinc-400', href: '/hoy' },
           ].map(s => (
             <Link key={s.label} href={s.href}
               className="bg-zinc-800/60 border border-zinc-700 rounded-2xl px-3 py-3 hover:border-amber-500/50 transition-all">
-              <p className="text-zinc-500 text-[9px] uppercase tracking-widest truncate">{s.label}</p>
+              <p className="text-zinc-500 text-[9px] uppercase tracking-widest truncate">{s.icon} {s.label}</p>
               <p className={`text-2xl font-black mt-0.5 ${s.color}`}>{s.value}</p>
             </Link>
           ))}
@@ -108,7 +108,7 @@ export default function Dashboard() {
                   {leads.length}
                 </span>
               </div>
-              <Link href="/clients" className="shrink-0 text-zinc-500 hover:text-amber-400 text-xs uppercase tracking-wider transition-colors ml-2">
+              <Link href="/clients" className="shrink-0 text-zinc-400 hover:text-amber-400 text-xs uppercase tracking-wider transition-colors font-bold ml-2">
                 Ver →
               </Link>
             </div>
