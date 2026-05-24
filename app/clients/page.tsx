@@ -139,8 +139,8 @@ export default function ClientesPage() {
       email: selectedCliente.email || '',
       telefono: selectedCliente.telefono || '',
       etapa: selectedCliente.etapa || 'Lead',
-      presupuesto_min: selectedCliente.presupuesto_min || '',
-      presupuesto_max: selectedCliente.presupuesto_max || '',
+      presupuesto_min: selectedCliente.presupuesto_min?.toString() || '',
+      presupuesto_max: selectedCliente.presupuesto_max?.toString() || '',
       zonas_interes: selectedCliente.zonas_interes || [],
       tipo_propiedad: selectedCliente.tipo_propiedad || [],
       notas: selectedCliente.notas || '',
@@ -151,7 +151,7 @@ export default function ClientesPage() {
   const guardarEdicion = async () => {
     if (!selectedCliente || !editForm.nombre.trim()) return
     setGuardando(true)
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('clientes')
       .update({
         nombre: editForm.nombre,
@@ -281,97 +281,7 @@ export default function ClientesPage() {
   const inputCls = 'w-full bg-zinc-800 text-white px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500'
   const labelCls = 'text-zinc-500 text-xs uppercase tracking-wider mb-1.5 block'
 
-  // ── Modal editar ─────────────────────────────────────────────────────────────
-  const EditModal = () => (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-lg max-h-[90vh] flex flex-col">
-        <div className="flex items-center justify-between p-5 border-b border-zinc-800">
-          <h3 className="text-white font-black uppercase text-sm tracking-wider">Editar Cliente</h3>
-          <button onClick={() => setShowEditModal(false)} className="text-zinc-400 hover:text-white"><X size={20} /></button>
-        </div>
-        <div className="overflow-y-auto flex-1 p-5 space-y-4">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="col-span-2">
-              <label className={labelCls}>Nombre *</label>
-              <input value={editForm.nombre} onChange={e => setEditForm(p => ({...p, nombre: e.target.value}))}
-                className={inputCls} />
-            </div>
-            <div className="col-span-2">
-              <label className={labelCls}>Email</label>
-              <input type="email" value={editForm.email} onChange={e => setEditForm(p => ({...p, email: e.target.value}))}
-                className={inputCls} />
-            </div>
-            <div>
-              <label className={labelCls}>Teléfono</label>
-              <input value={editForm.telefono} onChange={e => setEditForm(p => ({...p, telefono: e.target.value}))}
-                placeholder="809-000-0000" className={inputCls} />
-            </div>
-            <div>
-              <label className={labelCls}>Etapa</label>
-              <select value={editForm.etapa} onChange={e => setEditForm(p => ({...p, etapa: e.target.value}))}
-                className={inputCls}>
-                {ETAPAS.map(e => <option key={e} value={e}>{e}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className={labelCls}>Presupuesto mín.</label>
-              <input value={editForm.presupuesto_min} onChange={e => setEditForm(p => ({...p, presupuesto_min: e.target.value}))}
-                placeholder="$100,000" className={inputCls} />
-            </div>
-            <div>
-              <label className={labelCls}>Presupuesto máx.</label>
-              <input value={editForm.presupuesto_max} onChange={e => setEditForm(p => ({...p, presupuesto_max: e.target.value}))}
-                placeholder="$300,000" className={inputCls} />
-            </div>
-          </div>
-
-          <div>
-            <label className={labelCls}>Tipo de propiedad</label>
-            <div className="flex flex-wrap gap-2">
-              {TIPOS.map(t => (
-                <button key={t} onClick={() => toggleTipoEdit(t)}
-                  className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${editForm.tipo_propiedad.includes(t) ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-zinc-400'}`}>
-                  {t}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <label className={labelCls}>Zonas de interés</label>
-            <div className="flex flex-wrap gap-2">
-              {ZONAS.map(z => (
-                <button key={z} onClick={() => toggleZonaEdit(z)}
-                  className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${editForm.zonas_interes.includes(z) ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-zinc-400'}`}>
-                  {z}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <label className={labelCls}>Notas</label>
-            <textarea value={editForm.notas} onChange={e => setEditForm(p => ({...p, notas: e.target.value}))}
-              placeholder="Observaciones del cliente..."
-              className="w-full bg-zinc-800 text-white px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500 resize-none h-20" />
-          </div>
-        </div>
-
-        <div className="flex gap-3 p-5 border-t border-zinc-800">
-          <button onClick={() => setShowEditModal(false)}
-            className="flex-1 py-2.5 rounded-xl border border-zinc-700 text-zinc-400 text-xs uppercase tracking-widest hover:border-zinc-500 transition-all">
-            Cancelar
-          </button>
-          <button onClick={guardarEdicion} disabled={guardando || !editForm.nombre}
-            className="flex-1 py-2.5 rounded-xl bg-amber-500 text-black text-xs uppercase tracking-widest font-black hover:bg-white transition-all disabled:opacity-50">
-            {guardando ? 'Guardando...' : 'Guardar cambios'}
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-
-  // ── Vista perfil de cliente ───────────────────────────────────────────────────
+  // ── Vista perfil ──────────────────────────────────────────────────────────────
   if (selectedCliente) {
     const dias = diasSinContacto(contactos, selectedCliente.id)
     const sinContacto = dias === null || dias >= DIAS_ALERTA
@@ -384,7 +294,6 @@ export default function ClientesPage() {
         </button>
         <div className="max-w-3xl mx-auto">
 
-          {/* Header cliente */}
           <div className="flex items-center gap-4 mb-6">
             <div className="w-16 h-16 rounded-full bg-amber-500 flex items-center justify-center text-black font-black text-2xl shrink-0">
               {selectedCliente.nombre.charAt(0)}
@@ -410,7 +319,6 @@ export default function ClientesPage() {
             </div>
           </div>
 
-          {/* Botones de contacto */}
           {selectedCliente.telefono && (
             <div className="flex gap-3 mb-6">
               <button onClick={() => abrirWhatsApp(selectedCliente)}
@@ -424,7 +332,6 @@ export default function ClientesPage() {
             </div>
           )}
 
-          {/* Sin teléfono — aviso */}
           {!selectedCliente.telefono && (
             <div className="flex items-center justify-between bg-zinc-900 border border-zinc-700 rounded-2xl px-4 py-3 mb-6">
               <p className="text-zinc-500 text-sm">Sin teléfono registrado</p>
@@ -435,7 +342,6 @@ export default function ClientesPage() {
             </div>
           )}
 
-          {/* Historial de contactos */}
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 mb-6">
             <div className="flex items-center gap-2 mb-4">
               <Clock size={16} className="text-amber-500" />
@@ -458,7 +364,6 @@ export default function ClientesPage() {
             )}
           </div>
 
-          {/* Propiedades asignadas */}
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 mb-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-white font-black uppercase text-sm tracking-wider flex items-center gap-2">
@@ -493,7 +398,6 @@ export default function ClientesPage() {
             )}
           </div>
 
-          {/* Perfil */}
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 mb-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-white font-black uppercase text-sm tracking-wider">Perfil del Cliente</h2>
@@ -538,14 +442,97 @@ export default function ClientesPage() {
             </div>
           </div>
 
-          {/* Eliminar cliente */}
           <button onClick={eliminarCliente}
             className="w-full py-3 rounded-2xl border border-red-800/50 text-red-500 hover:bg-red-900/20 text-xs uppercase font-bold tracking-wider transition-all">
             Eliminar cliente
           </button>
         </div>
 
-        {showEditModal && <EditModal />}
+        {/* Modal editar — dentro del return para evitar re-render */}
+        {showEditModal && (
+          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+            <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-lg max-h-[90vh] flex flex-col">
+              <div className="flex items-center justify-between p-5 border-b border-zinc-800">
+                <h3 className="text-white font-black uppercase text-sm tracking-wider">Editar Cliente</h3>
+                <button onClick={() => setShowEditModal(false)} className="text-zinc-400 hover:text-white"><X size={20} /></button>
+              </div>
+              <div className="overflow-y-auto flex-1 p-5 space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="col-span-2">
+                    <label className={labelCls}>Nombre *</label>
+                    <input value={editForm.nombre} onChange={e => setEditForm(p => ({...p, nombre: e.target.value}))}
+                      className={inputCls} />
+                  </div>
+                  <div className="col-span-2">
+                    <label className={labelCls}>Email</label>
+                    <input type="email" value={editForm.email} onChange={e => setEditForm(p => ({...p, email: e.target.value}))}
+                      className={inputCls} />
+                  </div>
+                  <div>
+                    <label className={labelCls}>Teléfono</label>
+                    <input value={editForm.telefono} onChange={e => setEditForm(p => ({...p, telefono: e.target.value}))}
+                      placeholder="809-000-0000" className={inputCls} />
+                  </div>
+                  <div>
+                    <label className={labelCls}>Etapa</label>
+                    <select value={editForm.etapa} onChange={e => setEditForm(p => ({...p, etapa: e.target.value}))}
+                      className={inputCls}>
+                      {ETAPAS.map(e => <option key={e} value={e}>{e}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className={labelCls}>Presupuesto mín.</label>
+                    <input value={editForm.presupuesto_min} onChange={e => setEditForm(p => ({...p, presupuesto_min: e.target.value}))}
+                      placeholder="$100,000" className={inputCls} />
+                  </div>
+                  <div>
+                    <label className={labelCls}>Presupuesto máx.</label>
+                    <input value={editForm.presupuesto_max} onChange={e => setEditForm(p => ({...p, presupuesto_max: e.target.value}))}
+                      placeholder="$300,000" className={inputCls} />
+                  </div>
+                </div>
+                <div>
+                  <label className={labelCls}>Tipo de propiedad</label>
+                  <div className="flex flex-wrap gap-2">
+                    {TIPOS.map(t => (
+                      <button key={t} onClick={() => toggleTipoEdit(t)}
+                        className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${editForm.tipo_propiedad.includes(t) ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-zinc-400'}`}>
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className={labelCls}>Zonas de interés</label>
+                  <div className="flex flex-wrap gap-2">
+                    {ZONAS.map(z => (
+                      <button key={z} onClick={() => toggleZonaEdit(z)}
+                        className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${editForm.zonas_interes.includes(z) ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-zinc-400'}`}>
+                        {z}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className={labelCls}>Notas</label>
+                  <textarea value={editForm.notas} onChange={e => setEditForm(p => ({...p, notas: e.target.value}))}
+                    placeholder="Observaciones del cliente..."
+                    className="w-full bg-zinc-800 text-white px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500 resize-none h-20" />
+                </div>
+              </div>
+              <div className="flex gap-3 p-5 border-t border-zinc-800">
+                <button onClick={() => setShowEditModal(false)}
+                  className="flex-1 py-2.5 rounded-xl border border-zinc-700 text-zinc-400 text-xs uppercase tracking-widest hover:border-zinc-500 transition-all">
+                  Cancelar
+                </button>
+                <button onClick={guardarEdicion} disabled={guardando || !editForm.nombre}
+                  className="flex-1 py-2.5 rounded-xl bg-amber-500 text-black text-xs uppercase tracking-widest font-black hover:bg-white transition-all disabled:opacity-50">
+                  {guardando ? 'Guardando...' : 'Guardar cambios'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Modal asignar propiedad */}
         {showAsignarModal && (
@@ -719,7 +706,6 @@ export default function ClientesPage() {
                     placeholder="$300,000" className={inputCls} />
                 </div>
               </div>
-
               <div>
                 <label className={labelCls}>Tipo de propiedad</label>
                 <div className="flex flex-wrap gap-2">
@@ -731,7 +717,6 @@ export default function ClientesPage() {
                   ))}
                 </div>
               </div>
-
               <div>
                 <label className={labelCls}>Zonas de interés</label>
                 <div className="flex flex-wrap gap-2">
@@ -743,7 +728,6 @@ export default function ClientesPage() {
                   ))}
                 </div>
               </div>
-
               <div>
                 <label className={labelCls}>Notas</label>
                 <textarea value={nuevoCliente.notas} onChange={e => setNuevoCliente(p => ({...p, notas: e.target.value}))}
@@ -751,7 +735,6 @@ export default function ClientesPage() {
                   className="w-full bg-zinc-800 text-white px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500 resize-none h-20" />
               </div>
             </div>
-
             <div className="flex gap-3 p-5 border-t border-zinc-800">
               <button onClick={() => setShowNuevoModal(false)}
                 className="flex-1 py-2.5 rounded-xl border border-zinc-700 text-zinc-400 text-xs uppercase tracking-widest hover:border-zinc-500 transition-all">
