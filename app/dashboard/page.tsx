@@ -167,7 +167,7 @@ export default function Dashboard() {
                     {sinContactar.length}
                   </span>
                 </div>
-                <Link href="/clients" className="text-zinc-500 hover:text-amber-400 text-xs uppercase tracking-wider transition-colors">
+                <Link href="/clients" className="text-zinc-400 hover:text-amber-400 text-xs uppercase tracking-wider transition-colors font-bold">
                   Ver →
                 </Link>
               </div>
@@ -225,7 +225,7 @@ export default function Dashboard() {
                   </span>
                 )}
               </div>
-              <Link href="/hoy" className="text-zinc-500 hover:text-amber-400 text-xs uppercase tracking-wider transition-colors shrink-0">
+              <Link href="/hoy" className="text-zinc-400 hover:text-amber-400 text-xs uppercase tracking-wider transition-colors shrink-0 font-bold">
                 Ver →
               </Link>
             </div>
@@ -258,7 +258,7 @@ export default function Dashboard() {
                 <span>👥</span>
                 <h3 className="text-white font-black text-sm uppercase tracking-wider">Clientes activos</h3>
               </div>
-              <Link href="/pipeline" className="text-zinc-500 hover:text-amber-400 text-xs uppercase transition-colors shrink-0">Ver →</Link>
+              <Link href="/pipeline" className="text-zinc-400 hover:text-amber-400 text-xs uppercase transition-colors shrink-0 font-bold">Ver →</Link>
             </div>
             {clientesActivos.length === 0 ? (
               <p className="text-zinc-500 text-sm text-center py-4">Sin clientes activos</p>
@@ -366,7 +366,7 @@ export default function Dashboard() {
                 <span>🏘️</span>
                 <h3 className="text-white font-black text-sm uppercase tracking-wider">Buscar por sector</h3>
               </div>
-              <Link href="/properties" className="text-zinc-500 hover:text-amber-400 text-xs uppercase tracking-wider transition-colors shrink-0">
+              <Link href="/properties" className="text-zinc-400 hover:text-amber-400 text-xs uppercase tracking-wider transition-colors shrink-0 font-bold">
                 Ver todas →
               </Link>
             </div>
@@ -405,8 +405,8 @@ export default function Dashboard() {
 
       {/* Botón flotante */}
       <Link href="/clients"
-        className="fixed bottom-20 right-4 md:bottom-8 md:right-8 z-50 bg-amber-500 hover:bg-white text-black px-4 py-2.5 rounded-2xl font-black text-xs uppercase shadow-2xl shadow-amber-500/40 transition-all flex items-center gap-2">
-        <span className="text-base font-black">+</span>
+        className="fixed bottom-20 right-3 md:bottom-8 md:right-8 z-50 bg-amber-500 hover:bg-white text-black px-3 py-2 rounded-xl font-black text-xs uppercase shadow-xl shadow-amber-500/40 transition-all flex items-center gap-1.5">
+        <span className="text-sm font-black">+</span>
         Nuevo Lead
       </Link>
     </div>
