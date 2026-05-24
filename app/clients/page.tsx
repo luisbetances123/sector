@@ -614,12 +614,7 @@ export default function ClientesPage() {
                   </div>
                 </div>
               )}
-              {selectedCliente.notas && (
-                <div className="col-span-2">
-                  <p className="text-zinc-500 text-xs uppercase mb-1">Notas</p>
-                  <p className="text-zinc-300">{selectedCliente.notas}</p>
-                </div>
-              )}
+
             </div>
           </div>
 
