@@ -5,6 +5,34 @@ import { supabase } from '../lib/supabase'
 
 const SECTORES = ['Piantini','Naco','Bella Vista','Evaristo Morales','Serralles','Los Cacicazgos','Arroyo Hondo','Viejo Arroyo Hondo','La Esperilla','El Millon','Mirador Norte','Mirador Sur']
 
+function calcularMatch(cliente: any, propiedad: any): number {
+  let score = 0
+  if (cliente.zonas_interes?.length > 0 && propiedad.sector) {
+    const zonaMatch = cliente.zonas_interes.some((z: string) =>
+      propiedad.sector?.toLowerCase().includes(z.toLowerCase()) ||
+      z.toLowerCase().includes(propiedad.sector?.toLowerCase() || '')
+    )
+    if (zonaMatch) score += 40
+  }
+  if (cliente.tipo_propiedad?.length > 0 && propiedad.type) {
+    const tipoMatch = cliente.tipo_propiedad.some((t: string) =>
+      propiedad.type?.toLowerCase().includes(t.toLowerCase()) ||
+      t.toLowerCase().includes(propiedad.type?.toLowerCase() || '')
+    )
+    if (tipoMatch) score += 30
+  }
+  if (cliente.presupuesto_min && cliente.presupuesto_max && propiedad.price) {
+    const precio = parseFloat(propiedad.price.replace(/[^0-9.]/g, ''))
+    const min = parseFloat(cliente.presupuesto_min)
+    const max = parseFloat(cliente.presupuesto_max)
+    if (!isNaN(precio) && !isNaN(min) && !isNaN(max)) {
+      if (precio >= min && precio <= max) score += 30
+      else if (precio <= max * 1.2) score += 15
+    }
+  }
+  return score
+}
+
 export default function Dashboard() {
   const [clientes, setClientes] = useState<any[]>([])
   const [properties, setProperties] = useState<any[]>([])
@@ -16,7 +44,7 @@ export default function Dashboard() {
     async function fetchAll() {
       const [c, p, f, ct] = await Promise.all([
         supabase.from('clientes').select('*'),
-        supabase.from('properties').select('*'),
+        supabase.from('properties').select('*').eq('estado', 'disponible'),
         supabase.from('followups').select('*'),
         supabase.from('contactos_whatsapp').select('*').order('fecha', { ascending: false }),
       ])
@@ -32,7 +60,7 @@ export default function Dashboard() {
   const hoyStr = new Date().toISOString().split('T')[0]
   const followupsHoy = followups.filter(f => f.fecha === hoyStr && !f.hecho)
   const followupsPendientes = followups.filter(f => !f.hecho).length
-  const propiedadesDisponibles = properties.filter(p => p.estado === 'disponible').length
+  const propiedadesDisponibles = properties.length
   const leads = clientes.filter(c => c.etapa === 'Lead')
   const clientesActivos = clientes.filter(c => c.etapa === 'Buscando' || c.etapa === 'En Oferta')
   const sinContactar = clientes.filter(c => {
@@ -43,6 +71,16 @@ export default function Dashboard() {
     const dias = (Date.now() - new Date(ultimo.fecha).getTime()) / (1000 * 60 * 60 * 24)
     return dias >= 3
   })
+
+  // Matchmaker global
+  const clientesConMatch = clientes.filter(c => {
+    if (c.etapa === 'Cierre') return false
+    return properties.some(p => calcularMatch(c, p) > 0)
+  })
+  const totalMatches = clientesConMatch.reduce((acc, c) => {
+    return acc + properties.filter(p => calcularMatch(c, p) > 0).length
+  }, 0)
+
   const clientesPorEtapa = ['Lead','Buscando','En Oferta','Cierre'].map(e => ({
     etapa: e, total: clientes.filter(c => c.etapa === e).length
   }))
@@ -212,7 +250,58 @@ export default function Dashboard() {
           </section>
         )}
 
-        {/* ══ 3. AGENDA DE HOY ══ */}
+        {/* ══ 3. MATCHMAKER ══ */}
+        {clientesConMatch.length > 0 && (
+          <section className="mb-6">
+            <div className="bg-gradient-to-br from-amber-950/80 to-zinc-900 border-2 border-amber-600/50 rounded-3xl p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <span className="text-xl animate-pulse">🔥</span>
+                  <span className="text-amber-300 font-black text-sm uppercase tracking-wider">
+                    ¡Tienes Matches!
+                  </span>
+                  <span className="bg-amber-500 text-black text-xs font-black px-2.5 py-0.5 rounded-full">
+                    {totalMatches}
+                  </span>
+                </div>
+                <Link href="/clients" className="text-zinc-400 hover:text-amber-400 text-xs uppercase tracking-wider transition-colors font-bold">
+                  Ver →
+                </Link>
+              </div>
+              <div className="flex flex-col gap-2">
+                {clientesConMatch.slice(0, 3).map((c: any) => {
+                  const matchCount = properties.filter(p => calcularMatch(c, p) > 0).length
+                  return (
+                    <div key={c.id} className="flex items-center justify-between bg-black/30 border border-amber-800/30 rounded-2xl px-4 py-3 gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-8 h-8 rounded-full bg-amber-500 text-black flex items-center justify-center font-black text-sm shrink-0">
+                          {c.nombre?.[0]?.toUpperCase()}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-white text-sm font-bold truncate">{c.nombre}</p>
+                          <p className="text-amber-400 text-xs">
+                            {matchCount} propiedad{matchCount !== 1 ? 'es' : ''} compatible{matchCount !== 1 ? 's' : ''}
+                          </p>
+                        </div>
+                      </div>
+                      <Link href="/clients"
+                        className="shrink-0 bg-amber-500 hover:bg-white text-black px-3 py-1.5 rounded-xl text-xs font-black transition-colors">
+                        Ver →
+                      </Link>
+                    </div>
+                  )
+                })}
+              </div>
+              {clientesConMatch.length > 3 && (
+                <Link href="/clients" className="block text-center text-amber-400 text-xs mt-3 hover:text-white transition-colors">
+                  + {clientesConMatch.length - 3} clientes más con matches
+                </Link>
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* ══ 4. AGENDA DE HOY ══ */}
         <section className="mb-6">
           <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-3xl p-6">
             <div className="flex items-center justify-between mb-5">
@@ -250,7 +339,7 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* ══ 4. CLIENTES ACTIVOS + PIPELINE ══ */}
+        {/* ══ 5. CLIENTES ACTIVOS + PIPELINE ══ */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-3xl p-6">
             <div className="flex items-center justify-between mb-5">
@@ -314,7 +403,7 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* ══ 5. ACTIVIDAD RECIENTE ══ */}
+        {/* ══ 6. ACTIVIDAD RECIENTE ══ */}
         <section className="mb-6">
           <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-3xl p-6">
             <div className="flex items-center gap-2 mb-5">
@@ -358,7 +447,7 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* ══ 6. SECTORES ══ */}
+        {/* ══ 7. SECTORES ══ */}
         <section className="mb-6">
           <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-3xl p-6">
             <div className="flex justify-between items-center mb-4">
