@@ -99,10 +99,6 @@ export default function FichaTecnica() {
           className="flex items-center justify-center gap-3 w-full bg-green-600 hover:bg-green-500 text-white py-4 rounded-2xl font-black text-sm uppercase tracking-wider transition-all mb-4">
           💬 Consultar por WhatsApp
         </a>
-
-        <a href="/listings" className="block text-center text-zinc-500 hover:text-amber-400 text-xs uppercase tracking-wider transition-colors py-2">
-          ← Ver todas las propiedades
-        </a>
       </div>
 
       <div className="border-t border-zinc-800 mt-8 py-6 text-center">
