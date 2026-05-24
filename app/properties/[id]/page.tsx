@@ -283,16 +283,15 @@ export default function PropertyDetailPage({ params }: { params: any }) {
             const msg = encodeURIComponent(`🏠 *${property.title}*\n📍 ${property.sector || property.location}\n💰 ${formatPrice(property.price, property.moneda)}\n\nVer ficha completa: ${url}`)
             window.open(`https://wa.me/?text=${msg}`, '_blank')
           }}
-          className="flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-xl text-xs font-black uppercase transition-all">
+          className="flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white px-5 py-2 rounded-xl text-xs font-black uppercase transition-all">
           💬 Compartir Ficha
         </button>
-        <button
           onClick={() => {
             const url = `${window.location.origin}/listings/${property.id}`
             navigator.clipboard.writeText(url)
             alert('Enlace copiado ✅')
           }}
-          className="flex items-center gap-2 bg-zinc-700 hover:bg-zinc-600 text-white px-4 py-2 rounded-xl text-xs font-black uppercase transition-all">
+          className="flex items-center gap-2 bg-zinc-700 hover:bg-zinc-600 text-white px-5 py-2 rounded-xl text-xs font-black uppercase transition-all">
           🔗 Copiar enlace
         </button>
       </div>
