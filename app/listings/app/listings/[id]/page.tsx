@@ -1,26 +1,9 @@
+'use client'
+import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
-import { notFound } from 'next/navigation'
+import { useParams } from 'next/navigation'
 
 const WHATSAPP = '19293056500'
-
-interface Propiedad {
-  id: string
-  title: string
-  type: string
-  price: string
-  location: string
-  sector?: string
-  bedrooms?: number
-  bathrooms?: number
-  estacionamientos?: number
-  m2?: number
-  descripcion?: string
-  image_url?: string
-  imagen_url?: string
-  moneda?: string
-  estado?: string
-  status?: string
-}
 
 function formatPrice(price: string, moneda = 'USD') {
   const num = parseFloat(price?.replace(/[^0-9.]/g, '') || '0')
@@ -30,19 +13,36 @@ function formatPrice(price: string, moneda = 'USD') {
   }).format(num)
 }
 
-export default async function FichaTecnica({ params }: { params: { id: string } }) {
-  const { data: p, error } = await supabase
-    .from('properties')
-    .select('*')
-    .eq('id', params.id)
-    .single()
+export default function FichaTecnica() {
+  const params = useParams()
+  const [p, setP] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
 
-  if (error || !p) return notFound()
+  useEffect(() => {
+    if (!params?.id) return
+    supabase.from('properties').select('*').eq('id', params.id).single()
+      .then(({ data }) => {
+        setP(data)
+        setLoading(false)
+      })
+  }, [params?.id])
+
+  if (loading) return (
+    <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+      <p className="text-amber-500 font-black text-2xl animate-pulse">HOMVI</p>
+    </div>
+  )
+
+  if (!p) return (
+    <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+      <p className="text-zinc-400">Propiedad no encontrada</p>
+    </div>
+  )
 
   const precio = formatPrice(p.price, p.moneda || 'USD')
-  const foto = p.image_url || p.imagen_url
+  const foto = p.imagen_url || p.image_url
   const whatsappMsg = encodeURIComponent(
-    `Hola, estoy interesado en la propiedad: *${p.title}* en ${p.sector || p.location} a ${precio}. ¿Podría darme más información?`
+    `Hola, estoy interesado en: *${p.title}* en ${p.sector || p.location} a ${precio}. ¿Podría darme más información?`
   )
   const whatsappUrl = `https://wa.me/${WHATSAPP}?text=${whatsappMsg}`
 
@@ -65,10 +65,9 @@ export default async function FichaTecnica({ params }: { params: { id: string } 
 
       <div className="max-w-3xl mx-auto px-4 py-6">
 
-        {/* Foto principal */}
+        {/* Foto */}
         {foto ? (
-          <img src={foto} alt={p.title}
-            className="w-full h-64 md:h-96 object-cover rounded-2xl mb-6" />
+          <img src={foto} alt={p.title} className="w-full h-64 md:h-96 object-cover rounded-2xl mb-6" />
         ) : (
           <div className="w-full h-64 bg-zinc-800 rounded-2xl flex items-center justify-center mb-6">
             <span className="text-5xl">🏠</span>
@@ -136,7 +135,7 @@ export default async function FichaTecnica({ params }: { params: { id: string } 
           </div>
         )}
 
-        {/* CTA WhatsApp */}
+        {/* CTA */}
         <a href={whatsappUrl} target="_blank" rel="noreferrer"
           className="flex items-center justify-center gap-3 w-full bg-green-600 hover:bg-green-500 text-white py-4 rounded-2xl font-black text-sm uppercase tracking-wider transition-all mb-4">
           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -145,13 +144,11 @@ export default async function FichaTecnica({ params }: { params: { id: string } 
           Consultar por WhatsApp
         </a>
 
-        <a href="/listings"
-          className="block text-center text-zinc-500 hover:text-amber-400 text-xs uppercase tracking-wider transition-colors py-2">
+        <a href="/listings" className="block text-center text-zinc-500 hover:text-amber-400 text-xs uppercase tracking-wider transition-colors py-2">
           ← Ver todas las propiedades
         </a>
       </div>
 
-      {/* Footer */}
       <div className="border-t border-zinc-800 mt-8 py-6 text-center">
         <p className="text-zinc-600 text-xs">© 2026 HOMVI · Santo Domingo, RD</p>
       </div>
