@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
-import { UserPlus, Home, X, Search, Plus, MessageCircle, Phone, Clock, Pencil, Sparkles } from 'lucide-react'
+import { UserPlus, Home, X, Search, Plus, MessageCircle, Phone, Clock, Pencil, Sparkles, StickyNote } from 'lucide-react'
 
 interface Cliente {
   id: string
@@ -45,6 +45,13 @@ interface Contacto {
   notas?: string
 }
 
+interface Nota {
+  id: string
+  cliente_id: string
+  texto: string
+  created_at: string
+}
+
 const ETAPAS = ['Lead', 'Buscando', 'En Oferta', 'Cierre']
 const ZONAS = ['Piantini', 'Naco', 'Bella Vista', 'Evaristo Morales', 'Serralles', 'Los Cacicazgos', 'Arroyo Hondo', 'Viejo Arroyo Hondo', 'La Esperilla', 'El Millón', 'Mirador Norte', 'Mirador Sur']
 const TIPOS = ['Apartamento', 'Casa', 'Villa', 'Penthouse', 'Local Comercial', 'Solar']
@@ -78,7 +85,6 @@ function formatPrice(price: string, moneda = 'USD') {
 
 function calcularMatch(cliente: Cliente, propiedad: Propiedad): number {
   let score = 0
-  // Match por zona (40 puntos)
   if (cliente.zonas_interes && cliente.zonas_interes.length > 0 && propiedad.sector) {
     const zonaMatch = cliente.zonas_interes.some(z =>
       propiedad.sector?.toLowerCase().includes(z.toLowerCase()) ||
@@ -86,7 +92,6 @@ function calcularMatch(cliente: Cliente, propiedad: Propiedad): number {
     )
     if (zonaMatch) score += 40
   }
-  // Match por tipo (30 puntos)
   if (cliente.tipo_propiedad && cliente.tipo_propiedad.length > 0 && propiedad.type) {
     const tipoMatch = cliente.tipo_propiedad.some(t =>
       propiedad.type?.toLowerCase().includes(t.toLowerCase()) ||
@@ -94,14 +99,13 @@ function calcularMatch(cliente: Cliente, propiedad: Propiedad): number {
     )
     if (tipoMatch) score += 30
   }
-  // Match por presupuesto (30 puntos)
   if (cliente.presupuesto_min && cliente.presupuesto_max && propiedad.price) {
     const precioPropiedad = parseFloat(propiedad.price.replace(/[^0-9.]/g, ''))
     const min = parseFloat(cliente.presupuesto_min)
     const max = parseFloat(cliente.presupuesto_max)
     if (!isNaN(precioPropiedad) && !isNaN(min) && !isNaN(max)) {
       if (precioPropiedad >= min && precioPropiedad <= max) score += 30
-      else if (precioPropiedad <= max * 1.2) score += 15 // cerca del presupuesto
+      else if (precioPropiedad <= max * 1.2) score += 15
     }
   }
   return score
@@ -113,6 +117,9 @@ export default function ClientesPage() {
   const [propiedadesAsignadas, setPropiedadesAsignadas] = useState<ClientePropiedad[]>([])
   const [contactos, setContactos] = useState<Contacto[]>([])
   const [contactosCliente, setContactosCliente] = useState<Contacto[]>([])
+  const [notasCliente, setNotasCliente] = useState<Nota[]>([])
+  const [nuevaNota, setNuevaNota] = useState('')
+  const [guardandoNota, setGuardandoNota] = useState(false)
   const [showAsignarModal, setShowAsignarModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [todasPropiedades, setTodasPropiedades] = useState<Propiedad[]>([])
@@ -175,13 +182,16 @@ export default function ClientesPage() {
 
   const abrirPerfil = async (cliente: Cliente) => {
     setSelectedCliente(cliente)
-    const [{ data: props }, { data: cts }, { data: allProps }] = await Promise.all([
+    setNuevaNota('')
+    const [{ data: props }, { data: cts }, { data: allProps }, { data: notas }] = await Promise.all([
       supabase.from('cliente_properties').select('id, property_id, properties(*)').eq('cliente_id', cliente.id),
       supabase.from('contactos_whatsapp').select('*').eq('cliente_id', cliente.id).order('fecha', { ascending: false }),
       supabase.from('properties').select('*').eq('estado', 'disponible'),
+      supabase.from('notas_cliente').select('*').eq('cliente_id', cliente.id).order('created_at', { ascending: false }),
     ])
     if (props) setPropiedadesAsignadas(props.map((r: any) => ({ id: r.id, property_id: r.property_id, properties: r.properties as Propiedad })))
     if (cts) setContactosCliente(cts)
+    if (notas) setNotasCliente(notas)
     if (allProps) {
       const matches = allProps
         .map(p => ({ ...p, score: calcularMatch(cliente, p) }))
@@ -190,6 +200,26 @@ export default function ClientesPage() {
         .slice(0, 5)
       setPropiedadesMatch(matches)
     }
+  }
+
+  const guardarNota = async () => {
+    if (!selectedCliente || !nuevaNota.trim()) return
+    setGuardandoNota(true)
+    const { data } = await supabase
+      .from('notas_cliente')
+      .insert({ cliente_id: selectedCliente.id, texto: nuevaNota.trim() })
+      .select()
+      .single()
+    if (data) {
+      setNotasCliente(prev => [data, ...prev])
+      setNuevaNota('')
+    }
+    setGuardandoNota(false)
+  }
+
+  const eliminarNota = async (notaId: string) => {
+    await supabase.from('notas_cliente').delete().eq('id', notaId)
+    setNotasCliente(prev => prev.filter(n => n.id !== notaId))
   }
 
   const abrirEditar = () => {
@@ -438,22 +468,59 @@ export default function ClientesPage() {
                   </div>
                 ))}
               </div>
-              {!selectedCliente.zonas_interes?.length && !selectedCliente.tipo_propiedad?.length && (
-                <p className="text-zinc-500 text-xs mt-3 text-center">
-                  Agrega zonas y tipo de propiedad al perfil para mejorar los matches
-                </p>
+            </div>
+          )}
+
+          {/* ══ NOTAS RÁPIDAS ══ */}
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 mb-6">
+            <div className="flex items-center gap-2 mb-4">
+              <StickyNote size={16} className="text-amber-500" />
+              <h2 className="text-white font-black uppercase text-sm tracking-wider">Notas de seguimiento</h2>
+              {notasCliente.length > 0 && (
+                <span className="bg-zinc-700 text-zinc-300 text-xs font-bold px-2 py-0.5 rounded-full">{notasCliente.length}</span>
               )}
             </div>
-          )}
 
-          {propiedadesMatch.length === 0 && (
-            <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-4 mb-6 text-center">
-              <Sparkles size={20} className="text-zinc-600 mx-auto mb-2" />
-              <p className="text-zinc-500 text-sm">Sin matches disponibles</p>
-              <p className="text-zinc-600 text-xs mt-1">Agrega zonas y tipo de propiedad al perfil del cliente</p>
+            {/* Input nueva nota */}
+            <div className="flex gap-2 mb-4">
+              <textarea
+                value={nuevaNota}
+                onChange={e => setNuevaNota(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); guardarNota() } }}
+                placeholder="Ej: 24 Mayo — Le gustó la cocina del apto en Naco pero el parqueo le pareció incómodo..."
+                className="flex-1 bg-zinc-800 text-white px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500 resize-none h-16 placeholder-zinc-600"
+              />
+              <button
+                onClick={guardarNota}
+                disabled={guardandoNota || !nuevaNota.trim()}
+                className="shrink-0 bg-amber-500 hover:bg-white text-black px-4 rounded-xl font-black text-xs uppercase transition-all disabled:opacity-50">
+                {guardandoNota ? '...' : '+ Nota'}
+              </button>
             </div>
-          )}
 
+            {/* Lista de notas */}
+            {notasCliente.length === 0 ? (
+              <p className="text-zinc-600 text-xs text-center py-2">Sin notas todavía — agrega observaciones de cada interacción</p>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {notasCliente.map(n => (
+                  <div key={n.id} className="flex gap-3 bg-zinc-800/50 rounded-xl p-3 group">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-zinc-300 text-sm leading-relaxed whitespace-pre-wrap">{n.texto}</p>
+                      <p className="text-zinc-600 text-[10px] mt-1">{formatFecha(n.created_at)}</p>
+                    </div>
+                    <button
+                      onClick={() => eliminarNota(n.id)}
+                      className="shrink-0 text-zinc-700 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100 mt-0.5">
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* ══ HISTORIAL CONTACTOS ══ */}
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 mb-6">
             <div className="flex items-center gap-2 mb-4">
               <Clock size={16} className="text-amber-500" />
@@ -476,6 +543,7 @@ export default function ClientesPage() {
             )}
           </div>
 
+          {/* ══ PROPIEDADES ASIGNADAS ══ */}
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 mb-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-white font-black uppercase text-sm tracking-wider flex items-center gap-2">
@@ -510,6 +578,7 @@ export default function ClientesPage() {
             )}
           </div>
 
+          {/* ══ PERFIL ══ */}
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 mb-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-white font-black uppercase text-sm tracking-wider">Perfil del Cliente</h2>
