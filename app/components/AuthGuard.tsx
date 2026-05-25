@@ -15,12 +15,15 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const isLanding = pathname === '/landing' || pathname === '/'
 
   useEffect(() => {
+    if (isPublic || isLanding) {
+      setChecking(false)
+      return
+    }
+
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession()
-      if (!session && !isPublic && !isLanding) {
+      if (!session) {
         router.replace('/login')
-      } else if (session && (pathname === '/login' || pathname === '/register')) {
-        router.replace('/dashboard')
       }
       setChecking(false)
     }
@@ -30,11 +33,14 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
       if (!session && !isPublic && !isLanding) {
         router.replace('/login')
       }
+      if (session && (pathname === '/login' || pathname === '/register')) {
+        router.replace('/dashboard')
+      }
     })
     return () => subscription.unsubscribe()
   }, [pathname])
 
-  if (checking && !isPublic && !isLanding) {
+  if (checking) {
     return <div className="min-h-screen bg-black flex items-center justify-center">
       <div className="text-zinc-500 text-sm">Cargando...</div>
     </div>
