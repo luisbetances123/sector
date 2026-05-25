@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/fantasmas",
+      "schedule": "0 9 * * *"
+    }
+  ]
+}
