@@ -39,6 +39,28 @@ export default function Dashboard() {
   const [followups, setFollowups] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [contactos, setContactos] = useState<any[]>([])
+  const [pushActivo, setPushActivo] = useState(false)
+
+  const activarNotificaciones = async () => {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      alert('Tu navegador no soporta notificaciones push')
+      return
+    }
+    const reg = await navigator.serviceWorker.register('/sw.js')
+    const perm = await Notification.requestPermission()
+    if (perm !== 'granted') return
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: 'BCZj1rLJn2Xlx49VMYqACxzJMLfs1qe71TJtNl2Z9zL9FXvE0sKfBYpt0Wu3EdQrdSedtfdG8edpj2344tIkKl0'
+    })
+    await fetch('/api/push/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ subscription: sub })
+    })
+    setPushActivo(true)
+    alert('Notificaciones activadas')
+  }
 
   useEffect(() => {
     async function fetchAll() {
@@ -106,6 +128,14 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-[#0a0a0a] p-4 md:p-8 pb-40 overflow-x-hidden w-full">
       <div className="max-w-5xl mx-auto w-full">
+
+        {/* Botón notificaciones */}
+        {!pushActivo && (
+          <button onClick={activarNotificaciones}
+            className="fixed bottom-6 right-6 z-50 bg-amber-500 hover:bg-amber-400 text-black font-black text-xs uppercase px-4 py-3 rounded-2xl shadow-lg transition-colors flex items-center gap-2">
+            🔔 Activar notificaciones
+          </button>
+        )}
 
         {/* Header */}
         <header className="mb-8">
