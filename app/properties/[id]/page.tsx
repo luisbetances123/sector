@@ -289,7 +289,7 @@ export default function PropertyDetailPage({ params }: { params: any }) {
           onClick={() => {
             const url = `${window.location.origin}/listings/${property.id}`
             navigator.clipboard.writeText(url)
-            alert('Enlace copiado ✅')
+            alert('Enlace copiado!')
           }}
           className="flex items-center gap-2 bg-zinc-700 hover:bg-zinc-600 text-white px-5 py-2 rounded-xl text-xs font-black uppercase transition-all"
           🔗 Copiar enlace
