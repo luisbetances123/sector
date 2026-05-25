@@ -191,6 +191,50 @@ export default function Dashboard() {
           </div>
         </section>
 
+        {/* ══ SEGUIMIENTO FANTASMA ══ */}
+        {(() => {
+          const DIAS = 7
+          const fantasmas = clientes.filter((cliente: any) => {
+            const del_cliente = contactos.filter((c: any) => c.cliente_id === cliente.id)
+            if (del_cliente.length === 0) return true
+            const ultimo = del_cliente.sort((a: any, b: any) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())[0]
+            const dias = (Date.now() - new Date(ultimo.fecha).getTime()) / (1000 * 60 * 60 * 24)
+            return dias >= DIAS
+          })
+          if (fantasmas.length === 0) return null
+          return (
+            <section className="mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">👻</span>
+                  <h2 className="text-white font-black uppercase text-sm tracking-wider">Clientes Fantasma</h2>
+                  <span className="bg-red-500/20 text-red-400 text-xs font-bold px-2 py-0.5 rounded-full border border-red-500/30">{fantasmas.length} sin contacto +7 días</span>
+                </div>
+                <Link href="/clients" className="text-zinc-500 text-xs hover:text-white transition-colors">Ver todos</Link>
+              </div>
+              <div className="flex flex-col gap-2">
+                {fantasmas.slice(0, 5).map((c: any) => (
+                  <div key={c.id} className="flex items-center justify-between bg-red-950/30 border border-red-900/40 rounded-2xl px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center text-red-400 text-sm font-bold">
+                        {c.nombre?.[0]?.toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="text-white text-sm font-bold">{c.nombre}</p>
+                        <p className="text-red-400 text-xs">Sin contacto +7 días</p>
+                      </div>
+                    </div>
+                    <a href={`https://wa.me/${c.telefono?.replace(/\D/g, '')}`} target="_blank" rel="noreferrer"
+                      className="bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded-xl text-xs font-black transition-colors">
+                      WhatsApp
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )
+        })()}
+
         {/* ══ 2. CLIENTES SIN CONTACTAR ══ */}
         {sinContactar.length > 0 && (
           <section className="mb-6">
