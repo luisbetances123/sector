@@ -1,5 +1,6 @@
 'use client'
 import { usePathname, useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import Sidebar from './Sidebar'
 import MobileNav from './MobileNav'
 import { supabase } from '../lib/supabase'
@@ -7,10 +8,37 @@ import { supabase } from '../lib/supabase'
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
+  const [checking, setChecking] = useState(true)
 
   const publicRoutes = ['/login', '/register', '/landing', '/listings']
   const isPublic = publicRoutes.some(r => pathname.startsWith(r))
   const isLanding = pathname === '/landing' || pathname === '/'
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session && !isPublic && !isLanding) {
+        router.replace('/login')
+      } else if (session && (pathname === '/login' || pathname === '/register')) {
+        router.replace('/dashboard')
+      }
+      setChecking(false)
+    }
+    checkAuth()
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!session && !isPublic && !isLanding) {
+        router.replace('/login')
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [pathname])
+
+  if (checking && !isPublic && !isLanding) {
+    return <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="text-zinc-500 text-sm">Cargando...</div>
+    </div>
+  }
 
   return (
     <div className="flex min-h-screen max-w-[100vw] overflow-x-hidden">
