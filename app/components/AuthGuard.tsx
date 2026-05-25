@@ -8,33 +8,35 @@ import { supabase } from '../lib/supabase'
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
-  const [ready, setReady] = useState(false)
-  const [authed, setAuthed] = useState(false)
+  const [checking, setChecking] = useState(true)
 
-  const publicRoutes = ['/login', '/register', '/landing', '/listings']
+  const publicRoutes = ['/login', '/register', '/listing']
   const isPublic = publicRoutes.some(r => pathname.startsWith(r))
   const isLanding = pathname === '/landing' || pathname === '/'
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      const hasSession = !!session
-      setAuthed(hasSession)
-      setReady(true)
-
-      if (!hasSession && !isPublic && !isLanding) {
-        router.replace('/login')
-      }
-      if (hasSession && (pathname === '/login' || pathname === '/register')) {
-        router.replace('/dashboard')
+      if (!session) {
+        if (!isPublic && !isLanding) {
+          router.push('/login')
+        } else {
+          setChecking(false)
+        }
+      } else {
+        if (isLanding || pathname === '/login' || pathname === '/register') {
+          router.push('/dashboard')
+        } else {
+          setChecking(false)
+        }
       }
     })
     return () => subscription.unsubscribe()
   }, [pathname])
 
-  if (!ready && !isPublic && !isLanding) {
+  if (checking && !isPublic && !isLanding) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-zinc-500 text-sm">Cargando...</div>
+      <div className="flex h-screen w-screen items-center justify-center bg-black text-white">
+        <p className="text-zinc-500 text-sm">Cargando HOMVI...</p>
       </div>
     )
   }
