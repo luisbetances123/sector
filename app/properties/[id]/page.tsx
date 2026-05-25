@@ -285,15 +285,16 @@ export default function PropertyDetailPage({ params }: { params: any }) {
           }}
           className="flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white px-5 py-2 rounded-xl text-xs font-black uppercase transition-all">
           💬 Compartir Ficha
-        </button>
-          onClick={() => {
-            const url = `${window.location.origin}/listings/${property.id}`
-            navigator.clipboard.writeText(url)
-            alert('Enlace copiado!')
-          }}
-          className="flex items-center gap-2 bg-zinc-700 hover:bg-zinc-600 text-white px-5 py-2 rounded-xl text-xs font-black uppercase transition-all">
-          🔗 Copiar enlace
-        </button>
+        <button
+  onClick={() => {
+    const url = `${window.location.origin}/listings/${property.id}`
+    navigator.clipboard.writeText(url)
+    alert('Enlace copiado!')
+  }}
+  className="flex items-center gap-2 bg-zinc-700 hover:bg-zinc-600 text-white px-5 py-2 rounded-xl text-xs font-black uppercase transition-all"
+>
+  Copiar enlace
+</button>
       </div>
 
       {(property.recamaras || property.banos || property.estacionamientos || property.m2) && (
