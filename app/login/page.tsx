@@ -23,8 +23,7 @@ export default function LoginPage() {
         setError('Email o contraseña incorrectos: ' + error.message)
         setLoading(false)
       } else {
-        await new Promise(r => setTimeout(r, 500))
-        router.push('/dashboard')
+        window.location.href = '/dashboard'
       }
     } catch (e: any) {
       setError('Error inesperado: ' + e.message)
