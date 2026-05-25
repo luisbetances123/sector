@@ -7,11 +7,12 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-webpush.setVapidDetails(
-  'mailto:admin@homvi.app',
-  process.env.VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!
-)
+const vapidPublic = process.env.VAPID_PUBLIC_KEY || ''
+const vapidPrivate = process.env.VAPID_PRIVATE_KEY || ''
+
+if (vapidPublic && vapidPrivate) {
+  webpush.setVapidDetails('mailto:admin@homvi.app', vapidPublic, vapidPrivate)
+}
 
 export async function POST(request: Request) {
   const { title, body, url } = await request.json()
