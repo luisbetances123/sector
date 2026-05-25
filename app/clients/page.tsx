@@ -471,55 +471,6 @@ export default function ClientesPage() {
             </div>
           )}
 
-          {/* ══ NOTAS RÁPIDAS ══ */}
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 mb-6">
-            <div className="flex items-center gap-2 mb-4">
-              <StickyNote size={16} className="text-amber-500" />
-              <h2 className="text-white font-black uppercase text-sm tracking-wider">Notas de seguimiento</h2>
-              {notasCliente.length > 0 && (
-                <span className="bg-zinc-700 text-zinc-300 text-xs font-bold px-2 py-0.5 rounded-full">{notasCliente.length}</span>
-              )}
-            </div>
-
-            {/* Input nueva nota */}
-            <div className="flex gap-2 mb-4">
-              <textarea
-                value={nuevaNota}
-                onChange={e => setNuevaNota(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); guardarNota() } }}
-                placeholder="Ej: 24 Mayo — Le gustó la cocina del apto en Naco pero el parqueo le pareció incómodo..."
-                className="flex-1 bg-zinc-800 text-white px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500 resize-none h-16 placeholder-zinc-600"
-              />
-              <button
-                onClick={guardarNota}
-                disabled={guardandoNota || !nuevaNota.trim()}
-                className="shrink-0 bg-amber-500 hover:bg-white text-black px-4 rounded-xl font-black text-xs uppercase transition-all disabled:opacity-50">
-                {guardandoNota ? '...' : '+ Nota'}
-              </button>
-            </div>
-
-            {/* Lista de notas */}
-            {notasCliente.length === 0 ? (
-              <p className="text-zinc-600 text-xs text-center py-2">Sin notas todavía — agrega observaciones de cada interacción</p>
-            ) : (
-              <div className="flex flex-col gap-2">
-                {notasCliente.map(n => (
-                  <div key={n.id} className="flex gap-3 bg-zinc-800/50 rounded-xl p-3 group">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-zinc-300 text-sm leading-relaxed whitespace-pre-wrap">{n.texto}</p>
-                      <p className="text-zinc-600 text-[10px] mt-1">{formatFecha(n.created_at)}</p>
-                    </div>
-                    <button
-                      onClick={() => eliminarNota(n.id)}
-                      className="shrink-0 text-zinc-700 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100 mt-0.5">
-                      <X size={14} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
           {/* ══ HISTORIAL CONTACTOS ══ */}
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 mb-6">
             <div className="flex items-center gap-2 mb-4">
@@ -617,6 +568,56 @@ export default function ClientesPage() {
 
             </div>
           </div>
+
+          {/* ══ NOTAS RÁPIDAS ══ */}
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 mb-6">
+            <div className="flex items-center gap-2 mb-4">
+              <StickyNote size={16} className="text-amber-500" />
+              <h2 className="text-white font-black uppercase text-sm tracking-wider">Notas de seguimiento</h2>
+              {notasCliente.length > 0 && (
+                <span className="bg-zinc-700 text-zinc-300 text-xs font-bold px-2 py-0.5 rounded-full">{notasCliente.length}</span>
+              )}
+            </div>
+
+            {/* Input nueva nota */}
+            <div className="flex gap-2 mb-4">
+              <textarea
+                value={nuevaNota}
+                onChange={e => setNuevaNota(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); guardarNota() } }}
+                placeholder="Ej: 24 Mayo — Le gustó la cocina del apto en Naco pero el parqueo le pareció incómodo..."
+                className="flex-1 bg-zinc-800 text-white px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500 resize-none h-16 placeholder-zinc-600"
+              />
+              <button
+                onClick={guardarNota}
+                disabled={guardandoNota || !nuevaNota.trim()}
+                className="shrink-0 bg-amber-500 hover:bg-white text-black px-4 rounded-xl font-black text-xs uppercase transition-all disabled:opacity-50">
+                {guardandoNota ? '...' : '+ Nota'}
+              </button>
+            </div>
+
+            {/* Lista de notas */}
+            {notasCliente.length === 0 ? (
+              <p className="text-zinc-600 text-xs text-center py-2">Sin notas todavía — agrega observaciones de cada interacción</p>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {notasCliente.map(n => (
+                  <div key={n.id} className="flex gap-3 bg-zinc-800/50 rounded-xl p-3 group">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-zinc-300 text-sm leading-relaxed whitespace-pre-wrap">{n.texto}</p>
+                      <p className="text-zinc-600 text-[10px] mt-1">{formatFecha(n.created_at)}</p>
+                    </div>
+                    <button
+                      onClick={() => eliminarNota(n.id)}
+                      className="shrink-0 text-zinc-700 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100 mt-0.5">
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
 
           <button onClick={eliminarCliente}
             className="w-full py-3 rounded-2xl border border-red-800/50 text-red-500 hover:bg-red-900/20 text-xs uppercase font-bold tracking-wider transition-all">
