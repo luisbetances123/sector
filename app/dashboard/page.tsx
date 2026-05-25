@@ -132,9 +132,14 @@ export default function Dashboard() {
         {/* Botón notificaciones */}
         {!pushActivo && (
           <button onClick={activarNotificaciones}
-            className="fixed bottom-6 right-6 z-50 bg-amber-500 hover:bg-amber-400 text-black font-black text-xs uppercase px-4 py-3 rounded-2xl shadow-lg transition-colors flex items-center gap-2">
-            🔔 Activar notificaciones
+            className="fixed top-4 right-4 z-50 bg-amber-500 hover:bg-amber-400 text-black font-black text-xs uppercase px-3 py-2 rounded-xl shadow-lg transition-colors flex items-center gap-1.5">
+            🔔 Notificaciones
           </button>
+        )}
+        {pushActivo && (
+          <div className="fixed top-4 right-4 z-50 bg-green-600 text-white font-bold text-xs px-3 py-2 rounded-xl flex items-center gap-1.5">
+            🔔 Activas
+          </div>
         )}
 
         {/* Header */}
