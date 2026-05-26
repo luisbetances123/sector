@@ -33,9 +33,9 @@ export default function DashboardMobile({
   const saludo = horaActual < 12 ? 'Buenos días' : horaActual < 19 ? 'Buenas tardes' : 'Buenas noches'
 
   return (
-    <div className="md:hidden min-h-screen bg-[#080808] text-white pb-24">
+    <div className="md:hidden min-h-screen bg-[#080808] text-white pb-32">
 
-      {/* Cabecera Móvil - Añadimos pt-16 para empujar el contenido abajo y evitar que lo tape el botón flotante global */}
+      {/* Cabecera Móvil */}
       <div className="sticky top-0 z-40 bg-[#080808]/95 backdrop-blur-sm px-4 pt-16 pb-4 border-b border-zinc-800/50">
         <div className="flex items-center justify-between gap-4">
           <div>
@@ -43,8 +43,7 @@ export default function DashboardMobile({
             <h1 className="text-white font-black text-2xl tracking-tight">HOMVI</h1>
           </div>
           
-          {/* Indicador de urgencia reubicado de forma segura a la derecha */}
-          {leads.length > 0 && (
+          {leads && leads.length > 0 && (
             <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-3 py-2 shrink-0">
               <span className="bg-red-500 text-white text-[11px] font-black px-2 py-0.5 rounded-full animate-pulse block text-center">
                 {leads.length} URGENTE{leads.length > 1 ? 'S' : ''}
@@ -56,8 +55,8 @@ export default function DashboardMobile({
 
       <div className="px-4 pt-4 space-y-5">
 
-        {/* LEADS - Tarjetas fijas y directas sin Swipe */}
-        {leads.length > 0 && (
+        {/* 1. LEADS URGENTES */}
+        {leads && leads.length > 0 && (
           <section>
             <div className="flex items-center gap-2 mb-3">
               <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
@@ -68,7 +67,6 @@ export default function DashboardMobile({
             <div className="space-y-3">
               {leads.slice(0, 5).map((c: any) => (
                 <div key={c.id} className="rounded-2xl bg-zinc-900 border border-red-900/40 p-4">
-                  
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-12 h-12 rounded-full bg-amber-500 flex items-center justify-center text-black font-black text-lg shrink-0">
                       {c.nombre?.[0]?.toUpperCase()}
@@ -79,30 +77,31 @@ export default function DashboardMobile({
                     </div>
                   </div>
 
-                  {/* Botones de acción directos */}
                   <div className="grid grid-cols-2 gap-3">
                     <a
                       href={`https://wa.me/${c.telefono?.replace(/\D/g, '')}`}
                       target="_blank"
-                      className="flex items-center justify-center gap-2 bg-green-600 active:bg-green-500 text-white font-black py-4 rounded-xl text-sm transition-colors"
+                      rel="noreferrer"
+                      className="flex items-center justify-center gap-2 bg-green-600 active:bg-green-500 text-white font-black py-4 rounded-xl text-sm"
                       onClick={(e) => e.stopPropagation()}
                     >
                       💬 WhatsApp
                     </a>
-
                     <a
                       href={`tel:${c.telefono}`}
-                      className="flex items-center justify-center gap-2 bg-zinc-700 active:bg-zinc-600 text-white font-black py-4 rounded-xl text-sm transition-colors"
+                      className="flex items-center justify-center gap-2 bg-zinc-700 active:bg-zinc-600 text-white font-black py-4 rounded-xl text-sm"
                       onClick={(e) => e.stopPropagation()}
                     >
                       📞 Llamar
                     </a>
                   </div>
-
                 </div>
               ))}
             </div>
-              {/* FANTASMAS — Corregido, limpio y sin duplicados */}
+          </section>
+        )}
+
+        {/* 2. FANTASMAS — Única sección oficial y limpia */}
         {fantasmas && fantasmas.length > 0 && (
           <section>
             <div className="flex items-end justify-between mb-3 w-full">
@@ -115,10 +114,7 @@ export default function DashboardMobile({
                   </span>
                 </div>
               </div>
-              <Link 
-                href="/clients?filter=fantasmas" 
-                className="text-zinc-500 active:text-zinc-300 text-xs font-bold py-1 pl-4 shrink-0"
-              >
+              <Link href="/clients?filter=fantasmas" className="text-zinc-500 active:text-zinc-300 text-xs font-bold py-1 pl-4 shrink-0">
                 Ver todos →
               </Link>
             </div>
@@ -135,9 +131,9 @@ export default function DashboardMobile({
                       <p className="text-red-400 text-xs">+7 días sin contacto</p>
                     </div>
                   </div>
-                  <a
-                    href={`https://wa.me/${c.telefono?.replace(/\D/g, '')}`}
-                    target="_blank"
+                  <a 
+                    href={`https://wa.me/${c.telefono?.replace(/\D/g, '')}`} 
+                    target="_blank" 
                     rel="noreferrer"
                     className="bg-green-600 text-white font-black px-4 py-3 rounded-xl text-xs"
                   >
@@ -149,13 +145,15 @@ export default function DashboardMobile({
           </section>
         )}
 
-        {/* MATCHES */}
-        {propiedadesMatch.length > 0 && (
-          <section>
+        {/* 3. MATCHES */}
+        {propiedadesMatch && propiedadesMatch.length > 0 && (
+          <section className="pb-6">
             <div className="flex items-center gap-2 mb-3">
               <span>🔥</span>
               <h2 className="text-white font-black text-sm uppercase tracking-widest">Matches</h2>
-              <span className="bg-amber-500/20 text-amber-400 text-xs font-bold px-2 py-0.5 rounded-full">{propiedadesMatch.length}</span>
+              <span className="bg-amber-500/20 text-amber-400 text-xs font-bold px-2 py-0.5 rounded-full">
+                {propiedadesMatch.length}
+              </span>
             </div>
             <div className="space-y-3">
               {propiedadesMatch.slice(0, 3).map((item: any) => (
@@ -166,13 +164,12 @@ export default function DashboardMobile({
                     </div>
                     <div>
                       <p className="text-white font-bold text-sm">{item.cliente.nombre}</p>
-                      <p className="text-amber-400 text-xs">{item.matches.length} propiedad{item.matches.length > 1 ? 'es' : ''} compatible{item.matches.length > 1 ? 's' : ''}</p>
+                      <p className="text-amber-400 text-xs">
+                        {item.matches.length} {item.matches.length > 1 ? 'propiedades compatibles' : 'propiedad compatible'}
+                      </p>
                     </div>
                   </div>
-                  <Link
-                    href="/clients"
-                    className="flex items-center justify-center gap-2 w-full bg-amber-500 active:bg-amber-400 text-black font-black py-4 rounded-xl text-sm"
-                  >
+                  <Link href="/clients" className="flex items-center justify-center gap-2 w-full bg-amber-500 active:bg-amber-400 text-black font-black py-4 rounded-xl text-sm">
                     Ver matches →
                   </Link>
                 </div>
@@ -181,7 +178,7 @@ export default function DashboardMobile({
           </section>
         )}
 
-        {/* SECTORES */}
+        {/* 4. SECTORES */}
         <section>
           <div className="flex items-center gap-2 mb-3">
             <span>📍</span>
@@ -196,9 +193,7 @@ export default function DashboardMobile({
                 key={s}
                 onClick={() => setSectorActivo(sectorActivo === s ? null : s)}
                 className={`shrink-0 px-4 py-3 rounded-2xl text-sm font-bold transition-colors ${
-                  sectorActivo === s
-                    ? 'bg-amber-500 text-black'
-                    : 'bg-zinc-800 text-zinc-300 active:bg-zinc-700'
+                  sectorActivo === s ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-zinc-300 active:bg-zinc-700'
                 }`}
               >
                 {s}
@@ -229,8 +224,8 @@ export default function DashboardMobile({
           )}
         </section>
 
-        {/* AGENDA HOY */}
-        {followups.filter((f: any) => {
+        {/* 5. AGENDA HOY */}
+        {followups && followups.filter((f: any) => {
           const hoy = new Date().toDateString()
           return new Date(f.fecha).toDateString() === hoy && !f.completado
         }).length > 0 && (
