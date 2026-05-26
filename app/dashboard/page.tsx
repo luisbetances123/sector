@@ -613,5 +613,6 @@ export default function Dashboard() {
         Nuevo Lead
       </Link>
     </div>
+    </>
   )
 }
