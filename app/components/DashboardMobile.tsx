@@ -37,7 +37,7 @@ export default function DashboardMobile({
   }
 
   return (
-    <div className="w-full min-h-screen bg-[#080808] text-white pb-36 font-sans">
+       <div className="fixed inset-0 w-full h-full bg-[#080808] text-white pb-36 font-sans overflow-y-auto z-50">
       
       {/* 1. CABECERA MÓVIL AMPLIA */}
       <div className="sticky top-0 z-40 bg-[#080808]/95 backdrop-blur-md px-5 pt-14 pb-5 border-b border-zinc-800/80">
