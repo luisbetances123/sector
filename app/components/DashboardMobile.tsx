@@ -102,11 +102,8 @@ export default function DashboardMobile({
                 </div>
               ))}
             </div>
-          </section>
-        )}
-
-        {/* FANTASMAS - Corregido para evitar solapamientos */}
-        {fantasmas.length > 0 && (
+              {/* FANTASMAS — Corregido, limpio y sin duplicados */}
+        {fantasmas && fantasmas.length > 0 && (
           <section>
             <div className="flex items-end justify-between mb-3 w-full">
               <div className="flex items-center gap-2">
@@ -118,7 +115,6 @@ export default function DashboardMobile({
                   </span>
                 </div>
               </div>
-              
               <Link 
                 href="/clients?filter=fantasmas" 
                 className="text-zinc-500 active:text-zinc-300 text-xs font-bold py-1 pl-4 shrink-0"
@@ -139,10 +135,10 @@ export default function DashboardMobile({
                       <p className="text-red-400 text-xs">+7 días sin contacto</p>
                     </div>
                   </div>
-                  
                   <a
                     href={`https://wa.me/${c.telefono?.replace(/\D/g, '')}`}
                     target="_blank"
+                    rel="noreferrer"
                     className="bg-green-600 text-white font-black px-4 py-3 rounded-xl text-xs"
                   >
                     WA
