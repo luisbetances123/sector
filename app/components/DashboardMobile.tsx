@@ -26,14 +26,9 @@ export default function DashboardMobile({
 }: Props) {
   const [sectorActivo, setSectorActivo] = useState<string | null>(null)
 
-  const propsFiltradas = sectorActivo
-    ? properties.filter((p: any) => p.sector === sectorActivo)
-    : properties
-
   const horaActual = new Date().getHours()
   const saludo = horaActual < 12 ? 'Buenos días' : horaActual < 19 ? 'Buenas tardes' : 'Buenas noches'
 
-  // Lógica para el Pipeline compactado para móvil
   const pipelineCounts = {
     lead: leads.length,
     buscando: clientes.filter(c => c.status?.toLowerCase() === 'buscando').length || 2,
@@ -42,124 +37,103 @@ export default function DashboardMobile({
   }
 
   return (
-<div className="w-full min-h-screen bg-[#080808] text-white pb-32">      
-      {/* 1. CABECERA MÓVIL PREMIUM */}
-      <div className="sticky top-0 z-40 bg-[#080808]/95 backdrop-blur-sm px-4 pt-16 pb-4 border-b border-zinc-800/50">
-        <div className="flex items-center justify-between gap-4">
+    <div className="w-full min-h-screen bg-[#080808] text-white pb-36 font-sans">
+      
+      {/* 1. CABECERA MÓVIL AMPLIA */}
+      <div className="sticky top-0 z-40 bg-[#080808]/95 backdrop-blur-md px-5 pt-14 pb-5 border-b border-zinc-800/80">
+        <div className="flex items-center justify-between">
           <div>
-            <p className="text-zinc-500 text-xs font-medium tracking-wide uppercase">{saludo}, Luis 👋</p>
-            <h1 className="text-white font-black text-2xl tracking-tight">HOMVI center</h1>
+            <p className="text-zinc-400 text-sm font-bold tracking-wide uppercase">{saludo}, Luis 👋</p>
+            <h1 className="text-white font-black text-3xl tracking-tight mt-0.5">HOMVI center</h1>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-3 shrink-0">
             <NotificationBell />
           </div>
         </div>
       </div>
 
-      <div className="px-4 pt-4 space-y-6">
+      <div className="px-5 pt-5 space-y-7">
 
-        {/* 2. CONTADORES MÉTRICOS EN CUADRÍCULA (Igual que la PC) */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="bg-zinc-900/40 border border-zinc-800/60 rounded-2xl p-3.5">
-            <p className="text-zinc-500 text-[11px] font-bold tracking-wider uppercase">👥 Clientes</p>
-            <p className="text-2xl font-black mt-1 text-white">{clientes.length || 3}</p>
+        {/* 2. CONTADORES MÉTRICOS AMPLIOS (Cuadrícula de 2 columnas legible) */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-4 shadow-sm">
+            <p className="text-zinc-400 text-xs font-bold tracking-wider uppercase flex items-center gap-1.5">👥 Clientes</p>
+            <p className="text-3xl font-black mt-2 text-white">{clientes.length || 3}</p>
           </div>
-          <div className="bg-zinc-900/40 border border-zinc-800/60 rounded-2xl p-3.5">
-            <p className="text-zinc-500 text-[11px] font-bold tracking-wider uppercase">🔴 Leads</p>
-            <p className="text-2xl font-black mt-1 text-amber-500">{leads.length || 1}</p>
+          <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-4 shadow-sm">
+            <p className="text-amber-400 text-xs font-bold tracking-wider uppercase flex items-center gap-1.5">🔴 Leads</p>
+            <p className="text-3xl font-black mt-2 text-amber-500">{leads.length || 1}</p>
           </div>
-          <div className="bg-zinc-900/40 border border-zinc-800/60 rounded-2xl p-3.5">
-            <p className="text-zinc-500 text-[11px] font-bold tracking-wider uppercase">🏠 Propiedades</p>
-            <p className="text-2xl font-black mt-1 text-emerald-500">{properties.length || 3}</p>
+          <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-4 shadow-sm">
+            <p className="text-emerald-400 text-xs font-bold tracking-wider uppercase flex items-center gap-1.5">🏠 Propiedades</p>
+            <p className="text-3xl font-black mt-2 text-emerald-500">{properties.length || 3}</p>
           </div>
-          <div className="bg-zinc-900/40 border border-zinc-800/60 rounded-2xl p-3.5">
-            <p className="text-zinc-500 text-[11px] font-bold tracking-wider uppercase">📅 Seguim.</p>
-            <p className="text-2xl font-black mt-1 text-blue-500">{followups.length || 1}</p>
+          <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-4 shadow-sm">
+            <p className="text-blue-400 text-xs font-bold tracking-wider uppercase flex items-center gap-1.5">📅 Seguim.</p>
+            <p className="text-3xl font-black mt-2 text-blue-500">{followups.length || 1}</p>
           </div>
         </div>
 
-        {/* 3. SECCIÓN ALERTAS CRÍTICAS (Solo aparecen si hay datos reales) */}
-        {leads && leads.length > 0 && (
-          <section className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                <h2 className="text-xs font-black uppercase tracking-wider text-red-400">Leads urgentes sin responder</h2>
-              </div>
-              <span className="bg-red-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full">{leads.length}</span>
-            </div>
-            {leads.slice(0, 2).map((c: any) => (
-              <div key={c.id} className="bg-zinc-900/80 border border-zinc-800/50 rounded-xl p-3 flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-bold text-white">{c.nombre}</p>
-                  <p className="text-zinc-500 text-xs mt-0.5">{c.email || 'Sin correo'}</p>
-                </div>
-                <div className="flex gap-2">
-                  <a href={`https://wa.me/${c.telefono?.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="bg-emerald-600 p-2 rounded-lg text-white text-xs font-bold">WA</a>
-                  <a href={`tel:${c.telefono}`} className="bg-zinc-800 p-2 rounded-lg text-white text-xs font-bold">Tel</a>
-                </div>
-              </div>
-            ))}
-          </section>
-        )}
-
-        {/* 4. AGENDA DE HOY */}
-        <section className="bg-zinc-900/30 border border-zinc-800/40 rounded-2xl p-4">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-xs font-black uppercase tracking-wider text-zinc-400">📆 Agenda de hoy</h2>
-            <span className="text-[11px] text-zinc-500">Ver todo →</span>
+        {/* 3. AGENDA DE HOY (Más visible y limpia) */}
+        <section className="bg-zinc-900/40 border border-zinc-800 rounded-2xl p-5">
+          <div className="flex items-center justify-between mb-3.5">
+            <h2 className="text-sm font-black uppercase tracking-widest text-zinc-300 flex items-center gap-2">📅 Agenda de hoy</h2>
+            <span className="text-xs text-amber-500 font-bold">Ver todo →</span>
           </div>
-          <div className="bg-zinc-900/20 border border-zinc-800/20 rounded-xl p-4 text-center">
-            <p className="text-xs text-zinc-500">Sin eventos programados para hoy</p>
+          <div className="bg-zinc-950/60 border border-zinc-800/40 rounded-xl p-5 text-center">
+            <p className="text-sm text-zinc-400 font-medium">No tienes eventos programados para hoy</p>
           </div>
         </section>
 
-        {/* 5. VISUALIZADOR DEL PIPELINE MÓVIL */}
-        <section className="bg-zinc-900/30 border border-zinc-800/40 rounded-2xl p-4 space-y-3">
-          <h2 className="text-xs font-black uppercase tracking-wider text-zinc-400">📊 Estado del Pipeline</h2>
-          <div className="space-y-2.5 pt-1">
+        {/* 4. VISUALIZADOR DEL PIPELINE (Barras gruesas y letras grandes) */}
+        <section className="bg-zinc-900/40 border border-zinc-800 rounded-2xl p-5 space-y-4">
+          <h2 className="text-sm font-black uppercase tracking-widest text-zinc-300">📊 Estado del Pipeline</h2>
+          
+          <div className="space-y-4 pt-1">
             <div>
-              <div className="flex justify-between text-xs text-zinc-400 mb-1">
-                <span>Lead</span>
-                <span className="font-bold text-white">{pipelineCounts.lead}</span>
+              <div className="flex justify-between text-sm font-bold text-zinc-300 mb-1.5">
+                <span>Leads sin procesar</span>
+                <span className="font-black text-amber-500 text-base">{pipelineCounts.lead}</span>
               </div>
-              <div className="w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
-                <div className="bg-amber-500 h-1.5 rounded-full" style={{ width: `${Math.min((pipelineCounts.lead/5)*100, 100)}%` }} />
+              <div className="w-full bg-zinc-800 h-3 rounded-full overflow-hidden">
+                <div className="bg-amber-500 h-3 rounded-full" style={{ width: `${Math.min((pipelineCounts.lead/5)*100, 100)}%` }} />
               </div>
             </div>
+
             <div>
-              <div className="flex justify-between text-xs text-zinc-400 mb-1">
-                <span>Buscando</span>
-                <span className="font-bold text-white">{pipelineCounts.buscando}</span>
+              <div className="flex justify-between text-sm font-bold text-zinc-300 mb-1.5">
+                <span>En Búsqueda Activa</span>
+                <span className="font-black text-blue-400 text-base">{pipelineCounts.buscando}</span>
               </div>
-              <div className="w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
-                <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: '65%' }} />
+              <div className="w-full bg-zinc-800 h-3 rounded-full overflow-hidden">
+                <div className="bg-blue-500 h-3 rounded-full" style={{ width: '65%' }} />
               </div>
             </div>
+
             <div>
-              <div className="flex justify-between text-xs text-zinc-400 mb-1">
-                <span>En Oferta</span>
-                <span className="font-bold text-white">{pipelineCounts.oferta}</span>
+              <div className="flex justify-between text-sm font-bold text-zinc-300 mb-1.5">
+                <span>En Oferta / Cierre</span>
+                <span className="font-black text-purple-400 text-base">{pipelineCounts.oferta}</span>
               </div>
-              <div className="w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
-                <div className="bg-purple-500 h-1.5 rounded-full" style={{ width: '0%' }} />
+              <div className="w-full bg-zinc-800 h-3 rounded-full overflow-hidden">
+                <div className="bg-purple-500 h-3 rounded-full" style={{ width: '0%' }} />
               </div>
             </div>
           </div>
         </section>
 
-        {/* 6. BUSCAR POR SECTOR (Cuadrícula limpia móvil) */}
-        <section className="bg-zinc-900/30 border border-zinc-800/40 rounded-2xl p-4">
-          <h2 className="text-xs font-black uppercase tracking-wider text-zinc-400 mb-3">📍 Buscar por Sector</h2>
-          <div className="grid grid-cols-3 gap-1.5">
-            {SECTORES.slice(0, 9).map((sector) => (
+        {/* 5. BUSCAR POR SECTOR (Dos columnas más grandes, ideales para dedos) */}
+        <section className="bg-zinc-900/40 border border-zinc-800 rounded-2xl p-5">
+          <h2 className="text-sm font-black uppercase tracking-widest text-zinc-300 mb-4">📍 Sectores Principales</h2>
+          <div className="grid grid-cols-2 gap-2.5">
+            {SECTORES.slice(0, 8).map((sector) => (
               <button
                 key={sector}
                 onClick={() => setSectorActivo(sectorActivo === sector ? null : sector)}
-                className={`text-[10px] font-bold py-2 px-1 rounded-xl border transition-all truncate text-center ${
+                className={`text-xs font-bold py-3 px-3 rounded-xl border transition-all truncate text-center ${
                   sectorActivo === sector
-                    ? 'bg-amber-500 border-amber-400 text-black shadow-lg'
-                    : 'bg-zinc-900/60 border-zinc-800 text-zinc-400 active:bg-zinc-800'
+                    ? 'bg-amber-500 border-amber-400 text-black shadow-md font-black'
+                    : 'bg-zinc-950/80 border-zinc-800/80 text-zinc-300 active:bg-zinc-800'
                 }`}
               >
                 {sector}
@@ -168,15 +142,17 @@ export default function DashboardMobile({
           </div>
         </section>
 
-        {/* 7. ACCIONES RÁPIDAS (Accesos directos de creación) */}
-        <section className="space-y-2.5">
-          <h2 className="text-xs font-black uppercase tracking-wider text-zinc-500 px-1">Acciones Rápidas</h2>
-          <div className="grid grid-cols-2 gap-2">
-            <button className="bg-zinc-900 border border-zinc-800 text-white font-bold text-xs py-3 px-3 rounded-xl text-left active:bg-zinc-800">
-              ➕ Nueva Propiedad
+        {/* 6. ACCIONES RÁPIDAS (Grandes botones corporativos) */}
+        <section className="space-y-3">
+          <h2 className="text-sm font-black uppercase tracking-widest text-zinc-400 px-1">Acciones Rápidas</h2>
+          <div className="grid grid-cols-2 gap-3">
+            <button className="bg-zinc-900 border border-zinc-800 text-white font-bold text-sm py-4 px-4 rounded-xl text-left active:bg-zinc-800 shadow-sm flex flex-col justify-between h-20">
+              <span className="text-xl">🏠</span>
+              <span>+ Propiedad</span>
             </button>
-            <button className="bg-zinc-900 border border-zinc-800 text-white font-bold text-xs py-3 px-3 rounded-xl text-left active:bg-zinc-800">
-              ➕ Nuevo Evento
+            <button className="bg-zinc-900 border border-zinc-800 text-white font-bold text-sm py-4 px-4 rounded-xl text-left active:bg-zinc-800 shadow-sm flex flex-col justify-between h-20">
+              <span className="text-xl">📆</span>
+              <span>+ Evento</span>
             </button>
           </div>
         </section>
