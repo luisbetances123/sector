@@ -112,7 +112,7 @@ export default function DashboardMobile({
                         className="flex items-center justify-center gap-2 bg-green-600 active:bg-green-500 text-white font-black py-4 rounded-xl text-sm transition-colors"
                         onClick={e => e.stopPropagation()}
                       >
-                        WhatsApp
+                        💬 WhatsApp
                       </a>
                       
                         href={`tel:${c.telefono}`}
