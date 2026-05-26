@@ -104,21 +104,25 @@ export default function DashboardMobile({
                       </div>
                     </div>
 
-                    {/* Botones grandes */}
+                                        {/* Botones grandes */}
                     <div className="grid grid-cols-2 gap-3">
-                      
+                      <a
                         href={`https://wa.me/${c.telefono?.replace(/\D/g, '')}`}
                         target="_blank"
                         className="flex items-center justify-center gap-2 bg-green-600 active:bg-green-500 text-white font-black py-4 rounded-xl text-sm transition-colors"
-                        onClick={e => e.stopPropagation()}
+                        onClick={(e) => e.stopPropagation()}
                       >
                         💬 WhatsApp
                       </a>
-                      
+
+                      <a
                         href={`tel:${c.telefono}`}
                         className="flex items-center justify-center gap-2 bg-zinc-700 active:bg-zinc-600 text-white font-black py-4 rounded-xl text-sm transition-colors"
-                        onClick={e => e.stopPropagation()}
+                        onClick={(e) => e.stopPropagation()}
                       >
+                        📞 Llamar
+                      </a>
+                    </div>
                         Llamar
                       </a>
                     </div>
