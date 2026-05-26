@@ -104,7 +104,7 @@ export default function DashboardMobile({
                       </div>
                     </div>
 
-                                        {/* Botones grandes */}
+                    {/* Botones grandes */}
                     <div className="grid grid-cols-2 gap-3">
                       <a
                         href={`https://wa.me/${c.telefono?.replace(/\D/g, '')}`}
@@ -123,9 +123,7 @@ export default function DashboardMobile({
                         📞 Llamar
                       </a>
                     </div>
-                        Llamar
-                      </a>
-                    </div>
+
                   </div>
                 </div>
               ))}
@@ -154,6 +152,7 @@ export default function DashboardMobile({
                     </div>
                   </div>
                   
+                  <a
                     href={`https://wa.me/${c.telefono?.replace(/\D/g, '')}`}
                     target="_blank"
                     className="bg-green-600 text-white font-black px-4 py-3 rounded-xl text-xs"
