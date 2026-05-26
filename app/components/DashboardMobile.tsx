@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
+import NotificationBell from './NotificationBell' // <-- ¡Importación agregada aquí!
 
 interface Props {
   leads: any[]
@@ -35,7 +36,7 @@ export default function DashboardMobile({
   return (
     <div className="md:hidden min-h-screen bg-[#080808] text-white pb-32">
 
-      {/* Cabecera Móvil */}
+          {/* Cabecera Móvil */}
       <div className="sticky top-0 z-40 bg-[#080808]/95 backdrop-blur-sm px-4 pt-16 pb-4 border-b border-zinc-800/50">
         <div className="flex items-center justify-between gap-4">
           <div>
@@ -43,13 +44,18 @@ export default function DashboardMobile({
             <h1 className="text-white font-black text-2xl tracking-tight">HOMVI</h1>
           </div>
           
-          {leads && leads.length > 0 && (
-            <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-3 py-2 shrink-0">
-              <span className="bg-red-500 text-white text-[11px] font-black px-2 py-0.5 rounded-full animate-pulse block text-center">
-                {leads.length} URGENTE{leads.length > 1 ? 'S' : ''}
-              </span>
-            </div>
-          )}
+          <div className="flex items-center gap-3 shrink-0">
+            {/* Componente de Notificaciones */}
+            <NotificationBell />
+
+            {leads && leads.length > 0 && (
+              <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-3 py-2 shrink-0">
+                <span className="bg-red-500 text-white text-[11px] font-black px-2 py-0.5 rounded-full animate-pulse block text-center">
+                  {leads.length} URGENTE{leads.length > 1 ? 'S' : ''}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
