@@ -141,6 +141,7 @@ export default function Dashboard() {
 
   return (
     <>
+      {/* 📱 VISTA MÓVIL PREMIUM ACTIVA */}
       <DashboardMobile
         leads={leads}
         fantasmas={fantasmas}
@@ -161,68 +162,67 @@ export default function Dashboard() {
           return Math.floor((Date.now() - new Date(ultimo.fecha).getTime()) / (1000 * 60 * 60 * 24))
         }}
       />
-    <div className="min-h-screen bg-[#0a0a0a] p-4 md:p-8 pb-40 overflow-x-hidden w-full">
-      <div className="max-w-5xl mx-auto w-full">
 
-        {/* Botón notificaciones */}
-        {!pushActivo && (
-          <button onClick={activarNotificaciones}
-            className="fixed top-4 right-4 z-50 bg-amber-500 hover:bg-amber-400 text-black font-black text-xs uppercase px-3 py-2 rounded-xl shadow-lg transition-colors flex items-center gap-1.5">
-            🔔 Notificaciones
-          </button>
-        )}
-        {pushActivo && (
-          <div className="fixed top-4 right-4 z-50 bg-green-600 text-white font-bold text-xs px-3 py-2 rounded-xl flex items-center gap-1.5">
-            🔔 Activas
-          </div>
-        )}
+      {/* 💻 VISTA ESCRITORIO (Se oculta por completo en móviles gracias a hidden md:block) */}
+      <div className="hidden md:block min-h-screen bg-[#0a0a0a] p-4 md:p-8 pb-40 overflow-x-hidden w-full">
+        <div className="max-w-5xl mx-auto w-full">
 
-        {/* Header */}
-        <header className="mb-8">
-          <p className="text-zinc-500 text-xs uppercase tracking-widest mb-1">
-            {new Date().toLocaleDateString('es-DO', { weekday: 'long', day: 'numeric', month: 'long' })}
-          </p>
-          <h1 className="text-3xl md:text-5xl font-black text-white leading-tight">
-            Hola, <span className="text-amber-500 italic">Luis</span> 👋
-          </h1>
-        </header>
-
-        {/* Stats */}
-        <div className="grid grid-cols-4 gap-2 mb-8">
-          {[
-            { label: 'Clientes', icon: '👥', value: clientes.length, color: 'text-white', href: '/clients' },
-            { label: 'Leads', icon: '🔴', value: leads.length, color: leads.length > 0 ? 'text-red-400' : 'text-zinc-400', href: '/clients' },
-            { label: 'Propied.', icon: '🏠', value: propiedadesDisponibles, color: 'text-green-400', href: '/properties' },
-            { label: 'Seguim.', icon: '📅', value: followupsPendientes, color: followupsPendientes > 0 ? 'text-amber-400' : 'text-zinc-400', href: '/hoy' },
-          ].map(s => (
-            <Link key={s.label} href={s.href}
-              className="bg-zinc-800/60 border border-zinc-700 rounded-2xl px-3 py-3 hover:border-amber-500/50 transition-all">
-              <p className="text-zinc-500 text-[9px] uppercase tracking-widest truncate">{s.icon} {s.label}</p>
-              <p className={`text-2xl font-black mt-0.5 ${s.color}`}>{s.value}</p>
-            </Link>
-          ))}
-        </div>
-
-        {/* ══ 1. LEADS ══ */}
-        <section className="mb-6">
-          <div className={`rounded-3xl p-6 border-2 ${leads.length > 0 ? 'bg-red-950/80 border-red-700/60' : 'bg-zinc-800/40 border-zinc-700/40'}`}>
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className={`w-3 h-3 rounded-full shrink-0 ${leads.length > 0 ? 'bg-red-500 animate-pulse' : 'bg-zinc-600'}`} />
-                <span className={`font-black text-sm uppercase tracking-wider truncate ${leads.length > 0 ? 'text-red-300' : 'text-zinc-400'}`}>
-                  Leads sin responder
-                </span>
-                <span className={`shrink-0 text-sm font-black px-2.5 py-0.5 rounded-full ${leads.length > 0 ? 'bg-red-600 text-white' : 'bg-zinc-700 text-zinc-400'}`}>
-                  {leads.length}
-                </span>
-              </div>
-              <Link href="/clients" className="shrink-0 text-zinc-400 hover:text-amber-400 text-xs uppercase tracking-wider transition-colors font-bold ml-2">
-                Ver →
-              </Link>
+          {/* Botón notificaciones */}
+          {!pushActivo && (
+            <button onClick={activarNotificaciones}
+              className="fixed top-4 right-4 z-50 bg-amber-500 hover:bg-amber-400 text-black font-black text-xs uppercase px-3 py-2 rounded-xl shadow-lg transition-colors flex items-center gap-1.5">
+              🔔 Notificaciones
+            </button>
+          )}
+          {pushActivo && (
+            <div className="fixed top-4 right-4 z-50 bg-green-600 text-white font-bold text-xs px-3 py-2 rounded-xl flex items-center gap-1.5">
+              🔔 Activas
             </div>
-            {leads.length === 0 ? (
-              <p className="text-zinc-500 text-sm text-center py-4">✅ Sin leads pendientes hoy</p>
-            ) : (
+          )}
+
+          {/* Header */}
+          <header className="mb-8">
+            <p className="text-zinc-500 text-xs uppercase tracking-widest mb-1">
+              {new Date().toLocaleDateString('es-DO', { weekday: 'long', day: 'numeric', month: 'long' })}
+            </p>
+            <h1 className="text-3xl md:text-5xl font-black text-white leading-tight">
+              Hola, <span className="text-amber-500 italic">Luis</span> 👋
+            </h1>
+          </header>
+
+          {/* Stats */}
+          <div className="grid grid-cols-4 gap-2 mb-8">
+            {[
+              { label: 'Clientes', icon: '👥', value: clientes.length, color: 'text-white', href: '/clients' },
+              { label: 'Leads', icon: '🔴', value: leads.length, color: leads.length > 0 ? 'text-red-400' : 'text-zinc-400', href: '/clients' },
+              { label: 'Propied.', icon: '🏠', value: propiedadesDisponibles, color: 'text-green-400', href: '/properties' },
+              { label: 'Seguim.', icon: '📅', value: followupsPendientes, color: followupsPendientes > 0 ? 'text-amber-400' : 'text-zinc-400', href: '/hoy' },
+            ].map(s => (
+              <Link key={s.label} href={s.href}
+                className="bg-zinc-800/60 border border-zinc-700 rounded-2xl px-3 py-3 hover:border-amber-500/50 transition-all">
+                <p className="text-zinc-500 text-[9px] uppercase tracking-widest truncate">{s.icon} {s.label}</p>
+                <p className={`text-2xl font-black mt-0.5 ${s.color}`}>{s.value}</p>
+              </Link>
+            ))}
+          </div>
+
+          {/* ══ 1. LEADS ══ */}
+          <section className="mb-6">
+            <div className={`rounded-3xl p-6 border-2 ${leads.length > 0 ? 'bg-red-950/80 border-red-700/60' : 'bg-zinc-800/40 border-zinc-700/40'}`}>
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className={`w-3 h-3 rounded-full shrink-0 ${leads.length > 0 ? 'bg-red-500 animate-pulse' : 'bg-zinc-600'}`} />
+                  <span className={`font-black text-sm uppercase tracking-wider truncate ${leads.length > 0 ? 'text-red-300' : 'text-zinc-400'}`}>
+                    Leads sin responder
+                  </span>
+                  <span className={`shrink-0 text-sm font-black px-2.5 py-0.5 rounded-full ${leads.length > 0 ? 'bg-red-600 text-white' : 'bg-zinc-700 text-zinc-400'}`}>
+                    {leads.length}
+                  </span>
+                </div>
+                <Link href="/clients" className="shrink-0 text-zinc-400 hover:text-amber-400 text-xs uppercase tracking-wider transition-colors font-bold ml-2">
+                  Ver →
+                </Link>
+              </div>
               <div className="flex flex-col gap-2">
                 {leads.slice(0, 5).map(c => (
                   <div key={c.id} className="flex items-center justify-between bg-black/30 border border-red-900/40 rounded-2xl px-4 py-3 gap-3">
@@ -251,117 +251,79 @@ export default function Dashboard() {
                     </div>
                   </div>
                 ))}
-                {leads.length > 5 && (
-                  <Link href="/clients" className="text-center text-red-400 text-xs py-2 hover:text-white transition-colors">
-                    + {leads.length - 5} leads más
-                  </Link>
-                )}
               </div>
-            )}
-          </div>
-        </section>
+            </div>
+          </section>
 
-        {/* ══ SEGUIMIENTO FANTASMA ══ */}
-        {(() => {
-          const DIAS = 7
-          const fantasmas = clientes.filter((cliente: any) => {
-            const del_cliente = contactos.filter((c: any) => c.cliente_id === cliente.id)
-            if (del_cliente.length === 0) return true
-            const ultimo = del_cliente.sort((a: any, b: any) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())[0]
-            const dias = (Date.now() - new Date(ultimo.fecha).getTime()) / (1000 * 60 * 60 * 24)
-            return dias >= DIAS
-          })
-          if (fantasmas.length === 0) return null
-          return (
-         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 w-full">
-  <div className="flex items-center gap-2">
-    <span className="text-xl">👻</span>
-    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
-      <h2 className="text-white font-black text-sm uppercase tracking-widest">
-        Clientes Fantasma
-      </h2>
-      {/* Usamos fantasmas.length para que coincida perfectamente con tu archivo */}
-      <span className="bg-red-500/20 text-red-400 text-xs font-bold px-2 py-0.5 rounded-full border border-red-500/30 w-max">
-        {fantasmas.length} sin contacto +7 días
-      </span>
-    </div>
-  </div>
-
-  <Link 
-    href="/clients" 
-    className="text-zinc-500 hover:text-white transition-colors text-xs font-bold py-1 sm:pl-4 self-end sm:self-auto shrink-0"
-  >
-    Ver todos →
-  </Link>
-</div>
-        {fantasmas.length} sin contacto +7 días
-      </span>
-    </div>
-  </div>
-
-  {/* El botón "Ver todos" se mantiene limpio, cliqueable y a la derecha */}
-  <Link 
-    href="/clients" 
-    className="text-zinc-500 hover:text-white transition-colors text-xs font-bold py-1 sm:pl-4 self-end sm:self-auto shrink-0"
-  >
-    Ver todos →
-  </Link>
-</div>
-              <div className="flex flex-col gap-2">
-                {fantasmas.slice(0, 5).map((c: any) => (
-                  <div key={c.id} className="flex items-center justify-between bg-red-950/30 border border-red-900/40 rounded-2xl px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center text-red-400 text-sm font-bold">
-                        {c.nombre?.[0]?.toUpperCase()}
-                      </div>
-                      <div>
-                        <p className="text-white text-sm font-bold">{c.nombre}</p>
-                        <p className="text-red-400 text-xs">Sin contacto +7 días</p>
-                      </div>
-                    </div>
-                    <a href={`https://wa.me/${c.telefono?.replace(/\D/g, '')}`} target="_blank" rel="noreferrer"
-                      className="bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded-xl text-xs font-black transition-colors">
-                      WhatsApp
-                    </a>
+          {/* ══ SEGUIMIENTO FANTASMA ══ */}
+          {fantasmas.length > 0 && (
+            <section className="mb-6">
+              <div className="bg-red-950/40 border-2 border-red-900/50 rounded-3xl p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl">👻</span>
+                    <span className="text-red-300 font-black text-sm uppercase tracking-wider">Clientes Fantasma</span>
+                    <span className="bg-red-600 text-white text-xs font-black px-2.5 py-0.5 rounded-full">{fantasmas.length}</span>
                   </div>
-                ))}
-              </div>
-            </section>
-          )
-        })()}
-
-        {/* ══ 2. CLIENTES SIN CONTACTAR ══ */}
-        {sinContactar.length > 0 && (
-          <section className="mb-6">
-            <div className="bg-orange-950/60 border-2 border-orange-700/50 rounded-3xl p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 rounded-full bg-orange-500 animate-pulse" />
-                  <span className="text-orange-300 font-black text-sm uppercase tracking-wider">
-                    Clientes sin contactar
-                  </span>
-                  <span className="bg-orange-600 text-white text-xs font-black px-2.5 py-0.5 rounded-full">
-                    {sinContactar.length}
-                  </span>
+                  <Link href="/clients" className="text-zinc-400 hover:text-amber-400 text-xs uppercase tracking-wider transition-colors font-bold">
+                    Ver →
+                  </Link>
                 </div>
-                <Link href="/clients" className="text-zinc-400 hover:text-amber-400 text-xs uppercase tracking-wider transition-colors font-bold">
-                  Ver →
-                </Link>
-              </div>
-              <div className="flex flex-col gap-2">
-                {sinContactar.slice(0, 4).map((c: any) => {
-                  const delCliente = contactos.filter((ct: any) => ct.cliente_id === c.id)
-                  const dias = delCliente.length === 0 ? null : Math.floor(
-                    (Date.now() - new Date(
-                      delCliente.sort((a: any, b: any) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())[0].fecha
-                    ).getTime()) / (1000 * 60 * 60 * 24)
-                  )
-                  return (
-                    <div key={c.id} className="flex items-center justify-between bg-black/30 border border-orange-900/40 rounded-2xl px-4 py-3 gap-3">
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="w-8 h-8 rounded-full bg-amber-500 text-black flex items-center justify-center font-black text-sm shrink-0">
+                <div className="flex flex-col gap-2">
+                  {fantasmas.slice(0, 5).map((c: any) => (
+                    <div key={c.id} className="flex items-center justify-between bg-red-950/30 border border-red-900/40 rounded-2xl px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center text-red-400 text-sm font-bold">
                           {c.nombre?.[0]?.toUpperCase()}
                         </div>
+                        <div>
+                          <p className="text-white text-sm font-bold">{c.nombre}</p>
+                          <p className="text-red-400 text-xs">Sin contacto +7 días</p>
+                        </div>
+                      </div>
+                      <a href={`https://wa.me/${c.telefono?.replace(/\D/g, '')}`} target="_blank" rel="noreferrer"
+                        className="bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded-xl text-xs font-black transition-colors">
+                        WhatsApp
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* ══ 2. CLIENTES SIN CONTACTAR ══ */}
+          {sinContactar.length > 0 && (
+            <section className="mb-6">
+              <div className="bg-orange-950/60 border-2 border-orange-700/50 rounded-3xl p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-3 h-3 rounded-full bg-orange-500 animate-pulse" />
+                    <span className="text-orange-300 font-black text-sm uppercase tracking-wider">
+                      Clientes sin contactar
+                    </span>
+                    <span className="bg-orange-600 text-white text-xs font-black px-2.5 py-0.5 rounded-full">
+                      {sinContactar.length}
+                    </span>
+                  </div>
+                  <Link href="/clients" className="text-zinc-400 hover:text-amber-400 text-xs uppercase tracking-wider transition-colors font-bold">
+                    Ver →
+                  </Link>
+                </div>
+                <div className="flex flex-col gap-2">
+                  {sinContactar.slice(0, 4).map((c: any) => {
+                    const delCliente = contactos.filter((ct: any) => ct.cliente_id === c.id)
+                    const dias = delCliente.length === 0 ? null : Math.floor(
+                      (Date.now() - new Date(
+                        delCliente.sort((a: any, b: any) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())[0].fecha
+                      ).getTime()) / (1000 * 60 * 60 * 24)
+                    )
+                    return (
+                      <div key={c.id} className="flex items-center justify-between bg-black/30 border border-orange-900/40 rounded-2xl px-4 py-3 gap-3">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-8 h-8 rounded-full bg-amber-500 text-black flex items-center justify-center font-black text-sm shrink-0">
+                            {c.nombre?.[0]?.toUpperCase()}
+                          </div>
                         <div className="min-w-0">
                           <p className="text-white text-sm font-bold truncate">{c.nombre}</p>
                           <p className="text-orange-400 text-xs">
@@ -380,11 +342,6 @@ export default function Dashboard() {
                   )
                 })}
               </div>
-              {sinContactar.length > 4 && (
-                <Link href="/clients" className="block text-center text-orange-400 text-xs mt-3 hover:text-white transition-colors">
-                  + {sinContactar.length - 4} más sin contactar
-                </Link>
-              )}
             </div>
           </section>
         )}
@@ -431,11 +388,6 @@ export default function Dashboard() {
                   )
                 })}
               </div>
-              {clientesConMatch.length > 3 && (
-                <Link href="/clients" className="block text-center text-amber-400 text-xs mt-3 hover:text-white transition-colors">
-                  + {clientesConMatch.length - 3} clientes más con matches
-                </Link>
-              )}
             </div>
           </section>
         )}
@@ -536,9 +488,6 @@ export default function Dashboard() {
                 </div>
               ))}
             </div>
-            <Link href="/pipeline" className="block text-center text-amber-500 text-xs mt-5 font-bold uppercase hover:text-white transition-colors">
-              Ver pipeline completo →
-            </Link>
           </div>
         </section>
 
@@ -579,9 +528,6 @@ export default function Dashboard() {
                   <span className={`text-[10px] uppercase font-bold shrink-0 ${a.color}`}>{a.tiempo}</span>
                 </div>
               ))}
-              {leads.length === 0 && followupsHoy.length === 0 && (
-                <p className="text-zinc-500 text-sm text-center py-4">Sin actividad reciente</p>
-              )}
             </div>
           </div>
         </section>
@@ -594,9 +540,6 @@ export default function Dashboard() {
                 <span>🏘️</span>
                 <h3 className="text-white font-black text-sm uppercase tracking-wider">Buscar por sector</h3>
               </div>
-              <Link href="/properties" className="text-zinc-400 hover:text-amber-400 text-xs uppercase tracking-wider transition-colors shrink-0 font-bold">
-                Ver todas →
-              </Link>
             </div>
             <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
               {SECTORES.map(s => (
@@ -609,8 +552,8 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* Acciones rápidas — solo desktop */}
-        <section className="hidden md:block mb-6">
+        {/* Acciones rápidas */}
+        <section className="mb-6">
           <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-3xl p-6">
             <h3 className="text-zinc-500 font-black uppercase text-xs tracking-widest mb-4">Acciones rápidas</h3>
             <div className="flex flex-wrap gap-3">
@@ -630,14 +573,14 @@ export default function Dashboard() {
         </section>
 
       </div>
-
-      {/* Botón flotante */}
-      <Link href="/clients"
-        className="fixed bottom-20 right-3 md:bottom-8 md:right-8 z-50 bg-amber-500 hover:bg-white text-black px-3 py-2 rounded-xl font-black text-xs uppercase shadow-xl shadow-amber-500/40 transition-all flex items-center gap-1.5">
-        <span className="text-sm font-black">+</span>
-        Nuevo Lead
-      </Link>
     </div>
+
+    {/* Botón flotante — Solo visible en desktop */}
+    <Link href="/clients"
+      className="hidden md:flex fixed bottom-8 right-8 z-50 bg-amber-500 hover:bg-white text-black px-4 py-2.5 rounded-xl font-black text-xs uppercase shadow-xl shadow-amber-500/40 transition-all items-center gap-1.5">
+      <span className="text-sm font-black">+</span>
+      Nuevo Lead
+    </Link>
     </>
   )
 }
