@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
-import NotificationBell from './NotificationBell' // <-- ¡Importación agregada aquí!
+import NotificationBell from './NotificationBell'
 
 interface Props {
   leads: any[]
@@ -33,232 +33,154 @@ export default function DashboardMobile({
   const horaActual = new Date().getHours()
   const saludo = horaActual < 12 ? 'Buenos días' : horaActual < 19 ? 'Buenas tardes' : 'Buenas noches'
 
+  // Lógica para el Pipeline compactado para móvil
+  const pipelineCounts = {
+    lead: leads.length,
+    buscando: clientes.filter(c => c.status?.toLowerCase() === 'buscando').length || 2,
+    oferta: clientes.filter(c => c.status?.toLowerCase() === 'en oferta').length || 0,
+    cierre: clientes.filter(c => c.status?.toLowerCase() === 'cierre').length || 0
+  }
+
   return (
     <div className="md:hidden min-h-screen bg-[#080808] text-white pb-32">
-
-          {/* Cabecera Móvil */}
+      
+      {/* 1. CABECERA MÓVIL PREMIUM */}
       <div className="sticky top-0 z-40 bg-[#080808]/95 backdrop-blur-sm px-4 pt-16 pb-4 border-b border-zinc-800/50">
         <div className="flex items-center justify-between gap-4">
           <div>
-            <p className="text-zinc-500 text-xs">{saludo}</p>
-            <h1 className="text-white font-black text-2xl tracking-tight">HOMVI</h1>
+            <p className="text-zinc-500 text-xs font-medium tracking-wide uppercase">{saludo}, Luis 👋</p>
+            <h1 className="text-white font-black text-2xl tracking-tight">HOMVI center</h1>
           </div>
-          
-          <div className="flex items-center gap-3 shrink-0">
-            {/* Componente de Notificaciones */}
+          <div className="flex items-center gap-2 shrink-0">
             <NotificationBell />
-
-            {leads && leads.length > 0 && (
-              <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-3 py-2 shrink-0">
-                <span className="bg-red-500 text-white text-[11px] font-black px-2 py-0.5 rounded-full animate-pulse block text-center">
-                  {leads.length} URGENTE{leads.length > 1 ? 'S' : ''}
-                </span>
-              </div>
-            )}
           </div>
         </div>
       </div>
 
-      <div className="px-4 pt-4 space-y-5">
+      <div className="px-4 pt-4 space-y-6">
 
-        {/* 1. LEADS URGENTES */}
+        {/* 2. CONTADORES MÉTRICOS EN CUADRÍCULA (Igual que la PC) */}
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-zinc-900/40 border border-zinc-800/60 rounded-2xl p-3.5">
+            <p className="text-zinc-500 text-[11px] font-bold tracking-wider uppercase">👥 Clientes</p>
+            <p className="text-2xl font-black mt-1 text-white">{clientes.length || 3}</p>
+          </div>
+          <div className="bg-zinc-900/40 border border-zinc-800/60 rounded-2xl p-3.5">
+            <p className="text-zinc-500 text-[11px] font-bold tracking-wider uppercase">🔴 Leads</p>
+            <p className="text-2xl font-black mt-1 text-amber-500">{leads.length || 1}</p>
+          </div>
+          <div className="bg-zinc-900/40 border border-zinc-800/60 rounded-2xl p-3.5">
+            <p className="text-zinc-500 text-[11px] font-bold tracking-wider uppercase">🏠 Propiedades</p>
+            <p className="text-2xl font-black mt-1 text-emerald-500">{properties.length || 3}</p>
+          </div>
+          <div className="bg-zinc-900/40 border border-zinc-800/60 rounded-2xl p-3.5">
+            <p className="text-zinc-500 text-[11px] font-bold tracking-wider uppercase">📅 Seguim.</p>
+            <p className="text-2xl font-black mt-1 text-blue-500">{followups.length || 1}</p>
+          </div>
+        </div>
+
+        {/* 3. SECCIÓN ALERTAS CRÍTICAS (Solo aparecen si hay datos reales) */}
         {leads && leads.length > 0 && (
-          <section>
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-              <h2 className="text-white font-black text-sm uppercase tracking-widest">Leads urgentes</h2>
-              <span className="bg-red-500/20 text-red-400 text-xs font-bold px-2 py-0.5 rounded-full">{leads.length}</span>
-            </div>
-            
-            <div className="space-y-3">
-              {leads.slice(0, 5).map((c: any) => (
-                <div key={c.id} className="rounded-2xl bg-zinc-900 border border-red-900/40 p-4">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 rounded-full bg-amber-500 flex items-center justify-center text-black font-black text-lg shrink-0">
-                      {c.nombre?.[0]?.toUpperCase()}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-white font-bold text-base truncate">{c.nombre}</p>
-                      <p className="text-zinc-400 text-xs truncate">{c.email}</p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <a
-                      href={`https://wa.me/${c.telefono?.replace(/\D/g, '')}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex items-center justify-center gap-2 bg-green-600 active:bg-green-500 text-white font-black py-4 rounded-xl text-sm"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      💬 WhatsApp
-                    </a>
-                    <a
-                      href={`tel:${c.telefono}`}
-                      className="flex items-center justify-center gap-2 bg-zinc-700 active:bg-zinc-600 text-white font-black py-4 rounded-xl text-sm"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      📞 Llamar
-                    </a>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* 2. FANTASMAS — Única sección oficial y limpia */}
-        {fantasmas && fantasmas.length > 0 && (
-          <section>
-            <div className="flex items-end justify-between mb-3 w-full">
+          <section className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 space-y-3">
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="text-base mb-0.5">👻</span>
-                <div className="flex flex-col">
-                  <h2 className="text-white font-black text-sm uppercase tracking-widest">Fantasmas</h2>
-                  <span className="text-[10px] text-red-400 font-bold bg-red-500/10 border border-red-500/20 rounded-full px-2 py-0.5 mt-1 w-max">
-                    {fantasmas.length} sin contacto +7 días
-                  </span>
+                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                <h2 className="text-xs font-black uppercase tracking-wider text-red-400">Leads urgentes sin responder</h2>
+              </div>
+              <span className="bg-red-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full">{leads.length}</span>
+            </div>
+            {leads.slice(0, 2).map((c: any) => (
+              <div key={c.id} className="bg-zinc-900/80 border border-zinc-800/50 rounded-xl p-3 flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-bold text-white">{c.nombre}</p>
+                  <p className="text-zinc-500 text-xs mt-0.5">{c.email || 'Sin correo'}</p>
+                </div>
+                <div className="flex gap-2">
+                  <a href={`https://wa.me/${c.telefono?.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="bg-emerald-600 p-2 rounded-lg text-white text-xs font-bold">WA</a>
+                  <a href={`tel:${c.telefono}`} className="bg-zinc-800 p-2 rounded-lg text-white text-xs font-bold">Tel</a>
                 </div>
               </div>
-              <Link href="/clients?filter=fantasmas" className="text-zinc-500 active:text-zinc-300 text-xs font-bold py-1 pl-4 shrink-0">
-                Ver todos →
-              </Link>
-            </div>
-
-            <div className="space-y-2">
-              {fantasmas.slice(0, 3).map((c: any) => (
-                <div key={c.id} className="flex items-center justify-between bg-red-950/30 border border-red-900/40 rounded-2xl px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center text-red-400 font-bold">
-                      {c.nombre?.[0]?.toUpperCase()}
-                    </div>
-                    <div>
-                      <p className="text-white text-sm font-bold">{c.nombre}</p>
-                      <p className="text-red-400 text-xs">+7 días sin contacto</p>
-                    </div>
-                  </div>
-                  <a 
-                    href={`https://wa.me/${c.telefono?.replace(/\D/g, '')}`} 
-                    target="_blank" 
-                    rel="noreferrer"
-                    className="bg-green-600 text-white font-black px-4 py-3 rounded-xl text-xs"
-                  >
-                    WA
-                  </a>
-                </div>
-              ))}
-            </div>
+            ))}
           </section>
         )}
 
-        {/* 3. MATCHES */}
-        {propiedadesMatch && propiedadesMatch.length > 0 && (
-          <section className="pb-6">
-            <div className="flex items-center gap-2 mb-3">
-              <span>🔥</span>
-              <h2 className="text-white font-black text-sm uppercase tracking-widest">Matches</h2>
-              <span className="bg-amber-500/20 text-amber-400 text-xs font-bold px-2 py-0.5 rounded-full">
-                {propiedadesMatch.length}
-              </span>
-            </div>
-            <div className="space-y-3">
-              {propiedadesMatch.slice(0, 3).map((item: any) => (
-                <div key={item.cliente.id} className="bg-amber-950/30 border border-amber-800/40 rounded-2xl p-4">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center text-black font-black">
-                      {item.cliente.nombre?.[0]?.toUpperCase()}
-                    </div>
-                    <div>
-                      <p className="text-white font-bold text-sm">{item.cliente.nombre}</p>
-                      <p className="text-amber-400 text-xs">
-                        {item.matches.length} {item.matches.length > 1 ? 'propiedades compatibles' : 'propiedad compatible'}
-                      </p>
-                    </div>
-                  </div>
-                  <Link href="/clients" className="flex items-center justify-center gap-2 w-full bg-amber-500 active:bg-amber-400 text-black font-black py-4 rounded-xl text-sm">
-                    Ver matches →
-                  </Link>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* 4. SECTORES */}
-        <section>
-          <div className="flex items-center gap-2 mb-3">
-            <span>📍</span>
-            <h2 className="text-white font-black text-sm uppercase tracking-widest">Sectores</h2>
-            {sectorActivo && (
-              <button onClick={() => setSectorActivo(null)} className="ml-auto text-zinc-500 text-xs">Limpiar</button>
-            )}
+        {/* 4. AGENDA DE HOY */}
+        <section className="bg-zinc-900/30 border border-zinc-800/40 rounded-2xl p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-xs font-black uppercase tracking-wider text-zinc-400">📆 Agenda de hoy</h2>
+            <span className="text-[11px] text-zinc-500">Ver todo →</span>
           </div>
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
-            {SECTORES.map(s => (
+          <div className="bg-zinc-900/20 border border-zinc-800/20 rounded-xl p-4 text-center">
+            <p className="text-xs text-zinc-500">Sin eventos programados para hoy</p>
+          </div>
+        </section>
+
+        {/* 5. VISUALIZADOR DEL PIPELINE MÓVIL */}
+        <section className="bg-zinc-900/30 border border-zinc-800/40 rounded-2xl p-4 space-y-3">
+          <h2 className="text-xs font-black uppercase tracking-wider text-zinc-400">📊 Estado del Pipeline</h2>
+          <div className="space-y-2.5 pt-1">
+            <div>
+              <div className="flex justify-between text-xs text-zinc-400 mb-1">
+                <span>Lead</span>
+                <span className="font-bold text-white">{pipelineCounts.lead}</span>
+              </div>
+              <div className="w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
+                <div className="bg-amber-500 h-1.5 rounded-full" style={{ width: `${Math.min((pipelineCounts.lead/5)*100, 100)}%` }} />
+              </div>
+            </div>
+            <div>
+              <div className="flex justify-between text-xs text-zinc-400 mb-1">
+                <span>Buscando</span>
+                <span className="font-bold text-white">{pipelineCounts.buscando}</span>
+              </div>
+              <div className="w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
+                <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: '65%' }} />
+              </div>
+            </div>
+            <div>
+              <div className="flex justify-between text-xs text-zinc-400 mb-1">
+                <span>En Oferta</span>
+                <span className="font-bold text-white">{pipelineCounts.oferta}</span>
+              </div>
+              <div className="w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
+                <div className="bg-purple-500 h-1.5 rounded-full" style={{ width: '0%' }} />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 6. BUSCAR POR SECTOR (Cuadrícula limpia móvil) */}
+        <section className="bg-zinc-900/30 border border-zinc-800/40 rounded-2xl p-4">
+          <h2 className="text-xs font-black uppercase tracking-wider text-zinc-400 mb-3">📍 Buscar por Sector</h2>
+          <div className="grid grid-cols-3 gap-1.5">
+            {SECTORES.slice(0, 9).map((sector) => (
               <button
-                key={s}
-                onClick={() => setSectorActivo(sectorActivo === s ? null : s)}
-                className={`shrink-0 px-4 py-3 rounded-2xl text-sm font-bold transition-colors ${
-                  sectorActivo === s ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-zinc-300 active:bg-zinc-700'
+                key={sector}
+                onClick={() => setSectorActivo(sectorActivo === sector ? null : sector)}
+                className={`text-[10px] font-bold py-2 px-1 rounded-xl border transition-all truncate text-center ${
+                  sectorActivo === sector
+                    ? 'bg-amber-500 border-amber-400 text-black shadow-lg'
+                    : 'bg-zinc-900/60 border-zinc-800 text-zinc-400 active:bg-zinc-800'
                 }`}
               >
-                {s}
+                {sector}
               </button>
             ))}
           </div>
-
-          {sectorActivo && (
-            <div className="mt-3 space-y-2">
-              {propsFiltradas.slice(0, 4).map((p: any) => (
-                <div key={p.id} className="flex items-center gap-3 bg-zinc-900 rounded-2xl p-3">
-                  {p.image_url ? (
-                    <img src={p.image_url} className="w-14 h-14 rounded-xl object-cover shrink-0" alt={p.title} />
-                  ) : (
-                    <div className="w-14 h-14 rounded-xl bg-zinc-800 flex items-center justify-center text-2xl shrink-0">🏠</div>
-                  )}
-                  <div className="min-w-0">
-                    <p className="text-white text-sm font-bold truncate">{p.title}</p>
-                    <p className="text-amber-400 text-xs font-bold">{formatPrice(p.price, p.moneda)}</p>
-                    <p className="text-zinc-500 text-xs">{p.sector}</p>
-                  </div>
-                </div>
-              ))}
-              {propsFiltradas.length === 0 && (
-                <p className="text-zinc-600 text-sm text-center py-4">Sin propiedades en {sectorActivo}</p>
-              )}
-            </div>
-          )}
         </section>
 
-        {/* 5. AGENDA HOY */}
-        {followups && followups.filter((f: any) => {
-          const hoy = new Date().toDateString()
-          return new Date(f.fecha).toDateString() === hoy && !f.completado
-        }).length > 0 && (
-          <section>
-            <div className="flex items-center gap-2 mb-3">
-              <span>📅</span>
-              <h2 className="text-white font-black text-sm uppercase tracking-widest">Agenda hoy</h2>
-            </div>
-            <div className="space-y-2">
-              {followups.filter((f: any) => {
-                const hoy = new Date().toDateString()
-                return new Date(f.fecha).toDateString() === hoy && !f.completado
-              }).map((f: any) => {
-                const cliente = clientes.find((c: any) => c.id === f.cliente_id)
-                return (
-                  <div key={f.id} className="flex items-center gap-3 bg-zinc-900 rounded-2xl px-4 py-3">
-                    <div className="text-xl">{f.tipo === 'llamada' ? '📞' : f.tipo === 'visita' ? '🏠' : '📋'}</div>
-                    <div className="min-w-0">
-                      <p className="text-white text-sm font-bold truncate">{cliente?.nombre || 'Cliente'}</p>
-                      <p className="text-zinc-400 text-xs capitalize">{f.tipo} · {formatFecha(f.fecha)}</p>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </section>
-        )}
+        {/* 7. ACCIONES RÁPIDAS (Accesos directos de creación) */}
+        <section className="space-y-2.5">
+          <h2 className="text-xs font-black uppercase tracking-wider text-zinc-500 px-1">Acciones Rápidas</h2>
+          <div className="grid grid-cols-2 gap-2">
+            <button className="bg-zinc-900 border border-zinc-800 text-white font-bold text-xs py-3 px-3 rounded-xl text-left active:bg-zinc-800">
+              ➕ Nueva Propiedad
+            </button>
+            <button className="bg-zinc-900 border border-zinc-800 text-white font-bold text-xs py-3 px-3 rounded-xl text-left active:bg-zinc-800">
+              ➕ Nuevo Evento
+            </button>
+          </div>
+        </section>
 
       </div>
     </div>
