@@ -112,7 +112,6 @@ export default function DashboardMobile({
                         className="flex items-center justify-center gap-2 bg-green-600 active:bg-green-500 text-white font-black py-4 rounded-xl text-sm transition-colors"
                         onClick={e => e.stopPropagation()}
                       >
-                        <span className="text-xl">💬</span>
                         WhatsApp
                       </a>
                       
@@ -120,7 +119,6 @@ export default function DashboardMobile({
                         className="flex items-center justify-center gap-2 bg-zinc-700 active:bg-zinc-600 text-white font-black py-4 rounded-xl text-sm transition-colors"
                         onClick={e => e.stopPropagation()}
                       >
-                        <span className="text-xl">📞</span>
                         Llamar
                       </a>
                     </div>
@@ -135,7 +133,7 @@ export default function DashboardMobile({
         {fantasmas.length > 0 && (
           <section>
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-lg">👻</span>
+              <span>👻</span>
               <h2 className="text-white font-black text-sm uppercase tracking-widest">Fantasmas</h2>
               <span className="bg-red-500/20 text-red-400 text-xs font-bold px-2 py-0.5 rounded-full">{fantasmas.length}</span>
             </div>
@@ -168,7 +166,7 @@ export default function DashboardMobile({
         {propiedadesMatch.length > 0 && (
           <section>
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-lg">🔥</span>
+              <span>🔥</span>
               <h2 className="text-white font-black text-sm uppercase tracking-widest">Matches</h2>
               <span className="bg-amber-500/20 text-amber-400 text-xs font-bold px-2 py-0.5 rounded-full">{propiedadesMatch.length}</span>
             </div>
@@ -199,7 +197,7 @@ export default function DashboardMobile({
         {/* SECTORES - Carrusel horizontal */}
         <section>
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-lg">📍</span>
+            <span>📍</span>
             <h2 className="text-white font-black text-sm uppercase tracking-widest">Sectores</h2>
             {sectorActivo && (
               <button onClick={() => setSectorActivo(null)} className="ml-auto text-zinc-500 text-xs">Limpiar</button>
@@ -251,7 +249,7 @@ export default function DashboardMobile({
         }).length > 0 && (
           <section>
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-lg">📅</span>
+              <span>📅</span>
               <h2 className="text-white font-black text-sm uppercase tracking-widest">Agenda hoy</h2>
             </div>
             <div className="space-y-2">
