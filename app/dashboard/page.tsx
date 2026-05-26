@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
+import DashboardMobile from '../components/DashboardMobile'
 
 const SECTORES = ['Piantini','Naco','Bella Vista','Evaristo Morales','Serralles','Los Cacicazgos','Arroyo Hondo','Viejo Arroyo Hondo','La Esperilla','El Millon','Mirador Norte','Mirador Sur']
 
@@ -125,7 +126,41 @@ export default function Dashboard() {
     </div>
   )
 
+  const fantasmas = clientes.filter((cliente: any) => {
+    const del_cliente = contactos.filter((c: any) => c.cliente_id === cliente.id)
+    if (del_cliente.length === 0) return true
+    const ultimo = del_cliente.sort((a: any, b: any) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())[0]
+    const dias = (Date.now() - new Date(ultimo.fecha).getTime()) / (1000 * 60 * 60 * 24)
+    return dias >= 7
+  })
+
+  const propiedadesMatch = clientesConMatch.map((c: any) => ({
+    cliente: c,
+    matches: properties.filter((p: any) => calcularMatch(c, p) > 0)
+  }))
+
   return (
+    <>
+      <DashboardMobile
+        leads={leads}
+        fantasmas={fantasmas}
+        sinContactar={sinContactar}
+        propiedadesMatch={propiedadesMatch}
+        followups={followups}
+        contactos={contactos}
+        clientes={clientes}
+        SECTORES={SECTORES}
+        calcularMatch={calcularMatch}
+        properties={properties}
+        formatPrice={(p, m) => new Intl.NumberFormat('es-DO', { style: 'currency', currency: m || 'USD', maximumFractionDigits: 0 }).format(parseFloat(p?.replace(/[^0-9.]/g, '') || '0'))}
+        formatFecha={(f) => new Date(f).toLocaleDateString('es-DO', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+        diasSinContacto={(cts, cid) => {
+          const del_cliente = cts.filter((c: any) => c.cliente_id === cid)
+          if (del_cliente.length === 0) return null
+          const ultimo = del_cliente.sort((a: any, b: any) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())[0]
+          return Math.floor((Date.now() - new Date(ultimo.fecha).getTime()) / (1000 * 60 * 60 * 24))
+        }}
+      />
     <div className="min-h-screen bg-[#0a0a0a] p-4 md:p-8 pb-40 overflow-x-hidden w-full">
       <div className="max-w-5xl mx-auto w-full">
 
