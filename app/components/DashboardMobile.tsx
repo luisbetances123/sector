@@ -105,14 +105,28 @@ export default function DashboardMobile({
           </section>
         )}
 
-        {/* FANTASMAS */}
+        {/* FANTASMAS - Corregido para evitar solapamientos */}
         {fantasmas.length > 0 && (
           <section>
-            <div className="flex items-center gap-2 mb-3">
-              <span>👻</span>
-              <h2 className="text-white font-black text-sm uppercase tracking-widest">Fantasmas</h2>
-              <span className="bg-red-500/20 text-red-400 text-xs font-bold px-2 py-0.5 rounded-full">{fantasmas.length}</span>
+            <div className="flex items-end justify-between mb-3 w-full">
+              <div className="flex items-center gap-2">
+                <span className="text-base mb-0.5">👻</span>
+                <div className="flex flex-col">
+                  <h2 className="text-white font-black text-sm uppercase tracking-widest">Fantasmas</h2>
+                  <span className="text-[10px] text-red-400 font-bold bg-red-500/10 border border-red-500/20 rounded-full px-2 py-0.5 mt-1 w-max">
+                    {fantasmas.length} sin contacto +7 días
+                  </span>
+                </div>
+              </div>
+              
+              <Link 
+                href="/clients?filter=fantasmas" 
+                className="text-zinc-500 active:text-zinc-300 text-xs font-bold py-1 pl-4 shrink-0"
+              >
+                Ver todos →
+              </Link>
             </div>
+
             <div className="space-y-2">
               {fantasmas.slice(0, 3).map((c: any) => (
                 <div key={c.id} className="flex items-center justify-between bg-red-950/30 border border-red-900/40 rounded-2xl px-4 py-3">
