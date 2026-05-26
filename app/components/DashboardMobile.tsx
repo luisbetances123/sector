@@ -37,8 +37,17 @@ export default function DashboardMobile({
   }
 
   return (
-       <div className="fixed inset-0 w-full h-full bg-[#080808] text-white pb-36 font-sans overflow-y-auto z-50">
+    <div className="fixed inset-0 w-full h-full bg-[#080808] text-white pb-36 font-sans overflow-y-auto z-50 antialiased">
       
+      {/* Forzar escala móvil real en navegadores rebeldes */}
+      <style jsx global>{`
+        html, body {
+          viewport-fit: cover;
+          -webkit-text-size-adjust: 100%;
+          text-size-adjust: 100%;
+        }
+      `}</style>
+
       {/* 1. CABECERA MÓVIL AMPLIA */}
       <div className="sticky top-0 z-40 bg-[#080808]/95 backdrop-blur-md px-5 pt-14 pb-5 border-b border-zinc-800/80">
         <div className="flex items-center justify-between">
@@ -54,27 +63,27 @@ export default function DashboardMobile({
 
       <div className="px-5 pt-5 space-y-7">
 
-        {/* 2. CONTADORES MÉTRICOS AMPLIOS (Cuadrícula de 2 columnas legible) */}
+        {/* 2. CONTADORES MÉTRICOS AMPLIOS */}
         <div className="grid grid-cols-2 gap-4">
-          <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-4 shadow-sm">
+          <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-5 shadow-sm">
             <p className="text-zinc-400 text-xs font-bold tracking-wider uppercase flex items-center gap-1.5">👥 Clientes</p>
             <p className="text-3xl font-black mt-2 text-white">{clientes.length || 3}</p>
           </div>
-          <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-4 shadow-sm">
+          <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-5 shadow-sm">
             <p className="text-amber-400 text-xs font-bold tracking-wider uppercase flex items-center gap-1.5">🔴 Leads</p>
             <p className="text-3xl font-black mt-2 text-amber-500">{leads.length || 1}</p>
           </div>
-          <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-4 shadow-sm">
+          <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-5 shadow-sm">
             <p className="text-emerald-400 text-xs font-bold tracking-wider uppercase flex items-center gap-1.5">🏠 Propiedades</p>
             <p className="text-3xl font-black mt-2 text-emerald-500">{properties.length || 3}</p>
           </div>
-          <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-4 shadow-sm">
+          <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-5 shadow-sm">
             <p className="text-blue-400 text-xs font-bold tracking-wider uppercase flex items-center gap-1.5">📅 Seguim.</p>
             <p className="text-3xl font-black mt-2 text-blue-500">{followups.length || 1}</p>
           </div>
         </div>
 
-        {/* 3. AGENDA DE HOY (Más visible y limpia) */}
+        {/* 3. AGENDA DE HOY */}
         <section className="bg-zinc-900/40 border border-zinc-800 rounded-2xl p-5">
           <div className="flex items-center justify-between mb-3.5">
             <h2 className="text-sm font-black uppercase tracking-widest text-zinc-300 flex items-center gap-2">📅 Agenda de hoy</h2>
@@ -85,7 +94,7 @@ export default function DashboardMobile({
           </div>
         </section>
 
-        {/* 4. VISUALIZADOR DEL PIPELINE (Barras gruesas y letras grandes) */}
+        {/* 4. VISUALIZADOR DEL PIPELINE */}
         <section className="bg-zinc-900/40 border border-zinc-800 rounded-2xl p-5 space-y-4">
           <h2 className="text-sm font-black uppercase tracking-widest text-zinc-300">📊 Estado del Pipeline</h2>
           
@@ -122,15 +131,15 @@ export default function DashboardMobile({
           </div>
         </section>
 
-        {/* 5. BUSCAR POR SECTOR (Dos columnas más grandes, ideales para dedos) */}
+        {/* 5. BUSCAR POR SECTOR */}
         <section className="bg-zinc-900/40 border border-zinc-800 rounded-2xl p-5">
           <h2 className="text-sm font-black uppercase tracking-widest text-zinc-300 mb-4">📍 Sectores Principales</h2>
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-2 gap-3">
             {SECTORES.slice(0, 8).map((sector) => (
               <button
                 key={sector}
                 onClick={() => setSectorActivo(sectorActivo === sector ? null : sector)}
-                className={`text-xs font-bold py-3 px-3 rounded-xl border transition-all truncate text-center ${
+                className={`text-sm font-bold py-3.5 px-3 rounded-xl border transition-all truncate text-center ${
                   sectorActivo === sector
                     ? 'bg-amber-500 border-amber-400 text-black shadow-md font-black'
                     : 'bg-zinc-950/80 border-zinc-800/80 text-zinc-300 active:bg-zinc-800'
@@ -142,7 +151,7 @@ export default function DashboardMobile({
           </div>
         </section>
 
-        {/* 6. ACCIONES RÁPIDAS (Grandes botones corporativos) */}
+        {/* 6. ACCIONES RÁPIDAS */}
         <section className="space-y-3">
           <h2 className="text-sm font-black uppercase tracking-widest text-zinc-400 px-1">Acciones Rápidas</h2>
           <div className="grid grid-cols-2 gap-3">
