@@ -273,15 +273,40 @@ export default function Dashboard() {
           })
           if (fantasmas.length === 0) return null
           return (
-            <section className="mb-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-xl">👻</span>
-                  <h2 className="text-white font-black uppercase text-sm tracking-wider">Clientes Fantasma</h2>
-                  <span className="bg-red-500/20 text-red-400 text-xs font-bold px-2 py-0.5 rounded-full border border-red-500/30">{fantasmas.length} sin contacto +7 días</span>
-                </div>
-                <Link href="/clients" className="text-zinc-500 text-xs hover:text-white transition-colors">Ver todos</Link>
-              </div>
+         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 w-full">
+  <div className="flex items-center gap-2">
+    <span className="text-xl">👻</span>
+    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+      <h2 className="text-white font-black text-sm uppercase tracking-widest">
+        Clientes Fantasma
+      </h2>
+      {/* Usamos fantasmas.length para que coincida perfectamente con tu archivo */}
+      <span className="bg-red-500/20 text-red-400 text-xs font-bold px-2 py-0.5 rounded-full border border-red-500/30 w-max">
+        {fantasmas.length} sin contacto +7 días
+      </span>
+    </div>
+  </div>
+
+  <Link 
+    href="/clients" 
+    className="text-zinc-500 hover:text-white transition-colors text-xs font-bold py-1 sm:pl-4 self-end sm:self-auto shrink-0"
+  >
+    Ver todos →
+  </Link>
+</div>
+        {fantasmas.length} sin contacto +7 días
+      </span>
+    </div>
+  </div>
+
+  {/* El botón "Ver todos" se mantiene limpio, cliqueable y a la derecha */}
+  <Link 
+    href="/clients" 
+    className="text-zinc-500 hover:text-white transition-colors text-xs font-bold py-1 sm:pl-4 self-end sm:self-auto shrink-0"
+  >
+    Ver todos →
+  </Link>
+</div>
               <div className="flex flex-col gap-2">
                 {fantasmas.slice(0, 5).map((c: any) => (
                   <div key={c.id} className="flex items-center justify-between bg-red-950/30 border border-red-900/40 rounded-2xl px-4 py-3">
