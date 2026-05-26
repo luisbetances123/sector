@@ -1,5 +1,5 @@
 'use client'
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 
 interface Props {
@@ -24,22 +24,6 @@ export default function DashboardMobile({
   calcularMatch, properties, formatPrice, formatFecha, diasSinContacto
 }: Props) {
   const [sectorActivo, setSectorActivo] = useState<string | null>(null)
-  const [swipeStates, setSwipeStates] = useState<Record<string, number>>({})
-  const touchStartX = useRef<Record<string, number>>({})
-
-  const handleTouchStart = (id: string, x: number) => {
-    touchStartX.current[id] = x
-  }
-
-  const handleTouchEnd = (id: string, x: number, telefono: string) => {
-    const diff = touchStartX.current[id] - x
-    if (diff > 60) {
-      window.open(`https://wa.me/${telefono?.replace(/\D/g, '')}`, '_blank')
-    } else if (diff < -60) {
-      window.location.href = `tel:${telefono}`
-    }
-    setSwipeStates(prev => ({ ...prev, [id]: 0 }))
-  }
 
   const propsFiltradas = sectorActivo
     ? properties.filter((p: any) => p.sector === sectorActivo)
@@ -51,16 +35,18 @@ export default function DashboardMobile({
   return (
     <div className="md:hidden min-h-screen bg-[#080808] text-white pb-24">
 
-      {/* Header compacto */}
+      {/* Header compacto y corregido */}
       <div className="sticky top-0 z-40 bg-[#080808]/95 backdrop-blur-sm px-4 pt-4 pb-3 border-b border-zinc-800/50">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           <div>
             <p className="text-zinc-500 text-xs">{saludo}</p>
             <h1 className="text-white font-black text-xl tracking-tight">HOMVI</h1>
           </div>
-          <div className="flex items-center gap-2">
+          
+          {/* Contenedor alineado para alertas y notificaciones */}
+          <div className="flex items-center gap-2 max-w-[60%] shrink-0">
             {leads.length > 0 && (
-              <span className="bg-red-500 text-white text-xs font-black px-2 py-1 rounded-full animate-pulse">
+              <span className="bg-red-500 text-white text-[10px] font-black px-2 py-1 rounded-full animate-pulse whitespace-nowrap">
                 {leads.length} urgente{leads.length > 1 ? 's' : ''}
               </span>
             )}
@@ -70,7 +56,7 @@ export default function DashboardMobile({
 
       <div className="px-4 pt-4 space-y-5">
 
-        {/* LEADS - Tarjetas con swipe */}
+        {/* LEADS - Tarjetas fijas y directas sin Swipe */}
         {leads.length > 0 && (
           <section>
             <div className="flex items-center gap-2 mb-3">
@@ -78,53 +64,41 @@ export default function DashboardMobile({
               <h2 className="text-white font-black text-sm uppercase tracking-widest">Leads urgentes</h2>
               <span className="bg-red-500/20 text-red-400 text-xs font-bold px-2 py-0.5 rounded-full">{leads.length}</span>
             </div>
-            <p className="text-zinc-600 text-xs mb-3">← Desliza para llamar · Desliza para WhatsApp →</p>
+            
             <div className="space-y-3">
               {leads.slice(0, 5).map((c: any) => (
-                <div
-                  key={c.id}
-                  className="relative overflow-hidden rounded-2xl bg-zinc-900 border border-red-900/40"
-                  onTouchStart={e => handleTouchStart(c.id, e.touches[0].clientX)}
-                  onTouchEnd={e => handleTouchEnd(c.id, e.changedTouches[0].clientX, c.telefono)}
-                >
-                  {/* Indicadores de swipe */}
-                  <div className="absolute inset-0 flex items-center justify-between px-5 pointer-events-none">
-                    <div className="text-green-400 opacity-30 text-2xl">📞</div>
-                    <div className="text-green-500 opacity-30 text-2xl">💬</div>
+                <div key={c.id} className="rounded-2xl bg-zinc-900 border border-red-900/40 p-4">
+                  
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-full bg-amber-500 flex items-center justify-center text-black font-black text-lg shrink-0">
+                      {c.nombre?.[0]?.toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-white font-bold text-base truncate">{c.nombre}</p>
+                      <p className="text-zinc-400 text-xs truncate">{c.email}</p>
+                    </div>
                   </div>
 
-                  <div className="relative p-4">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 rounded-full bg-amber-500 flex items-center justify-center text-black font-black text-lg shrink-0">
-                        {c.nombre?.[0]?.toUpperCase()}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-white font-bold text-base truncate">{c.nombre}</p>
-                        <p className="text-zinc-400 text-xs truncate">{c.email}</p>
-                      </div>
-                    </div>
+                  {/* Botones de acción directos */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <a
+                      href={`https://wa.me/${c.telefono?.replace(/\D/g, '')}`}
+                      target="_blank"
+                      className="flex items-center justify-center gap-2 bg-green-600 active:bg-green-500 text-white font-black py-4 rounded-xl text-sm transition-colors"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      💬 WhatsApp
+                    </a>
 
-                    {/* Botones grandes */}
-                    <div className="grid grid-cols-2 gap-3">
-                      <a
-                        href={`https://wa.me/${c.telefono?.replace(/\D/g, '')}`}
-                        target="_blank"
-                        className="flex items-center justify-center gap-2 bg-green-600 active:bg-green-500 text-white font-black py-4 rounded-xl text-sm transition-colors"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        💬 WhatsApp
-                      </a>
-
-                      <a
-                        href={`tel:${c.telefono}`}
-                        className="flex items-center justify-center gap-2 bg-zinc-700 active:bg-zinc-600 text-white font-black py-4 rounded-xl text-sm transition-colors"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        📞 Llamar
-                      </a>
-                    </div>
-
+                    <a
+                      href={`tel:${c.telefono}`}
+                      className="flex items-center justify-center gap-2 bg-zinc-700 active:bg-zinc-600 text-white font-black py-4 rounded-xl text-sm transition-colors"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      📞 Llamar
+                    </a>
                   </div>
+
                 </div>
               ))}
             </div>
@@ -165,7 +139,7 @@ export default function DashboardMobile({
           </section>
         )}
 
-        {/* MATCHES - Botón full width */}
+        {/* MATCHES */}
         {propiedadesMatch.length > 0 && (
           <section>
             <div className="flex items-center gap-2 mb-3">
@@ -197,7 +171,7 @@ export default function DashboardMobile({
           </section>
         )}
 
-        {/* SECTORES - Carrusel horizontal */}
+        {/* SECTORES */}
         <section>
           <div className="flex items-center gap-2 mb-3">
             <span>📍</span>
