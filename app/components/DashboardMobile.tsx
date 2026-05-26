@@ -42,8 +42,7 @@ export default function DashboardMobile({
   }
 
   return (
-    <div className="md:hidden min-h-screen bg-[#080808] text-white pb-32">
-      
+<div className="w-full min-h-screen bg-[#080808] text-white pb-32">      
       {/* 1. CABECERA MÓVIL PREMIUM */}
       <div className="sticky top-0 z-40 bg-[#080808]/95 backdrop-blur-sm px-4 pt-16 pb-4 border-b border-zinc-800/50">
         <div className="flex items-center justify-between gap-4">
