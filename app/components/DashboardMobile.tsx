@@ -35,22 +35,22 @@ export default function DashboardMobile({
   return (
     <div className="md:hidden min-h-screen bg-[#080808] text-white pb-24">
 
-      {/* Header compacto y corregido */}
-      <div className="sticky top-0 z-40 bg-[#080808]/95 backdrop-blur-sm px-4 pt-4 pb-3 border-b border-zinc-800/50">
-        <div className="flex items-center justify-between gap-2">
+      {/* Cabecera Móvil - Añadimos pt-16 para empujar el contenido abajo y evitar que lo tape el botón flotante global */}
+      <div className="sticky top-0 z-40 bg-[#080808]/95 backdrop-blur-sm px-4 pt-16 pb-4 border-b border-zinc-800/50">
+        <div className="flex items-center justify-between gap-4">
           <div>
             <p className="text-zinc-500 text-xs">{saludo}</p>
-            <h1 className="text-white font-black text-xl tracking-tight">HOMVI</h1>
+            <h1 className="text-white font-black text-2xl tracking-tight">HOMVI</h1>
           </div>
           
-          {/* Contenedor alineado para alertas y notificaciones */}
-          <div className="flex items-center gap-2 max-w-[60%] shrink-0">
-            {leads.length > 0 && (
-              <span className="bg-red-500 text-white text-[10px] font-black px-2 py-1 rounded-full animate-pulse whitespace-nowrap">
-                {leads.length} urgente{leads.length > 1 ? 's' : ''}
+          {/* Indicador de urgencia reubicado de forma segura a la derecha */}
+          {leads.length > 0 && (
+            <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-3 py-2 shrink-0">
+              <span className="bg-red-500 text-white text-[11px] font-black px-2 py-0.5 rounded-full animate-pulse block text-center">
+                {leads.length} URGENTE{leads.length > 1 ? 'S' : ''}
               </span>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
 
