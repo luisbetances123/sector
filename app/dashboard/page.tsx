@@ -41,12 +41,23 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
   const [contactos, setContactos] = useState<any[]>([])
   const [pushActivo, setPushActivo] = useState(false)
-  
-  // 📱 NUEVO: Estado para detectar si es celular al instante
   const [isMobile, setIsMobile] = useState(false)
 
+  // Funciones de formateo reales del negocio
+  const formatPrice = (p: string, m?: string) => 
+    new Intl.NumberFormat('es-DO', { style: 'currency', currency: m || 'USD', maximumFractionDigits: 0 }).format(parseFloat(p?.replace(/[^0-9.]/g, '') || '0'))
+  
+  const formatFecha = (f: string) => 
+    new Date(f).toLocaleDateString('es-DO', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+  
+  const diasSinContacto = (cts: any[], cid: string) => {
+    const del_cliente = cts.filter((c: any) => c.cliente_id === cid)
+    if (del_cliente.length === 0) return null
+    const ultimo = del_cliente.sort((a: any, b: any) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())[0]
+    return Math.floor((Date.now() - new Date(ultimo.fecha).getTime()) / (1000 * 60 * 60 * 24))
+  }
+
   useEffect(() => {
-    // Detectamos el ancho de la pantalla inmediatamente al cargar
     const checkDevice = () => {
       setIsMobile(window.innerWidth < 768)
     }
@@ -55,27 +66,22 @@ export default function Dashboard() {
     return () => window.removeEventListener('resize', checkDevice)
   }, [])
 
-  // Si detecta que es celular, pintamos DIRECTAMENTE la vista móvil con esteroides
-  // Esto evita que las restricciones de Supabase en incógnito rompan la pantalla
-  if (isMobile) {
-    return (
-      <DashboardMobile 
-        leads={[]} // Pasamos arreglos seguros para evitar caídas por políticas RLS
-        fantasmas={[]}
-        sinContactar={[]}
-        propiedadesMatch={[]}
-        followups={followups}
-        contactos={contactos}
-        clientes={clientes}
-        SECTORES={SECTORES}
-        calcularMatch={calcularMatch}
-        properties={properties}
-        formatPrice={(p) => p}
-        formatFecha={(f) => f}
-        diasSinContacto={() => null}
-      />
-    )
-  }
+  useEffect(() => {
+    async function fetchAll() {
+      const [c, p, f, ct] = await Promise.all([
+        supabase.from('clientes').select('*'),
+        supabase.from('properties').select('*').eq('estado', 'disponible'),
+        supabase.from('followups').select('*'),
+        supabase.from('contactos_whatsapp').select('*').order('fecha', { ascending: false }),
+      ])
+      if (c.data) setClientes(c.data)
+      if (p.data) setProperties(p.data)
+      if (f.data) setFollowups(f.data)
+      if (ct.data) setContactos(ct.data)
+      setLoading(false)
+    }
+    fetchAll()
+  }, [])
 
   const activarNotificaciones = async () => {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
@@ -98,30 +104,13 @@ export default function Dashboard() {
     alert('Notificaciones activadas')
   }
 
-  useEffect(() => {
-    async function fetchAll() {
-      const [c, p, f, ct] = await Promise.all([
-        supabase.from('clientes').select('*'),
-        supabase.from('properties').select('*').eq('estado', 'disponible'),
-        supabase.from('followups').select('*'),
-        supabase.from('contactos_whatsapp').select('*').order('fecha', { ascending: false }),
-      ])
-      if (c.data) setClientes(c.data)
-      if (p.data) setProperties(p.data)
-      if (f.data) setFollowups(f.data)
-      if (ct.data) setContactos(ct.data)
-      setLoading(false)
-    }
-    fetchAll()
-  }, [])
-
   if (loading) return (
     <div className="flex items-center justify-center min-h-screen bg-black">
       <p className="text-amber-500 font-black text-2xl animate-pulse">HOMVI</p>
     </div>
   )
 
-  // Procesamiento de datos intermedios
+  // Procesamiento intermedio de datos e historiales
   const hoyStr = new Date().toISOString().split('T')[0]
   const followupsHoy = followups.filter(f => f.fecha === hoyStr && !f.hecho)
   const followupsPendientes = followups.filter(f => !f.hecho).length
@@ -177,33 +166,30 @@ export default function Dashboard() {
 
   const clientesActivos = clientes.filter(c => c.etapa === 'Buscando' || c.etapa === 'En Oferta')
 
+  // 📱 DESVÍO MÓVIL SEGURO (Se ejecuta con variables y funciones ya listas)
+  if (isMobile) {
+    return (
+      <DashboardMobile
+        leads={leads}
+        fantasmas={fantasmas}
+        sinContactar={sinContactar}
+        propiedadesMatch={propiedadesMatch}
+        followups={followups}
+        contactos={contactos}
+        clientes={clientes}
+        SECTORES={SECTORES}
+        calcularMatch={calcularMatch}
+        properties={properties}
+        formatPrice={formatPrice}
+        formatFecha={formatFecha}
+        diasSinContacto={diasSinContacto}
+      />
+    )
+  }
+
   return (
     <>
-      {/* 📱 BLOQUE MÓVIL AISLADO (Se oculta en computadoras) */}
-      <div className="block md:hidden">
-        <DashboardMobile
-          leads={leads}
-          fantasmas={fantasmas}
-          sinContactar={sinContactar}
-          propiedadesMatch={propiedadesMatch}
-          followups={followups}
-          contactos={contactos}
-          clientes={clientes}
-          SECTORES={SECTORES}
-          calcularMatch={calcularMatch}
-          properties={properties}
-          formatPrice={(p, m) => new Intl.NumberFormat('es-DO', { style: 'currency', currency: m || 'USD', maximumFractionDigits: 0 }).format(parseFloat(p?.replace(/[^0-9.]/g, '') || '0'))}
-          formatFecha={(f) => new Date(f).toLocaleDateString('es-DO', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
-          diasSinContacto={(cts, cid) => {
-            const del_cliente = cts.filter((c: any) => c.cliente_id === cid)
-            if (del_cliente.length === 0) return null
-            const ultimo = del_cliente.sort((a: any, b: any) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())[0]
-            return Math.floor((Date.now() - new Date(ultimo.fecha).getTime()) / (1000 * 60 * 60 * 24))
-          }}
-        />
-      </div>
-
-      {/* 💻 BLOQUE ESCRITORIO AISLADO (Se oculta por completo en móviles) */}
+      {/* 💻 BLOQUE ESCRITORIO (Solo visible en pantallas medianas/grandes) */}
       <div className="hidden md:block min-h-screen bg-[#0a0a0a] p-4 md:p-8 pb-40 overflow-x-hidden w-full">
         <div className="max-w-5xl mx-auto w-full">
 
@@ -442,7 +428,7 @@ export default function Dashboard() {
                   {followupsHoy.length > 0 && (
                     <span className="bg-amber-500 text-black text-xs font-black px-2.5 py-0.5 rounded-full">
                       {followupsHoy.length}
-                  </span>
+                    </span>
                   )}
                 </div>
                 <Link href="/hoy" className="text-zinc-400 hover:text-amber-400 text-xs uppercase tracking-wider transition-colors shrink-0 font-bold">
