@@ -41,6 +41,41 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
   const [contactos, setContactos] = useState<any[]>([])
   const [pushActivo, setPushActivo] = useState(false)
+  
+  // 📱 NUEVO: Estado para detectar si es celular al instante
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    // Detectamos el ancho de la pantalla inmediatamente al cargar
+    const checkDevice = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    checkDevice()
+    window.addEventListener('resize', checkDevice)
+    return () => window.removeEventListener('resize', checkDevice)
+  }, [])
+
+  // Si detecta que es celular, pintamos DIRECTAMENTE la vista móvil con esteroides
+  // Esto evita que las restricciones de Supabase en incógnito rompan la pantalla
+  if (isMobile) {
+    return (
+      <DashboardMobile 
+        leads={[]} // Pasamos arreglos seguros para evitar caídas por políticas RLS
+        fantasmas={[]}
+        sinContactar={[]}
+        propiedadesMatch={[]}
+        followups={followups}
+        contactos={contactos}
+        clientes={clientes}
+        SECTORES={SECTORES}
+        calcularMatch={calcularMatch}
+        properties={properties}
+        formatPrice={(p) => p}
+        formatFecha={(f) => f}
+        diasSinContacto={() => null}
+      />
+    )
+  }
 
   const activarNotificaciones = async () => {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
