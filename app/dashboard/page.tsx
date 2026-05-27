@@ -579,7 +579,6 @@ export default function Dashboard() {
 
         </div>
       </div>
-
       {/* Botón flotante — Solo visible en desktop */}
       <Link href="/clients"
         className="hidden md:flex fixed bottom-8 right-8 z-50 bg-amber-500 hover:bg-white text-black px-4 py-2.5 rounded-xl font-black text-xs uppercase shadow-xl shadow-amber-500/40 transition-all items-center gap-1.5">
@@ -588,5 +587,4 @@ export default function Dashboard() {
       </Link>
     </>
   )
-} )
 }
