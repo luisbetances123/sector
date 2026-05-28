@@ -37,7 +37,8 @@ export default function DashboardMobile({
   }
 
   return (
-    <div className="fixed inset-0 w-full h-full bg-[#080808] text-white pb-40 font-sans overflow-y-auto z-50 antialiased selection:bg-amber-500 selection:text-black">
+    /* CAMBIO CLAVE: Quitamos fixed inset-0 para que use el ancho total real y no se comprima */
+    <div className="relative w-full min-h-screen bg-[#080808] text-white pb-32 font-sans antialiased selection:bg-amber-500 selection:text-black">
       
       {/* Forzar escala móvil real e inyección de Viewport agresiva */}
       <style jsx global>{`
@@ -45,12 +46,13 @@ export default function DashboardMobile({
           viewport-fit: cover;
           -webkit-text-size-adjust: 100%;
           text-size-adjust: 100%;
-          font-size: 16px !important; /* Base sólida para evitar fuentes microscópicas */
+          font-size: 16px !important;
+          background-color: #080808 !important;
         }
       `}</style>
 
       {/* 1. CABECERA MÓVIL GIGANTE */}
-      <div className="sticky top-0 z-40 bg-[#080808]/95 backdrop-blur-md px-6 pt-16 pb-6 border-b border-zinc-800/90">
+      <div className="sticky top-0 z-40 bg-[#080808]/95 backdrop-blur-md px-6 pt-14 pb-6 border-b border-zinc-800/90">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-zinc-400 text-sm font-black tracking-widest uppercase">{saludo}, Luis 👋</p>
@@ -155,7 +157,7 @@ export default function DashboardMobile({
         </section>
 
         {/* 6. ACCIONES RÁPIDAS EXTRAGRANDE */}
-        <section className="space-y-4 pb-4">
+        <section className="space-y-4 pb-12">
           <h2 className="text-base font-black uppercase tracking-widest text-zinc-400 px-1">Acciones Rápidas</h2>
           <div className="grid grid-cols-2 gap-4">
             <button className="bg-amber-500 border-2 border-amber-400 text-black font-black text-base py-5 px-5 rounded-2xl text-left active:scale-95 transition-all shadow-lg flex flex-col justify-between h-24">
