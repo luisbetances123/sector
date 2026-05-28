@@ -1,8 +1,7 @@
 'use client'
-import { useState } from 'react'
-import NotificationBell from './NotificationBell'
+import React from 'react'
 
-interface Props {
+interface DashboardMobileProps {
   leads: any[]
   fantasmas: any[]
   sinContactar: any[]
@@ -11,203 +10,260 @@ interface Props {
   contactos: any[]
   clientes: any[]
   SECTORES: string[]
-  calcularMatch: (c: any, p: any) => number
+  calcularMatch: (cliente: any, propiedad: any) => number
   properties: any[]
-  formatPrice: (p: string, m: string) => string
+  formatPrice: (p: string, m?: string) => string
   formatFecha: (f: string) => string
-  diasSinContacto: (contactos: any[], clienteId: string) => number | null
-  setView?: (view: string) => void // Proporciona el control de navegación interno
+  diasSinContacto: (cts: any[], cid: string) => number | null
+  currentView: string  
+  setView: (view: string) => void 
 }
 
 export default function DashboardMobile({
-  leads, fantasmas, sinContactar, propiedadesMatch,
-  followups, contactos, clientes, SECTORES,
-  calcularMatch, properties, formatPrice, formatFecha, diasSinContacto,
+  leads,
+  fantasmas,
+  sinContactar,
+  propiedadesMatch,
+  followups,
+  contactos,
+  clientes,
+  SECTORES,
+  calcularMatch,
+  properties,
+  formatPrice,
+  formatFecha,
+  diasSinContacto,
+  currentView,
   setView
-}: Props) {
-  const [sectorActivo, setSectorActivo] = useState<string | null>(null)
+}: DashboardMobileProps) {
 
-  const horaActual = new Date().getHours()
-  const saludo = horaActual < 12 ? 'Buenos días' : horaActual < 19 ? 'Buenas tardes' : 'Buenas noches'
+  // 📱 Renderizado dinámico según la pestaña activa
+  const renderContent = () => {
+    switch (currentView) {
+      case 'clientes':
+        return (
+          <div className="p-4 text-white animate-fadeIn">
+            <h2 className="text-2xl font-black mb-4 uppercase tracking-tight">👥 Lista de Clientes</h2>
+            <div className="flex flex-col gap-3">
+              {clientes.length === 0 ? (
+                <p className="text-zinc-500 text-sm">No hay clientes registrados.</p>
+              ) : (
+                clientes.map(c => (
+                  <div key={c.id} className="bg-zinc-900/60 p-4 border border-zinc-800 rounded-2xl flex justify-between items-center">
+                    <div>
+                      <p className="font-bold text-base text-white">{c.nombre}</p>
+                      <p className="text-zinc-500 text-xs mt-0.5">{c.telefono || 'Sin número registrado'}</p>
+                      <span className="inline-block text-[10px] px-2 py-0.5 bg-zinc-850 text-amber-400 font-black rounded-md mt-2 uppercase tracking-wider">
+                        {c.etapa}
+                      </span>
+                    </div>
+                    {c.telefono && (
+                      <a href={`https://wa.me/${c.telefono.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="bg-green-600 text-white p-2.5 rounded-xl text-sm">
+                        💬
+                      </a>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )
+      
+      case 'propiedades':
+        return (
+          <div className="p-4 text-white animate-fadeIn">
+            <h2 className="text-2xl font-black mb-4 uppercase tracking-tight">🏢 Inventario de Propiedades</h2>
+            <div className="flex flex-col gap-3">
+              {properties.length === 0 ? (
+                <p className="text-zinc-500 text-sm">No hay propiedades disponibles.</p>
+              ) : (
+                properties.map(p => (
+                  <div key={p.id} className="bg-zinc-900/60 p-4 border border-zinc-800 rounded-2xl">
+                    <p className="font-bold text-base text-white truncate">{p.title}</p>
+                    <p className="text-amber-500 font-mono font-black text-sm mt-1">{formatPrice(p.price, p.currency)}</p>
+                    <p className="text-zinc-400 text-xs mt-1.5 flex items-center gap-1">
+                      <span>📍</span> <span className="truncate">{p.sector || 'Sector no especificado'}</span>
+                    </p>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )
 
-  const pipelineCounts = {
-    lead: leads.length,
-    buscando: clientes.filter(c => c.status?.toLowerCase() === 'buscando').length || 2,
-    oferta: clientes.filter(c => c.status?.toLowerCase() === 'en oferta').length || 0,
-    cierre: clientes.filter(c => c.status?.toLowerCase() === 'cierre').length || 0
-  }
+      case 'pipeline':
+        return (
+          <div className="p-4 text-white animate-fadeIn">
+            <h2 className="text-2xl font-black mb-4 uppercase tracking-tight">📊 Pipeline de Ventas</h2>
+            <p className="text-zinc-400 text-sm mb-6">Estado operacional de los flujos de trabajo activos.</p>
+            
+            <div className="flex flex-col gap-4 bg-zinc-900/40 border border-zinc-800 p-5 rounded-3xl">
+              {['Lead', 'Buscando', 'En Oferta', 'Cierre'].map(etapa => {
+                const totalEtapa = clientes.filter(c => c.etapa === etapa).length
+                const maxEtapa = Math.max(...['Lead', 'Buscando', 'En Oferta', 'Cierre'].map(e => clientes.filter(c => c.etapa === e).length), 1)
+                return (
+                  <div key={etapa}>
+                    <div className="flex justify-between items-center mb-1.5">
+                      <span className="text-zinc-400 text-xs font-black uppercase tracking-wider">{etapa}</span>
+                      <span className="text-white font-black text-sm">{totalEtapa}</span>
+                    </div>
+                    <div className="h-2.5 bg-zinc-800 rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full rounded-full transition-all duration-500 ${
+                          etapa === 'Lead' ? 'bg-zinc-500' : etapa === 'Buscando' ? 'bg-blue-500' : etapa === 'En Oferta' ? 'bg-amber-500' : 'bg-green-500'
+                        }`}
+                        style={{ width: `${(totalEtapa / maxEtapa) * 100}%` }}
+                      />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )
 
-  // Manejador seguro por si no se pasa la función desde el padre
-  const navegarA = (vista: string) => {
-    if (setView) {
-      setView(vista)
-    } else {
-      console.warn(`La función setView no está definida. Intento de ir a: ${vista}`)
+      case 'alertas':
+        return (
+          <div className="p-4 text-white animate-fadeIn">
+            <h2 className="text-2xl font-black mb-4 uppercase tracking-tight">⚠️ Alertas del Sistema</h2>
+            
+            <div className="flex flex-col gap-3">
+              {fantasmas.length === 0 && sinContactar.length === 0 && leads.length === 0 ? (
+                <div className="bg-zinc-900/40 border border-zinc-800 p-6 rounded-3xl text-center">
+                  <span className="text-3xl">🎉</span>
+                  <p className="text-zinc-400 text-sm font-bold mt-2">¡Todo al día! No tienes alertas pendientes.</p>
+                </div>
+              ) : (
+                <>
+                  {leads.map(l => (
+                    <div key={l.id} className="bg-red-950/30 border border-red-900/60 p-4 rounded-2xl">
+                      <p className="text-red-400 text-xs font-black uppercase tracking-wider">🔴 LEAD SIN RESPONDER</p>
+                      <p className="text-white font-bold text-base mt-1">{l.nombre}</p>
+                      <p className="text-zinc-400 text-xs mt-0.5">{l.telefono || 'Sin teléfono'}</p>
+                    </div>
+                  ))}
+
+                  {fantasmas.map(f => (
+                    <div key={f.id} className="bg-zinc-900/80 border border-red-900/40 p-4 rounded-2xl">
+                      <p className="text-red-400 text-xs font-black uppercase tracking-wider">👻 CLIENTE FANTASMA</p>
+                      <p className="text-white font-bold text-base mt-1">{f.nombre}</p>
+                      <p className="text-zinc-500 text-xs mt-0.5">Más de 7 días sin contacto directo</p>
+                    </div>
+                  ))}
+
+                  {sinContactar.map(s => (
+                    <div key={s.id} className="bg-orange-950/20 border border-orange-900/40 p-4 rounded-2xl">
+                      <p className="text-orange-400 text-xs font-black uppercase tracking-wider">⏳ DESATENDIDO</p>
+                      <p className="text-white font-bold text-base mt-1">{s.nombre}</p>
+                      <p className="text-zinc-500 text-xs mt-0.5">Requiere seguimiento de rutina</p>
+                    </div>
+                  ))}
+                </>
+              )}
+            </div>
+          </div>
+        )
+
+      case 'dashboard':
+      default:
+        return (
+          <div className="p-4 animate-fadeIn">
+            {/* ── HEADER GIGANTE ── */}
+            <div className="mb-6">
+              <p className="text-zinc-500 text-xs uppercase tracking-widest font-black">BUENOS DÍAS, LUIS 👋</p>
+              <h1 className="text-4xl font-black text-white tracking-tighter mt-0.5">HOMVI<br/>CENTER</h1>
+            </div>
+
+            {/* ── BLOQUES DEL DASHBOARD INTERACTIVOS GIGANTES ── */}
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              <button onClick={() => setView('clientes')} className="bg-zinc-900/90 border-2 border-zinc-800 text-left p-5 rounded-3xl active:scale-95 transition-transform focus:outline-none">
+                <p className="text-zinc-500 text-xs uppercase font-black tracking-wider">👥 Clientes</p>
+                <p className="text-4xl font-black text-white mt-1.5">{clientes.length}</p>
+              </button>
+              
+              <button onClick={() => setView('alertas')} className="bg-zinc-900/90 border-2 border-zinc-800 text-left p-5 rounded-3xl active:scale-95 transition-transform focus:outline-none">
+                <p className="text-amber-500 text-xs uppercase font-black tracking-wider">🔴 Leads</p>
+                <p className="text-4xl font-black text-amber-500 mt-1.5">{leads.length}</p>
+              </button>
+              
+              <button onClick={() => setView('propiedades')} className="bg-zinc-900/90 border-2 border-zinc-800 text-left p-5 rounded-3xl active:scale-95 transition-transform focus:outline-none">
+                <p className="text-green-500 text-xs uppercase font-black tracking-wider">🏠 Proped.</p>
+                <p className="text-4xl font-black text-green-500 mt-1.5">{properties.length}</p>
+              </button>
+              
+              <button onClick={() => setView('pipeline')} className="bg-zinc-900/90 border-2 border-zinc-800 text-left p-5 rounded-3xl active:scale-95 transition-transform focus:outline-none">
+                <p className="text-blue-500 text-xs uppercase font-black tracking-wider">📅 Seguim.</p>
+                <p className="text-4xl font-black text-blue-500 mt-1.5">{followups.length}</p>
+              </button>
+            </div>
+
+            {/* ── SECTORES PRINCIPALES ── */}
+            <div className="bg-zinc-900/50 border border-zinc-800 p-5 rounded-3xl mb-6">
+              <h3 className="text-white font-black text-sm uppercase tracking-wide mb-3">📍 Sectores Principales</h3>
+              <div className="grid grid-cols-2 gap-2">
+                {SECTORES.slice(0, 8).map(s => (
+                  <button 
+                    key={s} 
+                    onClick={() => setView('propiedades')} 
+                    className="bg-zinc-950 border border-zinc-800 text-zinc-300 py-3.5 px-2 rounded-2xl font-black text-xs uppercase truncate text-center active:bg-amber-500 active:text-black transition-colors"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* ── ACCIONES RÁPIDAS GIGANTES ── */}
+            <div className="mb-6">
+              <h3 className="text-zinc-500 font-black text-xs uppercase tracking-wider mb-3">Acciones Rápidas</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <button onClick={() => setView('propiedades')} className="bg-amber-500 text-black p-5 rounded-3xl text-left font-black active:scale-95 transition-all focus:outline-none">
+                  <span className="text-2xl">🏠</span>
+                  <p className="text-sm uppercase font-black mt-3 tracking-wide">+ Propiedad</p>
+                </button>
+                <button onClick={() => setView('pipeline')} className="bg-zinc-900 border border-zinc-800 text-white p-5 rounded-3xl text-left font-black active:scale-95 transition-all focus:outline-none">
+                  <span className="text-2xl">📅</span>
+                  <p className="text-sm uppercase font-black mt-3 tracking-wide">+ Evento</p>
+                </button>
+              </div>
+            </div>
+          </div>
+        )
     }
   }
 
   return (
-    <div className="relative w-full min-h-screen bg-[#080808] text-white pb-36 font-sans antialiased block">
+    <div className="min-h-screen bg-black text-white pb-32 w-full overflow-x-hidden select-none">
       
-      <style jsx global>{`
-        html, body {
-          viewport-fit: cover;
-          -webkit-text-size-adjust: 100% !important;
-          text-size-adjust: 100% !important;
-          font-size: 18px !important;
-          background-color: #080808 !important;
-          width: 100% !important;
-          margin: 0 !important;
-          padding: 0 !important;
-        }
-      `}</style>
+      {/* Contenido Dinámico de la SPA */}
+      {renderContent()}
 
-      {/* 1. CABECERA MÓVIL ULTRA GIGANTE */}
-      <div className="w-full bg-[#080808]/95 backdrop-blur-md px-6 pt-16 pb-8 border-b-2 border-zinc-800/90">
-        <div className="flex items-center justify-between w-full">
-          <div>
-            <p className="text-zinc-400 text-base font-black tracking-widest uppercase">{saludo}, Luis 👋</p>
-            <h1 className="text-white font-black text-5xl tracking-tighter mt-2 uppercase italic text-transparent bg-clip-text bg-gradient-to-r from-white to-zinc-400">
-              HOMVI center
-            </h1>
-          </div>
-          <div className="flex items-center scale-150 justify-center w-14 h-14 bg-zinc-900 rounded-full border border-zinc-700 shrink-0 mr-2">
-            <NotificationBell />
-          </div>
-        </div>
-      </div>
-
-      <div className="w-full px-5 pt-8 space-y-10">
-
-        {/* 2. CONTADORES MÉTRICOS ENORMES INTERACTIVOS (POR EVENTO CLICK) */}
-        <div className="grid grid-cols-2 gap-5">
-          {/* CLIENTES */}
-          <button 
-            onClick={() => navegarA('clientes')}
-            className="block bg-zinc-900/90 border-2 border-zinc-800 rounded-2xl p-6 shadow-2xl active:scale-95 transition-all text-left w-full focus:outline-none"
-          >
-            <p className="text-zinc-400 text-sm font-black tracking-wider uppercase flex items-center gap-2">👥 Clientes</p>
-            <p className="text-5xl font-black mt-4 text-white tracking-tight">{clientes.length || 3}</p>
-          </button>
-
-          {/* LEADS */}
-          <button 
-            onClick={() => navegarA('pipeline')}
-            className="block bg-zinc-900/90 border-2 border-zinc-800 rounded-2xl p-6 shadow-2xl active:scale-95 transition-all text-left w-full focus:outline-none"
-          >
-            <p className="text-amber-400 text-sm font-black tracking-wider uppercase flex items-center gap-2">🔴 Leads</p>
-            <p className="text-5xl font-black mt-4 text-amber-500 tracking-tight">{leads.length || 1}</p>
-          </button>
-
-          {/* PROPIEDADES */}
-          <button 
-            onClick={() => navegarA('propiedades')}
-            className="block bg-zinc-900/90 border-2 border-zinc-800 rounded-2xl p-6 shadow-2xl active:scale-95 transition-all text-left w-full focus:outline-none"
-          >
-            <p className="text-emerald-400 text-sm font-black tracking-wider uppercase flex items-center gap-2">🏠 Proped.</p>
-            <p className="text-5xl font-black mt-4 text-emerald-500 tracking-tight">{properties.length || 3}</p>
-          </button>
-
-          {/* SEGUIMIENTOS */}
-          <button 
-            onClick={() => navegarA('calendario')}
-            className="block bg-zinc-900/90 border-2 border-zinc-800 rounded-2xl p-6 shadow-2xl active:scale-95 transition-all text-left w-full focus:outline-none"
-          >
-            <p className="text-blue-400 text-sm font-black tracking-wider uppercase flex items-center gap-2">📅 Seguim.</p>
-            <p className="text-5xl font-black mt-4 text-blue-500 tracking-tight">{followups.length || 1}</p>
-          </button>
-        </div>
-
-        {/* 3. AGENDA DE HOY INTERACTIVA */}
-        <section className="w-full bg-zinc-900 border-2 border-zinc-800 rounded-2xl p-6 shadow-xl">
-          <div onClick={() => navegarA('calendario')} className="flex items-center justify-between mb-5 cursor-pointer group">
-            <h2 className="text-lg font-black uppercase tracking-widest text-zinc-200 flex items-center gap-2">📅 Agenda de hoy</h2>
-            <span className="text-base text-amber-500 font-black tracking-wider uppercase group-hover:underline">Ver todo →</span>
-          </div>
-          <div 
-            onClick={() => navegarA('calendario')}
-            className="block bg-zinc-950/90 border border-zinc-800 rounded-xl p-8 text-center active:bg-zinc-900 transition-colors cursor-pointer"
-          >
-            <p className="text-lg text-zinc-400 font-bold">No tienes eventos programados para hoy</p>
-          </div>
-        </section>
-
-        {/* 4. PIPELINE DE ESTADO MAJESTUOSO */}
-        <div 
-          onClick={() => navegarA('pipeline')}
-          className="block w-full bg-zinc-900 border-2 border-zinc-800 rounded-2xl p-6 space-y-6 shadow-xl text-left active:scale-[0.99] transition-transform cursor-pointer"
-        >
-          <div className="flex justify-between items-center">
-            <h2 className="text-lg font-black uppercase tracking-widest text-zinc-200">📊 Estado del Pipeline</h2>
-            <span className="text-zinc-500 font-bold text-sm">Gestionar →</span>
-          </div>
-          
-          <div className="space-y-6 pt-2">
-            <div>
-              <div className="flex justify-between text-lg font-black text-zinc-300 mb-2">
-                <span>Leads sin procesar</span>
-                <span className="font-black text-amber-400 text-2xl">{pipelineCounts.lead}</span>
-              </div>
-              <div className="w-full bg-zinc-800 h-6 rounded-full overflow-hidden">
-                <div className="bg-amber-500 h-6 rounded-full" style={{ width: `${Math.min((pipelineCounts.lead/5)*100, 100)}%` }} />
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between text-lg font-black text-zinc-300 mb-2">
-                <span>En Búsqueda Activa</span>
-                <span className="font-black text-blue-400 text-2xl">{pipelineCounts.buscando}</span>
-              </div>
-              <div className="w-full bg-zinc-800 h-6 rounded-full overflow-hidden">
-                <div className="bg-blue-500 h-6 rounded-full" style={{ width: '65%' }} />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* 5. SECTORES */}
-        <section className="w-full bg-zinc-900 border-2 border-zinc-800 rounded-2xl p-6 shadow-xl">
-          <h2 className="text-lg font-black uppercase tracking-widest text-zinc-200 mb-5">📍 Sectores Principales</h2>
-          <div className="grid grid-cols-2 gap-4">
-            {SECTORES.slice(0, 8).map((sector) => (
-              <button
-                key={sector}
-                onClick={() => setSectorActivo(sectorActivo === sector ? null : sector)}
-                className={`text-lg font-black py-5 px-3 rounded-xl border-2 transition-all truncate text-center active:scale-95 ${
-                  sectorActivo === sector
-                    ? 'bg-amber-500 border-amber-300 text-black shadow-lg scale-102'
-                    : 'bg-zinc-950 border-zinc-850 text-zinc-200 active:bg-zinc-800'
-                }`}
-              >
-                {sector}
-              </button>
-            ))}
-          </div>
-        </section>
-
-        {/* 6. ACCIONES RÁPIDAS TITÁNICAS */}
-        <section className="space-y-5 pb-16 w-full">
-          <h2 className="text-lg font-black uppercase tracking-widest text-zinc-400 px-1">Acciones Rápidas</h2>
-          <div className="grid grid-cols-2 gap-5">
-            <button 
-              onClick={() => navegarA('propiedades')}
-              className="bg-amber-500 border-2 border-amber-400 text-black font-black text-lg py-6 px-5 rounded-2xl text-left active:scale-95 transition-all shadow-2xl flex flex-col justify-between h-28 w-full"
+      {/* ══ NAVBAR INFERIOR INTEGRAL DE GESTIÓN (SPA ACTIVA) ══ */}
+      <nav className="fixed bottom-0 left-0 right-0 h-20 bg-zinc-950/95 border-t border-zinc-900 backdrop-blur-md grid grid-cols-5 items-center justify-center z-50 px-2">
+        {[
+          { id: 'dashboard', label: 'DASHBOARD', icon: '🏠' },
+          { id: 'clientes', label: 'CLIENTES', icon: '👥' },
+          { id: 'propiedades', label: 'PROPIEDADES', icon: '🏢' },
+          { id: 'pipeline', label: 'PIPELINE', icon: '📊' },
+          { id: 'alertas', label: 'ALERTAS', icon: '🔔' },
+        ].map(item => {
+          const isActive = currentView === item.id
+          return (
+            <button
+              key={item.id}
+              onClick={() => setView(item.id)} 
+              className="flex flex-col items-center justify-center h-full transition-all active:scale-90 focus:outline-none"
             >
-              <span className="text-3xl">🏠</span>
-              <span className="uppercase tracking-wider">+ Propiedad</span>
+              <span className={`text-xl mb-0.5 transition-transform ${isActive ? 'scale-110' : 'opacity-50'}`}>
+                {item.icon}
+              </span>
+              <span className={`text-[8px] font-black tracking-tighter uppercase transition-colors ${isActive ? 'text-amber-500' : 'text-zinc-500'}`}>
+                {item.label}
+              </span>
             </button>
-            
-            <button 
-              onClick={() => navegarA('calendario')}
-              className="bg-zinc-900 border-2 border-zinc-800 text-white font-black text-lg py-6 px-5 rounded-2xl text-left active:scale-95 transition-all shadow-2xl flex flex-col justify-between h-28 w-full"
-            >
-              <span className="text-3xl">📆</span>
-              <span className="uppercase tracking-wider text-zinc-200">+ Evento</span>
-            </button>
-          </div>
-        </section>
-
-      </div>
+          )
+        })}
+      </nav>
     </div>
   )
 }
