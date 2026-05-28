@@ -39,13 +39,12 @@ export default function DashboardMobile({
   return (
     <div className="relative w-full min-h-screen bg-[#080808] text-white pb-36 font-sans antialiased block">
       
-      {/* Forzar de manera implacable que el viewport se estire al 100% */}
       <style jsx global>{`
         html, body {
           viewport-fit: cover;
           -webkit-text-size-adjust: 100% !important;
           text-size-adjust: 100% !important;
-          font-size: 18px !important; /* Subimos la base global de tamaño */
+          font-size: 18px !important;
           background-color: #080808 !important;
           width: 100% !important;
           margin: 0 !important;
@@ -68,43 +67,52 @@ export default function DashboardMobile({
         </div>
       </div>
 
-      {/* Contenedor con padding lateral generoso pero w-full */}
       <div className="w-full px-5 pt-8 space-y-10">
 
-        {/* 2. CONTADORES MÉTRICOS ENORMES (Aumentamos padding y fuentes) */}
+        {/* 2. CONTADORES MÉTRICOS ENORMES INTERACTIVOS */}
         <div className="grid grid-cols-2 gap-5">
-          <div className="bg-zinc-900/90 border-2 border-zinc-800 rounded-2xl p-6 shadow-2xl active:scale-95 transition-all">
+          {/* CLIENTES -> Lleva a la lista de clientes */}
+          <Link href="/clientes" className="block bg-zinc-900/90 border-2 border-zinc-800 rounded-2xl p-6 shadow-2xl active:scale-95 transition-all text-left">
             <p className="text-zinc-400 text-sm font-black tracking-wider uppercase flex items-center gap-2">👥 Clientes</p>
             <p className="text-5xl font-black mt-4 text-white tracking-tight">{clientes.length || 3}</p>
-          </div>
-          <div className="bg-zinc-900/90 border-2 border-zinc-800 rounded-2xl p-6 shadow-2xl active:scale-95 transition-all">
+          </Link>
+
+          {/* LEADS -> Lleva a la sección de Leads / Pipeline */}
+          <Link href="/pipeline" className="block bg-zinc-900/90 border-2 border-zinc-800 rounded-2xl p-6 shadow-2xl active:scale-95 transition-all text-left">
             <p className="text-amber-400 text-sm font-black tracking-wider uppercase flex items-center gap-2">🔴 Leads</p>
             <p className="text-5xl font-black mt-4 text-amber-500 tracking-tight">{leads.length || 1}</p>
-          </div>
-          <div className="bg-zinc-900/90 border-2 border-zinc-800 rounded-2xl p-6 shadow-2xl active:scale-95 transition-all">
+          </Link>
+
+          {/* PROPIEDADES -> Lleva al catálogo de propiedades */}
+          <Link href="/propiedades" className="block bg-zinc-900/90 border-2 border-zinc-800 rounded-2xl p-6 shadow-2xl active:scale-95 transition-all text-left">
             <p className="text-emerald-400 text-sm font-black tracking-wider uppercase flex items-center gap-2">🏠 Proped.</p>
             <p className="text-5xl font-black mt-4 text-emerald-500 tracking-tight">{properties.length || 3}</p>
-          </div>
-          <div className="bg-zinc-900/90 border-2 border-zinc-800 rounded-2xl p-6 shadow-2xl active:scale-95 transition-all">
+          </Link>
+
+          {/* SEGUIMIENTOS -> Lleva al Calendario / Agenda */}
+          <Link href="/calendario" className="block bg-zinc-900/90 border-2 border-zinc-800 rounded-2xl p-6 shadow-2xl active:scale-95 transition-all text-left">
             <p className="text-blue-400 text-sm font-black tracking-wider uppercase flex items-center gap-2">📅 Seguim.</p>
             <p className="text-5xl font-black mt-4 text-blue-500 tracking-tight">{followups.length || 1}</p>
-          </div>
+          </Link>
         </div>
 
-        {/* 3. AGENDA DE HOY */}
+        {/* 3. AGENDA DE HOY INTERACTIVA */}
         <section className="w-full bg-zinc-900 border-2 border-zinc-800 rounded-2xl p-6 shadow-xl">
-          <div className="flex items-center justify-between mb-5">
+          <Link href="/calendario" className="flex items-center justify-between mb-5 group">
             <h2 className="text-lg font-black uppercase tracking-widest text-zinc-200 flex items-center gap-2">📅 Agenda de hoy</h2>
-            <span className="text-base text-amber-500 font-black tracking-wider uppercase">Ver todo →</span>
-          </div>
-          <div className="bg-zinc-950/90 border border-zinc-800 rounded-xl p-8 text-center">
+            <span className="text-base text-amber-500 font-black tracking-wider uppercase group-hover:underline">Ver todo →</span>
+          </Link>
+          <Link href="/calendario" className="block bg-zinc-950/90 border border-zinc-800 rounded-xl p-8 text-center active:bg-zinc-900 transition-colors">
             <p className="text-lg text-zinc-400 font-bold">No tienes eventos programados para hoy</p>
-          </div>
+          </Link>
         </section>
 
-        {/* 4. PIPELINE DE ESTADO MAJESTUOSO */}
-        <section className="w-full bg-zinc-900 border-2 border-zinc-800 rounded-2xl p-6 space-y-6 shadow-xl">
-          <h2 className="text-lg font-black uppercase tracking-widest text-zinc-200">📊 Estado del Pipeline</h2>
+        {/* 4. PIPELINE DE ESTADO MAJESTUOSO (Tocarlo te manda al Pipeline visual) */}
+        <Link href="/pipeline" className="block w-full bg-zinc-900 border-2 border-zinc-800 rounded-2xl p-6 space-y-6 shadow-xl text-left active:scale-[0.99] transition-transform">
+          <div className="flex justify-between items-center">
+            <h2 className="text-lg font-black uppercase tracking-widest text-zinc-200">📊 Estado del Pipeline</h2>
+            <span className="text-zinc-500 font-bold text-sm">Gestionar →</span>
+          </div>
           
           <div className="space-y-6 pt-2">
             <div>
@@ -126,20 +134,10 @@ export default function DashboardMobile({
                 <div className="bg-blue-500 h-6 rounded-full" style={{ width: '65%' }} />
               </div>
             </div>
-
-            <div>
-              <div className="flex justify-between text-lg font-black text-zinc-300 mb-2">
-                <span>En Oferta / Cierre</span>
-                <span className="font-black text-purple-400 text-2xl">{pipelineCounts.oferta}</span>
-              </div>
-              <div className="w-full bg-zinc-800 h-6 rounded-full overflow-hidden">
-                <div className="bg-purple-500 h-6 rounded-full" style={{ width: '0%' }} />
-              </div>
-            </div>
           </div>
-        </section>
+        </Link>
 
-        {/* 5. SECTORES (BOTONES EXTRA GRANDES) */}
+        {/* 5. SECTORES */}
         <section className="w-full bg-zinc-900 border-2 border-zinc-800 rounded-2xl p-6 shadow-xl">
           <h2 className="text-lg font-black uppercase tracking-widest text-zinc-200 mb-5">📍 Sectores Principales</h2>
           <div className="grid grid-cols-2 gap-4">
@@ -159,18 +157,21 @@ export default function DashboardMobile({
           </div>
         </section>
 
-        {/* 6. ACCIONES RÁPIDAS TITÁNICAS */}
+        {/* 6. ACCIONES RÁPIDAS TITÁNICAS CON ENLACES REALES */}
         <section className="space-y-5 pb-16 w-full">
           <h2 className="text-lg font-black uppercase tracking-widest text-zinc-400 px-1">Acciones Rápidas</h2>
           <div className="grid grid-cols-2 gap-5">
-            <button className="bg-amber-500 border-2 border-amber-400 text-black font-black text-lg py-6 px-5 rounded-2xl text-left active:scale-95 transition-all shadow-2xl flex flex-col justify-between h-28">
+            {/* Agregar Propiedad -> Apunta al formulario de creación */}
+            <Link href="/propiedades?crear=true" className="bg-amber-500 border-2 border-amber-400 text-black font-black text-lg py-6 px-5 rounded-2xl text-left active:scale-95 transition-all shadow-2xl flex flex-col justify-between h-28">
               <span className="text-3xl">🏠</span>
               <span className="uppercase tracking-wider">+ Propiedad</span>
-            </button>
-            <button className="bg-zinc-900 border-2 border-zinc-800 text-white font-black text-lg py-6 px-5 rounded-2xl text-left active:scale-95 transition-all shadow-2xl flex flex-col justify-between h-28">
+            </Link>
+            
+            {/* Agregar Evento -> Apunta al formulario del calendario */}
+            <Link href="/calendario?crear=true" className="bg-zinc-900 border-2 border-zinc-800 text-white font-black text-lg py-6 px-5 rounded-2xl text-left active:scale-95 transition-all shadow-2xl flex flex-col justify-between h-28">
               <span className="text-3xl">📆</span>
               <span className="uppercase tracking-wider text-zinc-200">+ Evento</span>
-            </button>
+            </Link>
           </div>
         </section>
 
