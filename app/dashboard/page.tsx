@@ -42,6 +42,9 @@ export default function Dashboard() {
   const [contactos, setContactos] = useState<any[]>([])
   const [pushActivo, setPushActivo] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  
+  // Estado para controlar la SPA de forma interactiva en móvil
+  const [currentView, setCurrentView] = useState('dashboard')
 
   // Funciones de formateo reales del negocio
   const formatPrice = (p: string, m?: string) => 
@@ -166,8 +169,11 @@ export default function Dashboard() {
 
   const clientesActivos = clientes.filter(c => c.etapa === 'Buscando' || c.etapa === 'En Oferta')
 
-  // 📱 DESVÍO MÓVIL SEGURO (Se ejecuta con variables y funciones ya listas)
+  // 📱 DESVÍO MÓVIL SEGURO (Manejando la inyección de estados interactivos)
   if (isMobile) {
+    // Si tienes un menú inferior o componente global en dashboard, aquí interceptamos las pestañas.
+    // Para simplificar la SPA, si el usuario navega a otra sección que no sea el "dashboard" base,
+    // puedes renderizar sus componentes o, en este caso, se pasa setView para acoplarlo a tu controlador global.
     return (
       <DashboardMobile
         leads={leads}
@@ -183,6 +189,12 @@ export default function Dashboard() {
         formatPrice={formatPrice}
         formatFecha={formatFecha}
         diasSinContacto={diasSinContacto}
+        setView={(view) => {
+          setCurrentView(view)
+          // Si el padre principal en app/dashboard tiene una función global para cambiar de sección,
+          // asegúrate de que coordine con ella. Por ahora, registra el cambio reactivo.
+          console.log("Cambiando vista móvil a:", view)
+        }}
       />
     )
   }

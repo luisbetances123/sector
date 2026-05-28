@@ -1,6 +1,5 @@
 'use client'
 import { useState } from 'react'
-import Link from 'next/link'
 import NotificationBell from './NotificationBell'
 
 interface Props {
@@ -17,12 +16,14 @@ interface Props {
   formatPrice: (p: string, m: string) => string
   formatFecha: (f: string) => string
   diasSinContacto: (contactos: any[], clienteId: string) => number | null
+  setView?: (view: string) => void // Proporciona el control de navegación interno
 }
 
 export default function DashboardMobile({
   leads, fantasmas, sinContactar, propiedadesMatch,
   followups, contactos, clientes, SECTORES,
-  calcularMatch, properties, formatPrice, formatFecha, diasSinContacto
+  calcularMatch, properties, formatPrice, formatFecha, diasSinContacto,
+  setView
 }: Props) {
   const [sectorActivo, setSectorActivo] = useState<string | null>(null)
 
@@ -34,6 +35,15 @@ export default function DashboardMobile({
     buscando: clientes.filter(c => c.status?.toLowerCase() === 'buscando').length || 2,
     oferta: clientes.filter(c => c.status?.toLowerCase() === 'en oferta').length || 0,
     cierre: clientes.filter(c => c.status?.toLowerCase() === 'cierre').length || 0
+  }
+
+  // Manejador seguro por si no se pasa la función desde el padre
+  const navegarA = (vista: string) => {
+    if (setView) {
+      setView(vista)
+    } else {
+      console.warn(`La función setView no está definida. Intento de ir a: ${vista}`)
+    }
   }
 
   return (
@@ -69,46 +79,64 @@ export default function DashboardMobile({
 
       <div className="w-full px-5 pt-8 space-y-10">
 
-        {/* 2. CONTADORES MÉTRICOS ENORMES INTERACTIVOS */}
+        {/* 2. CONTADORES MÉTRICOS ENORMES INTERACTIVOS (POR EVENTO CLICK) */}
         <div className="grid grid-cols-2 gap-5">
-          {/* CLIENTES -> Lleva a la lista de clientes */}
-          <Link href="/clientes" className="block bg-zinc-900/90 border-2 border-zinc-800 rounded-2xl p-6 shadow-2xl active:scale-95 transition-all text-left">
+          {/* CLIENTES */}
+          <button 
+            onClick={() => navegarA('clientes')}
+            className="block bg-zinc-900/90 border-2 border-zinc-800 rounded-2xl p-6 shadow-2xl active:scale-95 transition-all text-left w-full focus:outline-none"
+          >
             <p className="text-zinc-400 text-sm font-black tracking-wider uppercase flex items-center gap-2">👥 Clientes</p>
             <p className="text-5xl font-black mt-4 text-white tracking-tight">{clientes.length || 3}</p>
-          </Link>
+          </button>
 
-          {/* LEADS -> Lleva a la sección de Leads / Pipeline */}
-          <Link href="/pipeline" className="block bg-zinc-900/90 border-2 border-zinc-800 rounded-2xl p-6 shadow-2xl active:scale-95 transition-all text-left">
+          {/* LEADS */}
+          <button 
+            onClick={() => navegarA('pipeline')}
+            className="block bg-zinc-900/90 border-2 border-zinc-800 rounded-2xl p-6 shadow-2xl active:scale-95 transition-all text-left w-full focus:outline-none"
+          >
             <p className="text-amber-400 text-sm font-black tracking-wider uppercase flex items-center gap-2">🔴 Leads</p>
             <p className="text-5xl font-black mt-4 text-amber-500 tracking-tight">{leads.length || 1}</p>
-          </Link>
+          </button>
 
-          {/* PROPIEDADES -> Lleva al catálogo de propiedades */}
-          <Link href="/propiedades" className="block bg-zinc-900/90 border-2 border-zinc-800 rounded-2xl p-6 shadow-2xl active:scale-95 transition-all text-left">
+          {/* PROPIEDADES */}
+          <button 
+            onClick={() => navegarA('propiedades')}
+            className="block bg-zinc-900/90 border-2 border-zinc-800 rounded-2xl p-6 shadow-2xl active:scale-95 transition-all text-left w-full focus:outline-none"
+          >
             <p className="text-emerald-400 text-sm font-black tracking-wider uppercase flex items-center gap-2">🏠 Proped.</p>
             <p className="text-5xl font-black mt-4 text-emerald-500 tracking-tight">{properties.length || 3}</p>
-          </Link>
+          </button>
 
-          {/* SEGUIMIENTOS -> Lleva al Calendario / Agenda */}
-          <Link href="/calendario" className="block bg-zinc-900/90 border-2 border-zinc-800 rounded-2xl p-6 shadow-2xl active:scale-95 transition-all text-left">
+          {/* SEGUIMIENTOS */}
+          <button 
+            onClick={() => navegarA('calendario')}
+            className="block bg-zinc-900/90 border-2 border-zinc-800 rounded-2xl p-6 shadow-2xl active:scale-95 transition-all text-left w-full focus:outline-none"
+          >
             <p className="text-blue-400 text-sm font-black tracking-wider uppercase flex items-center gap-2">📅 Seguim.</p>
             <p className="text-5xl font-black mt-4 text-blue-500 tracking-tight">{followups.length || 1}</p>
-          </Link>
+          </button>
         </div>
 
         {/* 3. AGENDA DE HOY INTERACTIVA */}
         <section className="w-full bg-zinc-900 border-2 border-zinc-800 rounded-2xl p-6 shadow-xl">
-          <Link href="/calendario" className="flex items-center justify-between mb-5 group">
+          <div onClick={() => navegarA('calendario')} className="flex items-center justify-between mb-5 cursor-pointer group">
             <h2 className="text-lg font-black uppercase tracking-widest text-zinc-200 flex items-center gap-2">📅 Agenda de hoy</h2>
             <span className="text-base text-amber-500 font-black tracking-wider uppercase group-hover:underline">Ver todo →</span>
-          </Link>
-          <Link href="/calendario" className="block bg-zinc-950/90 border border-zinc-800 rounded-xl p-8 text-center active:bg-zinc-900 transition-colors">
+          </div>
+          <div 
+            onClick={() => navegarA('calendario')}
+            className="block bg-zinc-950/90 border border-zinc-800 rounded-xl p-8 text-center active:bg-zinc-900 transition-colors cursor-pointer"
+          >
             <p className="text-lg text-zinc-400 font-bold">No tienes eventos programados para hoy</p>
-          </Link>
+          </div>
         </section>
 
-        {/* 4. PIPELINE DE ESTADO MAJESTUOSO (Tocarlo te manda al Pipeline visual) */}
-        <Link href="/pipeline" className="block w-full bg-zinc-900 border-2 border-zinc-800 rounded-2xl p-6 space-y-6 shadow-xl text-left active:scale-[0.99] transition-transform">
+        {/* 4. PIPELINE DE ESTADO MAJESTUOSO */}
+        <div 
+          onClick={() => navegarA('pipeline')}
+          className="block w-full bg-zinc-900 border-2 border-zinc-800 rounded-2xl p-6 space-y-6 shadow-xl text-left active:scale-[0.99] transition-transform cursor-pointer"
+        >
           <div className="flex justify-between items-center">
             <h2 className="text-lg font-black uppercase tracking-widest text-zinc-200">📊 Estado del Pipeline</h2>
             <span className="text-zinc-500 font-bold text-sm">Gestionar →</span>
@@ -135,7 +163,7 @@ export default function DashboardMobile({
               </div>
             </div>
           </div>
-        </Link>
+        </div>
 
         {/* 5. SECTORES */}
         <section className="w-full bg-zinc-900 border-2 border-zinc-800 rounded-2xl p-6 shadow-xl">
@@ -157,21 +185,25 @@ export default function DashboardMobile({
           </div>
         </section>
 
-        {/* 6. ACCIONES RÁPIDAS TITÁNICAS CON ENLACES REALES */}
+        {/* 6. ACCIONES RÁPIDAS TITÁNICAS */}
         <section className="space-y-5 pb-16 w-full">
           <h2 className="text-lg font-black uppercase tracking-widest text-zinc-400 px-1">Acciones Rápidas</h2>
           <div className="grid grid-cols-2 gap-5">
-            {/* Agregar Propiedad -> Apunta al formulario de creación */}
-            <Link href="/propiedades?crear=true" className="bg-amber-500 border-2 border-amber-400 text-black font-black text-lg py-6 px-5 rounded-2xl text-left active:scale-95 transition-all shadow-2xl flex flex-col justify-between h-28">
+            <button 
+              onClick={() => navegarA('propiedades')}
+              className="bg-amber-500 border-2 border-amber-400 text-black font-black text-lg py-6 px-5 rounded-2xl text-left active:scale-95 transition-all shadow-2xl flex flex-col justify-between h-28 w-full"
+            >
               <span className="text-3xl">🏠</span>
               <span className="uppercase tracking-wider">+ Propiedad</span>
-            </Link>
+            </button>
             
-            {/* Agregar Evento -> Apunta al formulario del calendario */}
-            <Link href="/calendario?crear=true" className="bg-zinc-900 border-2 border-zinc-800 text-white font-black text-lg py-6 px-5 rounded-2xl text-left active:scale-95 transition-all shadow-2xl flex flex-col justify-between h-28">
+            <button 
+              onClick={() => navegarA('calendario')}
+              className="bg-zinc-900 border-2 border-zinc-800 text-white font-black text-lg py-6 px-5 rounded-2xl text-left active:scale-95 transition-all shadow-2xl flex flex-col justify-between h-28 w-full"
+            >
               <span className="text-3xl">📆</span>
               <span className="uppercase tracking-wider text-zinc-200">+ Evento</span>
-            </Link>
+            </button>
           </div>
         </section>
 
