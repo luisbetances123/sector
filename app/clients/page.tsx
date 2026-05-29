@@ -5,13 +5,12 @@ import { UserPlus, Home, X, Search, Plus, MessageCircle, Phone, Clock, Pencil, S
 
 interface Cliente {
   id: string
-  nombre: string
+  name: string // Corrección a estructura nativa de la DB
   email: string
-  telefono?: string
-  etapa: string
+  phone?: string // Corrección a estructura nativa de la DB
+  status: string // Corrección a estructura nativa de la DB
   tipo_propiedad?: string[]
-  presupuesto_min?: string
-  presupuesto_max?: string
+  price?: string // Mapeado como el presupuesto almacenado en pipeline
   zonas_interes?: string[]
   notas?: string
 }
@@ -52,16 +51,11 @@ interface Nota {
   created_at: string
 }
 
-const ETAPAS = ['Lead', 'Buscando', 'En Oferta', 'Cierre']
+const ETAPAS = ['LEAD', 'BUSCANDO', 'EN OFERTA', 'CIERRE']
 const ZONAS = ['Piantini', 'Naco', 'Bella Vista', 'Evaristo Morales', 'Serralles', 'Los Cacicazgos', 'Arroyo Hondo', 'Viejo Arroyo Hondo', 'La Esperilla', 'El Millón', 'Mirador Norte', 'Mirador Sur']
 const TIPOS = ['Apartamento', 'Casa', 'Villa', 'Penthouse', 'Local Comercial', 'Solar']
 const DIAS_ALERTA = 3
-
-const nuevoClienteInicial = {
-  nombre: '', email: '', telefono: '', etapa: 'Lead',
-  presupuesto_min: '', presupuesto_max: '',
-  zonas_interes: [] as string[], tipo_propiedad: [] as string[], notas: ''
-}
+const TASA_CAMBIO = 60 // Tasa estándar de conversión RD$ por 1 US$
 
 function diasSinContacto(contactos: Contacto[], clienteId: string): number | null {
   const del_cliente = contactos.filter(c => c.cliente_id === clienteId)
@@ -77,14 +71,32 @@ function formatFecha(fecha: string) {
   })
 }
 
-function formatPrice(price: string, moneda = 'USD') {
-  const num = parseFloat(price?.replace(/[^0-9.]/g, '') || '0')
-  if (isNaN(num) || num === 0) return price || '—'
-  return new Intl.NumberFormat('es-DO', { style: 'currency', currency: moneda, maximumFractionDigits: 0 }).format(num)
+function formatPrice(price: string, monedaDefault = 'USD') {
+  if (!price) return '—'
+  if (price.includes('US$') || price.includes('RD$')) return price
+  
+  const num = parseFloat(price.replace(/[^0-9.]/g, ''))
+  if (isNaN(num) || num === 0) return price
+  return new Intl.NumberFormat('es-DO', { style: 'currency', currency: monedaDefault, maximumFractionDigits: 0 }).format(num)
+}
+
+// Extrae el valor numérico absoluto de un string con formato ('US$ 150,000' -> 150000)
+function normalizarMontoAUSD(montoStr: string | undefined): number {
+  if (!montoStr) return 0
+  const numero = parseFloat(montoStr.replace(/[^0-9.]/g, ''))
+  if (isNaN(numero)) return 0
+  
+  // Si explícitamente dice RD$, se convierte a dólares para el algoritmo de matching
+  if (montoStr.includes('RD')) {
+    return numero / TASA_CAMBIO
+  }
+  return numero
 }
 
 function calcularMatch(cliente: Cliente, propiedad: Propiedad): number {
   let score = 0
+  
+  // 1. Match por sector geográfico (40 puntos)
   if (cliente.zonas_interes && cliente.zonas_interes.length > 0 && propiedad.sector) {
     const zonaMatch = cliente.zonas_interes.some(z =>
       propiedad.sector?.toLowerCase().includes(z.toLowerCase()) ||
@@ -92,6 +104,8 @@ function calcularMatch(cliente: Cliente, propiedad: Propiedad): number {
     )
     if (zonaMatch) score += 40
   }
+  
+  // 2. Match por tipo de inmueble (30 puntos)
   if (cliente.tipo_propiedad && cliente.tipo_propiedad.length > 0 && propiedad.type) {
     const tipoMatch = cliente.tipo_propiedad.some(t =>
       propiedad.type?.toLowerCase().includes(t.toLowerCase()) ||
@@ -99,16 +113,28 @@ function calcularMatch(cliente: Cliente, propiedad: Propiedad): number {
     )
     if (tipoMatch) score += 30
   }
-  if (cliente.presupuesto_min && cliente.presupuesto_max && propiedad.price) {
-    const precioPropiedad = parseFloat(propiedad.price.replace(/[^0-9.]/g, ''))
-    const min = parseFloat(cliente.presupuesto_min)
-    const max = parseFloat(cliente.presupuesto_max)
-    if (!isNaN(precioPropiedad) && !isNaN(min) && !isNaN(max)) {
-      if (precioPropiedad >= min && precioPropiedad <= max) score += 30
-      else if (precioPropiedad <= max * 1.2) score += 15
+  
+  // 3. Match inteligente Bimonetario de Presupuesto (30 puntos)
+  if (cliente.price && propiedad.price) {
+    const precioClienteUSD = normalizarMontoAUSD(cliente.price)
+    const precioPropiedadUSD = normalizarMontoAUSD(propiedad.price)
+    
+    if (precioClienteUSD > 0 && precioPropiedadUSD > 0) {
+      // Si el precio de la propiedad está dentro del presupuesto estimado del cliente (con margen del 15%)
+      if (precioPropiedadUSD <= precioClienteUSD) {
+        score += 30
+      } else if (precioPropiedadUSD <= precioClienteUSD * 1.15) {
+        score += 15
+      }
     }
   }
   return score
+}
+
+const nuevoClienteInicial = {
+  nombre: '', email: '', telefono: '', etapa: 'LEAD',
+  price: '', currency: 'USD',
+  zonas_interes: [] as string[], tipo_propiedad: [] as string[], notas: ''
 }
 
 export default function ClientesPage() {
@@ -132,7 +158,7 @@ export default function ClientesPage() {
 
   useEffect(() => {
     Promise.all([
-      supabase.from('clientes').select('*'),
+      supabase.from('clients').select('*').order('created_at', { ascending: false }),
       supabase.from('contactos_whatsapp').select('*').order('fecha', { ascending: false }),
     ]).then(([c, ct]) => {
       if (c.data) setClientes(c.data)
@@ -156,28 +182,28 @@ export default function ClientesPage() {
 
   const abrirWhatsApp = async (cliente: Cliente, propiedadTexto?: string) => {
     await registrarContacto(cliente.id, 'whatsapp')
-    const numero = cliente.telefono?.replace(/\D/g, '')
+    const numero = cliente.phone?.replace(/\D/g, '')
     const mensaje = propiedadTexto || (() => {
       const etapaMensaje: Record<string, string> = {
-        'Lead': `Hola ${cliente.nombre}, te contacto de HOMVI. Vi que estás interesado en propiedades. ¿Tienes un momento para hablar?`,
-        'Buscando': `Hola ${cliente.nombre}, tengo algunas propiedades nuevas que podrían interesarte. ¿Cuándo podemos hablar?`,
-        'En Oferta': `Hola ${cliente.nombre}, quería darte seguimiento a la oferta. ¿Tienes alguna duda o actualización?`,
-        'Cierre': `Hola ${cliente.nombre}, quería dar seguimiento al proceso de cierre. ¿Todo va bien?`,
+        'LEAD': `Hola ${cliente.name}, te contacto de HOMVI. Vi que estás interesado en propiedades. ¿Tienes un momento para hablar?`,
+        'BUSCANDO': `Hola ${cliente.name}, tengo algunas propiedades nuevas que podrían interesarte. ¿Cuándo podemos hablar?`,
+        'EN OFERTA': `Hola ${cliente.name}, quería darte seguimiento a la oferta. ¿Tienes alguna duda o actualización?`,
+        'CIERRE': `Hola ${cliente.name}, quería dar seguimiento al proceso de cierre. ¿Todo va bien?`,
       }
-      return etapaMensaje[cliente.etapa] || `Hola ${cliente.nombre}, te contacto de HOMVI.`
+      return etapaMensaje[cliente.status] || `Hola ${cliente.name}, te contacto de HOMVI.`
     })()
     window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`, '_blank')
   }
 
   const compartirPropiedad = (cliente: Cliente, propiedad: Propiedad) => {
     const precio = formatPrice(propiedad.price, propiedad.moneda)
-    const mensaje = `Hola ${cliente.nombre}, encontré una propiedad que podría interesarte:\n\n🏠 *${propiedad.title}*\n📍 ${propiedad.sector || propiedad.location}\n💰 ${precio}\n${propiedad.recamaras ? `🛏 ${propiedad.recamaras} recámaras` : ''}\n\n¿Te gustaría saber más detalles?`
+    const mensaje = `Hola ${cliente.name}, encontré una propiedad que podría interesarte:\n\n🏠 *${propiedad.title}*\n📍 ${propiedad.sector || propiedad.location}\n💰 ${precio}\n${propiedad.recamaras ? `🛏 ${propiedad.recamaras} habitaciones` : ''}\n\n¿Te gustaría saber más detalles?`
     abrirWhatsApp(cliente, mensaje)
   }
 
   const abrirLlamada = async (cliente: Cliente) => {
     await registrarContacto(cliente.id, 'llamada')
-    window.open(`tel:${cliente.telefono}`)
+    window.open(`tel:${cliente.phone}`)
   }
 
   const abrirPerfil = async (cliente: Cliente) => {
@@ -224,13 +250,20 @@ export default function ClientesPage() {
 
   const abrirEditar = () => {
     if (!selectedCliente) return
+    
+    // Separar moneda del valor si ya viene formateado
+    let valorLimpio = selectedCliente.price || ''
+    let monedaDetectada = 'USD'
+    if (valorLimpio.includes('RD$')) { monedaDetectada = 'RD'; valorLimpio = valorLimpio.replace(/[^0-9.]/g, '') }
+    else if (valorLimpio.includes('US$')) { monedaDetectada = 'USD'; valorLimpio = valorLimpio.replace(/[^0-9.]/g, '') }
+
     setEditForm({
-      nombre: selectedCliente.nombre || '',
+      nombre: selectedCliente.name || '',
       email: selectedCliente.email || '',
-      telefono: selectedCliente.telefono || '',
-      etapa: selectedCliente.etapa || 'Lead',
-      presupuesto_min: selectedCliente.presupuesto_min?.toString() || '',
-      presupuesto_max: selectedCliente.presupuesto_max?.toString() || '',
+      telefono: selectedCliente.phone || '',
+      etapa: selectedCliente.status || 'LEAD',
+      price: valorLimpio,
+      currency: monedaDetectada,
       zonas_interes: selectedCliente.zonas_interes || [],
       tipo_propiedad: selectedCliente.tipo_propiedad || [],
       notas: selectedCliente.notas || '',
@@ -241,15 +274,26 @@ export default function ClientesPage() {
   const guardarEdicion = async () => {
     if (!selectedCliente || !editForm.nombre.trim()) return
     setGuardando(true)
+
+    // Formatear precio
+    const numeroLimpio = editForm.price.replace(/[^0-9.]/g, '')
+    let precioFormateado = null
+    if (numeroLimpio) {
+      const valor = parseFloat(numeroLimpio)
+      if (!isNaN(valor)) {
+        const formato = new Intl.NumberFormat('es-DO', { maximumFractionDigits: 0 }).format(valor)
+        precioFormateado = `${editForm.currency}$ ${formato}`
+      }
+    }
+
     const { data } = await supabase
-      .from('clientes')
+      .from('clients')
       .update({
-        nombre: editForm.nombre,
+        name: editForm.nombre,
         email: editForm.email,
-        telefono: editForm.telefono || null,
-        etapa: editForm.etapa,
-        presupuesto_min: editForm.presupuesto_min || null,
-        presupuesto_max: editForm.presupuesto_max || null,
+        phone: editForm.telefono || null,
+        status: editForm.etapa,
+        price: precioFormateado,
         zonas_interes: editForm.zonas_interes,
         tipo_propiedad: editForm.tipo_propiedad,
         notas: editForm.notas || null,
@@ -267,8 +311,8 @@ export default function ClientesPage() {
 
   const eliminarCliente = async () => {
     if (!selectedCliente) return
-    if (!confirm(`¿Eliminar a ${selectedCliente.nombre}? Esta acción no se puede deshacer.`)) return
-    await supabase.from('clientes').delete().eq('id', selectedCliente.id)
+    if (!confirm(`¿Eliminar a ${selectedCliente.name}? Esta acción no se puede deshacer.`)) return
+    await supabase.from('clients').delete().eq('id', selectedCliente.id)
     setClientes(prev => prev.filter(c => c.id !== selectedCliente.id))
     setSelectedCliente(null)
   }
@@ -302,49 +346,52 @@ export default function ClientesPage() {
 
   const toggleZona = (zona: string) => setNuevoCliente(prev => ({
     ...prev,
-    zonas_interes: prev.zonas_interes.includes(zona)
-      ? prev.zonas_interes.filter(z => z !== zona)
-      : [...prev.zonas_interes, zona]
+    zonas_interes: prev.zonas_interes.includes(zona) ? prev.zonas_interes.filter(z => z !== zona) : [...prev.zonas_interes, zona]
   }))
 
   const toggleTipo = (tipo: string) => setNuevoCliente(prev => ({
     ...prev,
-    tipo_propiedad: prev.tipo_propiedad.includes(tipo)
-      ? prev.tipo_propiedad.filter(t => t !== tipo)
-      : [...prev.tipo_propiedad, tipo]
+    tipo_propiedad: prev.tipo_propiedad.includes(tipo) ? prev.tipo_propiedad.filter(t => t !== tipo) : [...prev.tipo_propiedad, tipo]
   }))
 
   const toggleZonaEdit = (zona: string) => setEditForm(prev => ({
     ...prev,
-    zonas_interes: prev.zonas_interes.includes(zona)
-      ? prev.zonas_interes.filter(z => z !== zona)
-      : [...prev.zonas_interes, zona]
+    zonas_interes: prev.zonas_interes.includes(zona) ? prev.zonas_interes.filter(z => z !== zona) : [...prev.zonas_interes, zona]
   }))
 
   const toggleTipoEdit = (tipo: string) => setEditForm(prev => ({
     ...prev,
-    tipo_propiedad: prev.tipo_propiedad.includes(tipo)
-      ? prev.tipo_propiedad.filter(t => t !== tipo)
-      : [...prev.tipo_propiedad, tipo]
+    tipo_propiedad: prev.tipo_propiedad.includes(tipo) ? prev.tipo_propiedad.filter(t => t !== tipo) : [...prev.tipo_propiedad, tipo]
   }))
 
   const guardarCliente = async () => {
     if (!nuevoCliente.nombre.trim() || !nuevoCliente.email.trim()) return
     setGuardando(true)
+    
+    const numeroLimpio = nuevoCliente.price.replace(/[^0-9.]/g, '')
+    let precioFormateado = null
+    if (numeroLimpio) {
+      const valor = parseFloat(numeroLimpio)
+      if (!isNaN(valor)) {
+        const formato = new Intl.NumberFormat('es-DO', { maximumFractionDigits: 0 }).format(valor)
+        precioFormateado = `${nuevoCliente.currency}$ ${formato}`
+      }
+    }
+
     const { data: { user } } = await supabase.auth.getUser()
     const { data } = await supabase
-      .from('clientes')
+      .from('clients')
       .insert({
-        nombre: nuevoCliente.nombre,
+        name: nuevoCliente.nombre,
         email: nuevoCliente.email,
-        telefono: nuevoCliente.telefono || null,
-        etapa: nuevoCliente.etapa,
-        presupuesto_min: nuevoCliente.presupuesto_min || null,
-        presupuesto_max: nuevoCliente.presupuesto_max || null,
+        phone: nuevoCliente.telefono || null,
+        status: nuevoCliente.etapa,
+        price: precioFormateado,
+        initial: nuevoCliente.nombre.slice(0, 2).toUpperCase(),
         zonas_interes: nuevoCliente.zonas_interes,
         tipo_propiedad: nuevoCliente.tipo_propiedad,
         notas: nuevoCliente.notas || null,
-        user_id: user?.id,
+        owner_id: user?.id,
       })
       .select().single()
     if (data) {
@@ -362,10 +409,10 @@ export default function ClientesPage() {
   )
 
   const etapaColor: Record<string, string> = {
-    'Lead': 'bg-zinc-700 text-zinc-300',
-    'Buscando': 'bg-blue-900/80 text-blue-300',
-    'En Oferta': 'bg-amber-900/80 text-amber-300',
-    'Cierre': 'bg-green-900/80 text-green-300',
+    'LEAD': 'bg-zinc-700 text-zinc-300',
+    'BUSCANDO': 'bg-blue-900/80 text-blue-300',
+    'EN OFERTA': 'bg-amber-900/80 text-amber-300',
+    'CIERRE': 'bg-green-900/80 text-green-300',
   }
 
   const inputCls = 'w-full bg-zinc-800 text-white px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500'
@@ -386,10 +433,10 @@ export default function ClientesPage() {
 
           <div className="flex items-center gap-4 mb-6">
             <div className="w-16 h-16 rounded-full bg-amber-500 flex items-center justify-center text-black font-black text-2xl shrink-0">
-              {selectedCliente.nombre.charAt(0)}
+              {selectedCliente.name.charAt(0)}
             </div>
             <div className="flex-1 min-w-0">
-              <h1 className="text-2xl font-black text-white truncate">{selectedCliente.nombre}</h1>
+              <h1 className="text-2xl font-black text-white truncate">{selectedCliente.name}</h1>
               <p className="text-zinc-400 text-sm">{selectedCliente.email}</p>
               {dias !== null && (
                 <p className={`text-xs mt-0.5 font-bold ${sinContacto ? 'text-red-400' : 'text-green-400'}`}>
@@ -400,7 +447,7 @@ export default function ClientesPage() {
             </div>
             <div className="flex flex-col gap-2 shrink-0">
               <span className="px-3 py-1 bg-amber-500/20 text-amber-500 rounded-full text-xs font-bold uppercase text-center">
-                {selectedCliente.etapa}
+                {selectedCliente.status}
               </span>
               <button onClick={abrirEditar}
                 className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-xl text-xs font-bold uppercase transition-all">
@@ -409,7 +456,7 @@ export default function ClientesPage() {
             </div>
           </div>
 
-          {selectedCliente.telefono && (
+          {selectedCliente.phone && (
             <div className="flex gap-3 mb-6">
               <button onClick={() => abrirWhatsApp(selectedCliente)}
                 className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500 text-white py-3 rounded-2xl font-black text-sm uppercase transition-all">
@@ -422,7 +469,7 @@ export default function ClientesPage() {
             </div>
           )}
 
-          {!selectedCliente.telefono && (
+          {!selectedCliente.phone && (
             <div className="flex items-center justify-between bg-zinc-900 border border-zinc-700 rounded-2xl px-4 py-3 mb-6">
               <p className="text-zinc-500 text-sm">Sin teléfono registrado</p>
               <button onClick={abrirEditar}
@@ -440,7 +487,7 @@ export default function ClientesPage() {
                 <h2 className="text-amber-400 font-black uppercase text-sm tracking-wider">
                   {propiedadesMatch.length} Propiedades Sugeridas
                 </h2>
-                <span className="text-xs text-zinc-500">— match automático</span>
+                <span className="text-xs text-zinc-500">— match inteligente bimonetario</span>
               </div>
               <div className="flex flex-col gap-3">
                 {propiedadesMatch.map(p => (
@@ -457,7 +504,7 @@ export default function ClientesPage() {
                       <p className="text-zinc-400 text-xs">{p.sector || p.location}</p>
                       <p className="text-amber-400 text-xs font-bold">{formatPrice(p.price, p.moneda)}</p>
                     </div>
-                    {selectedCliente.telefono && (
+                    {selectedCliente.phone && (
                       <button
                         onClick={() => compartirPropiedad(selectedCliente, p)}
                         className="shrink-0 flex items-center gap-1.5 bg-green-600 hover:bg-green-500 text-white px-3 py-2 rounded-xl text-xs font-black transition-colors">
@@ -517,7 +564,7 @@ export default function ClientesPage() {
                     <div className="flex-1 min-w-0">
                       <p className="text-white font-bold text-sm truncate">{rel.properties.title}</p>
                       <p className="text-zinc-400 text-xs">{rel.properties.sector || rel.properties.location}</p>
-                      <p className="text-amber-500 text-xs font-bold">{rel.properties.price}</p>
+                      <p className="text-amber-500 text-xs font-bold">{formatPrice(rel.properties.price, rel.properties.moneda)}</p>
                     </div>
                     <button onClick={() => desasignarPropiedad(rel.id)}
                       className="text-zinc-500 hover:text-red-400 transition-colors flex-shrink-0">
@@ -539,11 +586,11 @@ export default function ClientesPage() {
               </button>
             </div>
             <div className="grid grid-cols-2 gap-4 text-sm">
-              {selectedCliente.telefono && (
-                <div><p className="text-zinc-500 text-xs uppercase">Teléfono</p><p className="text-white">{selectedCliente.telefono}</p></div>
+              {selectedCliente.phone && (
+                <div><p className="text-zinc-500 text-xs uppercase">Teléfono</p><p className="text-white">{selectedCliente.phone}</p></div>
               )}
-              {selectedCliente.presupuesto_min && (
-                <div><p className="text-zinc-500 text-xs uppercase">Presupuesto</p><p className="text-white">{selectedCliente.presupuesto_min} – {selectedCliente.presupuesto_max}</p></div>
+              {selectedCliente.price && (
+                <div><p className="text-zinc-500 text-xs uppercase">Presupuesto Máx.</p><p className="text-white">{formatPrice(selectedCliente.price)}</p></div>
               )}
               {selectedCliente.tipo_propiedad && selectedCliente.tipo_propiedad.length > 0 && (
                 <div className="col-span-2">
@@ -565,7 +612,6 @@ export default function ClientesPage() {
                   </div>
                 </div>
               )}
-
             </div>
           </div>
 
@@ -579,7 +625,6 @@ export default function ClientesPage() {
               )}
             </div>
 
-            {/* Input nueva nota */}
             <div className="flex gap-2 mb-4">
               <textarea
                 value={nuevaNota}
@@ -596,7 +641,6 @@ export default function ClientesPage() {
               </button>
             </div>
 
-            {/* Lista de notas */}
             {notasCliente.length === 0 ? (
               <p className="text-zinc-600 text-xs text-center py-2">Sin notas todavía — agrega observaciones de cada interacción</p>
             ) : (
@@ -617,7 +661,6 @@ export default function ClientesPage() {
               </div>
             )}
           </div>
-
 
           <button onClick={eliminarCliente}
             className="w-full py-3 rounded-2xl border border-red-800/50 text-red-500 hover:bg-red-900/20 text-xs uppercase font-bold tracking-wider transition-all">
@@ -652,13 +695,15 @@ export default function ClientesPage() {
                       {ETAPAS.map(e => <option key={e} value={e}>{e}</option>)}
                     </select>
                   </div>
-                  <div>
-                    <label className={labelCls}>Presupuesto mín.</label>
-                    <input value={editForm.presupuesto_min} onChange={e => setEditForm(p => ({...p, presupuesto_min: e.target.value}))} placeholder="$100,000" className={inputCls} />
-                  </div>
-                  <div>
-                    <label className={labelCls}>Presupuesto máx.</label>
-                    <input value={editForm.presupuesto_max} onChange={e => setEditForm(p => ({...p, presupuesto_max: e.target.value}))} placeholder="$300,000" className={inputCls} />
+                  <div className="col-span-2">
+                    <label className={labelCls}>Presupuesto Máximo</label>
+                    <div className="flex rounded-xl overflow-hidden border border-zinc-700 focus-within:border-amber-500">
+                      <select value={editForm.currency} onChange={e => setEditForm(p => ({...p, currency: e.target.value}))} className="bg-zinc-700 border-none text-white text-xs px-2 focus:outline-none font-bold cursor-pointer">
+                        <option value="USD">USD ($)</option>
+                        <option value="RD">DOP (RD$)</option>
+                      </select>
+                      <input value={editForm.price} onChange={e => setEditForm(p => ({...p, price: e.target.value}))} placeholder="250,000" className="w-full bg-zinc-800 border-none px-4 py-2 text-white text-sm focus:outline-none" />
+                    </div>
                   </div>
                 </div>
                 <div>
@@ -729,7 +774,7 @@ export default function ClientesPage() {
                       <div className="flex-1 min-w-0">
                         <p className="text-white text-sm font-bold truncate">{p.title}</p>
                         <p className="text-zinc-400 text-xs">{p.sector || p.location}</p>
-                        <p className="text-amber-500 text-xs font-bold">{p.price}</p>
+                        <p className="text-amber-500 text-xs font-bold">{formatPrice(p.price, p.moneda)}</p>
                       </div>
                       {yaAsignada && <span className="text-amber-500 text-xs font-bold flex-shrink-0">✓ Asignada</span>}
                     </div>
@@ -773,23 +818,23 @@ export default function ClientesPage() {
               const alerta = dias === null || dias >= DIAS_ALERTA
               return (
                 <div key={c.id} onClick={() => abrirPerfil(c)}
-                  className={`bg-zinc-900/40 border p-5 rounded-2xl cursor-pointer transition-all hover:bg-zinc-900 ${alerta && c.etapa !== 'Cierre' ? 'border-red-800/50 hover:border-red-600' : 'border-zinc-800 hover:border-amber-500'}`}>
+                  className={`bg-zinc-900/40 border p-5 rounded-2xl cursor-pointer transition-all hover:bg-zinc-900 ${alerta && c.status !== 'CIERRE' ? 'border-red-800/50 hover:border-red-600' : 'border-zinc-800 hover:border-amber-500'}`}>
                   <div className="flex justify-between items-start mb-3">
                     <div className="flex gap-3 items-center min-w-0">
                       <div className="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center text-black font-black shrink-0">
-                        {c.nombre.charAt(0)}
+                        {c.name.charAt(0)}
                       </div>
                       <div className="min-w-0">
-                        <p className="font-bold text-white truncate">{c.nombre}</p>
+                        <p className="font-bold text-white truncate">{c.name}</p>
                         <p className="text-zinc-500 text-xs truncate">{c.email}</p>
                       </div>
                     </div>
-                    <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase shrink-0 ml-2 ${etapaColor[c.etapa] || 'bg-zinc-800 text-zinc-400'}`}>
-                      {c.etapa}
+                    <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase shrink-0 ml-2 ${etapaColor[c.status] || 'bg-zinc-800 text-zinc-400'}`}>
+                      {c.status}
                     </span>
                   </div>
 
-                  {alerta && c.etapa !== 'Cierre' && (
+                  {alerta && c.status !== 'CIERRE' && (
                     <div className="flex items-center gap-1.5 bg-red-900/30 border border-red-800/40 rounded-xl px-3 py-1.5 mb-3">
                       <span className="text-xs">🔴</span>
                       <p className="text-red-400 text-xs font-bold">
@@ -805,7 +850,7 @@ export default function ClientesPage() {
                     </div>
                   )}
 
-                  {c.telefono && (
+                  {c.phone && (
                     <div className="flex gap-2 mt-3" onClick={e => e.stopPropagation()}>
                       <button onClick={() => abrirWhatsApp(c)}
                         className="flex-1 flex items-center justify-center gap-1.5 bg-green-700 hover:bg-green-600 text-white py-2 rounded-xl text-xs font-black transition-colors">
@@ -863,15 +908,15 @@ export default function ClientesPage() {
                     {ETAPAS.map(e => <option key={e} value={e}>{e}</option>)}
                   </select>
                 </div>
-                <div>
-                  <label className={labelCls}>Presupuesto mín.</label>
-                  <input value={nuevoCliente.presupuesto_min} onChange={e => setNuevoCliente(p => ({...p, presupuesto_min: e.target.value}))}
-                    placeholder="$100,000" className={inputCls} />
-                </div>
-                <div>
-                  <label className={labelCls}>Presupuesto máx.</label>
-                  <input value={nuevoCliente.presupuesto_max} onChange={e => setNuevoCliente(p => ({...p, presupuesto_max: e.target.value}))}
-                    placeholder="$300,000" className={inputCls} />
+                <div className="col-span-2">
+                  <label className={labelCls}>Presupuesto Estimado</label>
+                  <div className="flex rounded-xl overflow-hidden border border-zinc-700 focus-within:border-amber-500">
+                    <select value={nuevoCliente.currency} onChange={e => setNuevoCliente(p => ({...p, currency: e.target.value}))} className="bg-zinc-700 border-none text-white text-xs px-2 focus:outline-none font-bold cursor-pointer">
+                      <option value="USD">USD ($)</option>
+                      <option value="RD">DOP (RD$)</option>
+                    </select>
+                    <input value={nuevoCliente.price} onChange={e => setNuevoCliente(p => ({...p, price: e.target.value}))} placeholder="150,000" className="w-full bg-zinc-800 border-none px-4 py-2 text-white text-sm focus:outline-none" />
+                  </div>
                 </div>
               </div>
               <div>
