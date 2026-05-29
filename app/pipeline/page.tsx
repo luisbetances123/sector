@@ -12,7 +12,16 @@ type Client = {
   price: string
   initial: string
 }
-
+type Client = {
+  id: string
+  name: string
+  email: string
+  status: string
+  type: string
+  price: string
+  initial: string
+  etapa_changed_at?: string
+}
 const COLUMNS = ['LEAD', 'BUSCANDO', 'EN OFERTA', 'CIERRE']
 
 const colColors: Record<string, string> = {
@@ -46,15 +55,15 @@ export default function PipelinePage() {
     if (!error && data) setClients(data)
     setLoading(false)
   }
-
-  async function onDragEnd(result: DropResult) {
-    const { destination, source, draggableId } = result
-    if (!destination) return
-    if (destination.droppableId === source.droppableId) return
-    const newStatus = destination.droppableId
-    setClients(prev => prev.map(c => c.id === draggableId ? { ...c, status: newStatus } : c))
-    await supabase.from('clients').update({ status: newStatus }).eq('id', draggableId)
-  }
+async function onDragEnd(result: DropResult) {
+  const { destination, source, draggableId } = result
+  if (!destination) return
+  if (destination.droppableId === source.droppableId) return
+  const newStatus = destination.droppableId
+  const now = new Date().toISOString()
+  setClients(prev => prev.map(c => c.id === draggableId ? { ...c, status: newStatus, etapa_changed_at: now } : c))
+  await supabase.from('clients').update({ status: newStatus, etapa_changed_at: now }).eq('id', draggableId)
+}
 
   async function handleAddClient(e: React.FormEvent) {
     e.preventDefault()
@@ -159,6 +168,11 @@ export default function PipelinePage() {
                             </div>
                             {c.type && <div className="text-zinc-500 text-xs mb-1">{c.type}</div>}
                             {c.price && <div className="text-amber-500 font-bold text-sm">{c.price}</div>}
+{c.etapa_changed_at && (
+  <div className="mt-2 text-[10px] text-zinc-500 font-bold uppercase">
+    {Math.floor((Date.now() - new Date(c.etapa_changed_at).getTime()) / (1000 * 60 * 60 * 24))} días en etapa
+  </div>
+)}
                           </div>
                         )}
                       </Draggable>
