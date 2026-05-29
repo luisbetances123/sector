@@ -14,6 +14,15 @@ const SECTORES_SDE = [
   'Alma Rosa I', 'Alma Rosa II', 'Ensanche Ozama', 'San Isidro', 'Ensanche Isabelita', 'Prado Oriental',
   'Los Tres Ojos', 'Corales del Sur', 'Mirador del Este', 'Riviera del Caribe', 'Cerros del Ozama', 'Las Américas',
 ]
+const SECTORES_SDN = [
+  'Palmarejo', 'Don Honorio', 'El Condado', 'Los Girasoles', 'Villa Mella', 'Ciudad Real',
+  'La Isabela', 'Brisas del Norte', 'Los Alcarrizos', 'San Felipe', 'Colinas del Norte', 'Reparto Universitario',
+]
+
+const SECTORES_SDO = [
+  'Manoguayabo', 'Mirador del Oeste', 'Villa Aura', 'Herrera', 'Los Alcarrizos', 'Alameda',
+  'Engombe', 'Los Hidalgos', 'Pantoja', 'Las Caobas', 'Avenida Monumental', 'Palmarejo',
+]
 function calcularMatch(cliente: any, propiedad: any): number {
   let score = 0
   if (cliente.zonas_interes?.length > 0 && propiedad.sector) {
@@ -591,7 +600,7 @@ export default function Dashboard() {
             </div>
           </section>
 
-          {/* ══ 8. SECTORES SDE ══ */}
+         {/* ══ 8. SECTORES SDE ══ */}
           <section className="mb-6">
             <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-3xl p-6">
               <div className="flex justify-between items-center mb-4">
@@ -602,6 +611,46 @@ export default function Dashboard() {
               </div>
               <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
                 {SECTORES_SDE.map(s => (
+                  <Link key={s} href={`/properties?sector=${encodeURIComponent(s)}`}
+                    className="bg-zinc-700/50 hover:bg-amber-500 hover:text-black text-zinc-300 text-center py-2.5 px-1 rounded-xl text-xs font-black uppercase tracking-wide transition-all truncate">
+                    {s}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* ══ 9. SECTORES SDN ══ */}
+          <section className="mb-6">
+            <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-3xl p-6">
+              <div className="flex justify-between items-center mb-4">
+                <div className="flex items-center gap-2">
+                  <span>🌇</span>
+                  <h3 className="text-white font-black text-sm uppercase tracking-wider">Santo Domingo Norte</h3>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+                {SECTORES_SDN.map(s => (
+                  <Link key={s} href={`/properties?sector=${encodeURIComponent(s)}`}
+                    className="bg-zinc-700/50 hover:bg-amber-500 hover:text-black text-zinc-300 text-center py-2.5 px-1 rounded-xl text-xs font-black uppercase tracking-wide transition-all truncate">
+                    {s}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* ══ 10. SECTORES SDO ══ */}
+          <section className="mb-6">
+            <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-3xl p-6">
+              <div className="flex justify-between items-center mb-4">
+                <div className="flex items-center gap-2">
+                  <span>🌆</span>
+                  <h3 className="text-white font-black text-sm uppercase tracking-wider">Santo Domingo Oeste</h3>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+                {SECTORES_SDO.map(s => (
                   <Link key={s} href={`/properties?sector=${encodeURIComponent(s)}`}
                     className="bg-zinc-700/50 hover:bg-amber-500 hover:text-black text-zinc-300 text-center py-2.5 px-1 rounded-xl text-xs font-black uppercase tracking-wide transition-all truncate">
                     {s}
