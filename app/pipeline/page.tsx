@@ -54,7 +54,6 @@ export default function PipelinePage() {
     const { data, error } = await supabase.from('clients').select('*').order('created_at', { ascending: false })
     if (!error && data) setClients(data)
     setLoading(false)
-  }
 async function onDragEnd(result: DropResult) {
   const { destination, source, draggableId } = result
   if (!destination) return
@@ -62,7 +61,8 @@ async function onDragEnd(result: DropResult) {
   const newStatus = destination.droppableId
   const now = new Date().toISOString()
   setClients(prev => prev.map(c => c.id === draggableId ? { ...c, status: newStatus, etapa_changed_at: now } : c))
-  await supabase.from('clients').update({ status: newStatus, etapa_changed_at: now }).eq('id', draggableId)
+  const { error } = await supabase.from('clients').update({ status: newStatus, etapa_changed_at: now }).eq('id', draggableId)
+  console.log('update result:', error)
 }
 
   async function handleAddClient(e: React.FormEvent) {
