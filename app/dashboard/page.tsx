@@ -4,8 +4,17 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import DashboardMobile from '../components/DashboardMobile'
 
-const SECTORES = ['Piantini','Naco','Bella Vista','Evaristo Morales','Serralles','Los Cacicazgos','Arroyo Hondo','Viejo Arroyo Hondo','La Esperilla','El Millon','Mirador Norte','Mirador Sur']
-
+const SECTORES = [
+  // Ya existentes
+  'Piantini', 'Naco', 'Bella Vista', 'Evaristo Morales', 'Serralles', 'Los Cacicazgos',
+  'Arroyo Hondo', 'Viejo Arroyo Hondo', 'La Esperilla', 'El Millon', 'Mirador Norte', 'Mirador Sur',
+  // Nuevos - Clase Alta
+  'Paraíso', 'La Castellana', 'Jardines del Norte',
+  // Nuevos - Clase Media-Alta
+  'Los Prados', 'Gazcue', 'Ensanche Quisqueya', 'Los Restauradores', 'Zona Colonial',
+  // Nuevos - En auge
+  'Arroyo Manzano', 'Colinas de los Ríos',
+]
 function calcularMatch(cliente: any, propiedad: any): number {
   let score = 0
   if (cliente.zonas_interes?.length > 0 && propiedad.sector) {
