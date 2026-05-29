@@ -3,17 +3,16 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import DashboardMobile from '../components/DashboardMobile'
-
 const SECTORES = [
-  // Ya existentes
   'Piantini', 'Naco', 'Bella Vista', 'Evaristo Morales', 'Serralles', 'Los Cacicazgos',
   'Arroyo Hondo', 'Viejo Arroyo Hondo', 'La Esperilla', 'El Millon', 'Mirador Norte', 'Mirador Sur',
-  // Nuevos - Clase Alta
-  'Paraíso', 'La Castellana', 'Jardines del Norte',
-  // Nuevos - Clase Media-Alta
-  'Los Prados', 'Gazcue', 'Ensanche Quisqueya', 'Los Restauradores', 'Zona Colonial',
-  // Nuevos - En auge
-  'Arroyo Manzano', 'Colinas de los Ríos', 'Fernández', 'Renacimiento',
+  'Paraíso', 'La Castellana', 'Jardines del Norte', 'Los Prados', 'Gazcue', 'Ensanche Quisqueya',
+  'Los Restauradores', 'Zona Colonial', 'Arroyo Manzano', 'Colinas de los Ríos', 'Fernández', 'Renacimiento',
+]
+
+const SECTORES_SDE = [
+  'Alma Rosa I', 'Alma Rosa II', 'Ensanche Ozama', 'San Isidro', 'Ensanche Isabelita', 'Prado Oriental',
+  'Los Tres Ojos', 'Corales del Sur', 'Mirador del Este', 'Riviera del Caribe', 'Cerros del Ozama', 'Las Américas',
 ]
 function calcularMatch(cliente: any, propiedad: any): number {
   let score = 0
@@ -572,13 +571,13 @@ export default function Dashboard() {
             </div>
           </section>
 
-          {/* ══ 7. SECTORES ══ */}
+ {/* ══ 7. SECTORES ══ */}
           <section className="mb-6">
             <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-3xl p-6">
               <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center gap-2">
-                  <span>🏘️</span>
-                  <h3 className="text-white font-black text-sm uppercase tracking-wider">Buscar por sector</h3>
+                  <span>🏙️</span>
+                  <h3 className="text-white font-black text-sm uppercase tracking-wider">Distrito Nacional</h3>
                 </div>
               </div>
               <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
@@ -592,6 +591,25 @@ export default function Dashboard() {
             </div>
           </section>
 
+          {/* ══ 8. SECTORES SDE ══ */}
+          <section className="mb-6">
+            <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-3xl p-6">
+              <div className="flex justify-between items-center mb-4">
+                <div className="flex items-center gap-2">
+                  <span>🌅</span>
+                  <h3 className="text-white font-black text-sm uppercase tracking-wider">Santo Domingo Este</h3>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+                {SECTORES_SDE.map(s => (
+                  <Link key={s} href={`/properties?sector=${encodeURIComponent(s)}`}
+                    className="bg-zinc-700/50 hover:bg-amber-500 hover:text-black text-zinc-300 text-center py-2.5 px-1 rounded-xl text-xs font-black uppercase tracking-wide transition-all truncate">
+                    {s}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
           {/* Acciones rápidas */}
           <section className="mb-6">
             <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-3xl p-6">
