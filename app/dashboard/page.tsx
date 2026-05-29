@@ -586,8 +586,7 @@ export default function Dashboard() {
               <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center gap-2">
                   <span>🏙️</span>
-                  <h3 className="text-white font-black text-sm uppercase tracking-wider">Distrito Nacional</h3>
-                </div>
+<h3 className="text-amber-400 font-black text-sm uppercase tracking-wider">Distrito Nacional</h3>                </div>
               </div>
               <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
                 {SECTORES.map(s => (
@@ -606,8 +605,7 @@ export default function Dashboard() {
               <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center gap-2">
                   <span>🌅</span>
-                  <h3 className="text-white font-black text-sm uppercase tracking-wider">Santo Domingo Este</h3>
-                </div>
+<h3 className="text-blue-400 font-black text-sm uppercase tracking-wider">Santo Domingo Este</h3>                </div>
               </div>
               <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
                 {SECTORES_SDE.map(s => (
@@ -626,8 +624,7 @@ export default function Dashboard() {
               <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center gap-2">
                   <span>🌇</span>
-                  <h3 className="text-white font-black text-sm uppercase tracking-wider">Santo Domingo Norte</h3>
-                </div>
+<h3 className="text-green-400 font-black text-sm uppercase tracking-wider">Santo Domingo Norte</h3>                </div>
               </div>
               <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
                 {SECTORES_SDN.map(s => (
@@ -646,8 +643,7 @@ export default function Dashboard() {
               <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center gap-2">
                   <span>🌆</span>
-                  <h3 className="text-white font-black text-sm uppercase tracking-wider">Santo Domingo Oeste</h3>
-                </div>
+<h3 className="text-purple-400 font-black text-sm uppercase tracking-wider">Santo Domingo Oeste</h3>                </div>
               </div>
               <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
                 {SECTORES_SDO.map(s => (
