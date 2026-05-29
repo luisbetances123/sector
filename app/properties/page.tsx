@@ -23,11 +23,17 @@ type Property = {
   moneda: string
   created_at?: string
 }
-
 const SECTORES = [
-  'Piantini','Naco','Bella Vista','Evaristo Morales','Serralles',
-  'Los Cacicazgos','Arroyo Hondo','Viejo Arroyo Hondo','La Esperilla',
-  'El Millon','Mirador Norte','Mirador Sur',
+  'Piantini', 'Naco', 'Bella Vista', 'Evaristo Morales', 'Serralles', 'Los Cacicazgos',
+  'Arroyo Hondo', 'Viejo Arroyo Hondo', 'La Esperilla', 'El Millon', 'Mirador Norte', 'Mirador Sur',
+  'Paraíso', 'La Castellana', 'Jardines del Norte', 'Los Prados', 'Gazcue', 'Ensanche Quisqueya',
+  'Los Restauradores', 'Zona Colonial', 'Arroyo Manzano', 'Colinas de los Ríos', 'Fernández', 'Renacimiento',
+  'Alma Rosa I', 'Alma Rosa II', 'Ensanche Ozama', 'San Isidro', 'Ensanche Isabelita', 'Prado Oriental',
+  'Los Tres Ojos', 'Corales del Sur', 'Mirador del Este', 'Riviera del Caribe', 'Cerros del Ozama', 'Las Américas',
+  'Palmarejo', 'Don Honorio', 'El Condado', 'Los Girasoles', 'Villa Mella', 'Ciudad Real',
+  'La Isabela', 'Brisas del Norte', 'Los Alcarrizos', 'San Felipe', 'Colinas del Norte', 'Reparto Universitario',
+  'Manoguayabo', 'Mirador del Oeste', 'Villa Aura', 'Herrera', 'Engombe', 'Los Hidalgos',
+  'Pantoja', 'Las Caobas', 'Avenida Monumental', 'Alameda',
 ]
 
 const TIPOS: PropertyType[] = ['APARTAMENTO','CASA','LOCAL','TERRENO','OFICINA','BODEGA']
