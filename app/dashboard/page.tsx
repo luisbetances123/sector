@@ -25,8 +25,11 @@ const SECTORES_SDO = [
   'Engombe', 'Los Hidalgos', 'Pantoja', 'Las Caobas', 'Avenida Monumental', 'Palmarejo',
 ]
 
+// LÓGICA BI-MONETARIA POTENCIADA SIN BORRAR TUS CRITERIOS DE URB / TIPO PROPIEDAD
 function calcularMatch(cliente: any, propiedad: any): number {
   let score = 0
+  
+  // 1. Match de Zonas / Sectores
   if (cliente.zonas_interes?.length > 0 && propiedad.sector) {
     const zonaMatch = cliente.zonas_interes.some((z: string) =>
       propiedad.sector?.toLowerCase().includes(z.toLowerCase()) ||
@@ -34,6 +37,8 @@ function calcularMatch(cliente: any, propiedad: any): number {
     )
     if (zonaMatch) score += 40
   }
+  
+  // 2. Match de Tipo de propiedad
   if (cliente.tipo_propiedad?.length > 0 && propiedad.type) {
     const tipoMatch = cliente.tipo_propiedad.some((t: string) =>
       propiedad.type?.toLowerCase().includes(t.toLowerCase()) ||
@@ -41,15 +46,34 @@ function calcularMatch(cliente: any, propiedad: any): number {
     )
     if (tipoMatch) score += 30
   }
-  if (cliente.presupuesto_min && cliente.presupuesto_max && propiedad.price) {
-    const precio = parseFloat(propiedad.price.replace(/[^0-9.]/g, ''))
-    const min = parseFloat(cliente.presupuesto_min)
-    const max = parseFloat(cliente.presupuesto_max)
-    if (!isNaN(precio) && !isNaN(min) && !isNaN(max)) {
-      if (precio >= min && precio <= max) score += 30
-      else if (precio <= max * 1.2) score += 15
+  
+  // 3. Match de Presupuesto con conversión inteligente en tiempo real (Tasa: 60)
+  // Soporta tanto las columnas legacy (presupuesto_min) como las nuevas del pipeline (budget_min, currency)
+  const min = parseFloat(cliente.budget_min || cliente.presupuesto_min || '0')
+  const max = parseFloat(cliente.budget_max || cliente.presupuesto_max || '0')
+  const clienteCurrency = cliente.currency || 'USD'
+
+  if (max > 0 && propiedad.price) {
+    let precioPropiedad = parseFloat(propiedad.price.toString().replace(/[^0-9.]/g, ''))
+    const propiedadCurrency = propiedad.currency || 'USD'
+
+    if (!isNaN(precioPropiedad) && !isNaN(min) && !isNaN(max)) {
+      // Normalizar precio de la propiedad a la moneda del cliente para comparar peras con peras
+      if (clienteCurrency === 'USD' && propiedadCurrency === 'DOP') {
+        precioPropiedad = precioPropiedad / 60
+      } else if (clienteCurrency === 'DOP' && propiedadCurrency === 'USD') {
+        precioPropiedad = precioPropiedad * 60
+      }
+
+      // Sistema de puntuación idéntico al tuyo
+      if (precioPropiedad >= min && precioPropiedad <= max) {
+        score += 30
+      } else if (precioPropiedad <= max * 1.2) {
+        score += 15
+      }
     }
   }
+  
   return score
 }
 
@@ -76,11 +100,10 @@ export default function Dashboard() {
     return Math.floor((Date.now() - new Date(ultimo.fecha).getTime()) / (1000 * 60 * 60 * 24))
   }
 
-  // Función auxiliar para formatear números de teléfono al formato limpio internacional de WhatsApp
   const limpiarTelefonoWa = (tel: string) => {
     let limpio = tel.replace(/\D/g, '')
     if (limpio.length === 10 && (limpio.startsWith('809') || limpio.startsWith('829') || limpio.startsWith('849'))) {
-      limpio = '1' + limpio // Prefijo para RD si solo tiene 10 dígitos
+      limpio = '1' + limpio
     }
     return limpio
   }
@@ -95,7 +118,7 @@ export default function Dashboard() {
   useEffect(() => {
     async function fetchAll() {
       const [c, p, f, ct] = await Promise.all([
-        supabase.from('clients').select('*'), // CORREGIDO: De 'clientes' a 'clients'
+        supabase.from('clients').select('*'),
         supabase.from('properties').select('*').eq('estado', 'disponible'),
         supabase.from('followups').select('*'),
         supabase.from('contactos_whatsapp').select('*').order('fecha', { ascending: false }),
@@ -141,7 +164,6 @@ export default function Dashboard() {
   const followupsPendientes = followups.filter(f => !f.hecho).length
   const propiedadesDisponibles = properties.length
   
-  // CORREGIDO: Usando 'status' en lugar de 'etapa'
   const leads = clientes.filter(c => c.status === 'LEAD') 
   
   const sinContactar = clientes.filter(c => {
@@ -161,7 +183,6 @@ export default function Dashboard() {
     return acc + properties.filter(p => calcularMatch(c, p) > 0).length
   }, 0)
 
-  // CORREGIDO: Mapeando los nombres exactos de columnas de tu Pipeline
   const clientesPorEtapa = ['LEAD','BUSCANDO','EN OFERTA','CIERRE'].map(e => ({
     etapa: e, total: clientes.filter(c => c.status === e).length
   }))
