@@ -12,6 +12,7 @@ type Client = {
   price: string
   initial: string
   etapa_changed_at?: string
+  currency?: string // Soporte opcional si decides agregarlo como columna después
 }
 
 const COLUMNS = ['LEAD', 'BUSCANDO', 'EN OFERTA', 'CIERRE']
@@ -30,7 +31,7 @@ const badgeColors: Record<string, string> = {
   CIERRE: 'bg-green-900 text-green-300',
 }
 
-const emptyForm = { name: '', email: '', phone: '', type: '', price: '', initial: '', status: 'LEAD' }
+const emptyForm = { name: '', email: '', phone: '', type: '', price: '', initial: '', status: 'LEAD', currency: 'USD' }
 
 export default function PipelinePage() {
   const [clients, setClients] = useState<Client[]>([])
@@ -62,10 +63,8 @@ export default function PipelinePage() {
     const newStatus = destination.droppableId
     const now = new Date().toISOString()
 
-    // 1. Actualizar el estado visual en el frontend inmediatamente
     setClients(prev => prev.map(c => c.id === draggableId ? { ...c, status: newStatus, etapa_changed_at: now } : c))
 
-    // 2. Guardar el estado actual en la tabla 'clients'
     const { error: clientError } = await supabase
       .from('clients')
       .update({ status: newStatus, etapa_changed_at: now })
@@ -76,7 +75,6 @@ export default function PipelinePage() {
       return
     }
 
-    // 3. Insertar el movimiento en la tabla de historial para el Calendario
     const { error: historyError } = await supabase
       .from('client_movements') 
       .insert([
@@ -89,23 +87,46 @@ export default function PipelinePage() {
 
     if (historyError) {
       console.error('Error al guardar en el historial para el calendario:', historyError)
-    } else {
-      console.log('¡Movimiento guardado en el historial con éxito!')
     }
   }
+
+  // Formateador nativo para presentar los montos de forma elegante en las tarjetas
+  const formatearMontoDominicano = (montoStr: string) => {
+    if (!montoStr) return ''
+    if (montoStr.includes('US$') || montoStr.includes('RD$')) return montoStr
+    
+    const numero = parseFloat(montoStr.replace(/[^0-9.]/g, ''))
+    if (isNaN(numero)) return montoStr
+
+    const formateado = new Intl.NumberFormat('es-DO', { maximumFractionDigits: 0 }).format(numero)
+    return `US$ ${formateado}` // Fallback por defecto si viene plano de la DB
+  };
 
   async function handleAddClient(e: React.FormEvent) {
     e.preventDefault()
     if (!form.name.trim()) return
     setSaving(true)
     setFormError(null)
+
+    // Limpiar el número y formatearlo con su respectivo prefijo de moneda
+    const numeroLimpio = form.price.replace(/[^0-9.]/g, '')
+    let precioFormateado = null
+    
+    if (numeroLimpio) {
+      const valor = parseFloat(numeroLimpio)
+      if (!isNaN(valor)) {
+        const formatoNumero = new Intl.NumberFormat('es-DO', { maximumFractionDigits: 0 }).format(valor)
+        precioFormateado = `${form.currency}$ ${formatoNumero}`
+      }
+    }
+
     const { data: { user } } = await supabase.auth.getUser()
     const { data, error } = await supabase.from('clients').insert({
       name: form.name.trim(),
       email: form.email || null,
       phone: form.phone || null,
       type: form.type || null,
-      price: form.price || null,
+      price: precioFormateado,
       initial: form.initial || form.name.slice(0, 2).toUpperCase(),
       status: form.status,
       owner_id: user?.id,
@@ -156,11 +177,17 @@ export default function PipelinePage() {
             </div>
             <div>
               <label className="text-zinc-400 text-xs uppercase tracking-wider block mb-1">Tipo</label>
-              <input value={form.type} onChange={set('type')} placeholder="Comprador..." className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-500" />
+              <input value={form.type} onChange={set('type')} placeholder="Comprador / Alquiler..." className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-500" />
             </div>
             <div>
-              <label className="text-zinc-400 text-xs uppercase tracking-wider block mb-1">Precio</label>
-              <input value={form.price} onChange={set('price')} placeholder="$80,000" className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-500" />
+              <label className="text-zinc-400 text-xs uppercase tracking-wider block mb-1">Presupuesto / Precio</label>
+              <div className="flex rounded-lg overflow-hidden border border-zinc-700 focus-within:border-amber-500">
+                <select value={form.currency} onChange={set('currency')} className="bg-zinc-700 border-none text-white text-xs px-2 focus:outline-none font-bold cursor-pointer">
+                  <option value="USD">USD ($)</option>
+                  <option value="RD">DOP (RD$)</option>
+                </select>
+                <input value={form.price} onChange={set('price')} placeholder="150,000" className="w-full bg-zinc-800 border-none px-3 py-2 text-white text-sm focus:outline-none" />
+              </div>
             </div>
             <div>
               <label className="text-zinc-400 text-xs uppercase tracking-wider block mb-1">Etapa</label>
@@ -213,7 +240,11 @@ export default function PipelinePage() {
                             </div>
                             
                             {c.type && <div className="text-zinc-500 text-xs font-medium tracking-wide mb-1 uppercase">{c.type}</div>}
-                            {c.price && <div className="text-amber-500 font-extrabold text-sm">{c.price}</div>}
+                            {c.price && (
+                              <div className={`font-extrabold text-sm ${c.price.startsWith('RD') ? 'text-blue-400' : 'text-amber-500'}`}>
+                                {formatearMontoDominicano(c.price)}
+                              </div>
+                            )}
                             
                             {c.etapa_changed_at && (
                               <div className="mt-3 pt-2 border-t border-zinc-800/60 flex items-center justify-between text-[10px] text-zinc-500 font-bold uppercase tracking-wider">
