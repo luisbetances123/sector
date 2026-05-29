@@ -661,10 +661,10 @@ export default function Dashboard() {
               <h3 className="text-zinc-500 font-black uppercase text-xs tracking-widest mb-4">Acciones rápidas</h3>
               <div className="flex flex-wrap gap-3">
                 {[
-                  { label: '+ Nueva propiedad', href: '/properties', style: 'bg-zinc-700/80 text-white hover:bg-zinc-600' },
-                  { label: '+ Nuevo evento', href: '/hoy', style: 'bg-zinc-700/80 text-white hover:bg-zinc-600' },
-                  { label: 'Ver pipeline', href: '/pipeline', style: 'bg-zinc-700/80 text-white hover:bg-zinc-600' },
-                  { label: 'Reportes', href: '/reports', style: 'bg-zinc-700/80 text-white hover:bg-zinc-600' },
+                  { label: '+ Nueva propiedad', href: '/properties', style: 'bg-amber-500/20 text-amber-400 hover:bg-amber-500 hover:text-black border border-amber-500/30' },
+                  { label: '+ Nuevo evento', href: '/hoy', style: 'bg-blue-500/20 text-blue-400 hover:bg-blue-500 hover:text-white border border-blue-500/30' },
+                  { label: 'Ver pipeline', href: '/pipeline', style: 'bg-green-500/20 text-green-400 hover:bg-green-500 hover:text-black border border-green-500/30' },
+                  { label: 'Reportes', href: '/reports', style: 'bg-purple-500/20 text-purple-400 hover:bg-purple-500 hover:text-white border border-purple-500/30' },
                 ].map(a => (
                   <Link key={a.label} href={a.href}
                     className={`px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all ${a.style}`}>
