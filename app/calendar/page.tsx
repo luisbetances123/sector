@@ -12,14 +12,35 @@ interface FollowUp {
   hora: string
   urgencia: string
   hecho: boolean
+  isMovement?: boolean
+  colorBorde?: string
 }
 
-const tipoIcono: Record<string, string> = { llamada: '📞', visita: '🏠', documento: '📄', otro: '📌' }
+const tipoIcono: Record<string, string> = { 
+  llamada: '📞', 
+  visita: '🏠', 
+  documento: '📄', 
+  otro: '📌',
+  movimiento: '🏷️' 
+}
+
 const urgenciaColor: Record<string, string> = {
   alta: 'bg-red-900 text-red-300',
   media: 'bg-amber-900 text-amber-300',
   baja: 'bg-green-900 text-green-300',
+  LEAD: 'bg-zinc-800 text-zinc-400 border border-zinc-700',
+  BUSCANDO: 'bg-blue-950 text-blue-400 border border-blue-900',
+  'EN OFERTA': 'bg-amber-950 text-amber-400 border border-amber-900',
+  CIERRE: 'bg-green-950 text-green-400 border border-green-900'
 }
+
+const puntitoColor: Record<string, string> = {
+  LEAD: 'bg-zinc-500',
+  BUSCANDO: 'bg-blue-600',
+  'EN OFERTA': 'bg-amber-500',
+  CIERRE: 'bg-green-600'
+}
+
 const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
 const DIAS = ['Dom','Lun','Mar','Mie','Jue','Vie','Sab']
 
@@ -35,16 +56,63 @@ export default function CalendarPage() {
   const hoyStr = hoy.toISOString().split('T')[0]
   const [form, setForm] = useState({ cliente_id: '', tipo: 'llamada', titulo: '', detalle: '', fecha: hoyStr, hora: '09:00', urgencia: 'media' })
 
-  useEffect(() => { fetchFollowups(); fetchClientes() }, [])
+  useEffect(() => { 
+    // Primero cargamos los clientes y luego los datos para asegurar el cruce de nombres
+    fetchClientes().then(() => {
+      fetchData()
+    })
+  }, [])
 
-  async function fetchFollowups() {
-    const { data } = await supabase.from('followups').select('*').order('fecha').order('hora')
-    if (data) setFollowups(data)
-  }
-
+  // Modificamos esta función para que devuelva una promesa
   async function fetchClientes() {
     const { data } = await supabase.from('clients').select('id, name')
     if (data) setClientes(data)
+  }
+
+  async function fetchData() {
+    // 1. Traer los followups normales
+    const { data: followupsData } = await supabase.from('followups').select('*').order('fecha').order('hora')
+    
+    // 2. Traer los movimientos de forma limpia (Evitamos el error 400)
+    const { data: movementsData } = await supabase
+      .from('client_movements')
+      .select('id, client_id, etapa, moved_at')
+
+    let combinados: FollowUp[] = []
+
+    if (followupsData) {
+      combinados = [...followupsData]
+    }
+
+    // 3. Formatear y añadir movimientos cruzando el nombre localmente
+    if (movementsData) {
+      const movimientosFormateados: FollowUp[] = movementsData.map(mov => {
+        const fechaJusta = mov.moved_at ? mov.moved_at.split('T')[0] : ''
+        const horaJusta = mov.moved_at ? mov.moved_at.split('T')[1]?.substring(0, 5) : '12:00'
+        
+        let colorB = 'border-l-zinc-500'
+        if (mov.etapa === 'BUSCANDO') colorB = 'border-l-blue-600'
+        if (mov.etapa === 'EN OFERTA') colorB = 'border-l-amber-500'
+        if (mov.etapa === 'CIERRE') colorB = 'border-l-green-600'
+
+        return {
+          id: `mov-${mov.id}`,
+          cliente_id: mov.client_id,
+          tipo: 'movimiento',
+          titulo: `Cambio a etapa: ${mov.etapa}`,
+          detalle: `El cliente fue movido en el Pipeline.`,
+          fecha: fechaJusta,
+          hora: horaJusta,
+          urgencia: mov.etapa, 
+          hecho: true,         
+          isMovement: true,
+          colorBorde: colorB
+        }
+      })
+      combinados = [...combinados, ...movimientosFormateados]
+    }
+
+    setFollowups(combinados)
   }
 
   async function saveFollowup() {
@@ -54,7 +122,7 @@ export default function CalendarPage() {
     if (!error) {
       setForm({ cliente_id: '', tipo: 'llamada', titulo: '', detalle: '', fecha: diaSeleccionado || hoyStr, hora: '09:00', urgencia: 'media' })
       setShowForm(false)
-      fetchFollowups()
+      fetchData()
     } else {
       alert('Error: ' + error.message)
     }
@@ -62,6 +130,7 @@ export default function CalendarPage() {
   }
 
   async function toggleHecho(id: string, hecho: boolean) {
+    if (id.startsWith('mov-')) return 
     await supabase.from('followups').update({ hecho: !hecho }).eq('id', id)
     setFollowups(prev => prev.map(f => f.id === id ? { ...f, hecho: !f.hecho } : f))
   }
@@ -69,13 +138,15 @@ export default function CalendarPage() {
   const primerDia = new Date(anio, mes, 1).getDay()
   const diasEnMes = new Date(anio, mes + 1, 0).getDate()
   const celdas = Array(primerDia).fill(null).concat(Array.from({ length: diasEnMes }, (_, i) => i + 1))
+  
   const eventosDelDia = (dia: number) => {
     const f = `${anio}-${String(mes+1).padStart(2,'0')}-${String(dia).padStart(2,'0')}`
     return followups.filter(fu => fu.fecha === f)
   }
+  
   const eventosDiaSeleccionado = diaSeleccionado ? followups.filter(f => f.fecha === diaSeleccionado) : []
-  const pendientes = followups.filter(f => !f.hecho).length
-  const completados = followups.filter(f => f.hecho).length
+  const pendientes = followups.filter(f => !f.hecho && !f.isMovement).length
+  const completados = followups.filter(f => f.hecho || f.isMovement).length
   const nombreCliente = (id: string) => clientes.find(c => c.id === id)?.name || ''
 
   return (
@@ -114,7 +185,17 @@ export default function CalendarPage() {
                 return (
                   <button key={i} onClick={() => setDiaSeleccionado(fechaStr)} className={`relative p-1 rounded-lg text-xs font-bold transition-all min-h-[44px] flex flex-col items-center ${esSel ? 'bg-amber-500 text-black' : esHoy ? 'bg-zinc-700 text-white' : 'text-zinc-400 hover:bg-zinc-800'}`}>
                     <span>{dia}</span>
-                    {eventos.length > 0 && <div className="flex gap-0.5 mt-0.5 flex-wrap justify-center">{eventos.slice(0,3).map((e,ei) => <div key={ei} className={`w-1 h-1 rounded-full ${esSel ? 'bg-black' : e.urgencia === 'alta' ? 'bg-red-400' : e.urgencia === 'media' ? 'bg-amber-400' : 'bg-green-400'}`} />)}</div>}
+                    {eventos.length > 0 && (
+                      <div className="flex gap-0.5 mt-0.5 flex-wrap justify-center">
+                        {eventos.slice(0,3).map((e,ei) => {
+                          let dotBg = e.urgencia === 'alta' ? 'bg-red-400' : e.urgencia === 'media' ? 'bg-amber-400' : 'bg-green-400'
+                          if (e.isMovement) {
+                            dotBg = puntitoColor[e.urgencia] || 'bg-zinc-400'
+                          }
+                          return <div key={ei} className={`w-1.5 h-1.5 rounded-full ${esSel ? 'bg-black' : dotBg}`} />
+                        })}
+                      </div>
+                    )}
                   </button>
                 )
               })}
@@ -127,10 +208,15 @@ export default function CalendarPage() {
             {eventosDiaSeleccionado.length === 0 ? <p className="text-zinc-500 text-sm text-center py-6">Sin eventos este dia</p> : (
               <div className="flex flex-col gap-3">
                 {eventosDiaSeleccionado.sort((a,b) => a.hora.localeCompare(b.hora)).map(f => (
-                  <div key={f.id} className={`border rounded-xl p-3 transition-all ${f.hecho ? 'border-zinc-800 opacity-50' : 'border-zinc-700'}`}>
+                  <div key={f.id} className={`border rounded-xl p-3 transition-all ${f.colorBorde ? `border-zinc-800 border-l-4 ${f.colorBorde}` : f.hecho ? 'border-zinc-800 opacity-50' : 'border-zinc-700'}`}>
                     <div className="flex items-start justify-between gap-2">
-                      <div className="flex items-center gap-2"><span>{tipoIcono[f.tipo] || '📌'}</span><span className={`text-sm font-bold ${f.hecho ? 'line-through text-zinc-500' : 'text-white'}`}>{f.titulo}</span></div>
-                      <button onClick={() => toggleHecho(f.id, f.hecho)} className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${f.hecho ? 'bg-green-400 border-green-400' : 'border-zinc-500 hover:border-green-400'}`}>{f.hecho && <span className="text-black text-[10px] font-bold">✓</span>}</button>
+                      <div className="flex items-center gap-2">
+                        <span>{tipoIcono[f.tipo] || '📌'}</span>
+                        <span className={`text-sm font-bold ${f.hecho && !f.isMovement ? 'line-through text-zinc-500' : 'text-white'}`}>{f.titulo}</span>
+                      </div>
+                      {!f.isMovement && (
+                        <button onClick={() => toggleHecho(f.id, f.hecho)} className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${f.hecho ? 'bg-green-400 border-green-400' : 'border-zinc-500 hover:border-green-400'}`}>{f.hecho && <span className="text-black text-[10px] font-bold">✓</span>}</button>
+                      )}
                     </div>
                     {f.hora && <p className="text-amber-500 text-xs font-mono mt-1">{f.hora}</p>}
                     {f.cliente_id && nombreCliente(f.cliente_id) && <p className="text-zinc-400 text-xs mt-1">👤 {nombreCliente(f.cliente_id)}</p>}

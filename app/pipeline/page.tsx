@@ -11,17 +11,9 @@ type Client = {
   type: string
   price: string
   initial: string
-}
-type Client = {
-  id: string
-  name: string
-  email: string
-  status: string
-  type: string
-  price: string
-  initial: string
   etapa_changed_at?: string
 }
+
 const COLUMNS = ['LEAD', 'BUSCANDO', 'EN OFERTA', 'CIERRE']
 
 const colColors: Record<string, string> = {
@@ -48,22 +40,59 @@ export default function PipelinePage() {
   const [saving, setSaving] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
 
-  useEffect(() => { fetchClients() }, [])
+  useEffect(() => { 
+    fetchClients() 
+  }, [])
 
   async function fetchClients() {
-    const { data, error } = await supabase.from('clients').select('*').order('created_at', { ascending: false })
+    const { data, error } = await supabase
+      .from('clients')
+      .select('*')
+      .order('created_at', { ascending: false })
+      
     if (!error && data) setClients(data)
     setLoading(false)
-async function onDragEnd(result: DropResult) {
-  const { destination, source, draggableId } = result
-  if (!destination) return
-  if (destination.droppableId === source.droppableId) return
-  const newStatus = destination.droppableId
-  const now = new Date().toISOString()
-  setClients(prev => prev.map(c => c.id === draggableId ? { ...c, status: newStatus, etapa_changed_at: now } : c))
-  const { error } = await supabase.from('clients').update({ status: newStatus, etapa_changed_at: now }).eq('id', draggableId)
-  console.log('update result:', error)
-}
+  }
+
+  async function onDragEnd(result: DropResult) {
+    const { destination, source, draggableId } = result
+    if (!destination) return
+    if (destination.droppableId === source.droppableId) return
+
+    const newStatus = destination.droppableId
+    const now = new Date().toISOString()
+
+    // 1. Actualizar el estado visual en el frontend inmediatamente
+    setClients(prev => prev.map(c => c.id === draggableId ? { ...c, status: newStatus, etapa_changed_at: now } : c))
+
+    // 2. Guardar el estado actual en la tabla 'clients'
+    const { error: clientError } = await supabase
+      .from('clients')
+      .update({ status: newStatus, etapa_changed_at: now })
+      .eq('id', draggableId)
+
+    if (clientError) {
+      console.error('Error al actualizar cliente:', clientError)
+      return
+    }
+
+    // 3. Insertar el movimiento en la tabla de historial para el Calendario
+    const { error: historyError } = await supabase
+      .from('client_movements') 
+      .insert([
+        {
+          client_id: draggableId,
+          etapa: newStatus,
+          moved_at: now
+        }
+      ])
+
+    if (historyError) {
+      console.error('Error al guardar en el historial para el calendario:', historyError)
+    } else {
+      console.log('¡Movimiento guardado en el historial con éxito!')
+    }
+  }
 
   async function handleAddClient(e: React.FormEvent) {
     e.preventDefault()
@@ -81,6 +110,7 @@ async function onDragEnd(result: DropResult) {
       status: form.status,
       owner_id: user?.id,
     }).select().single()
+    
     setSaving(false)
     if (error) { setFormError(error.message); return }
     if (data) setClients(prev => [data, ...prev])
@@ -103,7 +133,7 @@ async function onDragEnd(result: DropResult) {
           <h1 className="text-2xl md:text-4xl font-black italic text-amber-500 tracking-tighter uppercase">PIPELINE</h1>
           <p className="text-zinc-500 text-xs mt-1 uppercase tracking-widest">{clients.length} CLIENTES EN TOTAL</p>
         </div>
-        <button onClick={() => setShowForm(v => !v)} className="px-3 py-2 bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs rounded-xl transition-all uppercase">
+        <button onClick={() => { setShowForm(v => !v); setForm(emptyForm); setFormError(null); }} className="px-3 py-2 bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs rounded-xl transition-all uppercase">
           {showForm ? 'X' : '+ Nuevo'}
         </button>
       </div>
@@ -160,19 +190,39 @@ async function onDragEnd(result: DropResult) {
                     {byStatus(col).map((c, index) => (
                       <Draggable key={c.id} draggableId={c.id} index={index}>
                         {(provided, snapshot) => (
-                          <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}
-                            className={`bg-zinc-900 border border-zinc-800 rounded-xl p-4 mb-3 cursor-grab transition-all ${snapshot.isDragging ? 'shadow-lg shadow-amber-500/20 border-amber-500' : 'hover:border-zinc-600'}`}>
+                          <div 
+                            ref={provided.innerRef} 
+                            {...provided.draggableProps} 
+                            {...provided.dragHandleProps}
+                            className={`bg-zinc-900/90 border-y border-r border-zinc-800 border-l-4 ${
+                              c.status === 'LEAD' ? 'border-l-zinc-500' :
+                              c.status === 'BUSCANDO' ? 'border-l-blue-600' :
+                              c.status === 'EN OFERTA' ? 'border-l-amber-500' :
+                              c.status === 'CIERRE' ? 'border-l-green-600' : 'border-l-zinc-700'
+                            } rounded-xl p-4 mb-3 cursor-grab transition-all ${
+                              snapshot.isDragging 
+                                ? 'shadow-xl shadow-black/50 scale-[1.02] border-zinc-700' 
+                                : 'hover:border-zinc-700 hover:bg-zinc-900'
+                            }`}
+                          >
                             <div className="flex items-center gap-3 mb-2">
-                              <div className="w-8 h-8 rounded-full bg-amber-500 text-black flex items-center justify-center font-bold text-sm">{c.initial}</div>
-                              <div className="font-bold text-white text-sm">{c.name}</div>
+                              <div className="w-7 h-7 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-300 flex items-center justify-center font-black text-xs uppercase tracking-wider">
+                                {c.initial}
+                              </div>
+                              <div className="font-bold text-zinc-100 text-sm tracking-tight">{c.name}</div>
                             </div>
-                            {c.type && <div className="text-zinc-500 text-xs mb-1">{c.type}</div>}
-                            {c.price && <div className="text-amber-500 font-bold text-sm">{c.price}</div>}
-{c.etapa_changed_at && (
-  <div className="mt-2 text-[10px] text-zinc-500 font-bold uppercase">
-    {Math.floor((Date.now() - new Date(c.etapa_changed_at).getTime()) / (1000 * 60 * 60 * 24))} días en etapa
-  </div>
-)}
+                            
+                            {c.type && <div className="text-zinc-500 text-xs font-medium tracking-wide mb-1 uppercase">{c.type}</div>}
+                            {c.price && <div className="text-amber-500 font-extrabold text-sm">{c.price}</div>}
+                            
+                            {c.etapa_changed_at && (
+                              <div className="mt-3 pt-2 border-t border-zinc-800/60 flex items-center justify-between text-[10px] text-zinc-500 font-bold uppercase tracking-wider">
+                                <span>Tiempo:</span>
+                                <span>
+                                  {Math.floor((Date.now() - new Date(c.etapa_changed_at).getTime()) / (1000 * 60 * 60 * 24))} días en etapa
+                                </span>
+                              </div>
+                            )}
                           </div>
                         )}
                       </Draggable>
