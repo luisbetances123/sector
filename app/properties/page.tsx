@@ -494,76 +494,60 @@ function PropertiesContent() {
       </div>
 
       {/* Filtros sector */}
-      <div className="flex gap-2 flex-wrap mb-6">
-        <button onClick={() => setSectorActivo('')}
-          className={`px-3 py-1.5 rounded-xl text-xs font-black uppercase transition-all ${!sectorActivo ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'}`}>
-          Todos
-        </button>
-        {SECTORES.map(s => (
-          <button key={s} onClick={() => setSectorActivo(sectorActivo === s ? '' : s)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-black uppercase transition-all ${sectorActivo === s ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'}`}>
-            {s}
+      <div className="flex flex-col gap-3 mb-6">
+        {/* Todos */}
+        <div className="flex gap-2 flex-wrap">
+          <button onClick={() => setSectorActivo('')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-black uppercase transition-all ${!sectorActivo ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'}`}>
+            Todos
           </button>
-        ))}
+        </div>
+        {/* Distrito Nacional */}
+        <div className="flex flex-col gap-1">
+          <span className="text-amber-400 text-[10px] font-black uppercase tracking-widest">🏙️ Distrito Nacional</span>
+          <div className="flex gap-2 flex-wrap">
+            {['Piantini','Naco','Bella Vista','Evaristo Morales','Serralles','Los Cacicazgos','Arroyo Hondo','Viejo Arroyo Hondo','La Esperilla','El Millon','Mirador Norte','Mirador Sur','Paraíso','La Castellana','Jardines del Norte','Los Prados','Gazcue','Ensanche Quisqueya','Los Restauradores','Zona Colonial','Arroyo Manzano','Colinas de los Ríos','Fernández','Renacimiento'].map(s => (
+              <button key={s} onClick={() => setSectorActivo(sectorActivo === s ? '' : s)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-black uppercase transition-all ${sectorActivo === s ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'}`}>
+                {s}
+              </button>
+            ))}
+          </div>
+        </div>
+        {/* Santo Domingo Este */}
+        <div className="flex flex-col gap-1">
+          <span className="text-blue-400 text-[10px] font-black uppercase tracking-widest">🌅 Santo Domingo Este</span>
+          <div className="flex gap-2 flex-wrap">
+            {['Alma Rosa I','Alma Rosa II','Ensanche Ozama','San Isidro','Ensanche Isabelita','Prado Oriental','Los Tres Ojos','Corales del Sur','Mirador del Este','Riviera del Caribe','Cerros del Ozama','Las Américas'].map(s => (
+              <button key={s} onClick={() => setSectorActivo(sectorActivo === s ? '' : s)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-black uppercase transition-all ${sectorActivo === s ? 'bg-blue-500 text-white' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'}`}>
+                {s}
+              </button>
+            ))}
+          </div>
+        </div>
+        {/* Santo Domingo Norte */}
+        <div className="flex flex-col gap-1">
+          <span className="text-green-400 text-[10px] font-black uppercase tracking-widest">🌇 Santo Domingo Norte</span>
+          <div className="flex gap-2 flex-wrap">
+            {['Palmarejo','Don Honorio','El Condado','Los Girasoles','Villa Mella','Ciudad Real','La Isabela','Brisas del Norte','Los Alcarrizos','San Felipe','Colinas del Norte','Reparto Universitario'].map(s => (
+              <button key={s} onClick={() => setSectorActivo(sectorActivo === s ? '' : s)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-black uppercase transition-all ${sectorActivo === s ? 'bg-green-500 text-black' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'}`}>
+                {s}
+              </button>
+            ))}
+          </div>
+        </div>
+        {/* Santo Domingo Oeste */}
+        <div className="flex flex-col gap-1">
+          <span className="text-purple-400 text-[10px] font-black uppercase tracking-widest">🌆 Santo Domingo Oeste</span>
+          <div className="flex gap-2 flex-wrap">
+            {['Manoguayabo','Mirador del Oeste','Villa Aura','Herrera','Engombe','Los Hidalgos','Pantoja','Las Caobas','Avenida Monumental','Alameda','Los Alcarrizos','Palmarejo'].map(s => (
+              <button key={s} onClick={() => setSectorActivo(sectorActivo === s ? '' : s)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-black uppercase transition-all ${sectorActivo === s ? 'bg-purple-500 text-white' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'}`}>
+                {s}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
-
-      {/* Grid */}
-      {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden animate-pulse">
-              <div className="h-44 bg-zinc-800" />
-              <div className="p-4 space-y-3">
-                <div className="h-4 bg-zinc-800 rounded-lg w-3/4" />
-                <div className="h-3 bg-zinc-800 rounded-lg w-1/2" />
-                <div className="h-5 bg-zinc-800 rounded-lg w-1/3 mt-4" />
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : filtered.length === 0 ? (
-        <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-12 text-center">
-          <svg className="w-10 h-10 text-zinc-700 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9.75L12 3l9 6.75V21H3V9.75z" />
-          </svg>
-          <p className="text-zinc-500 text-sm mb-4">
-            {search || sectorActivo ? 'No hay propiedades con esos filtros.' : 'Aún no hay propiedades. ¡Crea la primera!'}
-          </p>
-          {!search && !sectorActivo && (
-            <button onClick={openNew}
-              className="px-4 py-2 bg-amber-500 text-black text-sm font-black uppercase rounded-xl hover:bg-white transition-all">
-              + Nueva propiedad
-            </button>
-          )}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map(p => (
-            <PropertyCard
-              key={p.id}
-              property={p}
-              onClick={() => router.push('/properties/' + p.id)}
-              onEdit={e => openEdit(e, p)}
-              onDelete={e => handleDelete(e, p.id, p.title)}
-            />
-          ))}
-        </div>
-      )}
-
-      <PropertyModal
-        open={modalOpen}
-        initial={editingProperty}
-        onClose={() => { setModalOpen(false); setEditingProperty(null) }}
-        onSave={handleSave}
-      />
-    </div>
-  )
-}
-
-export default function PropertiesPage() {
-  return (
-    <Suspense fallback={<div className="p-4 text-zinc-500">Cargando...</div>}>
-      <PropertiesContent />
-    </Suspense>
-  )
-}
