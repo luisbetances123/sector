@@ -13,7 +13,7 @@ const SECTORES = [
   // Nuevos - Clase Media-Alta
   'Los Prados', 'Gazcue', 'Ensanche Quisqueya', 'Los Restauradores', 'Zona Colonial',
   // Nuevos - En auge
-  'Arroyo Manzano', 'Colinas de los Ríos',
+  'Arroyo Manzano', 'Colinas de los Ríos', 'Fernández', 'Renacimiento',
 ]
 function calcularMatch(cliente: any, propiedad: any): number {
   let score = 0
