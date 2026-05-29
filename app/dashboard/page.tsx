@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import DashboardMobile from '../components/DashboardMobile'
+
 const SECTORES = [
   'Piantini', 'Naco', 'Bella Vista', 'Evaristo Morales', 'Serralles', 'Los Cacicazgos',
   'Arroyo Hondo', 'Viejo Arroyo Hondo', 'La Esperilla', 'El Millon', 'Mirador Norte', 'Mirador Sur',
@@ -23,6 +24,7 @@ const SECTORES_SDO = [
   'Manoguayabo', 'Mirador del Oeste', 'Villa Aura', 'Herrera', 'Los Alcarrizos', 'Alameda',
   'Engombe', 'Los Hidalgos', 'Pantoja', 'Las Caobas', 'Avenida Monumental', 'Palmarejo',
 ]
+
 function calcularMatch(cliente: any, propiedad: any): number {
   let score = 0
   if (cliente.zonas_interes?.length > 0 && propiedad.sector) {
@@ -59,11 +61,8 @@ export default function Dashboard() {
   const [contactos, setContactos] = useState<any[]>([])
   const [pushActivo, setPushActivo] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
-  
-  // Estado para la navegación interna interactiva en móviles
   const [currentView, setCurrentView] = useState('dashboard')
 
-  // Funciones de formateo reales del negocio
   const formatPrice = (p: string, m?: string) => 
     new Intl.NumberFormat('es-DO', { style: 'currency', currency: m || 'USD', maximumFractionDigits: 0 }).format(parseFloat(p?.replace(/[^0-9.]/g, '') || '0'))
   
@@ -77,10 +76,17 @@ export default function Dashboard() {
     return Math.floor((Date.now() - new Date(ultimo.fecha).getTime()) / (1000 * 60 * 60 * 24))
   }
 
-  useEffect(() => {
-    const checkDevice = () => {
-      setIsMobile(window.innerWidth < 768)
+  // Función auxiliar para formatear números de teléfono al formato limpio internacional de WhatsApp
+  const limpiarTelefonoWa = (tel: string) => {
+    let limpio = tel.replace(/\D/g, '')
+    if (limpio.length === 10 && (limpio.startsWith('809') || limpio.startsWith('829') || limpio.startsWith('849'))) {
+      limpio = '1' + limpio // Prefijo para RD si solo tiene 10 dígitos
     }
+    return limpio
+  }
+
+  useEffect(() => {
+    const checkDevice = () => { setIsMobile(window.innerWidth < 768) }
     checkDevice()
     window.addEventListener('resize', checkDevice)
     return () => window.removeEventListener('resize', checkDevice)
@@ -89,7 +95,7 @@ export default function Dashboard() {
   useEffect(() => {
     async function fetchAll() {
       const [c, p, f, ct] = await Promise.all([
-        supabase.from('clientes').select('*'),
+        supabase.from('clients').select('*'), // CORREGIDO: De 'clientes' a 'clients'
         supabase.from('properties').select('*').eq('estado', 'disponible'),
         supabase.from('followups').select('*'),
         supabase.from('contactos_whatsapp').select('*').order('fecha', { ascending: false }),
@@ -130,15 +136,16 @@ export default function Dashboard() {
     </div>
   )
 
-  // Procesamiento intermedio de datos e historiales
   const hoyStr = new Date().toISOString().split('T')[0]
   const followupsHoy = followups.filter(f => f.fecha === hoyStr && !f.hecho)
   const followupsPendientes = followups.filter(f => !f.hecho).length
   const propiedadesDisponibles = properties.length
-  const leads = clientes.filter(c => c.etapa === 'Lead')
+  
+  // CORREGIDO: Usando 'status' en lugar de 'etapa'
+  const leads = clientes.filter(c => c.status === 'LEAD') 
   
   const sinContactar = clientes.filter(c => {
-    if (c.etapa === 'Cierre') return false
+    if (c.status === 'CIERRE') return false
     const delCliente = contactos.filter(ct => ct.cliente_id === c.id)
     if (delCliente.length === 0) return true
     const ultimo = delCliente.sort((a: any, b: any) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())[0]
@@ -147,28 +154,29 @@ export default function Dashboard() {
   })
 
   const clientesConMatch = clientes.filter(c => {
-    if (c.etapa === 'Cierre') return false
+    if (c.status === 'CIERRE') return false
     return properties.some(p => calcularMatch(c, p) > 0)
   })
   const totalMatches = clientesConMatch.reduce((acc, c) => {
     return acc + properties.filter(p => calcularMatch(c, p) > 0).length
   }, 0)
 
-  const clientesPorEtapa = ['Lead','Buscando','En Oferta','Cierre'].map(e => ({
-    etapa: e, total: clientes.filter(c => c.etapa === e).length
+  // CORREGIDO: Mapeando los nombres exactos de columnas de tu Pipeline
+  const clientesPorEtapa = ['LEAD','BUSCANDO','EN OFERTA','CIERRE'].map(e => ({
+    etapa: e, total: clientes.filter(c => c.status === e).length
   }))
   const maxEtapa = Math.max(...clientesPorEtapa.map(e => e.total), 1)
   const tipoIcono: Record<string, string> = { llamada: '📞', visita: '🏠', documento: '📄', otro: '📌' }
   
   const etapaColor: Record<string, string> = {
-    'Lead': 'bg-zinc-700 text-zinc-300',
-    'Buscando': 'bg-blue-900/80 text-blue-300',
-    'En Oferta': 'bg-amber-900/80 text-amber-300',
-    'Cierre': 'bg-green-900/80 text-green-300',
+    'LEAD': 'bg-zinc-700 text-zinc-300',
+    'BUSCANDO': 'bg-blue-900/80 text-blue-300',
+    'EN OFERTA': 'bg-amber-900/80 text-amber-300',
+    'CIERRE': 'bg-green-900/80 text-green-300',
   }
   const etapaBarColor: Record<string, string> = {
-    'Lead': 'bg-zinc-500', 'Buscando': 'bg-blue-500',
-    'En Oferta': 'bg-amber-500', 'Cierre': 'bg-green-500',
+    'LEAD': 'bg-zinc-500', 'BUSCANDO': 'bg-blue-500',
+    'EN OFERTA': 'bg-amber-500', 'CIERRE': 'bg-green-500',
   }
 
   const fantasmas = clientes.filter((cliente: any) => {
@@ -184,9 +192,8 @@ export default function Dashboard() {
     matches: properties.filter((p: any) => calcularMatch(c, p) > 0)
   }))
 
-  const clientesActivos = clientes.filter(c => c.etapa === 'Buscando' || c.etapa === 'En Oferta')
+  const clientesActivos = clientes.filter(c => c.status === 'BUSCANDO' || c.status === 'EN OFERTA')
 
-  // 📱 DESVÍO MÓVIL SEGURO (SPA Reactiva)
   if (isMobile) {
     return (
       <DashboardMobile
@@ -203,15 +210,14 @@ export default function Dashboard() {
         formatPrice={formatPrice}
         formatFecha={formatFecha}
         diasSinContacto={diasSinContacto}
-        currentView={currentView} // Le pasamos la vista actual activa
-        setView={setCurrentView}   // Permitimos que cambie de pestaña dinámicamente
+        currentView={currentView}
+        setView={setCurrentView}
       />
     )
   }
 
   return (
     <>
-      {/* 💻 BLOQUE ESCRITORIO (Solo visible en pantallas medianas/grandes) */}
       <div className="hidden md:block min-h-screen bg-[#0a0a0a] p-4 md:p-8 pb-40 overflow-x-hidden w-full">
         <div className="max-w-5xl mx-auto w-full">
 
@@ -276,22 +282,22 @@ export default function Dashboard() {
                   <div key={c.id} className="flex items-center justify-between bg-black/30 border border-red-900/40 rounded-2xl px-4 py-3 gap-3">
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="w-9 h-9 rounded-full bg-amber-500 text-black flex items-center justify-center font-black text-sm shrink-0">
-                        {c.nombre?.[0]?.toUpperCase()}
+                        {c.name?.[0]?.toUpperCase()}
                       </div>
                       <div className="min-w-0">
-                        <p className="text-white text-sm font-bold truncate">{c.nombre}</p>
-                        <p className="text-zinc-500 text-xs truncate">{c.telefono || c.email || '—'}</p>
+                        <p className="text-white text-sm font-bold truncate">{c.name}</p>
+                        <p className="text-zinc-500 text-xs truncate">{c.phone || c.email || '—'}</p>
                       </div>
                     </div>
                     <div className="flex gap-1.5 shrink-0">
-                      {c.telefono && (
-                        <a href={`https://wa.me/${c.telefono.replace(/\D/g, '')}`} target="_blank" rel="noreferrer"
+                      {c.phone && (
+                        <a href={`https://wa.me/${limpiarTelefonoWa(c.phone)}?text=${encodeURIComponent(`Hola ${c.name}, te escribe Luis de HOMVI. Vi tu interés en una propiedad, ¿cómo estás?`)}`} target="_blank" rel="noreferrer"
                           className="bg-green-600 hover:bg-green-500 text-white px-2.5 py-1.5 rounded-xl text-xs font-black transition-colors">
                           💬
                         </a>
                       )}
-                      {c.telefono && (
-                        <a href={`tel:${c.telefono}`}
+                      {c.phone && (
+                        <a href={`tel:${c.phone}`}
                           className="bg-zinc-700 hover:bg-zinc-600 text-white px-2.5 py-1.5 rounded-xl text-xs font-black transition-colors">
                           📞
                         </a>
@@ -322,17 +328,19 @@ export default function Dashboard() {
                     <div key={c.id} className="flex items-center justify-between bg-red-950/30 border border-red-900/40 rounded-2xl px-4 py-3">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center text-red-400 text-sm font-bold">
-                          {c.nombre?.[0]?.toUpperCase()}
+                          {c.name?.[0]?.toUpperCase()}
                         </div>
                         <div>
-                          <p className="text-white text-sm font-bold">{c.nombre}</p>
+                          <p className="text-white text-sm font-bold">{c.name}</p>
                           <p className="text-red-400 text-xs">Sin contacto +7 días</p>
                         </div>
                       </div>
-                      <a href={`https://wa.me/${c.telefono?.replace(/\D/g, '')}`} target="_blank" rel="noreferrer"
-                        className="bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded-xl text-xs font-black transition-colors">
-                        WhatsApp
-                      </a>
+                      {c.phone && (
+                        <a href={`https://wa.me/${limpiarTelefonoWa(c.phone)}?text=${encodeURIComponent(`¡Hola ${c.name}! Espero que todo esté bien. Te escribo de HOMVI para ver si sigues interesado en buscar opciones de propiedades.`)}`} target="_blank" rel="noreferrer"
+                          className="bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded-xl text-xs font-black transition-colors">
+                          WhatsApp
+                        </a>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -370,17 +378,17 @@ export default function Dashboard() {
                       <div key={c.id} className="flex items-center justify-between bg-black/30 border border-orange-900/40 rounded-2xl px-4 py-3 gap-3">
                         <div className="flex items-center gap-3 min-w-0">
                           <div className="w-8 h-8 rounded-full bg-amber-500 text-black flex items-center justify-center font-black text-sm shrink-0">
-                            {c.nombre?.[0]?.toUpperCase()}
+                            {c.name?.[0]?.toUpperCase()}
                           </div>
                           <div className="min-w-0">
-                            <p className="text-white text-sm font-bold truncate">{c.nombre}</p>
+                            <p className="text-white text-sm font-bold truncate">{c.name}</p>
                             <p className="text-orange-400 text-xs">
                               {dias === null ? 'Sin contacto registrado' : `${dias} días sin contacto`}
                             </p>
                           </div>
                         </div>
-                        {c.telefono && (
-                          <a href={`https://wa.me/${c.telefono.replace(/\D/g, '')}?text=${encodeURIComponent(`Hola ${c.nombre}, te contacto de HOMVI. ¿Tienes un momento?`)}`}
+                        {c.phone && (
+                          <a href={`https://wa.me/${limpiarTelefonoWa(c.phone)}?text=${encodeURIComponent(`Hola ${c.name}, te contacto de HOMVI. ¿Pudiste revisar las opciones que tenemos disponibles?`)}`}
                             target="_blank" rel="noreferrer"
                             className="shrink-0 bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded-xl text-xs font-black transition-colors">
                             💬
@@ -419,10 +427,10 @@ export default function Dashboard() {
                       <div key={c.id} className="flex items-center justify-between bg-black/30 border border-amber-800/30 rounded-2xl px-4 py-3 gap-3">
                         <div className="flex items-center gap-3 min-w-0">
                           <div className="w-8 h-8 rounded-full bg-amber-500 text-black flex items-center justify-center font-black text-sm shrink-0">
-                            {c.nombre?.[0]?.toUpperCase()}
+                            {c.name?.[0]?.toUpperCase()}
                           </div>
                           <div className="min-w-0">
-                            <p className="text-white text-sm font-bold truncate">{c.nombre}</p>
+                            <p className="text-white text-sm font-bold truncate">{c.name}</p>
                             <p className="text-amber-400 text-xs">
                               {matchCount} propiedad{matchCount !== 1 ? 'es' : ''} compatible{matchCount !== 1 ? 's' : ''}
                             </p>
@@ -496,17 +504,17 @@ export default function Dashboard() {
                     <div key={c.id} className="flex items-center justify-between bg-zinc-900/60 rounded-2xl px-3 py-2.5 gap-2">
                       <div className="flex items-center gap-2.5 min-w-0">
                         <div className="w-8 h-8 rounded-full bg-amber-500 text-black flex items-center justify-center font-black text-sm shrink-0">
-                          {c.nombre?.[0]?.toUpperCase()}
+                          {c.name?.[0]?.toUpperCase()}
                         </div>
                         <div className="min-w-0">
-                          <p className="text-white text-xs font-bold truncate">{c.nombre}</p>
-                          <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${etapaColor[c.etapa] || 'bg-zinc-700 text-zinc-300'}`}>
-                            {c.etapa}
+                          <p className="text-white text-xs font-bold truncate">{c.name}</p>
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${etapaColor[c.status] || 'bg-zinc-700 text-zinc-300'}`}>
+                            {c.status}
                           </span>
                         </div>
                       </div>
-                      {c.telefono && (
-                        <a href={`https://wa.me/${c.telefono.replace(/\D/g, '')}`} target="_blank" rel="noreferrer"
+                      {c.phone && (
+                        <a href={`https://wa.me/${limpiarTelefonoWa(c.phone)}?text=${encodeURIComponent(`Hola ${c.name}, le escribe Luis de HOMVI. ¿Cómo va todo con los proyectos?`)}`} target="_blank" rel="noreferrer"
                           className="shrink-0 bg-green-700 hover:bg-green-600 text-white px-2.5 py-1.5 rounded-xl text-[10px] font-black transition-colors">
                           💬
                         </a>
@@ -550,8 +558,8 @@ export default function Dashboard() {
                 {[
                   ...leads.slice(0, 2).map(c => ({
                     id: 'lead-' + c.id, icon: '🟠',
-                    texto: `Nuevo lead: ${c.nombre}`,
-                    sub: c.telefono || c.email || '',
+                    texto: `Nuevo lead: ${c.name}`,
+                    sub: c.phone || c.email || '',
                     tiempo: 'pendiente', color: 'text-amber-400'
                   })),
                   ...followupsHoy.slice(0, 2).map(f => ({
@@ -580,13 +588,14 @@ export default function Dashboard() {
             </div>
           </section>
 
- {/* ══ 7. SECTORES ══ */}
+          {/* ══ 7. SECTORES ══ */}
           <section className="mb-6">
             <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-3xl p-6">
               <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center gap-2">
                   <span>🏙️</span>
-<h3 className="text-amber-400 font-black text-sm uppercase tracking-wider">Distrito Nacional</h3>                </div>
+                  <h3 className="text-amber-400 font-black text-sm uppercase tracking-wider">Distrito Nacional</h3>
+                </div>
               </div>
               <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
                 {SECTORES.map(s => (
@@ -599,13 +608,14 @@ export default function Dashboard() {
             </div>
           </section>
 
-         {/* ══ 8. SECTORES SDE ══ */}
+          {/* ══ 8. SECTORES SDE ══ */}
           <section className="mb-6">
             <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-3xl p-6">
               <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center gap-2">
                   <span>🌅</span>
-<h3 className="text-blue-400 font-black text-sm uppercase tracking-wider">Santo Domingo Este</h3>                </div>
+                  <h3 className="text-blue-400 font-black text-sm uppercase tracking-wider">Santo Domingo Este</h3>
+                </div>
               </div>
               <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
                 {SECTORES_SDE.map(s => (
@@ -624,7 +634,8 @@ export default function Dashboard() {
               <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center gap-2">
                   <span>🌇</span>
-<h3 className="text-green-400 font-black text-sm uppercase tracking-wider">Santo Domingo Norte</h3>                </div>
+                  <h3 className="text-green-400 font-black text-sm uppercase tracking-wider">Santo Domingo Norte</h3>
+                </div>
               </div>
               <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
                 {SECTORES_SDN.map(s => (
@@ -643,7 +654,8 @@ export default function Dashboard() {
               <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center gap-2">
                   <span>🌆</span>
-<h3 className="text-purple-400 font-black text-sm uppercase tracking-wider">Santo Domingo Oeste</h3>                </div>
+                  <h3 className="text-purple-400 font-black text-sm uppercase tracking-wider">Santo Domingo Oeste</h3>
+                </div>
               </div>
               <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
                 {SECTORES_SDO.map(s => (
@@ -655,6 +667,7 @@ export default function Dashboard() {
               </div>
             </div>
           </section>
+
           {/* Acciones rápidas */}
           <section className="mb-6">
             <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-3xl p-6">
@@ -677,7 +690,6 @@ export default function Dashboard() {
 
         </div>
       </div>
-      {/* Botón flotante — Solo visible en desktop */}
       <Link href="/clients"
         className="hidden md:flex fixed bottom-8 right-8 z-50 bg-amber-500 hover:bg-white text-black px-4 py-2.5 rounded-xl font-black text-xs uppercase shadow-xl shadow-amber-500/40 transition-all items-center gap-1.5">
         <span className="text-sm font-black">+</span>
