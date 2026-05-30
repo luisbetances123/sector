@@ -249,11 +249,6 @@ function PropertyModal({ open, initial, onClose, onSave }: ModalProps) {
           </div>
         </div>
       </div>
-    </div>
-  )
-}
-
-// ── Card ───────────────────────────────────────────────────────────────────────
 
 interface CardProps {
   property: Property
