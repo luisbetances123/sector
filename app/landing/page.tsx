@@ -263,7 +263,7 @@ export default function Page() {
       Configurado con los sectores donde se mueve el dinero real:{' '}
       <span className="text-amber-400 font-bold">Piantini, Naco, Bella Vista, Serralles, Los Cacicazgos, La Esperilla, Mirador Norte</span>
       {' '}— y los destinos de inversión turística como{' '}
-      <span className="text-amber-400 font-bold">Punta Cana, Bávaro y Bayahíbe</span>.
+      <span className="text-amber-400 font-bold">Punta Cana, Bávaro y Boca Chica</span>.
     </p>
   </section>
 </FadeIn>
