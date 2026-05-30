@@ -240,17 +240,17 @@ function PropertyModal({ open, initial, onClose, onSave }: ModalProps) {
           <div className="flex gap-3 pt-2">
             <button onClick={onClose}
               className="flex-1 bg-zinc-800 text-white py-3 rounded-xl font-bold text-sm hover:bg-zinc-700 transition-all">
-              Cancelar
+ Cancelar
             </button>
-  <button onClick={handleSave} disabled={saving}
+            <button onClick={handleSave} disabled={saving}
               className="flex-1 bg-amber-500 text-black py-3 rounded-xl font-black text-sm uppercase hover:bg-white transition-all disabled:opacity-50">
               {saving ? 'Guardando...' : initial ? 'Guardar cambios' : 'Crear propiedad'}
-          </button>
+            </button>
           </div>
         </div>
       </div>
     )
-}
+  }
 
 interface CardProps {
   property: Property
