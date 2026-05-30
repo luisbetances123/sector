@@ -132,8 +132,7 @@ badge: '🇩🇴 CRM Inmobiliario · Santo Domingo',      h1a: 'Tu cartera de cl
   en: {
     nav: { features: 'Features', faq: 'FAQ', cta: 'Get Started' },
     hero: {
-      badge: 'Real Estate CRM · Santo Domingo',
-      h1a: 'Your client portfolio,',
+badge: '🇩🇴 Real Estate CRM · Santo Domingo',      h1a: 'Your client portfolio,',
       h1b: 'under total control.',
       desc: 'Homvi is the CRM designed for real estate agents who operate at luxury standards. Visual pipeline, precise follow-ups, intelligent closing.',
       btnPrimary: 'Start Free',
