@@ -93,8 +93,7 @@ const content = {
   es: {
     nav: { features: 'Funciones', faq: 'FAQ', cta: 'Comenzar' },
     hero: {
-      badge: 'CRM Inmobiliario · Santo Domingo',
-      h1a: 'Tu cartera de clientes,',
+badge: '🇩🇴 CRM Inmobiliario · Santo Domingo',      h1a: 'Tu cartera de clientes,',
       h1b: 'bajo control total.',
       desc: 'Homvi es el CRM diseñado para agentes inmobiliarios que operan con estándares de lujo. Pipeline visual, seguimiento preciso, cierre inteligente.',
       btnPrimary: 'Empieza Gratis',
