@@ -203,7 +203,8 @@ export default function CalendarPage() {
                     {eventos.length > 0 && (
                       <div className="flex gap-0.5 mt-0.5 flex-wrap justify-center">
                         {eventos.slice(0,3).map((e,ei) => {
-let dotBg = tipoColor[e.tipo] || 'bg-zinc-400'                          if (e.isMovement) {
+                          let dotBg = tipoColor[e.tipo] || 'bg-zinc-400'
+                          if (e.isMovement) {
                             dotBg = puntitoColor[e.urgencia] || 'bg-zinc-400'
                           }
                           return <div key={ei} className={`w-1.5 h-1.5 rounded-full ${esSel ? 'bg-black' : dotBg}`} />
