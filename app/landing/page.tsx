@@ -249,6 +249,24 @@ export default function Page() {
             </div>
           </FadeIn>
         </section>
+        {/* RD Section */}
+<FadeIn>
+  <section className="py-12 px-6 max-w-4xl mx-auto text-center">
+    <span className="text-2xl mb-4 block">🇩🇴</span>
+    <h2 className="text-2xl md:text-3xl font-black mb-3">
+      Construido para el ecosistema inmobiliario de la República Dominicana
+    </h2>
+    <p className="text-zinc-400 text-sm mb-6 italic">
+      Desde Piantini hasta Punta Cana, HOMVI conoce tu territorio.
+    </p>
+    <p className="text-zinc-300 text-sm leading-relaxed max-w-2xl mx-auto">
+      Configurado con los sectores donde se mueve el dinero real:{' '}
+      <span className="text-amber-400 font-bold">Piantini, Naco, Bella Vista, Serralles, Los Cacicazgos, La Esperilla, Mirador Norte</span>
+      {' '}— y los destinos de inversión turística como{' '}
+      <span className="text-amber-400 font-bold">Punta Cana, Bávaro y Bayahíbe</span>.
+    </p>
+  </section>
+</FadeIn>
 
         {/* Stats */}
         <section className="py-10 px-6 max-w-6xl mx-auto border-y border-zinc-800">
