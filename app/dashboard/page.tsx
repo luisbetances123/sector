@@ -2,7 +2,6 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
-import DashboardMobile from '../components/DashboardMobile'
 
 const SECTORES = [
   'Piantini', 'Naco', 'Bella Vista', 'Evaristo Morales', 'Serralles', 'Los Cacicazgos',
@@ -215,27 +214,7 @@ export default function Dashboard() {
 
   const clientesActivos = clientes.filter(c => c.status === 'BUSCANDO' || c.status === 'EN OFERTA')
 
-  if (isMobile) {
-    return (
-      <DashboardMobile
-        leads={leads}
-        fantasmas={fantasmas}
-        sinContactar={sinContactar}
-        propiedadesMatch={propiedadesMatch}
-        followups={followups}
-        contactos={contactos}
-        clientes={clientes}
-        SECTORES={SECTORES}
-        calcularMatch={calcularMatch}
-        properties={properties}
-        formatPrice={formatPrice}
-        formatFecha={formatFecha}
-        diasSinContacto={diasSinContacto}
-        currentView={currentView}
-        setView={setCurrentView}
-      />
-    )
-  }
+ 
 
   return (
     <>
@@ -255,8 +234,7 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* Header */}
-          <header className="mb-8">
+                   <header className="mb-8">
             <p className="text-zinc-500 text-xs uppercase tracking-widest mb-1">
               {new Date().toLocaleDateString('es-DO', { weekday: 'long', day: 'numeric', month: 'long' })}
             </p>
@@ -265,8 +243,8 @@ export default function Dashboard() {
             </h1>
           </header>
 
-          {/* Stats */}
-          <div className="grid grid-cols-4 gap-2 mb-8">
+          {/* Stats: Ajustado a 2 columnas en móvil y 4 en escritorio */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-8">
             {[
               { label: 'Clientes', icon: '👥', value: clientes.length, color: 'text-white', href: '/clients' },
               { label: 'Leads', icon: '🔴', value: leads.length, color: leads.length > 0 ? 'text-red-400' : 'text-zinc-400', href: '/clients' },
