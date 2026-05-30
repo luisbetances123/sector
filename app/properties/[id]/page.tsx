@@ -322,7 +322,23 @@ export default function PropertyDetailPage({ params }: { params: any }) {
           <p className="text-zinc-300 text-sm leading-relaxed whitespace-pre-wrap">{property.descripcion}</p>
         </div>
       )}
-
+{/* Google Maps */}
+{(property.location || property.sector) && (
+  <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden mb-6">
+    <h2 className="text-xs font-black text-zinc-500 uppercase tracking-widest p-5 pb-0">Ubicación</h2>
+    <div className="p-5">
+      <iframe
+        width="100%"
+        height="300"
+        style={{ border: 0, borderRadius: '12px' }}
+        loading="lazy"
+        allowFullScreen
+        referrerPolicy="no-referrer-when-downgrade"
+        src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY}&q=${encodeURIComponent(`${property.location || ''} ${property.sector || ''} Santo Domingo República Dominicana`)}`}
+      />
+    </div>
+  </div>
+)}
       {property.created_at && (
         <p className="text-zinc-600 text-xs uppercase tracking-widest">
           Agregada el {new Date(property.created_at).toLocaleDateString('es-DO', {
