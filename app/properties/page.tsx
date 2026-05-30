@@ -245,10 +245,13 @@ function PropertyModal({ open, initial, onClose, onSave }: ModalProps) {
             <button onClick={handleSave} disabled={saving}
               className="flex-1 bg-amber-500 text-black py-3 rounded-xl font-black text-sm uppercase hover:bg-white transition-all disabled:opacity-50">
               {saving ? 'Guardando...' : initial ? 'Guardar cambios' : 'Crear propiedad'}
-            </button>
+ </button>
           </div>
         </div>
       </div>
+    )
+  }
+}
 
 interface CardProps {
   property: Property
