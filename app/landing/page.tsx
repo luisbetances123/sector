@@ -1,8 +1,93 @@
 'use client'
 import { supabase } from '../lib/supabase'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { LayoutDashboard, Sun, Users, Building2, TrendingUp, Calendar, BarChart3, ChevronDown } from 'lucide-react'
+
+// ── Typewriter hook ──────────────────────────────────────────────────────────
+function useTypewriter(text: string, speed = 40, delay = 500) {
+  const [displayed, setDisplayed] = useState('')
+  const [done, setDone] = useState(false)
+  useEffect(() => {
+    setDisplayed('')
+    setDone(false)
+    const timeout = setTimeout(() => {
+      let i = 0
+      const interval = setInterval(() => {
+        setDisplayed(text.slice(0, i + 1))
+        i++
+        if (i >= text.length) { clearInterval(interval); setDone(true) }
+      }, speed)
+      return () => clearInterval(interval)
+    }, delay)
+    return () => clearTimeout(timeout)
+  }, [text, speed, delay])
+  return { displayed, done }
+}
+
+// ── Counter hook ─────────────────────────────────────────────────────────────
+function useCounter(target: string, duration = 1500, active = false) {
+  const [value, setValue] = useState('0')
+  useEffect(() => {
+    if (!active) return
+    const num = parseFloat(target.replace(/[^0-9.]/g, ''))
+    const suffix = target.replace(/[0-9.,]/g, '')
+    if (isNaN(num)) { setValue(target); return }
+    let start = 0
+    const steps = 60
+    const increment = num / steps
+    const interval = setInterval(() => {
+      start += increment
+      if (start >= num) { setValue(target); clearInterval(interval); return }
+      const display = num >= 1000 ? Math.floor(start).toLocaleString() : start.toFixed(0)
+      setValue(display + suffix)
+    }, duration / steps)
+    return () => clearInterval(interval)
+  }, [active, target, duration])
+  return value
+}
+
+// ── FadeIn component ─────────────────────────────────────────────────────────
+function FadeIn({ children, delay = 0, className = '' }: { children: React.ReactNode, delay?: number, className?: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [visible, setVisible] = useState(false)
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setVisible(true); observer.disconnect() }
+    }, { threshold: 0.1 })
+    if (ref.current) observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [])
+  return (
+    <div ref={ref} className={className} style={{
+      opacity: visible ? 1 : 0,
+      transform: visible ? 'translateY(0)' : 'translateY(24px)',
+      transition: `opacity 0.6s ease ${delay}ms, transform 0.6s ease ${delay}ms`,
+    }}>
+      {children}
+    </div>
+  )
+}
+
+// ── StatCard ─────────────────────────────────────────────────────────────────
+function StatCard({ num, label }: { num: string, label: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [active, setActive] = useState(false)
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setActive(true); observer.disconnect() }
+    }, { threshold: 0.5 })
+    if (ref.current) observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [])
+  const value = useCounter(num, 1500, active)
+  return (
+    <div ref={ref} className="text-center">
+      <p className="text-4xl font-black mb-2 text-white">{value}</p>
+      <p className="text-zinc-500 text-xs uppercase tracking-widest">{label}</p>
+    </div>
+  )
+}
 
 const content = {
   es: {
@@ -97,6 +182,7 @@ export default function Page() {
   const [lang, setLang] = useState<'es' | 'en'>('es')
 
   const t = content[lang]
+  const { displayed: typedH1b, done: typedDone } = useTypewriter(t.hero.h1b, 45, 800)
 
   const guardarEmail = async () => {
     if (!email.trim()) return
@@ -107,154 +193,180 @@ export default function Page() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white font-sans">
+    <div className="min-h-screen bg-[#0a0a0a] text-white font-sans overflow-x-hidden">
 
-      {/* Nav */}
-      <nav className="flex justify-between items-center p-6 max-w-7xl mx-auto border-b border-zinc-800">
-        <div className="text-2xl font-black tracking-tighter text-amber-500">HOMVI</div>
-        <div className="hidden md:flex gap-8 text-xs uppercase tracking-widest text-zinc-500">
-          <a href="#features" className="hover:text-white cursor-pointer transition-colors">{t.nav.features}</a>
-          <a href="#faq" className="hover:text-white cursor-pointer transition-colors">{t.nav.faq}</a>
-        </div>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setLang(lang === 'es' ? 'en' : 'es')}
-            className="text-xs font-bold text-zinc-400 hover:text-amber-500 transition-colors border border-zinc-700 hover:border-amber-500 px-3 py-1.5 rounded-lg"
-          >
-            {lang === 'es' ? 'EN' : 'ES'}
-          </button>
-          <Link href="/dashboard" className="bg-amber-500 text-black px-5 py-2 rounded-lg text-xs font-bold hover:bg-white transition-all uppercase tracking-wider">
-            {t.nav.cta}
-          </Link>
-        </div>
-      </nav>
+      {/* Gradiente animado de fondo */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-amber-600/3 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-amber-400/3 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+      </div>
 
-      {/* Hero */}
-      <section className="pt-20 pb-10 px-6 text-center max-w-4xl mx-auto">
-        <span className="text-amber-500 text-xs uppercase tracking-widest font-bold mb-4 block">{t.hero.badge}</span>
-        <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-8 leading-tight">
-          {t.hero.h1a}{' '}
-          <span className="italic text-amber-500">{t.hero.h1b}</span>
-        </h1>
-        <p className="text-zinc-400 text-lg mb-10 max-w-2xl mx-auto leading-relaxed">{t.hero.desc}</p>
-        <div className="flex flex-col md:flex-row gap-4 justify-center">
-          <Link href="/dashboard" className="bg-amber-500 text-black px-8 py-4 rounded-xl font-black hover:bg-white transition-all text-sm uppercase tracking-wider">
-            {t.hero.btnPrimary}
-          </Link>
-          <a href="#features" className="border border-zinc-700 px-8 py-4 rounded-xl font-bold hover:border-amber-500 hover:text-amber-500 transition-all text-sm uppercase tracking-wider">
-            {t.hero.btnSecondary}
-          </a>
-        </div>
-      </section>
+      <div className="relative z-10">
+        {/* Nav */}
+        <nav className="flex justify-between items-center p-6 max-w-7xl mx-auto border-b border-zinc-800">
+          <div className="text-2xl font-black tracking-tighter text-amber-500">HOMVI</div>
+          <div className="hidden md:flex gap-8 text-xs uppercase tracking-widest text-zinc-500">
+            <a href="#features" className="hover:text-white cursor-pointer transition-colors">{t.nav.features}</a>
+            <a href="#faq" className="hover:text-white cursor-pointer transition-colors">{t.nav.faq}</a>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setLang(lang === 'es' ? 'en' : 'es')}
+              className="text-xs font-bold text-zinc-400 hover:text-amber-500 transition-colors border border-zinc-700 hover:border-amber-500 px-3 py-1.5 rounded-lg"
+            >
+              {lang === 'es' ? 'EN' : 'ES'}
+            </button>
+            <Link href="/dashboard" className="bg-amber-500 text-black px-5 py-2 rounded-lg text-xs font-bold hover:bg-white transition-all uppercase tracking-wider">
+              {t.nav.cta}
+            </Link>
+          </div>
+        </nav>
 
-      {/* Stats */}
-      <section className="py-10 px-6 max-w-6xl mx-auto border-y border-zinc-800">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          {t.stats.map(([num, label]) => (
-            <div key={label} className="text-center">
-              <p className="text-4xl font-black mb-2 text-white">{num}</p>
-              <p className="text-zinc-500 text-xs uppercase tracking-widest">{label}</p>
+        {/* Hero */}
+        <section className="pt-20 pb-10 px-6 text-center max-w-4xl mx-auto">
+          <FadeIn delay={0}>
+            <span className="text-amber-500 text-xs uppercase tracking-widest font-bold mb-4 block">{t.hero.badge}</span>
+          </FadeIn>
+          <FadeIn delay={200}>
+            <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-8 leading-tight">
+              {t.hero.h1a}{' '}
+              <span className="italic text-amber-500">
+                {typedH1b}
+                {!typedDone && <span className="animate-pulse">|</span>}
+              </span>
+            </h1>
+          </FadeIn>
+          <FadeIn delay={400}>
+            <p className="text-zinc-400 text-lg mb-10 max-w-2xl mx-auto leading-relaxed">{t.hero.desc}</p>
+          </FadeIn>
+          <FadeIn delay={600}>
+            <div className="flex flex-col md:flex-row gap-4 justify-center">
+              <Link href="/dashboard" className="bg-amber-500 text-black px-8 py-4 rounded-xl font-black hover:bg-white transition-all text-sm uppercase tracking-wider">
+                {t.hero.btnPrimary}
+              </Link>
+              <a href="#features" className="border border-zinc-700 px-8 py-4 rounded-xl font-bold hover:border-amber-500 hover:text-amber-500 transition-all text-sm uppercase tracking-wider">
+                {t.hero.btnSecondary}
+              </a>
             </div>
-          ))}
-        </div>
-      </section>
+          </FadeIn>
+        </section>
 
-      {/* Features */}
-      <section id="features" className="py-20 px-6 max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <span className="text-amber-500 text-xs uppercase tracking-widest font-bold mb-3 block">{t.featuresBadge}</span>
-          <h2 className="text-4xl font-black">{t.featuresTitle}</h2>
-        </div>
-        <div className="space-y-6">
-          {t.features.map((f, i) => {
-            const Icon = icons[i]
-            return (
-              <div key={i} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 hover:border-amber-500/30 transition-all">
-                <div className="flex items-start gap-6">
-                  <div className="flex-shrink-0">
-                    <div className="w-12 h-12 bg-amber-500/10 rounded-xl flex items-center justify-center">
-                      <Icon className="w-6 h-6 text-amber-500" />
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2 flex-wrap">
-                      <span className="text-amber-500 text-xs font-black">{f.numero}</span>
-                      <h3 className="text-xl font-black">{f.titulo}</h3>
-                      <span className="text-zinc-500 text-sm">— {f.subtitulo}</span>
-                    </div>
-                    <p className="text-zinc-400 text-sm leading-relaxed mb-4">{f.descripcion}</p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                      {f.puntos.map((p, j) => (
-                        <div key={j} className="flex items-center gap-2 text-sm text-zinc-300">
-                          <span className="w-1.5 h-1.5 bg-amber-500 rounded-full flex-shrink-0" />
-                          {p}
+        {/* Stats */}
+        <section className="py-10 px-6 max-w-6xl mx-auto border-y border-zinc-800">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {t.stats.map(([num, label]) => (
+              <StatCard key={label} num={num} label={label} />
+            ))}
+          </div>
+        </section>
+
+        {/* Features */}
+        <section id="features" className="py-20 px-6 max-w-6xl mx-auto">
+          <FadeIn>
+            <div className="text-center mb-16">
+              <span className="text-amber-500 text-xs uppercase tracking-widest font-bold mb-3 block">{t.featuresBadge}</span>
+              <h2 className="text-4xl font-black">{t.featuresTitle}</h2>
+            </div>
+          </FadeIn>
+          <div className="space-y-6">
+            {t.features.map((f, i) => {
+              const Icon = icons[i]
+              return (
+                <FadeIn key={i} delay={i * 80}>
+                  <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 hover:border-amber-500/30 transition-all">
+                    <div className="flex items-start gap-6">
+                      <div className="flex-shrink-0">
+                        <div className="w-12 h-12 bg-amber-500/10 rounded-xl flex items-center justify-center">
+                          <Icon className="w-6 h-6 text-amber-500" />
                         </div>
-                      ))}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2 flex-wrap">
+                          <span className="text-amber-500 text-xs font-black">{f.numero}</span>
+                          <h3 className="text-xl font-black">{f.titulo}</h3>
+                          <span className="text-zinc-500 text-sm">— {f.subtitulo}</span>
+                        </div>
+                        <p className="text-zinc-400 text-sm leading-relaxed mb-4">{f.descripcion}</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                          {f.puntos.map((p, j) => (
+                            <div key={j} className="flex items-center gap-2 text-sm text-zinc-300">
+                              <span className="w-1.5 h-1.5 bg-amber-500 rounded-full flex-shrink-0" />
+                              {p}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      </section>
+                </FadeIn>
+              )
+            })}
+          </div>
+        </section>
 
-      {/* FAQ */}
-      <section id="faq" className="py-20 px-6 max-w-3xl mx-auto">
-        <div className="text-center mb-12">
-          <span className="text-amber-500 text-xs uppercase tracking-widest font-bold mb-3 block">{t.faqBadge}</span>
-          <h2 className="text-4xl font-black">{t.faqTitle}</h2>
-        </div>
-        <div className="space-y-3">
-          {t.faqs.map((faq, i) => (
-            <div key={i} className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
-              <button
-                onClick={() => setFaqAbierto(faqAbierto === i ? null : i)}
-                className="w-full flex items-center justify-between p-6 text-left hover:bg-zinc-800/50 transition-all"
-              >
-                <span className="font-bold text-sm">{faq.pregunta}</span>
-                <ChevronDown className={`w-4 h-4 text-amber-500 flex-shrink-0 transition-transform ${faqAbierto === i ? 'rotate-180' : ''}`} />
-              </button>
-              {faqAbierto === i && (
-                <div className="px-6 pb-6">
-                  <p className="text-zinc-400 text-sm leading-relaxed">{faq.respuesta}</p>
-                </div>
-              )}
+        {/* FAQ */}
+        <section id="faq" className="py-20 px-6 max-w-3xl mx-auto">
+          <FadeIn>
+            <div className="text-center mb-12">
+              <span className="text-amber-500 text-xs uppercase tracking-widest font-bold mb-3 block">{t.faqBadge}</span>
+              <h2 className="text-4xl font-black">{t.faqTitle}</h2>
             </div>
-          ))}
-        </div>
-      </section>
+          </FadeIn>
+          <div className="space-y-3">
+            {t.faqs.map((faq, i) => (
+              <FadeIn key={i} delay={i * 60}>
+                <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
+                  <button
+                    onClick={() => setFaqAbierto(faqAbierto === i ? null : i)}
+                    className="w-full flex items-center justify-between p-6 text-left hover:bg-zinc-800/50 transition-all"
+                  >
+                    <span className="font-bold text-sm">{faq.pregunta}</span>
+                    <ChevronDown className={`w-4 h-4 text-amber-500 flex-shrink-0 transition-transform ${faqAbierto === i ? 'rotate-180' : ''}`} />
+                  </button>
+                  {faqAbierto === i && (
+                    <div className="px-6 pb-6">
+                      <p className="text-zinc-400 text-sm leading-relaxed">{faq.respuesta}</p>
+                    </div>
+                  )}
+                </div>
+              </FadeIn>
+            ))}
+          </div>
+        </section>
 
-      {/* CTA */}
-      <section id="contacto" className="py-16 px-6 text-center bg-amber-500/5 border-t border-amber-500/10">
-        <h2 className="text-4xl font-black mb-4">{t.ctaTitle}</h2>
-        <p className="text-zinc-400 mb-10 max-w-md mx-auto text-sm">{t.ctaDesc}</p>
-        <div className="max-w-md mx-auto flex flex-col gap-4">
-          <input
-            type="email"
-            placeholder={t.ctaPlaceholder}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="bg-zinc-900 border border-zinc-700 rounded-xl px-6 py-4 text-sm focus:border-amber-500 outline-none transition-colors"
-          />
-          <button
-            onClick={guardarEmail}
-            disabled={cargando || enviado}
-            className="bg-amber-500 text-black px-8 py-4 rounded-xl text-sm font-black hover:bg-white transition-all disabled:opacity-50 uppercase tracking-wider"
-          >
-            {enviado ? t.ctaSent : cargando ? t.ctaLoading : t.ctaBtn}
-          </button>
-        </div>
-      </section>
+        {/* CTA */}
+        <FadeIn>
+          <section id="contacto" className="py-16 px-6 text-center bg-amber-500/5 border-t border-amber-500/10">
+            <h2 className="text-4xl font-black mb-4">{t.ctaTitle}</h2>
+            <p className="text-zinc-400 mb-10 max-w-md mx-auto text-sm">{t.ctaDesc}</p>
+            <div className="max-w-md mx-auto flex flex-col gap-4">
+              <input
+                type="email"
+                placeholder={t.ctaPlaceholder}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="bg-zinc-900 border border-zinc-700 rounded-xl px-6 py-4 text-sm focus:border-amber-500 outline-none transition-colors"
+              />
+              <button
+                onClick={guardarEmail}
+                disabled={cargando || enviado}
+                className="bg-amber-500 text-black px-8 py-4 rounded-xl text-sm font-black hover:bg-white transition-all disabled:opacity-50 uppercase tracking-wider"
+              >
+                {enviado ? t.ctaSent : cargando ? t.ctaLoading : t.ctaBtn}
+              </button>
+            </div>
+          </section>
+        </FadeIn>
 
-      <footer className="py-8 text-center text-zinc-600 text-xs tracking-widest uppercase border-t border-zinc-800">
-        <p>{t.footer}</p>
-      </footer>
+        <footer className="py-8 text-center text-zinc-600 text-xs tracking-widest uppercase border-t border-zinc-800">
+          <p>{t.footer}</p>
+        </footer>
 
-      <a href="#" className="fixed bottom-6 right-6 bg-amber-500 text-black w-10 h-10 rounded-full flex items-center justify-center hover:bg-white transition-all shadow-lg z-50 text-lg font-black">
-        ↑
-      </a>
-
+        <a href="#" className="fixed bottom-6 right-6 bg-amber-500 text-black w-10 h-10 rounded-full flex items-center justify-center hover:bg-white transition-all shadow-lg z-50 text-lg font-black">
+          ↑
+        </a>
+      </div>
     </div>
   )
 }
