@@ -24,6 +24,21 @@ const tipoIcono: Record<string, string> = {
   movimiento: '🏷️' 
 }
 
+const tipoColor: Record<string, string> = {
+  llamada: 'bg-blue-400',
+  visita: 'bg-amber-400',
+  documento: 'bg-purple-400',
+  otro: 'bg-zinc-400',
+  movimiento: 'bg-zinc-500',
+}
+
+const tipoBorde: Record<string, string> = {
+  llamada: 'border-l-blue-400',
+  visita: 'border-l-amber-400',
+  documento: 'border-l-purple-400',
+  otro: 'border-l-zinc-400',
+}
+
 const urgenciaColor: Record<string, string> = {
   alta: 'bg-red-900 text-red-300',
   media: 'bg-amber-900 text-amber-300',
@@ -188,8 +203,7 @@ export default function CalendarPage() {
                     {eventos.length > 0 && (
                       <div className="flex gap-0.5 mt-0.5 flex-wrap justify-center">
                         {eventos.slice(0,3).map((e,ei) => {
-                          let dotBg = e.urgencia === 'alta' ? 'bg-red-400' : e.urgencia === 'media' ? 'bg-amber-400' : 'bg-green-400'
-                          if (e.isMovement) {
+let dotBg = tipoColor[e.tipo] || 'bg-zinc-400'                          if (e.isMovement) {
                             dotBg = puntitoColor[e.urgencia] || 'bg-zinc-400'
                           }
                           return <div key={ei} className={`w-1.5 h-1.5 rounded-full ${esSel ? 'bg-black' : dotBg}`} />
@@ -208,8 +222,7 @@ export default function CalendarPage() {
             {eventosDiaSeleccionado.length === 0 ? <p className="text-zinc-500 text-sm text-center py-6">Sin eventos este dia</p> : (
               <div className="flex flex-col gap-3">
                 {eventosDiaSeleccionado.sort((a,b) => a.hora.localeCompare(b.hora)).map(f => (
-                  <div key={f.id} className={`border rounded-xl p-3 transition-all ${f.colorBorde ? `border-zinc-800 border-l-4 ${f.colorBorde}` : f.hecho ? 'border-zinc-800 opacity-50' : 'border-zinc-700'}`}>
-                    <div className="flex items-start justify-between gap-2">
+<div key={f.id} className={`border rounded-xl p-3 transition-all ${f.colorBorde ? `border-zinc-800 border-l-4 ${f.colorBorde}` : f.hecho ? 'border-zinc-800 opacity-50' : `border-zinc-700 border-l-4 ${tipoBorde[f.tipo] || 'border-l-zinc-500'}`}`}>                    <div className="flex items-start justify-between gap-2">
                       <div className="flex items-center gap-2">
                         <span>{tipoIcono[f.tipo] || '📌'}</span>
                         <span className={`text-sm font-bold ${f.hecho && !f.isMovement ? 'line-through text-zinc-500' : 'text-white'}`}>{f.titulo}</span>
