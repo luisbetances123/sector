@@ -226,13 +226,13 @@ export default function Page() {
           </div>
           <div className="flex items-center gap-3">
             <button
-              onClick={() => setLang(lang === 'es' ? 'en' : 'es')}
-              className="text-xs font-bold text-zinc-400 hover:text-amber-500 transition-colors border border-zinc-700 hover:border-amber-500 px-3 py-1.5 rounded-lg"
-            >
-              {lang === 'es' ? 'EN' : 'ES'}
-            </button>
-            <Link href="/dashboard" className="bg-amber-500 text-black px-5 py-2 rounded-lg text-xs font-bold hover:bg-white transition-all uppercase tracking-wider">
-              {t.nav.cta}
+  onClick={() => setLang(lang === 'es' ? 'en' : 'es')}
+  className="text-xs font-bold text-zinc-400 hover:text-amber-500 transition-colors border border-zinc-700 hover:border-amber-500 px-3 py-1.5 rounded-lg"
+>
+  {lang === 'es' ? '🇺🇸 EN' : '🇩🇴 ES'}
+</button>
+<Link href="/dashboard" className="bg-amber-500 text-black px-5 py-2 rounded-lg text-xs font-bold hover:bg-white transition-all uppercase tracking-wider">
+  {t.nav.cta}
             </Link>
           </div>
         </nav>
