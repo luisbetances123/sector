@@ -111,7 +111,7 @@ badge: '🇩🇴 CRM Inmobiliario · Santo Domingo',      h1a: 'Tu cartera de cl
     ctaSent: '✓ ¡Apuntado!',
     ctaLoading: 'Guardando...',
     footer: '© 2026 HOMVI · CRM Inmobiliario · Santo Domingo',
-    features: [
+   features: [
       { numero: '01', titulo: 'Dashboard', subtitulo: 'Visión total de tu negocio en un vistazo', descripcion: 'El dashboard de HOMVI te muestra en tiempo real todo lo que importa: leads sin responder, seguimientos del día, clientes activos y propiedades disponibles. Sin distracciones, solo lo esencial para tomar decisiones rápidas.', puntos: ['Leads sin responder destacados', 'Seguimientos pendientes del día', 'Pipeline de clientes activo', 'Propiedades disponibles vs vendidas'] },
       { numero: '02', titulo: 'Hoy', subtitulo: 'Tu agenda diaria inteligente', descripcion: 'La vista de Hoy centraliza todas tus actividades del día: citas, llamadas, cierres y notas rápidas. Programa nuevas actividades en segundos y marca lo completado sin salir de la pantalla.', puntos: ['Citas y llamadas del día ordenadas por hora', 'Notas rápidas que se guardan al instante', 'Programar nuevas actividades con modal rápido', 'Etiquetas por tipo: cita, llamada, urgente, cierre'] },
       { numero: '03', titulo: 'Clientes', subtitulo: 'Tu cartera completa, siempre organizada', descripcion: 'Gestiona cada cliente con su perfil completo: presupuesto, zonas de interés, tipo de propiedad y etapa en el proceso de compra. Asigna propiedades directamente desde el perfil del cliente.', puntos: ['Perfil completo con presupuesto y preferencias', 'Zonas de interés por sector', 'Asignación directa de propiedades', 'Etapas: Lead, Buscando, En Oferta, Cierre'] },
@@ -120,6 +120,14 @@ badge: '🇩🇴 CRM Inmobiliario · Santo Domingo',      h1a: 'Tu cartera de cl
       { numero: '06', titulo: 'Calendario', subtitulo: 'Todas tus citas en un solo lugar', descripcion: 'El calendario de HOMVI centraliza tus citas, visitas y seguimientos. Visualiza tu semana o mes completo y nunca llegues a una reunión sin estar preparado.', puntos: ['Vista semanal y mensual', 'Citas vinculadas a clientes', 'Recordatorios automáticos', 'Sincronización con tus actividades diarias'] },
       { numero: '07', titulo: 'Reportes', subtitulo: 'Métricas que impulsan tu crecimiento', descripcion: 'Analiza tu rendimiento con reportes por etapa, sector y período. Identifica qué zonas generan más cierres, cuánto tiempo tarda un lead en convertirse y cuáles son tus propiedades más solicitadas.', puntos: ['Reportes por etapa del pipeline', 'Análisis por sector geográfico', 'Tiempo promedio de conversión', 'Propiedades más consultadas'] },
     ],
+    rd: {
+      title: 'Construido para el ecosistema inmobiliario de la República Dominicana',
+      subtitle: 'Desde Piantini hasta Punta Cana, HOMVI conoce tu territorio.',
+      desc: 'Configurado con los sectores donde se mueve el dinero real:',
+      sectors: 'Piantini, Naco, Bella Vista, Serralles, Los Cacicazgos, La Esperilla, Mirador Norte',
+      tourism: '— y los destinos de inversión turística como',
+      tourismPlaces: 'Punta Cana, Bávaro y Boca Chica',
+    },
     faqs: [
       { pregunta: '¿Necesito instalar algo?', respuesta: 'No. HOMVI es 100% web. Accedes desde cualquier navegador en tu computadora o teléfono, sin descargas ni instalaciones.' },
       { pregunta: '¿Puedo usar HOMVI con mi equipo?', respuesta: 'Sí. HOMVI soporta múltiples agentes. Cada uno tiene su propia cuenta y ve solo sus clientes, propiedades y actividades.' },
@@ -150,7 +158,7 @@ badge: '🇩🇴 Real Estate CRM · Santo Domingo',      h1a: 'Your client portf
     ctaSent: '✓ You\'re in!',
     ctaLoading: 'Saving...',
     footer: '© 2026 HOMVI · Real Estate CRM · Santo Domingo',
-    features: [
+   features: [
       { numero: '01', titulo: 'Dashboard', subtitulo: 'Total view of your business at a glance', descripcion: 'HOMVI\'s dashboard shows you in real time everything that matters: unanswered leads, today\'s follow-ups, active clients and available properties. No distractions, just what you need to make fast decisions.', puntos: ['Unanswered leads highlighted', 'Pending follow-ups for today', 'Active client pipeline', 'Available vs sold properties'] },
       { numero: '02', titulo: 'Today', subtitulo: 'Your smart daily agenda', descripcion: 'The Today view centralizes all your daily activities: appointments, calls, closings and quick notes. Schedule new activities in seconds and mark completed ones without leaving the screen.', puntos: ['Appointments and calls sorted by time', 'Quick notes saved instantly', 'Schedule new activities with quick modal', 'Tags by type: appointment, call, urgent, closing'] },
       { numero: '03', titulo: 'Clients', subtitulo: 'Your full portfolio, always organized', descripcion: 'Manage each client with their complete profile: budget, areas of interest, property type and stage in the buying process. Assign properties directly from the client profile.', puntos: ['Full profile with budget and preferences', 'Areas of interest by neighborhood', 'Direct property assignment', 'Stages: Lead, Searching, In Offer, Closing'] },
@@ -159,6 +167,14 @@ badge: '🇩🇴 Real Estate CRM · Santo Domingo',      h1a: 'Your client portf
       { numero: '06', titulo: 'Calendar', subtitulo: 'All your appointments in one place', descripcion: 'HOMVI\'s calendar centralizes your appointments, visits and follow-ups. View your full week or month and never arrive at a meeting unprepared.', puntos: ['Weekly and monthly view', 'Appointments linked to clients', 'Automatic reminders', 'Sync with your daily activities'] },
       { numero: '07', titulo: 'Reports', subtitulo: 'Metrics that drive your growth', descripcion: 'Analyze your performance with reports by stage, area and period. Identify which zones generate more closings, how long a lead takes to convert and which properties are most requested.', puntos: ['Reports by pipeline stage', 'Analysis by geographic area', 'Average conversion time', 'Most viewed properties'] },
     ],
+    rd: {
+      title: 'Built for the Dominican Republic real estate ecosystem',
+      subtitle: 'From Piantini to Punta Cana, HOMVI knows your territory.',
+      desc: 'Configured with the sectors where the real money moves:',
+      sectors: 'Piantini, Naco, Bella Vista, Serralles, Los Cacicazgos, La Esperilla, Mirador Norte',
+      tourism: '— and tourist investment destinations like',
+      tourismPlaces: 'Punta Cana, Bávaro and Boca Chica',
+    },
     faqs: [
       { pregunta: 'Do I need to install anything?', respuesta: 'No. HOMVI is 100% web-based. Access it from any browser on your computer or phone, no downloads or installations needed.' },
       { pregunta: 'Can I use HOMVI with my team?', respuesta: 'Yes. HOMVI supports multiple agents. Each one has their own account and only sees their own clients, properties and activities.' },
