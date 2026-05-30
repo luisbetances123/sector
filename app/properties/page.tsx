@@ -191,10 +191,12 @@ function PropertyModal({ open, initial, onClose, onSave }: ModalProps) {
               </select>
             </div>
             <div>
-              <label className={labelCls}>Ubicación</label>
-              <input value={form.location} onChange={e => set('location', e.target.value)}
-                placeholder="Av. Winston Churchill" className={inputCls} />
-            </div>
+            <div>
+  <label className={labelCls}>Ubicación</label>
+  <input value={form.location} onChange={e => set('location', e.target.value)}
+    placeholder="Ej: Av. Winston Churchill #45, Torre Mirador" className={inputCls} />
+  <p className="text-zinc-600 text-[10px] mt-1">📍 Dirección completa para ubicar en el mapa con precisión</p>
+</div>
           </div>
 
           <div>
