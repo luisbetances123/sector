@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState, useMemo } from 'react'
-import { supabase } from '@/app/lib/supabase'
+import { supabase } from '@/lib/supabase'
+
 type ClienteEstado = 'nuevo' | 'calificado' | 'cita' | 'negociacion' | 'cerrado'
 
 type Cliente = {
@@ -48,13 +49,18 @@ export default function CRMPage() {
 
   async function fetchClientes() {
     setLoading(true)
-    const { data, error } = await supabase
-      .from('clientes')
-      .select('*')
-      .order('created_at', { ascending: false })
-    
-    if (!error && data) setClientes(data)
-    setLoading(false)
+    try {
+      const { data, error } = await supabase
+        .from('clientes')
+        .select('*')
+        .order('created_at', { ascending: false })
+      
+      if (!error && data) setClientes(data)
+    } catch (err) {
+      console.error("Error fetching clients:", err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   async function handleAddCliente(e: React.FormEvent) {
@@ -72,33 +78,42 @@ export default function CRMPage() {
       notas: notas || null
     }
 
-    const { data, error } = await supabase
-      .from('clientes')
-      .insert([payload])
-      .select()
-      .single()
+    try {
+      const { data, error } = await supabase
+        .from('clientes')
+        .insert([payload])
+        .select()
+        .single()
 
-    if (!error && data) {
-      setClientes(prev => [data, ...prev])
-      // Limpiar formulario y cerrar modal
-      setNombre('')
-      setTelefono('')
-      setEmail('')
-      setPresupuesto('')
-      setNotas('')
-      setModalOpen(false)
+      if (!error && data) {
+        setClientes(prev => [data, ...prev])
+        // Limpiar formulario y cerrar modal
+        setNombre('')
+        setTelefono('')
+        setEmail('')
+        setPresupuesto('')
+        setNotas('')
+        setModalOpen(false)
+      }
+    } catch (err) {
+      console.error("Error adding client:", err)
+    } finally {
+      setGuardando(false)
     }
-    setGuardando(false)
   }
 
   async function cambiarEstado(id: string, nuevoEstado: ClienteEstado) {
-    const { error } = await supabase
-      .from('clientes')
-      .update({ estado: nuevoEstado })
-      .eq('id', id)
+    try {
+      const { error } = await supabase
+        .from('clientes')
+        .update({ estado: nuevoEstado })
+        .eq('id', id)
 
-    if (!error) {
-      setClientes(prev => prev.map(c => c.id === id ? { ...c, estado: nuevoEstado } : c))
+      if (!error) {
+        setClientes(prev => prev.map(c => c.id === id ? { ...c, estado: nuevoEstado } : c))
+      }
+    } catch (err) {
+      console.error("Error changing state:", err)
     }
   }
 
@@ -158,7 +173,7 @@ export default function CRMPage() {
 
                       {cliente.presupuesto_max && (
                         <div className="text-amber-400 font-extrabold text-[11px] bg-amber-500/5 px-2 py-0.5 rounded border border-amber-500/10 inline-block mb-2">
-                          USD ${(cliente.presupuesto_max).toLocaleString('es-DO')}
+                          USD {(cliente.presupuesto_max).toLocaleString('es-DO')}
                         </div>
                       )}
                       
