@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState, useMemo } from 'react'
-import { supabase } from '@/lib/supabase'
+import { supabase } from '../../../../lib/supabase'
 
 type ClienteEstado = 'nuevo' | 'calificado' | 'cita' | 'negociacion' | 'cerrado'
 
@@ -173,7 +173,7 @@ export default function CRMPage() {
 
                       {cliente.presupuesto_max && (
                         <div className="text-amber-400 font-extrabold text-[11px] bg-amber-500/5 px-2 py-0.5 rounded border border-amber-500/10 inline-block mb-2">
-                          USD {(cliente.presupuesto_max).toLocaleString('es-DO')}
+                          USD ${(cliente.presupuesto_max).toLocaleString('es-DO')}
                         </div>
                       )}
                       
@@ -200,7 +200,7 @@ export default function CRMPage() {
         </div>
       )}
 
-      {/* Ventana Emergente (Modal de Registro) */}
+      {/* Ventana Emergente */}
       {modalOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-md p-6">
