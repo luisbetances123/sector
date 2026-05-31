@@ -390,34 +390,33 @@ function PropertiesContent() {
   }
 
   async function handleSave(form: FormData) {
-    const payload = {
-      title: form.title,
-      price: form.price,
-      location: form.location,
-      type: form.type,
-      sector: form.sector,
-      estado: form.estado,
-      moneda: form.moneda,
-      m2: form.m2 ? parseFloat(form.m2 as string) : null,
-      recamaras: form.recamaras ? parseInt(form.recamaras as string) : null,
-      banos: form.banos ? parseFloat(form.banos as string) : null,
-      estacionamientos: form.estacionamientos ? parseInt(form.estacionamientos as string) : null,
-      descripcion: form.descripcion || null,
-      imagen_url: form.imagen_url || null,
-    }
+  const payload = {
+  title: form.title,
+  price: form.price,
+  location: form.location,
+  type: form.type,
+  sector: form.sector,
+  estado: form.estado,
+  moneda: form.moneda,
+  m2: form.m2 ? parseFloat(form.m2 as string) : null,
+  bedrooms: form.recamaras ? parseInt(form.recamaras as string) : null,
+  bathrooms: form.banos ? parseFloat(form.banos as string) : null,
+  estacionamientos: form.estacionamientos ? parseInt(form.estacionamientos as string) : null,
+  descripcion: form.descripcion || null,
+  imagen_url: form.imagen_url || null,
+}
 
-    if (editingProperty) {
-      const { data, error } = await supabase
-        .from('properties').update(payload).eq('id', editingProperty.id).select().single()
-      if (error) throw error
-      setProperties(prev => prev.map(p => p.id === editingProperty.id ? data : p))
-    } else {
-      const { data, error } = await supabase
-        .from('properties').insert([payload]).select().single()
-      if (error) throw error
-      setProperties(prev => [data, ...prev])
-    }
-  }
+if (editingProperty) {
+  const { data, error } = await supabase
+    .from('properties').update(payload).eq('id', editingProperty.id).select().single()
+  if (error) throw error
+  setProperties(prev => prev.map(p => p.id === editingProperty.id ? data : p))
+} else {
+  const { data, error } = await supabase
+    .from('properties').insert([payload]).select().single()
+  if (error) throw error
+  setProperties(prev => [data, ...prev])
+}
 
   async function handleDelete(e: React.MouseEvent, id: string, title: string) {
     e.stopPropagation()
