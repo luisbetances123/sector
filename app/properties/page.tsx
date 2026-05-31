@@ -594,7 +594,7 @@ if (editingProperty) {
         </div>
       )}
 
-      <PropertyModal
+ <PropertyModal
         open={modalOpen}
         initial={editingProperty}
         onClose={() => { setModalOpen(false); setEditingProperty(null) }}
