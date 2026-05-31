@@ -601,7 +601,6 @@ if (editingProperty) {
         onSave={handleSave}
       />
     </div>
-  )
 }
 
 export default function PropertiesPage() {
