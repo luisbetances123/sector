@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClient } from '../../lib/supabase'
+import supabase from '../../lib/supabase'
+
 // —— Types ——————————————————————————————————————————————————
 interface Cliente {
   id: string
@@ -240,7 +241,6 @@ export default function ClienteMatchesPage({
 }: {
   params: { id: string }
 }) {
-  const supabase = createClient()
   const [cliente, setCliente] = useState<Cliente | null>(null)
   const [matches, setMatches] = useState<MatchResult[]>([])
   const [loading, setLoading] = useState(true)
