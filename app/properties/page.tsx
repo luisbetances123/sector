@@ -109,80 +109,7 @@ function PropertyModal({ open, initial, onClose, onSave }: ModalProps) {
     setError('')
   }, [initial, open])
 
-  if (!open) return null
-
-  const set = (k: keyof FormData, v: string) => setForm(p => ({ ...p, [k]: v }))
-
-  const handleSave = async () => {
-    if (!form.title.trim()) { setError('El título es obligatorio'); return }
-    setSaving(true)
-    setError('')
-    try {
-      await onSave(form)
-      onClose()
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Error al guardar')
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  const inputCls = 'bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none text-sm w-full placeholder:text-zinc-500'
-  const labelCls = 'text-zinc-400 text-xs uppercase tracking-wider font-bold mb-1 block'
-
-  return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-zinc-900 border border-zinc-700 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-zinc-800">
-          <h2 className="text-lg font-black text-amber-500 uppercase tracking-tight">
-            {initial ? 'Editar Propiedad' : 'Nueva Propiedad'}
-          </h2>
-          <button onClick={onClose} className="text-zinc-500 hover:text-white transition-colors p-1">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-
-        <div className="px-6 py-5 space-y-4">
-          <div>
-            <label className={labelCls}>Título *</label>
-            <input value={form.title} onChange={e => set('title', e.target.value)}
-              placeholder="Ej: Penthouse en Piantini" className={inputCls} />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className={labelCls}>Tipo</label>
-              <select value={form.type} onChange={e => set('type', e.target.value as PropertyType)} className={inputCls}>
-                {TIPOS.map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className={labelCls}>Estado</label>
-              <select value={form.estado} onChange={e => set('estado', e.target.value as PropertyEstado)} className={inputCls}>
-                {ESTADOS.map(e => <option key={e.value} value={e.value}>{e.label}</option>)}
-              </select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-3 gap-3">
-            <div className="col-span-2">
-              <label className={labelCls}>Precio</label>
-              <input value={form.price} onChange={e => set('price', e.target.value)}
-                placeholder="350000" className={inputCls} />
-            </div>
-            <div>
-              <label className={labelCls}>Moneda</label>
-              <select value={form.moneda} onChange={e => set('moneda', e.target.value)} className={inputCls}>
-                <option value="USD">USD</option>
-                <option value="DOP">DOP</option>
-                <option value="EUR">EUR</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
+  <div className="grid grid-cols-2 gap-3">
             <div>
               <label className={labelCls}>Sector</label>
               <select value={form.sector} onChange={e => set('sector', e.target.value)} className={inputCls}>
@@ -191,12 +118,11 @@ function PropertyModal({ open, initial, onClose, onSave }: ModalProps) {
               </select>
             </div>
             <div>
-            <div>
-  <label className={labelCls}>Ubicación</label>
-  <input value={form.location} onChange={e => set('location', e.target.value)}
-    placeholder="Ej: Av. Winston Churchill #45, Torre Mirador" className={inputCls} />
-  <p className="text-zinc-600 text-[10px] mt-1">📍 Dirección completa para ubicar en el mapa con precisión</p>
-</div>
+              <label className={labelCls}>Ubicación</label>
+              <input value={form.location} onChange={e => set('location', e.target.value)}
+                placeholder="Ej: Av. Winston Churchill #45, Torre Mirador" className={inputCls} />
+              <p className="text-zinc-600 text-[10px] mt-1">📍 Dirección completa para ubicar en el mapa con precisión</p>
+            </div>
           </div>
 
           <div>
@@ -220,7 +146,7 @@ function PropertyModal({ open, initial, onClose, onSave }: ModalProps) {
             </div>
           </div>
 
-         <div>
+          <div>
             <label className={labelCls}>URL de imagen</label>
             <input value={form.imagen_url} onChange={e => set('imagen_url', e.target.value)}
               placeholder="https://..." className={inputCls} />
@@ -240,7 +166,7 @@ function PropertyModal({ open, initial, onClose, onSave }: ModalProps) {
           <div className="flex gap-3 pt-2">
             <button onClick={onClose}
               className="flex-1 bg-zinc-800 text-white py-3 rounded-xl font-bold text-sm hover:bg-zinc-700 transition-all">
- Cancelar
+              Cancelar
             </button>
             <button onClick={handleSave} disabled={saving}
               className="flex-1 bg-amber-500 text-black py-3 rounded-xl font-black text-sm uppercase hover:bg-white transition-all disabled:opacity-50">
