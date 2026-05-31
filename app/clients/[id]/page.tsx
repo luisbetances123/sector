@@ -1,9 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClient } from '../../../lib/supabase'
-// ─── Types ────────────────────────────────────────────────────────────────────
-
+import { createClient } from '../../lib/supabase'
+// —— Types ——————————————————————————————————————————————————
 interface Cliente {
   id: string
   nombre: string
