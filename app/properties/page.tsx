@@ -579,28 +579,29 @@ if (editingProperty) {
               + Nueva propiedad
             </button>
           )}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map(p => (
-            <PropertyCard
-              key={p.id}
-              property={p}
-              onClick={() => router.push('/properties/' + p.id)}
-              onEdit={e => openEdit(e, p)}
-              onDelete={e => handleDelete(e, p.id, p.title)}
-            />
-          ))}
-        </div>
-      )}
+      </div>
+    ) : (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {filtered.map(p => (
+          <PropertyCard
+            key={p.id}
+            property={p}
+            onClick={() => router.push('/properties/' + p.id)}
+            onEdit={e => openEdit(e, p)}
+            onDelete={e => handleDelete(e, p.id, p.title)}
+          />
+        ))}
+      </div>
+    )}
 
- <PropertyModal
-        open={modalOpen}
-        initial={editingProperty}
-        onClose={() => { setModalOpen(false); setEditingProperty(null) }}
-        onSave={handleSave}
-      />
-    </div>
+    <PropertyModal
+      open={modalOpen}
+      initial={editingProperty}
+      onClose={() => { setModalOpen(false); setEditingProperty(null); }}
+      onSave={handleSave}
+    />
+  </div>
+ )
 }
 
 export default function PropertiesPage() {
