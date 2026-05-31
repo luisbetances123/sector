@@ -277,7 +277,7 @@ export default function Page() {
             <div className="text-center mb-16">
               <span className="text-amber-500 text-xs uppercase tracking-widest font-bold mb-3 block">{t.featuresBadge}</span>
               <h2 className="text-4xl font-black">{t.featuresTitle}</h2>
-            </div>
+   </div>
           </FadeIn>
           <div className="space-y-6">
             {t.features.map((f, i) => {
@@ -306,96 +306,97 @@ export default function Page() {
                             </div>
                           ))}
                         </div>
- {/* Mockup visual */}
-<div className="mt-4 rounded-xl overflow-hidden border border-zinc-700/50 bg-zinc-950">
-  {i === 0 && (
-    <div className="p-3 space-y-2">
-      <div className="flex gap-2">
-        {['Leads', 'Clientes', 'Propied.', 'Seguim.'].map((l, k) => (
-          <div key={k} className="flex-1 bg-zinc-800 rounded-lg p-2 text-center">
-            <div className="text-amber-400 font-black text-sm">{[3,12,8,5][k]}</div>
-            <div className="text-zinc-500 text-[9px] uppercase">{l}</div>
-          </div>
-        ))}
-      </div>
-      <div className="bg-zinc-800 rounded-lg p-2 flex items-center gap-2">
-        <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-        <span className="text-zinc-300 text-xs">3 leads sin responder</span>
-      </div>
-    </div>
-  )}
-  {i === 1 && (
-    <div className="p-3 space-y-1.5">
-      {[['📞','Llamada a María G.','09:00','blue'],['🏠','Visita Piantini','11:30','amber'],['📄','Firma contrato','15:00','green']].map(([icon,txt,hora,color],k) => (
-        <div key={k} className="flex items-center gap-2 bg-zinc-800 rounded-lg px-2 py-1.5">
-          <span className="text-sm">{icon}</span>
-          <span className="text-zinc-300 text-xs flex-1">{txt}</span>
-          <span className={`text-${color}-400 text-[10px] font-mono`}>{hora}</span>
-        </div>
-      ))}
-    </div>
-  )}
-  {i === 2 && (
-    <div className="p-3 space-y-1.5">
-      {[['L','Lizmarie B.','Buscando','blue'],['J','Jean L.','En Oferta','amber'],['M','María N.','Lead','zinc']].map(([ini,nom,etapa,color],k) => (
-        <div key={k} className="flex items-center gap-2 bg-zinc-800 rounded-lg px-2 py-1.5">
-          <div className="w-6 h-6 rounded-full bg-amber-500 text-black flex items-center justify-center text-[10px] font-black">{ini}</div>
-          <span className="text-zinc-300 text-xs flex-1">{nom}</span>
-          <span className={`text-[9px] px-1.5 py-0.5 rounded bg-${color}-900/50 text-${color}-400 font-bold`}>{etapa}</span>
-        </div>
-      ))}
-    </div>
-  )}
-  {i === 3 && (
-    <div className="p-3 space-y-1.5">
-      {[['🏠','Penthouse en Piantini','$350,000'],['🏠','Apto en Naco','$185,000'],['🏠','Casa Arroyo Hondo','$420,000']].map(([icon,nom,precio],k) => (
-        <div key={k} className="flex items-center gap-2 bg-zinc-800 rounded-lg px-2 py-1.5">
-          <span>{icon}</span>
-          <span className="text-zinc-300 text-xs flex-1">{nom}</span>
-          <span className="text-amber-400 text-[10px] font-black">{precio}</span>
-        </div>
-      ))}
-    </div>
-  )}
-  {i === 4 && (
-    <div className="p-3">
-      <div className="grid grid-cols-4 gap-1.5">
-        {[['LEAD','1','zinc'],['BUSCANDO','3','blue'],['EN OFERTA','2','amber'],['CIERRE','1','green']].map(([etapa,num,color],k) => (
-          <div key={k} className={`bg-${color}-900/30 border border-${color}-700/30 rounded-lg p-2 text-center`}>
-            <div className={`text-${color}-400 font-black text-lg`}>{num}</div>
-            <div className={`text-${color}-500 text-[8px] uppercase`}>{etapa}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )}
-  {i === 5 && (
-    <div className="p-3">
-      <div className="grid grid-cols-7 gap-0.5 mb-1">
-        {['D','L','M','M','J','V','S'].map((d,k) => (
-          <div key={k} className="text-center text-zinc-600 text-[9px]">{d}</div>
-        ))}
-      </div>
-      <div className="grid grid-cols-7 gap-0.5">
-        {Array.from({length: 30}, (_,k) => (
-          <div key={k} className={`text-center text-[9px] rounded py-0.5 ${k===14 ? 'bg-amber-500 text-black font-black' : k===8||k===21 ? 'bg-blue-900/50 text-blue-400' : 'text-zinc-500'}`}>
-            {k+1}
-          </div>
-        ))}
-      </div>
-    </div>
-  )}
-  {i === 6 && (
-    <div className="p-3 space-y-2">
-      {[['Pipeline','Lead 33% · Buscando 67%'],['Sectores','Piantini · Naco · Bella Vista'],['Tiempo','2 días promedio de respuesta']].map(([label,val],k) => (
-        <div key={k} className="bg-zinc-800 rounded-lg px-2 py-1.5">
-          <div className="text-zinc-500 text-[9px] uppercase mb-0.5">{label}</div>
-          <div className="text-zinc-300 text-xs">{val}</div>
-        </div>
-      ))}
-    </div>
-  )}
-</div>
+                        {/* Mockup visual */}
+                        <div className="mt-4 rounded-xl overflow-hidden border border-zinc-700/50 bg-zinc-950">
+                          {i === 0 && (
+                            <div className="p-3 space-y-2">
+                              <div className="flex gap-2">
+                                {['Leads', 'Clientes', 'Propied.', 'Seguim.'].map((l, k) => (
+                                  <div key={k} className="flex-1 bg-zinc-800 rounded-lg p-2 text-center">
+                                    <div className="text-amber-400 font-black text-sm">{[3,12,8,5][k]}</div>
+                                    <div className="text-zinc-500 text-[9px] uppercase">{l}</div>
+                                  </div>
+                                ))}
+                              </div>
+                              <div className="bg-zinc-800 rounded-lg p-2 flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                                <span className="text-zinc-300 text-xs">3 leads sin responder</span>
+                              </div>
+                            </div>
+                          )}
+                          {i === 1 && (
+                            <div className="p-3 space-y-1.5">
+                              {[['📞','Llamada a María G.','09:00','text-blue-400'],['🏠','Visita Piantini','11:30','text-amber-400'],['📄','Firma contrato','15:00','text-green-400']].map(([icon,txt,hora,color],k) => (
+                                <div key={k} className="flex items-center gap-2 bg-zinc-800 rounded-lg px-2 py-1.5">
+                                  <span className="text-sm">{icon}</span>
+                                  <span className="text-zinc-300 text-xs flex-1">{txt}</span>
+                                  <span className={`${color} text-[10px] font-mono`}>{hora}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          {i === 2 && (
+                            <div className="p-3 space-y-1.5">
+                              {[['L','Lizmarie B.','Buscando','bg-blue-900/50 text-blue-400'],['J','Jean L.','En Oferta','bg-amber-900/50 text-amber-400'],['M','María N.','Lead','bg-zinc-700 text-zinc-300']].map(([ini,nom,etapa,color],k) => (
+                                <div key={k} className="flex items-center gap-2 bg-zinc-800 rounded-lg px-2 py-1.5">
+                                  <div className="w-6 h-6 rounded-full bg-amber-500 text-black flex items-center justify-center text-[10px] font-black">{ini}</div>
+                                  <span className="text-zinc-300 text-xs flex-1">{nom}</span>
+                                  <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${color}`}>{etapa}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          {i === 3 && (
+                            <div className="p-3 space-y-1.5">
+                              {[['🏠','Penthouse en Piantini','$350,000'],['🏠','Apto en Naco','$185,000'],['🏠','Casa Arroyo Hondo','$420,000']].map(([icon,nom,precio],k) => (
+                                <div key={k} className="flex items-center gap-2 bg-zinc-800 rounded-lg px-2 py-1.5">
+                                  <span>{icon}</span>
+                                  <span className="text-zinc-300 text-xs flex-1">{nom}</span>
+                                  <span className="text-amber-400 text-[10px] font-black">{precio}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          {i === 4 && (
+                            <div className="p-3">
+                              <div className="grid grid-cols-4 gap-1.5">
+                                {[['LEAD','1','bg-zinc-800 text-zinc-400'],['BUSCANDO','3','bg-blue-900/30 text-blue-400'],['EN OFERTA','2','bg-amber-900/30 text-amber-400'],['CIERRE','1','bg-green-900/30 text-green-400']].map(([etapa,num,color],k) => (
+                                  <div key={k} className={`rounded-lg p-2 text-center ${color}`}>
+                                    <div className="font-black text-lg">{num}</div>
+                                    <div className="text-[8px] uppercase opacity-70">{etapa}</div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {i === 5 && (
+                            <div className="p-3">
+                              <div className="grid grid-cols-7 gap-0.5 mb-1">
+                                {['D','L','M','M','J','V','S'].map((d,k) => (
+                                  <div key={k} className="text-center text-zinc-600 text-[9px]">{d}</div>
+                                ))}
+                              </div>
+                              <div className="grid grid-cols-7 gap-0.5">
+                                {Array.from({length: 30}, (_,k) => (
+                                  <div key={k} className={`text-center text-[9px] rounded py-0.5 ${k===14 ? 'bg-amber-500 text-black font-black' : k===8||k===21 ? 'bg-blue-900/50 text-blue-400' : 'text-zinc-500'}`}>
+                                    {k+1}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {i === 6 && (
+                            <div className="p-3 space-y-2">
+                              {[['Pipeline','Lead 33% · Buscando 67%'],['Sectores','Piantini · Naco · Bella Vista'],['Tiempo','2 días promedio de respuesta']].map(([label,val],k) => (
+                                <div key={k} className="bg-zinc-800 rounded-lg px-2 py-1.5">
+                                  <div className="text-zinc-500 text-[9px] uppercase mb-0.5">{label}</div>
+                                  <div className="text-zinc-300 text-xs">{val}</div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </FadeIn>
