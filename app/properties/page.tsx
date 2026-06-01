@@ -390,10 +390,10 @@ function PropertiesContent() {
     setLoading(false)
   }
 
-  async function handleSave(form: FormData) {
+    async function handleSave(form: FormData) {
     const payload = {
       title: form.title,
-      price: form.price,
+      price: form.price ? parseFloat(form.price as string) : null,
       location: form.location,
       type: form.type,
       sector: form.sector,
@@ -407,16 +407,30 @@ function PropertiesContent() {
       imagen_url: form.imagen_url || null,
     }
 
-    if (editingProperty) {
-      const { data, error } = await supabase
-        .from('properties').update(payload).eq('id', editingProperty.id).select().single()
-      if (error) throw error
-      setProperties(prev => prev.map(p => p.id === editingProperty.id ? data : p))
-    } else {
-      const { data, error } = await supabase
-        .from('properties').insert([payload]).select().single()
-      if (error) throw error
-      setProperties(prev => [data, ...prev])
+    try {
+      if (editingProperty) {
+        const { data, error } = await supabase
+          .from('properties')
+          .update(payload)
+          .eq('id', editingProperty.id)
+          .select()
+          .single()
+
+        if (error) throw error
+        setProperties(prev => prev.map(p => p.id === editingProperty.id ? data : p))
+      } else {
+        const { data, error } = await supabase
+          .from('properties')
+          .insert([payload])
+          .select()
+          .single()
+
+        if (error) throw error
+        setProperties(prev => [data, ...prev])
+      }
+    } catch (error) {
+      console.error("Error al guardar en Supabase:", error)
+      alert("Hubo un error al guardar la propiedad. Revisa la consola.")
     }
   }
 
