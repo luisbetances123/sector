@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { supabase } from '../app/lib/supabase'
+import { supabase } from '../lib/supabase'
 
 interface Cliente {
   id: string

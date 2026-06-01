@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState, useMemo } from 'react'
-import { supabase } from '../../../lib/supabase'
+import { supabase } from '../../lib/supabase'
 
 type ClienteEstado = 'nuevo' | 'calificado' | 'cita' | 'negociacion' | 'cerrado'
 

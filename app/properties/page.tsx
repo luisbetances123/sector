@@ -23,6 +23,7 @@ type Property = {
   moneda: string
   created_at?: string
 }
+
 const SECTORES = [
   'Piantini', 'Naco', 'Bella Vista', 'Evaristo Morales', 'Serralles', 'Los Cacicazgos',
   'Arroyo Hondo', 'Viejo Arroyo Hondo', 'La Esperilla', 'El Millon', 'Mirador Norte', 'Mirador Sur',
@@ -194,7 +195,7 @@ function PropertyModal({ open, initial, onClose, onSave }: ModalProps) {
               <label className={labelCls}>Ubicación</label>
               <input value={form.location} onChange={e => set('location', e.target.value)}
                 placeholder="Av. Winston Churchill" className={inputCls} />
-                <p className="text-zinc-600 text-[10px] mt-1">📍 Dirección completa para ubicar en el mapa con precisión</p>
+              <p className="text-zinc-600 text-[10px] mt-1">📍 Dirección completa para ubicar en el mapa con precisión</p>
             </div>
           </div>
 
@@ -219,7 +220,7 @@ function PropertyModal({ open, initial, onClose, onSave }: ModalProps) {
             </div>
           </div>
 
-         <div>
+          <div>
             <label className={labelCls}>URL de imagen</label>
             <input value={form.imagen_url} onChange={e => set('imagen_url', e.target.value)}
               placeholder="https://..." className={inputCls} />
@@ -390,33 +391,34 @@ function PropertiesContent() {
   }
 
   async function handleSave(form: FormData) {
-  const payload = {
-  title: form.title,
-  price: form.price,
-  location: form.location,
-  type: form.type,
-  sector: form.sector,
-  estado: form.estado,
-  moneda: form.moneda,
-  m2: form.m2 ? parseFloat(form.m2 as string) : null,
-  bedrooms: form.recamaras ? parseInt(form.recamaras as string) : null,
-  bathrooms: form.banos ? parseFloat(form.banos as string) : null,
-  estacionamientos: form.estacionamientos ? parseInt(form.estacionamientos as string) : null,
-  descripcion: form.descripcion || null,
-  imagen_url: form.imagen_url || null,
-}
+    const payload = {
+      title: form.title,
+      price: form.price,
+      location: form.location,
+      type: form.type,
+      sector: form.sector,
+      estado: form.estado,
+      moneda: form.moneda,
+      m2: form.m2 ? parseFloat(form.m2 as string) : null,
+      bedrooms: form.recamaras ? parseInt(form.recamaras as string) : null,
+      bathrooms: form.banos ? parseFloat(form.banos as string) : null,
+      estacionamientos: form.estacionamientos ? parseInt(form.estacionamientos as string) : null,
+      descripcion: form.descripcion || null,
+      imagen_url: form.imagen_url || null,
+    }
 
-if (editingProperty) {
-  const { data, error } = await supabase
-    .from('properties').update(payload).eq('id', editingProperty.id).select().single()
-  if (error) throw error
-  setProperties(prev => prev.map(p => p.id === editingProperty.id ? data : p))
-} else {
-  const { data, error } = await supabase
-    .from('properties').insert([payload]).select().single()
-  if (error) throw error
-  setProperties(prev => [data, ...prev])
-}
+    if (editingProperty) {
+      const { data, error } = await supabase
+        .from('properties').update(payload).eq('id', editingProperty.id).select().single()
+      if (error) throw error
+      setProperties(prev => prev.map(p => p.id === editingProperty.id ? data : p))
+    } else {
+      const { data, error } = await supabase
+        .from('properties').insert([payload]).select().single()
+      if (error) throw error
+      setProperties(prev => [data, ...prev])
+    }
+  }
 
   async function handleDelete(e: React.MouseEvent, id: string, title: string) {
     e.stopPropagation()
@@ -495,14 +497,12 @@ if (editingProperty) {
 
       {/* Filtros sector */}
       <div className="flex flex-col gap-3 mb-6">
-        {/* Todos */}
         <div className="flex gap-2 flex-wrap">
           <button onClick={() => setSectorActivo('')}
             className={`px-3 py-1.5 rounded-xl text-xs font-black uppercase transition-all ${!sectorActivo ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'}`}>
             Todos
           </button>
         </div>
-        {/* Distrito Nacional */}
         <div className="flex flex-col gap-1">
           <span className="text-amber-400 text-[10px] font-black uppercase tracking-widest">🏙️ Distrito Nacional</span>
           <div className="flex gap-2 flex-wrap">
@@ -514,7 +514,6 @@ if (editingProperty) {
             ))}
           </div>
         </div>
-        {/* Santo Domingo Este */}
         <div className="flex flex-col gap-1">
           <span className="text-blue-400 text-[10px] font-black uppercase tracking-widest">🌅 Santo Domingo Este</span>
           <div className="flex gap-2 flex-wrap">
@@ -526,7 +525,6 @@ if (editingProperty) {
             ))}
           </div>
         </div>
-        {/* Santo Domingo Norte */}
         <div className="flex flex-col gap-1">
           <span className="text-green-400 text-[10px] font-black uppercase tracking-widest">🌇 Santo Domingo Norte</span>
           <div className="flex gap-2 flex-wrap">
@@ -538,7 +536,6 @@ if (editingProperty) {
             ))}
           </div>
         </div>
-        {/* Santo Domingo Oeste */}
         <div className="flex flex-col gap-1">
           <span className="text-purple-400 text-[10px] font-black uppercase tracking-widest">🌆 Santo Domingo Oeste</span>
           <div className="flex gap-2 flex-wrap">
@@ -551,6 +548,7 @@ if (editingProperty) {
           </div>
         </div>
       </div>
+
       {/* Grid */}
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -579,29 +577,29 @@ if (editingProperty) {
               + Nueva propiedad
             </button>
           )}
-      </div>
-    ) : (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filtered.map(p => (
-          <PropertyCard
-            key={p.id}
-            property={p}
-            onClick={() => router.push('/properties/' + p.id)}
-            onEdit={e => openEdit(e, p)}
-            onDelete={e => handleDelete(e, p.id, p.title)}
-          />
-        ))}
-      </div>
-    )}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filtered.map(p => (
+            <PropertyCard
+              key={p.id}
+              property={p}
+              onClick={() => router.push('/properties/' + p.id)}
+              onEdit={e => openEdit(e, p)}
+              onDelete={e => handleDelete(e, p.id, p.title)}
+            />
+          ))}
+        </div>
+      )}
 
-    <PropertyModal
-      open={modalOpen}
-      initial={editingProperty}
-      onClose={() => { setModalOpen(false); setEditingProperty(null); }}
-      onSave={handleSave}
-    />
-  </div>
- )
+      <PropertyModal
+        open={modalOpen}
+        initial={editingProperty}
+        onClose={() => { setModalOpen(false); setEditingProperty(null) }}
+        onSave={handleSave}
+      />
+    </div>
+  )
 }
 
 export default function PropertiesPage() {
