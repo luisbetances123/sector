@@ -135,8 +135,10 @@ function PropertyModal({ open, initial, onClose, onSave }: ModalProps) {
     setError('')
     try {
       // Si el usuario escribió una url en el input, nos aseguramos de meterla al array antes de salvar
-      const finalImages = tempUrl.trim() ? [tempUrl.trim()] : form.imagenes
-      await onSave({ ...form, imagenes: finalImages })
+const finalImages = tempUrl.trim()
+  ? [...new Set([tempUrl.trim(), ...form.imagenes.filter(u => u && u !== tempUrl.trim())])]
+  : form.imagenes
+await onSave({ ...form, imagenes: finalImages })
       onClose()
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Error al guardar')
