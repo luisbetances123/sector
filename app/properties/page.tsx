@@ -19,7 +19,7 @@ type Property = {
   banos?: number
   estacionamientos?: number
   descripcion?: string
-  imagen_url?: string
+  imagenes?: string[] // Actualizado a array de strings para Claude
   moneda: string
   created_at?: string
 }
@@ -48,9 +48,19 @@ const ESTADOS: { value: PropertyEstado; label: string; color: string; dot: strin
 ]
 
 const EMPTY_FORM = {
-  title: '', price: '', location: '', type: 'APARTAMENTO' as PropertyType,
-  sector: '', estado: 'disponible' as PropertyEstado, m2: '',
-  recamaras: '', banos: '', estacionamientos: '', descripcion: '', imagen_url: '', moneda: 'USD',
+  title: '', 
+  price: '', 
+  location: '', 
+  type: 'APARTAMENTO' as PropertyType,
+  sector: '', 
+  estado: 'disponible' as PropertyEstado, 
+  m2: '',
+  recamaras: '', 
+  banos: '', 
+  estacionamientos: '', 
+  descripcion: '', 
+  moneda: 'USD', 
+  imagenes: [] as string[] // Cambiado a array de URLs
 }
 
 type FormData = typeof EMPTY_FORM
@@ -87,6 +97,9 @@ function PropertyModal({ open, initial, onClose, onSave }: ModalProps) {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
+  // Temporal para manejar la entrada de texto de URLs en el formulario antes de que Claude haga la lista dinámica
+  const [tempUrl, setTempUrl] = useState('')
+
   useEffect(() => {
     if (initial) {
       setForm({
@@ -101,25 +114,29 @@ function PropertyModal({ open, initial, onClose, onSave }: ModalProps) {
         banos: initial.banos?.toString() ?? '',
         estacionamientos: initial.estacionamientos?.toString() ?? '',
         descripcion: initial.descripcion ?? '',
-        imagen_url: initial.imagen_url ?? '',
+        imagenes: initial.imagenes ?? [],
         moneda: initial.moneda ?? 'USD',
       })
+      setTempUrl(initial.imagenes?.[0] ?? '')
     } else {
       setForm(EMPTY_FORM)
+      setTempUrl('')
     }
     setError('')
   }, [initial, open])
 
   if (!open) return null
 
-  const set = (k: keyof FormData, v: string) => setForm(p => ({ ...p, [k]: v }))
+  const set = (k: keyof FormData, v: any) => setForm(p => ({ ...p, [k]: v }))
 
   const handleSave = async () => {
     if (!form.title.trim()) { setError('El título es obligatorio'); return }
     setSaving(true)
     setError('')
     try {
-      await onSave(form)
+      // Si el usuario escribió una url en el input, nos aseguramos de meterla al array antes de salvar
+      const finalImages = tempUrl.trim() ? [tempUrl.trim()] : form.imagenes
+      await onSave({ ...form, imagenes: finalImages })
       onClose()
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Error al guardar')
@@ -211,7 +228,7 @@ function PropertyModal({ open, initial, onClose, onSave }: ModalProps) {
                 <div key={key} className="relative">
                   <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-sm">{label}</span>
                   <input type="number" min={0}
-                    value={form[key as keyof FormData]}
+                    value={form[key as keyof FormData] as string}
                     onChange={e => set(key as keyof FormData, e.target.value)}
                     placeholder={placeholder}
                     className={`${inputCls} pl-8 text-center`} />
@@ -220,11 +237,50 @@ function PropertyModal({ open, initial, onClose, onSave }: ModalProps) {
             </div>
           </div>
 
-          <div>
-            <label className={labelCls}>URL de imagen</label>
-            <input value={form.imagen_url} onChange={e => set('imagen_url', e.target.value)}
-              placeholder="https://..." className={inputCls} />
-          </div>
+     <div>
+  <label className={labelCls}>Fotos de la propiedad</label>
+  <div className="space-y-2">
+    {(form.imagenes.length > 0 ? form.imagenes : ['']).map((url, i) => (
+      <div key={i} className="flex gap-2">
+        <input
+          value={url}
+          onChange={e => {
+            const arr = [...form.imagenes]
+            if (arr.length === 0) arr.push('')
+            arr[i] = e.target.value
+            set('imagenes', arr)
+          }}
+          placeholder={i === 0 ? 'URL foto principal...' : `URL foto ${i + 1}...`}
+          className={inputCls}
+        />
+        {i > 0 && (
+          <button
+            type="button"
+            onClick={() => set('imagenes', form.imagenes.filter((_, j) => j !== i))}
+            className="px-3 bg-zinc-800 text-red-400 rounded-xl hover:bg-zinc-700 transition-colors shrink-0"
+          >
+            ✕
+          </button>
+        )}
+      </div>
+    ))}
+    <button
+      type="button"
+      onClick={() => set('imagenes', [...form.imagenes, ''])}
+      className="w-full py-2 border border-dashed border-zinc-700 text-zinc-500 text-xs rounded-xl hover:border-amber-500 hover:text-amber-500 transition-colors"
+    >
+      + Agregar otra foto
+    </button>
+  </div>
+  {form.imagenes[0] && (
+    <img
+      src={form.imagenes[0]}
+      alt="Preview"
+      className="mt-3 w-full h-32 object-cover rounded-xl border border-zinc-700"
+      onError={e => (e.currentTarget.style.display = 'none')}
+    />
+  )}
+</div>
 
           <div>
             <label className={labelCls}>Descripción</label>
@@ -264,12 +320,15 @@ interface CardProps {
 
 function PropertyCard({ property: p, onClick, onEdit, onDelete }: CardProps) {
   const hasMeta = p.recamaras || p.banos || p.estacionamientos || p.m2
+  // Usar la primera imagen del array si existe
+  const imagenPrincipal = p.imagenes && p.imagenes.length > 0 ? p.imagenes[0] : null
+
   return (
     <div onClick={onClick}
       className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden cursor-pointer hover:border-amber-500/50 transition-all group relative">
-      {p.imagen_url ? (
+      {imagenPrincipal ? (
         <div className="h-44 overflow-hidden">
-          <img src={p.imagen_url} alt={p.title}
+          <img src={imagenPrincipal} alt={p.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
         </div>
       ) : (
@@ -390,7 +449,7 @@ function PropertiesContent() {
     setLoading(false)
   }
 
-    async function handleSave(form: FormData) {
+  async function handleSave(form: FormData) {
     const payload = {
       title: form.title,
       price: form.price ? parseFloat(form.price as string) : null,
@@ -403,8 +462,9 @@ function PropertiesContent() {
       recamaras: form.recamaras ? parseInt(form.recamaras as string) : null,
       banos: form.banos ? parseFloat(form.banos as string) : null,
       estacionamientos: form.estacionamientos ? parseInt(form.estacionamientos as string) : null,
-      descripcion: form.descripcion || null,
-      imagen_url: form.imagen_url || null,
+     descripcion: form.descripcion || null,
+imagen_url: form.imagenes?.[0] || null,
+imagenes: form.imagenes || [],
     }
 
     try {
@@ -430,7 +490,7 @@ function PropertiesContent() {
       }
     } catch (error) {
       console.error("Error al guardar en Supabase:", error)
-      alert("Hubo un error al guardar la propiedad. Revisa la consola.")
+      alert("Hubo un error al guardar la propiedad. Pásale este log a Claude.")
     }
   }
 
