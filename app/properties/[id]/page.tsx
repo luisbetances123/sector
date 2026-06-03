@@ -43,20 +43,37 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
   const [property, setProperty] = useState<Property | null>(null)
   const [loading, setLoading] = useState(true)
   const [activeImg, setActiveImg] = useState(0)
+  const [propertyId, setPropertyId] = useState<string | null>(null)
 
   useEffect(() => {
+    const resolveParams = async () => {
+      const resolved = await Promise.resolve(params)
+      setPropertyId(resolved.id)
+    }
+    resolveParams()
+  }, [params])
+
+  useEffect(() => {
+    if (!propertyId) return
+
     async function fetchProperty() {
+      setLoading(true)
       const { data, error } = await supabase
         .from('properties')
         .select('*')
-        .eq('id', params.id)
+        .eq('id', propertyId)
         .single()
 
-      if (!error && data) setProperty(data)
+      if (!error && data) {
+        setProperty(data)
+      } else {
+        console.error('Error fetching property:', error)
+      }
       setLoading(false)
     }
+
     fetchProperty()
-  }, [params.id])
+  }, [propertyId])
 
   if (loading) {
     return (
@@ -80,7 +97,6 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
     )
   }
 
-  // Normaliza imágenes — soporta array nuevo y string antiguo
   const imagenes: string[] = (
     property.imagenes && property.imagenes.length > 0
       ? property.imagenes
@@ -95,7 +111,6 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
     <div className="min-h-screen bg-zinc-950 text-white">
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
 
-        {/* Back */}
         <button onClick={() => router.push('/properties')}
           className="flex items-center gap-2 text-zinc-500 hover:text-white transition-colors text-sm">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -104,35 +119,26 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
           Volver a propiedades
         </button>
 
-        {/* Galería */}
         {imagenes.length > 0 ? (
           <div className="space-y-3">
-            {/* Imagen principal */}
             <div className="relative h-72 md:h-[420px] rounded-2xl overflow-hidden bg-zinc-900">
-              <img
-                src={imagenes[activeImg]}
-                alt={property.title}
+              <img src={imagenes[activeImg]} alt={property.title}
                 className="w-full h-full object-cover"
-                onError={e => (e.currentTarget.src = '')}
-              />
-              {/* Contador */}
+                onError={e => { e.currentTarget.style.display = 'none' }} />
               {imagenes.length > 1 && (
                 <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-2.5 py-1 rounded-full backdrop-blur-sm">
                   {activeImg + 1} / {imagenes.length}
                 </div>
               )}
-              {/* Flechas */}
               {imagenes.length > 1 && (
                 <>
-                  <button
-                    onClick={() => setActiveImg(i => (i - 1 + imagenes.length) % imagenes.length)}
+                  <button onClick={() => setActiveImg(i => (i - 1 + imagenes.length) % imagenes.length)}
                     className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-black/80 transition-colors">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
                   </button>
-                  <button
-                    onClick={() => setActiveImg(i => (i + 1) % imagenes.length)}
+                  <button onClick={() => setActiveImg(i => (i + 1) % imagenes.length)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-black/80 transition-colors">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -141,7 +147,6 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
                 </>
               )}
             </div>
-            {/* Thumbnails */}
             {imagenes.length > 1 && (
               <div className="flex gap-2 overflow-x-auto pb-1">
                 {imagenes.map((url, i) => (
@@ -163,10 +168,8 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
           </div>
         )}
 
-        {/* Info principal */}
         <div className="grid md:grid-cols-3 gap-6">
           <div className="md:col-span-2 space-y-6">
-            {/* Título y estado */}
             <div>
               <div className="flex flex-wrap items-center gap-3 mb-2">
                 <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${estado.color}`}>
@@ -189,7 +192,6 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
               )}
             </div>
 
-            {/* Características */}
             {(property.recamaras || property.banos || property.estacionamientos || property.m2) && (
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {[
@@ -207,7 +209,6 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
               </div>
             )}
 
-            {/* Descripción */}
             {property.descripcion && (
               <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
                 <h2 className="text-xs font-black uppercase tracking-widest text-zinc-500 mb-3">Descripción</h2>
@@ -216,7 +217,6 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
             )}
           </div>
 
-          {/* Precio y CTA */}
           <div className="space-y-4">
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 sticky top-6">
               <p className="text-zinc-500 text-xs uppercase tracking-widest mb-1">Precio</p>
@@ -231,8 +231,7 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
                   )} / m²
                 </p>
               )}
-              <button
-                onClick={() => router.push('/properties')}
+              <button onClick={() => router.push('/properties')}
                 className="w-full bg-zinc-800 text-zinc-300 py-3 rounded-xl font-bold text-sm hover:bg-zinc-700 transition-all">
                 ← Volver al listado
               </button>
