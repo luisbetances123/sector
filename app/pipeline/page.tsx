@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd'
+import { useRouter } from 'next/navigation'
 import { supabase } from '../lib/supabase'
 
 type Client = {
@@ -34,6 +35,7 @@ const badgeColors: Record<string, string> = {
 const emptyForm = { name: '', email: '', phone: '', type: '', price: '', initial: '', status: 'LEAD', currency: 'USD' }
 
 export default function PipelinePage() {
+  const router = useRouter()
   const [clients, setClients] = useState<Client[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -203,12 +205,13 @@ export default function PipelinePage() {
                       <Draggable key={c.id} draggableId={c.id} index={index}>
                         {(provided, snapshot) => (
                           <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}
+                            onClick={() => !snapshot.isDragging && router.push(`/clients/${c.id}`)}
                             className={`bg-zinc-900/90 border-y border-r border-zinc-800 border-l-4 ${
                               c.status === 'LEAD' ? 'border-l-zinc-500' :
                               c.status === 'BUSCANDO' ? 'border-l-blue-600' :
                               c.status === 'EN OFERTA' ? 'border-l-amber-500' :
                               'border-l-green-600'
-                            } rounded-xl p-4 mb-3 cursor-grab transition-all ${
+                            } rounded-xl p-4 mb-3 cursor-pointer transition-all ${
                               snapshot.isDragging ? 'shadow-xl shadow-black/50 scale-[1.02]' : 'hover:border-zinc-700 hover:bg-zinc-900'
                             }`}>
                             <div className="flex items-center gap-3 mb-2">
