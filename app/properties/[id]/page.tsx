@@ -31,10 +31,23 @@ const ESTADOS: Record<string, { label: string; color: string; dot: string }> = {
 }
 
 function formatPrice(price: string, moneda = 'USD') {
-  const num = parseFloat(price?.replace(/[^0-9.]/g, '') ?? '0')
-  if (isNaN(num)) return price || '—'
+  if (!price) return '—'
+  
+  if (price.includes('US$') || price.includes('RD$')) return price
+
+  let limpio = price.replace(/,/g, '')
+  
+  if (/\.\d{3}$/.test(limpio)) {
+    limpio = limpio.replace(/\./g, '')
+  }
+
+  const num = parseFloat(limpio)
+  if (isNaN(num)) return price
+  
   return new Intl.NumberFormat('es-DO', {
-    style: 'currency', currency: moneda === 'DOP' ? 'DOP' : 'USD', maximumFractionDigits: 0,
+    style: 'currency', 
+    currency: moneda === 'DOP' ? 'DOP' : 'USD', 
+    maximumFractionDigits: 0,
   }).format(num)
 }
 
