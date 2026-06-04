@@ -55,7 +55,7 @@ const content = {
       badge: '🇩🇴 CRM & Inteligencia Inmobiliaria · Santo Domingo',
       h1a: 'El sistema definitivo para los',
       h1b: 'Top Producers.',
-      desc: 'Deja de pelear con hojas de cálculo y herramientas genéricas. Gestiona tu cartera en el Polígono Central con emparejamiento bimonetario, bitácoras inteligentes y control absoluto de tus cierres.',
+      desc: 'Deja de pelear con hojas de cálculo y herramientas genéricas. Gestiona tu cartera del Polígono Central con emparejamiento bimonetario, bitácoras inteligentes y control absoluto de tus cierres.',
       btnPrimary: 'Obtener Reporte + Acceso Beta',
       btnSecondary: 'Ver Funciones',
     },
