@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { supabase } from '../lib/supabase'
 import { UserPlus, Home, X, Search, Plus, MessageCircle, Phone, Clock, Pencil, Sparkles, StickyNote } from 'lucide-react'
 
@@ -138,6 +139,7 @@ const nuevoClienteInicial = {
 }
 
 export default function ClientesPage() {
+  const router = useRouter() // <- CAMBIO 3: Inicializado aquí arriba correctamente para que lo usen las funciones
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [selectedCliente, setSelectedCliente] = useState<Cliente | null>(null)
   const [propiedadesAsignadas, setPropiedadesAsignadas] = useState<ClientePropiedad[]>([])
@@ -206,26 +208,9 @@ export default function ClientesPage() {
     window.open(`tel:${cliente.phone}`)
   }
 
+  // <- CAMBIO 2: Modificada para redirigir directamente usando la Promise de Next.js
   const abrirPerfil = async (cliente: Cliente) => {
-    setSelectedCliente(cliente)
-    setNuevaNota('')
-    const [{ data: props }, { data: cts }, { data: allProps }, { data: notas }] = await Promise.all([
-      supabase.from('cliente_properties').select('id, property_id, properties(*)').eq('cliente_id', cliente.id),
-      supabase.from('contactos_whatsapp').select('*').eq('cliente_id', cliente.id).order('fecha', { ascending: false }),
-      supabase.from('properties').select('*').eq('estado', 'disponible'),
-      supabase.from('notas_cliente').select('*').eq('cliente_id', cliente.id).order('created_at', { ascending: false }),
-    ])
-    if (props) setPropiedadesAsignadas(props.map((r: any) => ({ id: r.id, property_id: r.property_id, properties: r.properties as Propiedad })))
-    if (cts) setContactosCliente(cts)
-    if (notas) setNotasCliente(notas)
-    if (allProps) {
-      const matches = allProps
-        .map(p => ({ ...p, score: calcularMatch(cliente, p) }))
-        .filter(p => p.score > 0)
-        .sort((a, b) => b.score - a.score)
-        .slice(0, 5)
-      setPropiedadesMatch(matches)
-    }
+    router.push(`/clients/${cliente.id}`)
   }
 
   const guardarNota = async () => {
@@ -254,7 +239,7 @@ export default function ClientesPage() {
     // Separar moneda del valor si ya viene formateado
     let valorLimpio = selectedCliente.price || ''
     let monedaDetectada = 'USD'
-    if (valorLimpio.includes('RD$')) { monedaDetectada = 'RD'; valorLimpio = valorLimpio.replace(/[^0-9.]/g, '') }
+    if (valorLimpio.includes('RD$')) { monedaDetectada = 'RD'; valorLimpio = valorLinteres = valorLimpio.replace(/[^0-9.]/g, '') }
     else if (valorLimpio.includes('US$')) { monedaDetectada = 'USD'; valorLimpio = valorLimpio.replace(/[^0-9.]/g, '') }
 
     setEditForm({
@@ -418,7 +403,7 @@ export default function ClientesPage() {
   const inputCls = 'w-full bg-zinc-800 text-white px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500'
   const labelCls = 'text-zinc-500 text-xs uppercase tracking-wider mb-1.5 block'
 
-  // ── Vista perfil ──────────────────────────────────────────────────────────────
+  // ── Vista perfil (Se mantiene intacta por seguridad) ───────────────────────────
   if (selectedCliente) {
     const dias = diasSinContacto(contactos, selectedCliente.id)
     const sinContacto = dias === null || dias >= DIAS_ALERTA
@@ -730,7 +715,7 @@ export default function ClientesPage() {
                 </div>
                 <div>
                   <label className={labelCls}>Notas</label>
-                  <textarea value={editForm.notas} onChange={e => setEditForm(p => ({...p, notas: e.target.value}))}
+                  <textarea value={editForm.notes} onChange={e => setEditForm(p => ({...p, notes: e.target.value}))}
                     placeholder="Observaciones del cliente..."
                     className="w-full bg-zinc-800 text-white px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500 resize-none h-20" />
                 </div>
@@ -943,7 +928,7 @@ export default function ClientesPage() {
               </div>
               <div>
                 <label className={labelCls}>Notas</label>
-                <textarea value={nuevoCliente.notas} onChange={e => setNuevoCliente(p => ({...p, notas: e.target.value}))}
+                <textarea value={nuevoCliente.notes} onChange={e => setNuevoCliente(p => ({...p, notes: e.target.value}))}
                   placeholder="Observaciones del cliente..."
                   className="w-full bg-zinc-800 text-white px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500 resize-none h-20" />
               </div>
