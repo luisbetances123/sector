@@ -714,7 +714,7 @@ if (valorLimpio.includes('RD$')) { monedaDetectada = 'RD'; valorLimpio = valorLi
                 </div>
                 <div>
                   <label className={labelCls}>Notas</label>
-                  <textarea value={editForm.notes} onChange={e => setEditForm(p => ({...p, notes: e.target.value}))}
+                  <textarea value={editForm.notas} onChange={e => setEditForm(p => ({...p, notes: e.target.value}))}
                     placeholder="Observaciones del cliente..."
                     className="w-full bg-zinc-800 text-white px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500 resize-none h-20" />
                 </div>
@@ -927,7 +927,7 @@ if (valorLimpio.includes('RD$')) { monedaDetectada = 'RD'; valorLimpio = valorLi
               </div>
               <div>
                 <label className={labelCls}>Notas</label>
-                <textarea value={nuevoCliente.notes} onChange={e => setNuevoCliente(p => ({...p, notes: e.target.value}))}
+                <textarea value={nuevoCliente.notas} onChange={e => setNuevoCliente(p => ({...p, notes: e.target.value}))}
                   placeholder="Observaciones del cliente..."
                   className="w-full bg-zinc-800 text-white px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500 resize-none h-20" />
               </div>
