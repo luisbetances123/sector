@@ -239,8 +239,7 @@ export default function ClientesPage() {
     // Separar moneda del valor si ya viene formateado
     let valorLimpio = selectedCliente.price || ''
     let monedaDetectada = 'USD'
-    if (valorLimpio.includes('RD$')) { monedaDetectada = 'RD'; valorLimpio = valorLinteres = valorLimpio.replace(/[^0-9.]/g, '') }
-    else if (valorLimpio.includes('US$')) { monedaDetectada = 'USD'; valorLimpio = valorLimpio.replace(/[^0-9.]/g, '') }
+if (valorLimpio.includes('RD$')) { monedaDetectada = 'RD'; valorLimpio = valorLimpio.replace(/[^0-9.]/g, '') }    else if (valorLimpio.includes('US$')) { monedaDetectada = 'USD'; valorLimpio = valorLimpio.replace(/[^0-9.]/g, '') }
 
     setEditForm({
       nombre: selectedCliente.name || '',
