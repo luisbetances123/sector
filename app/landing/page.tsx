@@ -52,11 +52,11 @@ const content = {
     nav: { features: 'Funciones', faq: 'FAQ', cta: 'Solicitar Acceso' },
     prelaunsch: '🚀 FASE DE PRELANZAMIENTO — Cupos limitados para la Beta Privada en RD',
     hero: {
-      badge: '🇩🇴 CRM Inmobiliario · Santo Domingo',
-      h1a: 'Tu cartera de clientes,',
-      h1b: 'bajo control total.',
-      desc: 'Homvi es el CRM diseñado para agentes inmobiliarios que operan con estándares de lujo. Pipeline visual, seguimiento preciso, cierre inteligente.',
-      btnPrimary: 'Solicitar Acceso Anticipado',
+      badge: '🇩🇴 CRM & Inteligencia Inmobiliaria · Santo Domingo',
+      h1a: 'El sistema definitivo para los',
+      h1b: 'Top Producers.',
+      desc: 'Deja de pelear con hojas de cálculo y herramientas genéricas. Gestiona tu cartera en el Polígono Central con emparejamiento bimonetario, bitácoras inteligentes y control absoluto de tus cierres.',
+      btnPrimary: 'Obtener Reporte + Acceso Beta',
       btnSecondary: 'Ver Funciones',
     },
     stats: [
@@ -69,20 +69,28 @@ const content = {
     featuresTitle: '7 herramientas. Un solo lugar.',
     faqBadge: 'Preguntas frecuentes',
     faqTitle: 'Todo lo que necesitas saber',
-    ctaTitle: 'Únete antes que todos.',
-    ctaDesc: 'Cupos limitados para la beta privada. Sin tarjeta de crédito.',
+    ctaTitle: 'No dejes que otro broker cierre el Penthouse de tu cliente.',
+    ctaDesc: 'El mercado de lujo se mueve rápido. Centraliza tu inventario bimonetario, automatiza tus seguimientos y da el servicio premium que esperan de ti.',
     ctaPlaceholder: 'tu@email.com',
     ctaBtn: 'Unirse a la Lista de Espera',
-    ctaSent: '✓ ¡Apuntado! Te avisamos pronto.',
+    ctaSent: '✓ ¡Apuntado! Te enviamos el reporte a tu correo.',
     ctaLoading: 'Guardando...',
     footer: '© 2026 HOMVI · CRM Inmobiliario · Santo Domingo',
     rd: {
       title: 'Construido para el ecosistema inmobiliario de la República Dominicana',
-      subtitle: 'Desde Piantini hasta Punta Cana, HOMVI conoce tu territory.',
+      subtitle: 'Desde Piantini hasta Punta Cana, HOMVI conoce tu territorio.',
       desc: 'Configurado con los sectores donde se mueve el dinero real:',
       sectors: 'Piantini, Naco, Bella Vista, Serralles, Los Cacicazgos, La Esperilla, Mirador Norte',
       tourism: '— y los destinos de inversión turística como',
       tourismPlaces: 'Punta Cana, Bávaro y Boca Chica',
+    },
+    magnet: {
+      badge: 'Acceso Exclusivo a Data Local',
+      title: '¿Quieres dominar los precios por m² en el Polígono Central?',
+      desc: 'Únete hoy a nuestra lista de espera para la Beta Privada y recibe de inmediato en tu correo el "Reporte de Absorción Inmobiliaria HOMVI 2026" con las tendencias de precios reales y zonas calientes de Santo Domingo.',
+      placeholder: 'Tu correo profesional (ej. nombre@asociado.com)',
+      btn: 'Obtener Reporte + Acceso Beta',
+      lock: '🔒 Cupos limitados para asegurar la exclusividad de la data.'
     },
     features: [
       { numero: '01', titulo: 'Dashboard', subtitulo: 'Visión total de tu negocio en un vistazo', descripcion: 'El dashboard de HOMVI te muestra en tiempo real todo lo que importa: leads sin responder, seguimientos del día, clientes activos y propiedades disponibles. Sin distracciones, solo lo esencial para tomar decisiones rápidas.', puntos: ['Leads sin responder destacados', 'Seguimientos pendientes del día', 'Pipeline de clientes activo', 'Propiedades disponibles vs vendidas'] },
@@ -90,7 +98,7 @@ const content = {
       { numero: '03', titulo: 'Clientes', subtitulo: 'Tu cartera completa, siempre organizada', descripcion: 'Gestiona cada cliente con su perfil completo: presupuesto, zonas de interés, tipo de propiedad y etapa en el proceso de compra. Asigna propiedades directamente desde el perfil del cliente.', puntos: ['Perfil completo con presupuesto y preferencias', 'Zonas de interés por sector', 'Asignación directa de propiedades', 'Etapas: Lead, Buscando, En Oferta, Cierre'] },
       { numero: '04', titulo: 'Propiedades', subtitulo: 'Catálogo de lujo siempre actualizado', descripcion: 'Administra tu inventario de propiedades con fotos, precio, sector, tipo y características. Filtra por cualquier criterio y conecta propiedades con los clientes correctos en segundos.', puntos: ['Fotos, precio y características completas', 'Filtros por sector, tipo y precio', 'Conexión directa cliente-propiedad', 'Historial de asignaciones'] },
       { numero: '05', titulo: 'Pipeline', subtitulo: 'El estado de cada negociación en tiempo real', descripcion: 'El pipeline visual te muestra en qué etapa está cada cliente. Arrastra, actualiza y prioriza sin esfuerzo. Nunca pierdas de vista una oportunidad de cierre.', puntos: ['Vista Kanban por etapas', 'Arrastrar y soltar entre etapas', 'Valor estimado por etapa', 'Alertas de clientes sin actividad'] },
-      { numero: '06', titulo: 'Calendario', subtitulo: 'Todas tus citas en un solo lugar', descripcion: 'El calendario de HOMVI centraliza tus citas, visitas y seguimientos. Visualiza tu semana o mes completo y nunca llegues a una reunión sin estar preparado.', puntos: ['Vista semanal y mensual', 'Citas vinculadas a clientes', 'Recordatorios automáticos', 'Sincronización con tus actividades diarias'] },
+      { numero: '06', titulo: 'Calendario', subtitulo: 'Todas tus citas en un solo lugar', descripcion: 'El calendario de HOMVI centraliza tus citas, visitas y seguimientos. Visualiza tu semana o mes completo y nunca llegues a una reunión sin estar preparado.', puntos: ['Vista semanal and mensual', 'Citas vinculadas a clientes', 'Recordatorios automáticos', 'Sincronización con tus actividades diarias'] },
       { numero: '07', titulo: 'Reportes', subtitulo: 'Métricas que impulsan tu crecimiento', descripcion: 'Analiza tu rendimiento con reportes por etapa, sector y período. Identifica qué zonas generan más cierres, cuánto tiempo tarda un lead en convertirse y cuáles son tus propiedades más solicitadas.', puntos: ['Reportes por etapa del pipeline', 'Análisis por sector geográfico', 'Tiempo promedio de conversión', 'Propiedades más consultadas'] },
     ],
     faqs: [
@@ -106,11 +114,11 @@ const content = {
     nav: { features: 'Features', faq: 'FAQ', cta: 'Request Access' },
     prelaunsch: '🚀 PRE-LAUNCH PHASE — Limited spots for the Private Beta in DR',
     hero: {
-      badge: '🇩🇴 Real Estate CRM · Santo Domingo',
-      h1a: 'Your client portfolio,',
-      h1b: 'under total control.',
-      desc: 'Homvi is the CRM designed for real estate agents who operate at luxury standards. Visual pipeline, precise follow-ups, intelligent closing.',
-      btnPrimary: 'Request Early Access',
+      badge: '🇩🇴 CRM & Real Estate Intelligence · Santo Domingo',
+      h1a: 'The ultimate system for',
+      h1b: 'Top Producers.',
+      desc: 'Stop fighting spreadsheets and generic software. Manage your portfolio in the Polígono Central with dual-currency matching, smart logs, and absolute control over your closings.',
+      btnPrimary: 'Get Report + Beta Access',
       btnSecondary: 'See Features',
     },
     stats: [
@@ -123,11 +131,11 @@ const content = {
     featuresTitle: '7 tools. One place.',
     faqBadge: 'Frequently asked questions',
     faqTitle: 'Everything you need to know',
-    ctaTitle: 'Join before everyone else.',
-    ctaDesc: 'Limited spots for the private beta. No credit card required.',
+    ctaTitle: 'Don\'t let another broker close your client\'s Penthouse.',
+    ctaDesc: 'The luxury market moves fast. Centralize your dual-currency inventory, automate your follow-ups, and deliver the premium service expected of you.',
     ctaPlaceholder: 'you@email.com',
     ctaBtn: 'Join the Waitlist',
-    ctaSent: '✓ You\'re in! We\'ll be in touch soon.',
+    ctaSent: '✓ You\'re in! We have sent the report to your email.',
     ctaLoading: 'Saving...',
     footer: '© 2026 HOMVI · Real Estate CRM · Santo Domingo',
     rd: {
@@ -137,6 +145,14 @@ const content = {
       sectors: 'Piantini, Naco, Bella Vista, Serralles, Los Cacicazgos, La Esperilla, Mirador Norte',
       tourism: '— and tourist investment destinations like',
       tourismPlaces: 'Punta Cana, Bávaro and Boca Chica',
+    },
+    magnet: {
+      badge: 'Exclusive Local Data Access',
+      title: 'Want to dominate prices per m² in the Polígono Central?',
+      desc: 'Join our Private Beta waitlist today and immediately receive the "HOMVI 2026 Real Estate Absorption Report" in your email, featuring real price trends and hot zones in Santo Domingo.',
+      placeholder: 'Your professional email (e.g., name@associate.com)',
+      btn: 'Get Report + Beta Access',
+      lock: '🔒 Limited spots to ensure data exclusivity.'
     },
     features: [
       { numero: '01', titulo: 'Dashboard', subtitulo: 'Total view of your business at a glance', descripcion: 'HOMVI\'s dashboard shows you in real time everything that matters: unanswered leads, today\'s follow-ups, active clients and available properties. No distractions, just what you need to make fast decisions.', puntos: ['Unanswered leads highlighted', 'Pending follow-ups for today', 'Active client pipeline', 'Available vs sold properties'] },
@@ -164,6 +180,12 @@ export default function Page() {
   const [email, setEmail] = useState('')
   const [enviado, setEnviado] = useState(false)
   const [cargando, setCargando] = useState(false)
+  
+  // Estado independiente para el formulario del Lead Magnet
+  const [magnetEmail, setMagnetEmail] = useState('')
+  const [magnetEnviado, setMagnetEnviado] = useState(false)
+  const [magnetCargando, setMagnetCargando] = useState(false)
+
   const [faqAbierto, setFaqAbierto] = useState<number | null>(null)
   const [lang, setLang] = useState<'es' | 'en'>('es')
 
@@ -205,6 +227,14 @@ export default function Page() {
     await supabase.from('beta_emails').insert({ email: email.trim() })
     setEnviado(true)
     setCargando(false)
+  }
+
+  const guardarMagnetEmail = async () => {
+    if (!magnetEmail.trim()) return
+    setMagnetCargando(true)
+    await supabase.from('beta_emails').insert({ email: magnetEmail.trim(), source: 'lead_magnet_report' })
+    setMagnetEnviado(true)
+    setMagnetCargando(false)
   }
 
   return (
@@ -266,20 +296,20 @@ export default function Page() {
             <span className="text-amber-500 text-xs uppercase tracking-widest font-bold mb-4 block">{t.hero.badge}</span>
           </FadeIn>
           <FadeIn delay={200}>
-            <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-8 leading-tight">
+            <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-8 leading-tight text-white">
               {t.hero.h1a}{' '}
-              <span className="italic text-amber-500">
+              <span className="italic text-amber-500 block sm:inline">
                 {typedH1b}
                 {!typedDone && <span className="animate-pulse">|</span>}
               </span>
             </h1>
           </FadeIn>
           <FadeIn delay={400}>
-            <p className="text-zinc-400 text-lg mb-10 max-w-2xl mx-auto leading-relaxed">{t.hero.desc}</p>
+            <p className="text-zinc-400 text-base md:text-lg mb-10 max-w-2xl mx-auto leading-relaxed">{t.hero.desc}</p>
           </FadeIn>
           <FadeIn delay={600}>
             <div className="flex flex-col md:flex-row gap-4 justify-center">
-              <a href="#contacto" className="bg-amber-500 text-black px-8 py-4 rounded-xl font-black hover:bg-white transition-all text-sm uppercase tracking-wider shadow-lg shadow-amber-500/10">
+              <a href="#reporte-data" className="bg-amber-500 text-black px-8 py-4 rounded-xl font-black hover:bg-white transition-all text-sm uppercase tracking-wider shadow-lg shadow-amber-500/10">
                 {t.hero.btnPrimary}
               </a>
               <a href="#features" className="border border-zinc-700 px-8 py-4 rounded-xl font-bold hover:border-amber-500 hover:text-amber-500 transition-all text-sm uppercase tracking-wider">
@@ -515,6 +545,46 @@ export default function Page() {
           </div>
         </section>
 
+        {/* SECCIÓN LEAD MAGNET - REPORTE DE DATA EXCLUSIVA */}
+        <FadeIn>
+          <section id="reporte-data" className="py-24 border-t border-zinc-800 bg-gradient-to-b from-black to-zinc-950/40">
+            <div className="max-w-4xl mx-auto px-6 text-center">
+              <span className="text-[10px] font-bold tracking-widest text-amber-500 uppercase bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">
+                {t.magnet.badge}
+              </span>
+              <h2 className="text-3xl md:text-5xl font-black text-white mt-5 mb-6 tracking-tight">
+                {t.magnet.title}
+              </h2>
+              <p className="text-zinc-400 text-base md:text-lg max-w-2xl mx-auto mb-10 leading-relaxed">
+                {t.magnet.desc}
+              </p>
+
+              {/* Caja del Formulario */}
+              <div className="bg-zinc-900/40 border border-zinc-800/80 p-6 md:p-8 rounded-2xl max-w-xl mx-auto backdrop-blur-md shadow-2xl">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <input
+                    type="email"
+                    placeholder={t.magnet.placeholder}
+                    value={magnetEmail}
+                    onChange={(e) => setMagnetEmail(e.target.value)}
+                    className="flex-1 px-4 py-3.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/20 transition placeholder-zinc-600"
+                  />
+                  <button 
+                    onClick={guardarMagnetEmail}
+                    disabled={magnetCargando || magnetEnviado}
+                    className="px-6 py-3.5 bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-black font-black rounded-xl text-xs uppercase tracking-wider transition shadow-lg shadow-amber-500/10 whitespace-nowrap"
+                  >
+                    {magnetEnviado ? t.ctaSent : magnetCargando ? t.ctaLoading : t.magnet.btn}
+                  </button>
+                </div>
+                <p className="text-[11px] text-zinc-500 mt-4">
+                  {t.magnet.lock}
+                </p>
+              </div>
+            </div>
+          </section>
+        </FadeIn>
+
         {/* FAQ */}
         <section id="faq" className="py-20 px-6 max-w-3xl mx-auto">
           <FadeIn>
@@ -547,10 +617,10 @@ export default function Page() {
 
         {/* CTA */}
         <FadeIn>
-          <section id="contacto" className="py-16 px-6 text-center bg-amber-500/5 border-t border-amber-500/10 relative overflow-hidden">
+          <section id="contacto" className="py-20 px-6 text-center bg-amber-500/5 border-t border-amber-500/10 relative overflow-hidden">
             <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-amber-500/10 rounded-full blur-2xl" />
-            <h2 className="text-4xl font-black mb-4">{t.ctaTitle}</h2>
-            <p className="text-zinc-400 mb-10 max-w-md mx-auto text-sm">{t.ctaDesc}</p>
+            <h2 className="text-3xl md:text-5xl font-black mb-4 tracking-tight text-white max-w-3xl mx-auto leading-tight">{t.ctaTitle}</h2>
+            <p className="text-zinc-400 mb-10 max-w-xl mx-auto text-sm md:text-base leading-relaxed">{t.ctaDesc}</p>
             <div className="max-w-md mx-auto flex flex-col gap-4 relative z-10">
               <div className="relative">
                 <input
