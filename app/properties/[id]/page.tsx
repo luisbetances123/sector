@@ -107,6 +107,11 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
 
   const estado = ESTADOS[property.estado] ?? ESTADOS.disponible
 
+  // Construimos el query de búsqueda del mapa según lo que tengamos en base de datos
+  const direccionCompleta = [property.location, property.sector, 'Santo Domingo, Republica Dominicana']
+    .filter(Boolean)
+    .join(', ')
+
   return (
     <div className="min-h-screen bg-zinc-950 text-white">
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
@@ -215,6 +220,22 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
                 <p className="text-zinc-300 text-sm leading-relaxed">{property.descripcion}</p>
               </div>
             )}
+
+            {/* SECCIÓN DE GOOGLE MAPS REINCORPORADA */}
+            <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
+              <h2 className="text-xs font-black uppercase tracking-widest text-zinc-500 mb-3">Ubicación en Mapa</h2>
+              <div className="w-full h-64 rounded-xl overflow-hidden border border-zinc-800 bg-zinc-950">
+                <iframe
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg)' }} // Modo oscuro elegante para el mapa
+                  loading="lazy"
+                  allowFullScreen
+                  src={`https://maps.google.com/maps?q=${encodeURIComponent(direccionCompleta)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                />
+              </div>
+            </div>
+
           </div>
 
           <div className="space-y-4">
