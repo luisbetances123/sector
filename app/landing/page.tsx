@@ -2,7 +2,7 @@
 import { supabase } from '../lib/supabase'
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { LayoutDashboard, Sun, Users, Building2, TrendingUp, Calendar, BarChart3, ChevronDown } from 'lucide-react'
+import { LayoutDashboard, Sun, Users, Building2, TrendingUp, Calendar, BarChart3, ChevronDown, ArrowRight, CheckCircle2 } from 'lucide-react'
 
 // ── Typewriter hook ──────────────────────────────────────────────────────────
 function useTypewriter(text: string, speed = 40, delay = 500) {
@@ -78,7 +78,7 @@ const content = {
     footer: '© 2026 HOMVI · CRM Inmobiliario · Santo Domingo',
     rd: {
       title: 'Construido para el ecosistema inmobiliario de la República Dominicana',
-      subtitle: 'Desde Piantini hasta Punta Cana, HOMVI conoce tu territorio.',
+      subtitle: 'Desde Piantini hasta Punta Cana, HOMVI conoce tu territory.',
       desc: 'Configurado con los sectores donde se mueve el dinero real:',
       sectors: 'Piantini, Naco, Bella Vista, Serralles, Los Cacicazgos, La Esperilla, Mirador Norte',
       tourism: '— y los destinos de inversión turística como',
@@ -167,8 +167,37 @@ export default function Page() {
   const [faqAbierto, setFaqAbierto] = useState<number | null>(null)
   const [lang, setLang] = useState<'es' | 'en'>('es')
 
+  // Estados para simular interactividad viva en los mockups
+  const [activeTab, setActiveTab] = useState(0)
+  const [completedTask, setCompletedTask] = useState<boolean[]>([false, false, false])
+
   const t = content[lang]
   const { displayed: typedH1b, done: typedDone } = useTypewriter(t.hero.h1b, 45, 800)
+
+  // Efecto automático para cambiar tabs de reportes o simular interacción periódica
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveTab((prev) => (prev + 1) % 3)
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [])
+
+  // Simulación de completar tareas en la vista 'Hoy'
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCompletedTask((prev) => {
+        const next = [...prev]
+        const firstFalseIndex = next.indexOf(false)
+        if (firstFalseIndex !== -1) {
+          next[firstFalseIndex] = true
+        } else {
+          return [false, false, false]
+        }
+        return next
+      })
+    }, 2500)
+    return () => clearInterval(interval)
+  }, [])
 
   const guardarEmail = async () => {
     if (!email.trim()) return
@@ -180,6 +209,22 @@ export default function Page() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white font-sans overflow-x-hidden">
+      
+      {/* Estilos CSS Inyectados para el Slider/Marquee infinito del Pipeline */}
+      <style jsx global>{`
+        @keyframes marquee {
+          0% { transform: translateX(0%); }
+          100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+          display: flex;
+          width: max-content;
+          animation: marquee 25s linear infinite;
+        }
+        .animate-marquee:hover {
+          animation-play-state: paused;
+        }
+      `}</style>
 
       {/* Gradiente animado de fondo */}
       <div className="fixed inset-0 pointer-events-none z-0">
@@ -234,7 +279,7 @@ export default function Page() {
           </FadeIn>
           <FadeIn delay={600}>
             <div className="flex flex-col md:flex-row gap-4 justify-center">
-              <a href="#contacto" className="bg-amber-500 text-black px-8 py-4 rounded-xl font-black hover:bg-white transition-all text-sm uppercase tracking-wider">
+              <a href="#contacto" className="bg-amber-500 text-black px-8 py-4 rounded-xl font-black hover:bg-white transition-all text-sm uppercase tracking-wider shadow-lg shadow-amber-500/10">
                 {t.hero.btnPrimary}
               </a>
               <a href="#features" className="border border-zinc-700 px-8 py-4 rounded-xl font-bold hover:border-amber-500 hover:text-amber-500 transition-all text-sm uppercase tracking-wider">
@@ -247,15 +292,17 @@ export default function Page() {
         {/* RD Section */}
         <FadeIn>
           <section className="py-12 px-6 max-w-4xl mx-auto text-center">
-            <span className="text-2xl mb-4 block">🇩🇴</span>
+            <span className="text-2xl mb-4 block animate-bounce">🇩🇴</span>
             <h2 className="text-2xl md:text-3xl font-black mb-3">{t.rd.title}</h2>
             <p className="text-zinc-400 text-sm mb-6 italic">{t.rd.subtitle}</p>
-            <p className="text-zinc-300 text-sm leading-relaxed max-w-2xl mx-auto">
-              {t.rd.desc}{' '}
-              <span className="text-amber-400 font-bold">{t.rd.sectors}</span>
-              {' '}{t.rd.tourism}{' '}
-              <span className="text-amber-400 font-bold">{t.rd.tourismPlaces}</span>.
-            </p>
+            <div className="bg-zinc-900/40 backdrop-blur border border-zinc-800 rounded-2xl p-6 max-w-2xl mx-auto shadow-inner">
+              <p className="text-zinc-300 text-sm leading-relaxed">
+                {t.rd.desc}{' '}
+                <span className="text-amber-400 font-bold underline decoration-amber-500/30">{t.rd.sectors}</span>
+                {' '}{t.rd.tourism}{' '}
+                <span className="text-amber-400 font-bold underline decoration-amber-500/30">{t.rd.tourismPlaces}</span>.
+              </p>
+            </div>
           </section>
         </FadeIn>
 
@@ -263,8 +310,8 @@ export default function Page() {
         <section className="py-10 px-6 max-w-6xl mx-auto border-y border-zinc-800">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {t.stats.map(([num, label]) => (
-              <div key={label} className="text-center">
-                <p className="text-4xl font-black mb-2 text-amber-400">{num}</p>
+              <div key={label} className="text-center group cursor-default">
+                <p className="text-4xl font-black mb-2 text-amber-400 group-hover:scale-110 transition-transform duration-300">{num}</p>
                 <p className="text-zinc-400 text-xs uppercase tracking-widest leading-relaxed">{label}</p>
               </div>
             ))}
@@ -277,24 +324,19 @@ export default function Page() {
             <div className="text-center mb-16">
               <span className="text-amber-500 text-xs uppercase tracking-widest font-bold mb-3 block">{t.featuresBadge}</span>
               <h2 className="text-4xl font-black">{t.featuresTitle}</h2>
-   </div>
+            </div>
           </FadeIn>
           <div className="space-y-6">
             {t.features.map((f, i) => {
               const Icon = icons[i]
               return (
                 <FadeIn key={i} delay={i * 80}>
-                  <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 hover:border-amber-500/30 transition-all">
-                    <div className="flex items-start gap-6">
-                      <div className="flex-shrink-0">
-                        <div className="w-12 h-12 bg-amber-500/10 rounded-xl flex items-center justify-center">
-                          <Icon className="w-6 h-6 text-amber-500" />
-                        </div>
-                      </div>
-                      <div className="flex-1">
+                  <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 hover:border-amber-500/40 transition-all group duration-300 shadow-xl">
+                    <div className="flex items-start gap-6 flex-col lg:flex-row">
+                      <div className="flex-1 w-full">
                         <div className="flex items-center gap-3 mb-2 flex-wrap">
-                          <span className="text-amber-500 text-xs font-black">{f.numero}</span>
-                          <h3 className="text-xl font-black">{f.titulo}</h3>
+                          <span className="text-amber-500 text-xs font-black bg-amber-500/10 px-2 py-0.5 rounded">{f.numero}</span>
+                          <h3 className="text-xl font-black group-hover:text-amber-400 transition-colors">{f.titulo}</h3>
                           <span className="text-zinc-500 text-sm">— {f.subtitulo}</span>
                         </div>
                         <p className="text-zinc-400 text-sm leading-relaxed mb-4">{f.descripcion}</p>
@@ -306,96 +348,164 @@ export default function Page() {
                             </div>
                           ))}
                         </div>
-                        {/* Mockup visual */}
-                        <div className="mt-4 rounded-xl overflow-hidden border border-zinc-700/50 bg-zinc-950">
-                          {i === 0 && (
-                            <div className="p-3 space-y-2">
-                              <div className="flex gap-2">
-                                {['Leads', 'Clientes', 'Propied.', 'Seguim.'].map((l, k) => (
-                                  <div key={k} className="flex-1 bg-zinc-800 rounded-lg p-2 text-center">
-                                    <div className="text-amber-400 font-black text-sm">{[3,12,8,5][k]}</div>
-                                    <div className="text-zinc-500 text-[9px] uppercase">{l}</div>
-                                  </div>
-                                ))}
-                              </div>
-                              <div className="bg-zinc-800 rounded-lg p-2 flex items-center gap-2">
-                                <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                                <span className="text-zinc-300 text-xs">3 leads sin responder</span>
-                              </div>
-                            </div>
-                          )}
-                          {i === 1 && (
-                            <div className="p-3 space-y-1.5">
-                              {[['📞','Llamada a María G.','09:00','text-blue-400'],['🏠','Visita Piantini','11:30','text-amber-400'],['📄','Firma contrato','15:00','text-green-400']].map(([icon,txt,hora,color],k) => (
-                                <div key={k} className="flex items-center gap-2 bg-zinc-800 rounded-lg px-2 py-1.5">
-                                  <span className="text-sm">{icon}</span>
-                                  <span className="text-zinc-300 text-xs flex-1">{txt}</span>
-                                  <span className={`${color} text-[10px] font-mono`}>{hora}</span>
+                      </div>
+
+                      {/* Mockup visual dinámico */}
+                      <div className="w-full lg:w-80 flex-shrink-0 rounded-xl overflow-hidden border border-zinc-700/50 bg-zinc-950 shadow-2xl transition-all group-hover:border-zinc-600">
+                        {i === 0 && (
+                          <div className="p-4 space-y-2.5">
+                            <div className="flex gap-2">
+                              {['Leads', 'Clientes', 'Propied.', 'Seguim.'].map((l, k) => (
+                                <div key={k} className="flex-1 bg-zinc-900 rounded-lg p-2 text-center border border-zinc-800">
+                                  <div className="text-amber-400 font-black text-sm">{[3,12,8,5][k]}</div>
+                                  <div className="text-zinc-500 text-[9px] uppercase tracking-wider">{l}</div>
                                 </div>
                               ))}
                             </div>
-                          )}
-                          {i === 2 && (
-                            <div className="p-3 space-y-1.5">
-                              {[['L','Lizmarie B.','Buscando','bg-blue-900/50 text-blue-400'],['J','Jean L.','En Oferta','bg-amber-900/50 text-amber-400'],['M','María N.','Lead','bg-zinc-700 text-zinc-300']].map(([ini,nom,etapa,color],k) => (
-                                <div key={k} className="flex items-center gap-2 bg-zinc-800 rounded-lg px-2 py-1.5">
-                                  <div className="w-6 h-6 rounded-full bg-amber-500 text-black flex items-center justify-center text-[10px] font-black">{ini}</div>
-                                  <span className="text-zinc-300 text-xs flex-1">{nom}</span>
-                                  <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${color}`}>{etapa}</span>
+                            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-2.5 flex items-center justify-between transition-all">
+                              <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+                                <span className="text-red-400 text-xs font-medium">3 leads sin responder</span>
+                              </div>
+                              <span className="text-[10px] bg-red-500 text-white font-bold px-1.5 py-0.5 rounded-full animate-pulse">¡Atender!</span>
+                            </div>
+                          </div>
+                        )}
+                        {i === 1 && (
+                          <div className="p-4 space-y-2">
+                            {[
+                              ['📞', 'Llamada a María G.', '09:00', 'text-blue-400'],
+                              ['🏠', 'Visita Piantini', '11:30', 'text-amber-400'],
+                              ['📄', 'Firma contrato', '15:00', 'text-green-400']
+                            ].map(([icon, txt, hora, color], k) => (
+                              <div 
+                                key={k} 
+                                className={`flex items-center gap-2 bg-zinc-900 rounded-lg px-3 py-2 border transition-all duration-500 ${completedTask[k] ? 'border-green-500/30 opacity-40 bg-zinc-900/20' : 'border-zinc-800'}`}
+                              >
+                                {completedTask[k] ? (
+                                  <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0 animate-scale" />
+                                ) : (
+                                  <span className="text-sm flex-shrink-0">{icon}</span>
+                                )}
+                                <span className={`text-xs flex-1 transition-all ${completedTask[k] ? 'line-through text-zinc-600' : 'text-zinc-300'}`}>{txt}</span>
+                                <span className={`${completedTask[k] ? 'text-zinc-600' : color} text-[10px] font-mono`}>{hora}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {i === 2 && (
+                          <div className="p-4 space-y-2">
+                            {[
+                              ['L', 'Lizmarie B.', 'Buscando', 'bg-blue-950 text-blue-400 border-blue-800/30'],
+                              ['J', 'Jean L.', 'En Oferta', 'bg-amber-950 text-amber-400 border-amber-800/30'],
+                              ['M', 'María N.', 'Lead', 'bg-zinc-900 text-zinc-400 border-zinc-800']
+                            ].map(([ini, nom, etapa, color], k) => (
+                              <div key={k} className="flex items-center gap-2 bg-zinc-900 rounded-lg px-3 py-2 border border-zinc-800 hover:translate-x-1 transition-transform">
+                                <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-amber-600 to-amber-400 text-black flex items-center justify-center text-[10px] font-black">{ini}</div>
+                                <span className="text-zinc-300 text-xs flex-1 font-medium">{nom}</span>
+                                <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold border ${color}`}>{etapa}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {i === 3 && (
+                          <div className="p-4 space-y-2">
+                            {[
+                              ['Penthouse en Piantini', 'US$350,000', 'Dispon.'],
+                              ['Apto en Naco', 'US$185,000', 'Dispon.'],
+                              ['Casa Arroyo Hondo', 'US$420,000', 'Reserv.']
+                            ].map(([nom, precio, estado], k) => (
+                              <div key={k} className="bg-zinc-900 rounded-lg p-2.5 border border-zinc-800 flex flex-col gap-1">
+                                <div className="flex justify-between items-center">
+                                  <span className="text-zinc-300 text-xs font-bold truncate max-w-[120px]">{nom}</span>
+                                  <span className={`text-[8px] px-1.5 py-0.2 rounded font-bold ${estado === 'Dispon.' ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>{estado}</span>
+                                </div>
+                                <span className="text-amber-500 text-[11px] font-mono font-black">{precio}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {i === 4 && (
+                          /* MARQUEE INFINITO DEL PIPELINE VISUAL */
+                          <div className="py-4 overflow-hidden relative bg-zinc-950 h-28 flex items-center">
+                            <div className="absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-zinc-950 to-transparent z-10 pointer-events-none" />
+                            <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-zinc-950 to-transparent z-10 pointer-events-none" />
+                            <div className="animate-marquee gap-3 flex">
+                              {[
+                                { n: 'Luis B.', e: 'Lead → Buscando', p: 'US$215k' },
+                                { n: 'Lizmarie B.', e: 'Buscando → Oferta', p: 'US$450k' },
+                                { n: 'Jean L.', e: 'Oferta → Cierre 🎉', p: 'US$135k' },
+                                { n: 'Maria N.', e: 'Nuevo Lead', p: 'US$300k' }
+                              ].map((item, idx) => (
+                                <div key={idx} className="bg-zinc-900 border border-zinc-800 rounded-xl p-3 w-40 shadow-xl flex flex-col gap-1">
+                                  <div className="text-zinc-300 font-bold text-xs">{item.n}</div>
+                                  <div className="text-[10px] text-amber-400 flex items-center gap-1 font-medium">{item.e}</div>
+                                  <div className="text-[10px] font-mono font-black text-zinc-500">{item.p}</div>
+                                </div>
+                              ))}
+                              {/* Duplicado para loop infinito */}
+                              {[
+                                { n: 'Luis B.', e: 'Lead → Buscando', p: 'US$215k' },
+                                { n: 'Lizmarie B.', e: 'Buscando → Oferta', p: 'US$450k' },
+                                { n: 'Jean L.', e: 'Oferta → Cierre 🎉', p: 'US$135k' },
+                                { n: 'Maria N.', e: 'Nuevo Lead', p: 'US$300k' }
+                              ].map((item, idx) => (
+                                <div key={`dup-${idx}`} className="bg-zinc-900 border border-zinc-800 rounded-xl p-3 w-40 shadow-xl flex flex-col gap-1">
+                                  <div className="text-zinc-300 font-bold text-xs">{item.n}</div>
+                                  <div className="text-[10px] text-amber-400 flex items-center gap-1 font-medium">{item.e}</div>
+                                  <div className="text-[10px] font-mono font-black text-zinc-500">{item.p}</div>
                                 </div>
                               ))}
                             </div>
-                          )}
-                          {i === 3 && (
-                            <div className="p-3 space-y-1.5">
-                              {[['🏠','Penthouse en Piantini','$350,000'],['🏠','Apto en Naco','$185,000'],['🏠','Casa Arroyo Hondo','$420,000']].map(([icon,nom,precio],k) => (
-                                <div key={k} className="flex items-center gap-2 bg-zinc-800 rounded-lg px-2 py-1.5">
-                                  <span>{icon}</span>
-                                  <span className="text-zinc-300 text-xs flex-1">{nom}</span>
-                                  <span className="text-amber-400 text-[10px] font-black">{precio}</span>
+                          </div>
+                        )}
+                        {i === 5 && (
+                          <div className="p-4">
+                            <div className="grid grid-cols-7 gap-0.5 mb-1.5">
+                              {['D','L','M','M','J','V','S'].map((d,k) => (
+                                <div key={k} className="text-center text-zinc-600 text-[9px] font-bold">{d}</div>
+                              ))}
+                            </div>
+                            <div className="grid grid-cols-7 gap-1">
+                              {Array.from({length: 28}, (_,k) => (
+                                <div key={k} className={`text-center text-[9px] rounded-md py-1 transition-all duration-300 ${k===14 ? 'bg-amber-500 text-black font-black shadow-lg shadow-amber-500/20' : k===8||k===21 ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold animate-pulse' : 'text-zinc-500 bg-zinc-900'}`}>
+                                  {k+1}
                                 </div>
                               ))}
                             </div>
-                          )}
-                          {i === 4 && (
-                            <div className="p-3">
-                              <div className="grid grid-cols-4 gap-1.5">
-                                {[['LEAD','1','bg-zinc-800 text-zinc-400'],['BUSCANDO','3','bg-blue-900/30 text-blue-400'],['EN OFERTA','2','bg-amber-900/30 text-amber-400'],['CIERRE','1','bg-green-900/30 text-green-400']].map(([etapa,num,color],k) => (
-                                  <div key={k} className={`rounded-lg p-2 text-center ${color}`}>
-                                    <div className="font-black text-lg">{num}</div>
-                                    <div className="text-[8px] uppercase opacity-70">{etapa}</div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                          {i === 5 && (
-                            <div className="p-3">
-                              <div className="grid grid-cols-7 gap-0.5 mb-1">
-                                {['D','L','M','M','J','V','S'].map((d,k) => (
-                                  <div key={k} className="text-center text-zinc-600 text-[9px]">{d}</div>
-                                ))}
-                              </div>
-                              <div className="grid grid-cols-7 gap-0.5">
-                                {Array.from({length: 30}, (_,k) => (
-                                  <div key={k} className={`text-center text-[9px] rounded py-0.5 ${k===14 ? 'bg-amber-500 text-black font-black' : k===8||k===21 ? 'bg-blue-900/50 text-blue-400' : 'text-zinc-500'}`}>
-                                    {k+1}
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                          {i === 6 && (
-                            <div className="p-3 space-y-2">
-                              {[['Pipeline','Lead 33% · Buscando 67%'],['Sectores','Piantini · Naco · Bella Vista'],['Tiempo','2 días promedio de respuesta']].map(([label,val],k) => (
-                                <div key={k} className="bg-zinc-800 rounded-lg px-2 py-1.5">
-                                  <div className="text-zinc-500 text-[9px] uppercase mb-0.5">{label}</div>
-                                  <div className="text-zinc-300 text-xs">{val}</div>
-                                </div>
+                          </div>
+                        )}
+                        {i === 6 && (
+                          <div className="p-4 space-y-2">
+                            <div className="flex gap-1.5 bg-zinc-900 p-1 rounded-lg border border-zinc-800">
+                              {['Mensual', 'Sectores', 'Conversión'].map((tab, idx) => (
+                                <button key={idx} className={`flex-1 text-[9px] font-bold uppercase py-1 rounded transition-colors ${activeTab === idx ? 'bg-amber-500 text-black' : 'text-zinc-500'}`}>
+                                  {tab.slice(0, 5)}
+                                </button>
                               ))}
                             </div>
-                          )}
-                        </div>
+                            <div className="bg-zinc-900 rounded-lg p-2.5 border border-zinc-800 h-16 flex flex-col justify-center">
+                              {activeTab === 0 && (
+                                <div>
+                                  <div className="text-zinc-500 text-[8px] uppercase tracking-wider">Cierres del Mes</div>
+                                  <div className="text-green-400 text-sm font-black font-mono">US$1,225,000</div>
+                                </div>
+                              )}
+                              {activeTab === 1 && (
+                                <div>
+                                  <div className="text-zinc-500 text-[8px] uppercase tracking-wider">Top Sector Activo</div>
+                                  <div className="text-amber-400 text-xs font-bold truncate">Piantini & Naco (64%)</div>
+                                </div>
+                              )}
+                              {activeTab === 2 && (
+                                <div>
+                                  <div className="text-zinc-500 text-[8px] uppercase tracking-wider">Velocidad de Cierre</div>
+                                  <div className="text-blue-400 text-xs font-mono font-bold">2.4 días por Lead</div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -416,16 +526,16 @@ export default function Page() {
           <div className="space-y-3">
             {t.faqs.map((faq, i) => (
               <FadeIn key={i} delay={i * 60}>
-                <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
+                <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden transition-all duration-300">
                   <button
                     onClick={() => setFaqAbierto(faqAbierto === i ? null : i)}
                     className="w-full flex items-center justify-between p-6 text-left hover:bg-zinc-800/50 transition-all"
                   >
-                    <span className="font-bold text-sm">{faq.pregunta}</span>
+                    <span className="font-bold text-sm text-zinc-200">{faq.pregunta}</span>
                     <ChevronDown className={`w-4 h-4 text-amber-500 flex-shrink-0 transition-transform duration-300 ${faqAbierto === i ? 'rotate-180' : ''}`} />
                   </button>
                   <div className={`overflow-hidden transition-all duration-300 ${faqAbierto === i ? 'max-h-48' : 'max-h-0'}`}>
-                    <div className="px-6 pb-6">
+                    <div className="px-6 pb-6 border-t border-zinc-800/40 pt-2">
                       <p className="text-zinc-400 text-sm leading-relaxed">{faq.respuesta}</p>
                     </div>
                   </div>
@@ -437,17 +547,18 @@ export default function Page() {
 
         {/* CTA */}
         <FadeIn>
-          <section id="contacto" className="py-16 px-6 text-center bg-amber-500/5 border-t border-amber-500/10">
+          <section id="contacto" className="py-16 px-6 text-center bg-amber-500/5 border-t border-amber-500/10 relative overflow-hidden">
+            <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-amber-500/10 rounded-full blur-2xl" />
             <h2 className="text-4xl font-black mb-4">{t.ctaTitle}</h2>
             <p className="text-zinc-400 mb-10 max-w-md mx-auto text-sm">{t.ctaDesc}</p>
-            <div className="max-w-md mx-auto flex flex-col gap-4">
+            <div className="max-w-md mx-auto flex flex-col gap-4 relative z-10">
               <div className="relative">
                 <input
                   type="email"
                   placeholder={t.ctaPlaceholder}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-zinc-900 border-2 border-zinc-700 rounded-xl px-6 py-4 text-sm focus:border-amber-500 outline-none transition-all placeholder-zinc-600"
+                  className="w-full bg-zinc-900 border-2 border-zinc-700 rounded-xl px-6 py-4 text-sm focus:border-amber-500 outline-none transition-all placeholder-zinc-600 focus:ring-1 focus:ring-amber-500/20"
                 />
               </div>
               <button
@@ -468,7 +579,7 @@ export default function Page() {
           <p>{t.footer}</p>
         </footer>
 
-        <a href="#" className="fixed bottom-6 right-6 bg-amber-500 text-black w-10 h-10 rounded-full flex items-center justify-center hover:bg-white transition-all shadow-lg z-50 text-lg font-black">
+        <a href="#" className="fixed bottom-6 right-6 bg-amber-500 text-black w-10 h-10 rounded-full flex items-center justify-center hover:bg-white transition-all shadow-lg z-50 text-lg font-black transform hover:scale-110 active:scale-95 duration-200">
           ↑
         </a>
       </div>
