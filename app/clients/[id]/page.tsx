@@ -78,18 +78,50 @@ function formatFecha(fecha: string) {
   })
 }
 
+// FUNCIÓN CORREGIDA: Agregamos auto-multiplicador por 1,000 para corregir precios como "215" -> "215,000"
 function formatPrice(price: string, monedaDefault = 'USD') {
   if (!price) return '—'
-  if (price.includes('US$') || price.includes('RD$')) return price
-  const num = parseFloat(price.replace(/[^0-9.]/g, ''))
+  
+  // Si ya viene completamente formateado desde el perfil del cliente, lo dejamos pasar limpio
+  if ((price.includes('US$') || price.includes('RD$') || price.includes('USD$')) && price.includes(',')) {
+    return price
+  }
+
+  let limpio = price.replace(/,/g, '').trim()
+  
+  if (/\.\d{3}$/.test(limpio)) {
+    limpio = limpio.replace(/\./g, '')
+  }
+
+  let num = parseFloat(limpio.replace(/[^0-9.]/g, ''))
   if (isNaN(num) || num === 0) return price
-  return new Intl.NumberFormat('es-DO', { style: 'currency', currency: monedaDefault, maximumFractionDigits: 0 }).format(num)
+
+  // Si el formulario guardó solo las centenas (ej: 215), lo auto-corrige a miles (215,000)
+  if (num > 0 && num < 1000) {
+    num = num * 1000
+  }
+
+  // Detectamos si el string guardado ya indicaba explícitamente DOP/RD
+  const esDOP = price.toUpperCase().includes('RD') || price.toUpperCase().includes('DOP') || monedaDefault === 'DOP'
+
+  return new Intl.NumberFormat('es-DO', { 
+    style: 'currency', 
+    currency: esDOP ? 'DOP' : 'USD', 
+    maximumFractionDigits: 0 
+  }).format(num)
 }
 
 function normalizarMontoAUSD(montoStr: string | undefined): number {
   if (!montoStr) return 0
-  const numero = parseFloat(montoStr.replace(/[^0-9.]/g, ''))
+  let limpio = montoStr.replace(/[^0-9.]/g, '')
+  let numero = parseFloat(limpio)
   if (isNaN(numero)) return 0
+  
+  // Ajuste preventivo en el matchmaker: si el presupuesto se guardó sin los miles, lo normalizamos
+  if (numero > 0 && numero < 1000) {
+    numero = numero * 1000
+  }
+
   if (montoStr.includes('RD')) return numero / TASA_CAMBIO
   return numero
 }
@@ -274,7 +306,7 @@ export default function ClienteDetailPage({ params }: { params: { id: string } }
     let valorLimpio = cliente.price || ''
     let monedaDetectada = 'USD'
     if (valorLimpio.includes('RD$')) { monedaDetectada = 'RD'; valorLimpio = valorLimpio.replace(/[^0-9.]/g, '') }
-    else if (valorLimpio.includes('US$')) { monedaDetectada = 'USD'; valorLimpio = valorLimpio.replace(/[^0-9.]/g, '') }
+    else if (valorLimpio.includes('US$') || valorLimpio.includes('USD$')) { monedaDetectada = 'USD'; valorLimpio = valorLimpio.replace(/[^0-9.]/g, '') }
     setEditForm({
       nombre: cliente.name || '', email: cliente.email || '', telefono: cliente.phone || '',
       etapa: cliente.status || 'LEAD', price: valorLimpio, currency: monedaDetectada,
@@ -290,7 +322,12 @@ export default function ClienteDetailPage({ params }: { params: { id: string } }
     let precioFormateado = null
     if (numeroLimpio) {
       const valor = parseFloat(numeroLimpio)
-      if (!isNaN(valor)) precioFormateado = `${editForm.currency}$ ${new Intl.NumberFormat('es-DO', { maximumFractionDigits: 0 }).format(valor)}`
+      if (!isNaN(valor)) {
+        // Al guardar el presupuesto desde edición, también nos aseguramos que si ponen "1000" o menos, se asuman miles de forma segura
+        let valorFinal = valor
+        if (valorFinal > 0 && valorFinal < 1000) valorFinal = valorFinal * 1000
+        precioFormateado = `${editForm.currency}$ ${new Intl.NumberFormat('es-DO', { maximumFractionDigits: 0 }).format(valorFinal)}`
+      }
     }
     const { data } = await supabase.from('clients').update({
       name: editForm.nombre, email: editForm.email, phone: editForm.telefono || null,
@@ -679,7 +716,7 @@ export default function ClienteDetailPage({ params }: { params: { id: string } }
               </div>
               <div>
                 <label className={labelCls}>Notas</label>
-                <textarea value={editForm.notas} onChange={e => setEditForm(p => ({...p, notas: e.target.value}))} placeholder="Observaciones..." className="w-full bg-zinc-800 text-white px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500 resize-none h-20" />
+                <textarea value={editForm.notas} onChange={e => setEditForm(p => ({...p, notes: e.target.value}))} placeholder="Observaciones..." className="w-full bg-zinc-800 text-white px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500 resize-none h-20" />
               </div>
             </div>
             <div className="flex gap-3 p-5 border-t border-zinc-800">
