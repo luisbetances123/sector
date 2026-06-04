@@ -35,14 +35,19 @@ function formatPrice(price: string, moneda = 'USD') {
   
   if (price.includes('US$') || price.includes('RD$')) return price
 
-  let limpio = price.replace(/,/g, '')
+  let limpio = price.replace(/,/g, '').trim()
   
   if (/\.\d{3}$/.test(limpio)) {
     limpio = limpio.replace(/\./g, '')
   }
 
-  const num = parseFloat(limpio)
+  let num = parseFloat(limpio)
   if (isNaN(num)) return price
+
+  // Si pusiste 215 y el formulario se comió los miles, lo corrige a 215,000 automáticamente
+  if (num > 0 && num < 1000) {
+    num = num * 1000
+  }
   
   return new Intl.NumberFormat('es-DO', {
     style: 'currency', 
