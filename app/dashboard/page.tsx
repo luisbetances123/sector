@@ -1,688 +1,159 @@
 'use client'
-import Link from 'next/link'
-import { useEffect, useState } from 'react'
-import { supabase } from '../lib/supabase'
-import DashboardMobile from '../components/DashboardMobile'
-const SECTORES = [
-  'Piantini', 'Naco', 'Bella Vista', 'Evaristo Morales', 'Serralles', 'Los Cacicazgos',
-  'Arroyo Hondo', 'Viejo Arroyo Hondo', 'La Esperilla', 'El Millon', 'Mirador Norte', 'Mirador Sur',
-  'Paraíso', 'La Castellana', 'Jardines del Norte', 'Los Prados', 'Gazcue', 'Ensanche Quisqueya',
-  'Los Restauradores', 'Zona Colonial', 'Arroyo Manzano', 'Colinas de los Ríos', 'Fernández', 'Renacimiento',
-]
+import { useState, useEffect } from 'react'
+import { 
+  TrendingUp, 
+  Users, 
+  Building2, 
+  Clock, 
+  ArrowUpRight, 
+  AlertCircle,
+  Phone,
+  ArrowRight,
+  CheckCircle2
+} from 'lucide-react'
 
-const SECTORES_SDE = [
-  'Alma Rosa I', 'Alma Rosa II', 'Ensanche Ozama', 'San Isidro', 'Ensanche Isabelita', 'Prado Oriental',
-  'Los Tres Ojos', 'Corales del Sur', 'Mirador del Este', 'Riviera del Caribe', 'Cerros del Ozama', 'Las Américas',
-]
-const SECTORES_SDN = [
-  'Palmarejo', 'Don Honorio', 'El Condado', 'Los Girasoles', 'Villa Mella', 'Ciudad Real',
-  'La Isabela', 'Brisas del Norte', 'Los Alcarrizos', 'San Felipe', 'Colinas del Norte', 'Reparto Universitario',
-]
-
-const SECTORES_SDO = [
-  'Manoguayabo', 'Mirador del Oeste', 'Villa Aura', 'Herrera', 'Los Alcarrizos', 'Alameda',
-  'Engombe', 'Los Hidalgos', 'Pantoja', 'Las Caobas', 'Avenida Monumental', 'Palmarejo',
-]
-function calcularMatch(cliente: any, propiedad: any): number {
-  let score = 0
-  if (cliente.zonas_interes?.length > 0 && propiedad.sector) {
-    const zonaMatch = cliente.zonas_interes.some((z: string) =>
-      propiedad.sector?.toLowerCase().includes(z.toLowerCase()) ||
-      z.toLowerCase().includes(propiedad.sector?.toLowerCase() || '')
-    )
-    if (zonaMatch) score += 40
-  }
-  if (cliente.tipo_propiedad?.length > 0 && propiedad.type) {
-    const tipoMatch = cliente.tipo_propiedad.some((t: string) =>
-      propiedad.type?.toLowerCase().includes(t.toLowerCase()) ||
-      t.toLowerCase().includes(propiedad.type?.toLowerCase() || '')
-    )
-    if (tipoMatch) score += 30
-  }
-  if (cliente.presupuesto_min && cliente.presupuesto_max && propiedad.price) {
-    const precio = parseFloat(propiedad.price.replace(/[^0-9.]/g, ''))
-    const min = parseFloat(cliente.presupuesto_min)
-    const max = parseFloat(cliente.presupuesto_max)
-    if (!isNaN(precio) && !isNaN(min) && !isNaN(max)) {
-      if (precio >= min && precio <= max) score += 30
-      else if (precio <= max * 1.2) score += 15
-    }
-  }
-  return score
-}
-
-export default function Dashboard() {
-  const [clientes, setClientes] = useState<any[]>([])
-  const [properties, setProperties] = useState<any[]>([])
-  const [followups, setFollowups] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [contactos, setContactos] = useState<any[]>([])
-  const [pushActivo, setPushActivo] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
-  
-  // Estado para la navegación interna interactiva en móviles
-  const [currentView, setCurrentView] = useState('dashboard')
-
-  // Funciones de formateo reales del negocio
-  const formatPrice = (p: string, m?: string) => 
-    new Intl.NumberFormat('es-DO', { style: 'currency', currency: m || 'USD', maximumFractionDigits: 0 }).format(parseFloat(p?.replace(/[^0-9.]/g, '') || '0'))
-  
-  const formatFecha = (f: string) => 
-    new Date(f).toLocaleDateString('es-DO', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
-  
-  const diasSinContacto = (cts: any[], cid: string) => {
-    const del_cliente = cts.filter((c: any) => c.cliente_id === cid)
-    if (del_cliente.length === 0) return null
-    const ultimo = del_cliente.sort((a: any, b: any) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())[0]
-    return Math.floor((Date.now() - new Date(ultimo.fecha).getTime()) / (1000 * 60 * 60 * 24))
-  }
+export default function DashboardPage() {
+  const [saludo, setSaludo] = useState('Buenos días')
 
   useEffect(() => {
-    const checkDevice = () => {
-      setIsMobile(window.innerWidth < 768)
-    }
-    checkDevice()
-    window.addEventListener('resize', checkDevice)
-    return () => window.removeEventListener('resize', checkDevice)
+    const hora = new Date().getHours()
+    if (hora >= 12 && hora < 19) setSaludo('Buenas tardes')
+    else if (hora >= 19 || hora < 5) setSaludo('Buenas noches')
   }, [])
 
-  useEffect(() => {
-    async function fetchAll() {
-      const [c, p, f, ct] = await Promise.all([
-        supabase.from('clientes').select('*'),
-        supabase.from('properties').select('*').eq('estado', 'disponible'),
-        supabase.from('followups').select('*'),
-        supabase.from('contactos_whatsapp').select('*').order('fecha', { ascending: false }),
-      ])
-      if (c.data) setClientes(c.data)
-      if (p.data) setProperties(p.data)
-      if (f.data) setFollowups(f.data)
-      if (ct.data) setContactos(ct.data)
-      setLoading(false)
-    }
-    fetchAll()
-  }, [])
+  // Datos simulados de alto rendimiento para el Broker Elite en RD
+  const stats = [
+    { name: 'Volumen en Pipeline', value: 'US$2,450,000', change: '+12.5%', icon: TrendingUp, color: 'text-[#CCFF00]' },
+    { name: 'Leads Activos', value: '18', change: '4 calientes', icon: Users, color: 'text-cyan-400' },
+    { name: 'Propiedades en Exclusiva', value: '8', change: '3 en Piantini', icon: Building2, color: 'text-purple-400' },
+    { name: 'Tasa de Cierre', value: '24%', change: 'Eficiencia alta', icon: Clock, color: 'text-emerald-400' },
+  ]
 
-  const activarNotificaciones = async () => {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-      alert('Tu navegador no soporta notificaciones push')
-      return
-    }
-    const reg = await navigator.serviceWorker.register('/sw.js')
-    const perm = await Notification.requestPermission()
-    if (perm !== 'granted') return
-    const sub = await reg.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: 'BCZj1rLJn2Xlx49VMYqACxzJMLfs1qe71TJtNl2Z9zL9FXvE0sKfBYpt0Wu3EdQrdSedtfdG8edpj2344tIkKl0'
-    })
-    await fetch('/api/push/subscribe', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ subscription: sub })
-    })
-    setPushActivo(true)
-    alert('Notificaciones activadas')
-  }
+  const urgentLeads = [
+    { id: 1, name: 'Luis Betances', sector: 'Naco', budget: 'US$450,500', time: 'Hace 12 min', project: 'Torre Regatta' },
+    { id: 2, name: 'Jean Lizardo', sector: 'Piantini', budget: 'US$820,000', time: 'Hace 45 min', project: 'Penthouse Exclusivo' },
+    { id: 3, name: 'Mariela Núñez', sector: 'Las Terrenas', budget: 'US$310,000', time: 'Hace 2 horas', project: 'Villa Vista Mar' },
+  ]
 
-  if (loading) return (
-    <div className="flex items-center justify-center min-h-screen bg-black">
-      <p className="text-amber-500 font-black text-2xl animate-pulse">HOMVI</p>
-    </div>
-  )
-
-  // Procesamiento intermedio de datos e historiales
-  const hoyStr = new Date().toISOString().split('T')[0]
-  const followupsHoy = followups.filter(f => f.fecha === hoyStr && !f.hecho)
-  const followupsPendientes = followups.filter(f => !f.hecho).length
-  const propiedadesDisponibles = properties.length
-  const leads = clientes.filter(c => c.etapa === 'Lead')
-  
-  const sinContactar = clientes.filter(c => {
-    if (c.etapa === 'Cierre') return false
-    const delCliente = contactos.filter(ct => ct.cliente_id === c.id)
-    if (delCliente.length === 0) return true
-    const ultimo = delCliente.sort((a: any, b: any) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())[0]
-    const dias = (Date.now() - new Date(ultimo.fecha).getTime()) / (1000 * 60 * 60 * 24)
-    return dias >= 3
-  })
-
-  const clientesConMatch = clientes.filter(c => {
-    if (c.etapa === 'Cierre') return false
-    return properties.some(p => calcularMatch(c, p) > 0)
-  })
-  const totalMatches = clientesConMatch.reduce((acc, c) => {
-    return acc + properties.filter(p => calcularMatch(c, p) > 0).length
-  }, 0)
-
-  const clientesPorEtapa = ['Lead','Buscando','En Oferta','Cierre'].map(e => ({
-    etapa: e, total: clientes.filter(c => c.etapa === e).length
-  }))
-  const maxEtapa = Math.max(...clientesPorEtapa.map(e => e.total), 1)
-  const tipoIcono: Record<string, string> = { llamada: '📞', visita: '🏠', documento: '📄', otro: '📌' }
-  
-  const etapaColor: Record<string, string> = {
-    'Lead': 'bg-zinc-700 text-zinc-300',
-    'Buscando': 'bg-blue-900/80 text-blue-300',
-    'En Oferta': 'bg-amber-900/80 text-amber-300',
-    'Cierre': 'bg-green-900/80 text-green-300',
-  }
-  const etapaBarColor: Record<string, string> = {
-    'Lead': 'bg-zinc-500', 'Buscando': 'bg-blue-500',
-    'En Oferta': 'bg-amber-500', 'Cierre': 'bg-green-500',
-  }
-
-  const fantasmas = clientes.filter((cliente: any) => {
-    const del_cliente = contactos.filter((c: any) => c.cliente_id === cliente.id)
-    if (del_cliente.length === 0) return true
-    const ultimo = del_cliente.sort((a: any, b: any) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())[0]
-    const dias = (Date.now() - new Date(ultimo.fecha).getTime()) / (1000 * 60 * 60 * 24)
-    return dias >= 7
-  })
-
-  const propiedadesMatch = clientesConMatch.map((c: any) => ({
-    cliente: c,
-    matches: properties.filter((p: any) => calcularMatch(c, p) > 0)
-  }))
-
-  const clientesActivos = clientes.filter(c => c.etapa === 'Buscando' || c.etapa === 'En Oferta')
-
-  // 📱 DESVÍO MÓVIL SEGURO (SPA Reactiva)
-  if (isMobile) {
-    return (
-      <DashboardMobile
-        leads={leads}
-        fantasmas={fantasmas}
-        sinContactar={sinContactar}
-        propiedadesMatch={propiedadesMatch}
-        followups={followups}
-        contactos={contactos}
-        clientes={clientes}
-        SECTORES={SECTORES}
-        calcularMatch={calcularMatch}
-        properties={properties}
-        formatPrice={formatPrice}
-        formatFecha={formatFecha}
-        diasSinContacto={diasSinContacto}
-        currentView={currentView} // Le pasamos la vista actual activa
-        setView={setCurrentView}   // Permitimos que cambie de pestaña dinámicamente
-      />
-    )
-  }
+  const todayTasks = [
+    { id: 1, time: '04:30 PM', type: 'Llamada', desc: 'Seguimiento a Luis B. sobre plano de la torre', phone: '+18095550123' },
+    { id: 2, time: '06:00 PM', type: 'Visita', desc: 'Mostrar unidad 14-B en Serrallés a inversionista', phone: null },
+  ]
 
   return (
-    <>
-      {/* 💻 BLOQUE ESCRITORIO (Solo visible en pantallas medianas/grandes) */}
-      <div className="hidden md:block min-h-screen bg-[#0a0a0a] p-4 md:p-8 pb-40 overflow-x-hidden w-full">
-        <div className="max-w-5xl mx-auto w-full">
-
-          {/* Botón notificaciones */}
-          {!pushActivo && (
-            <button onClick={activarNotificaciones}
-              className="fixed top-4 right-4 z-50 bg-amber-500 hover:bg-amber-400 text-black font-black text-xs uppercase px-3 py-2 rounded-xl shadow-lg transition-colors flex items-center gap-1.5">
-              🔔 Notificaciones
-            </button>
-          )}
-          {pushActivo && (
-            <div className="fixed top-4 right-4 z-50 bg-green-600 text-white font-bold text-xs px-3 py-2 rounded-xl flex items-center gap-1.5">
-              🔔 Activas
-            </div>
-          )}
-
-          {/* Header */}
-          <header className="mb-8">
-            <p className="text-zinc-500 text-xs uppercase tracking-widest mb-1">
-              {new Date().toLocaleDateString('es-DO', { weekday: 'long', day: 'numeric', month: 'long' })}
-            </p>
-            <h1 className="text-3xl md:text-5xl font-black text-white leading-tight">
-              Hola, <span className="text-amber-500 italic">Luis</span> 👋
-            </h1>
-          </header>
-
-          {/* Stats */}
-          <div className="grid grid-cols-4 gap-2 mb-8">
-            {[
-              { label: 'Clientes', icon: '👥', value: clientes.length, color: 'text-white', href: '/clients' },
-              { label: 'Leads', icon: '🔴', value: leads.length, color: leads.length > 0 ? 'text-red-400' : 'text-zinc-400', href: '/clients' },
-              { label: 'Propied.', icon: '🏠', value: propiedadesDisponibles, color: 'text-green-400', href: '/properties' },
-              { label: 'Seguim.', icon: '📅', value: followupsPendientes, color: followupsPendientes > 0 ? 'text-amber-400' : 'text-zinc-400', href: '/hoy' },
-            ].map(s => (
-              <Link key={s.label} href={s.href}
-                className="bg-zinc-800/60 border border-zinc-700 rounded-2xl px-3 py-3 hover:border-amber-500/50 transition-all">
-                <p className="text-zinc-500 text-[9px] uppercase tracking-widest truncate">{s.icon} {s.label}</p>
-                <p className={`text-2xl font-black mt-0.5 ${s.color}`}>{s.value}</p>
-              </Link>
-            ))}
-          </div>
-
-          {/* ══ 1. LEADS ══ */}
-          <section className="mb-6">
-            <div className={`rounded-3xl p-6 border-2 ${leads.length > 0 ? 'bg-red-950/80 border-red-700/60' : 'bg-zinc-800/40 border-zinc-700/40'}`}>
-              <div className="flex items-center justify-between mb-5">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className={`w-3 h-3 rounded-full shrink-0 ${leads.length > 0 ? 'bg-red-500 animate-pulse' : 'bg-zinc-600'}`} />
-                  <span className={`font-black text-sm uppercase tracking-wider truncate ${leads.length > 0 ? 'text-red-300' : 'text-zinc-400'}`}>
-                    Leads sin responder
-                  </span>
-                  <span className={`shrink-0 text-sm font-black px-2.5 py-0.5 rounded-full ${leads.length > 0 ? 'bg-red-600 text-white' : 'bg-zinc-700 text-zinc-400'}`}>
-                    {leads.length}
-                  </span>
-                </div>
-                <Link href="/clients" className="shrink-0 text-zinc-400 hover:text-amber-400 text-xs uppercase tracking-wider transition-colors font-bold ml-2">
-                  Ver →
-                </Link>
-              </div>
-              <div className="flex flex-col gap-2">
-                {leads.slice(0, 5).map(c => (
-                  <div key={c.id} className="flex items-center justify-between bg-black/30 border border-red-900/40 rounded-2xl px-4 py-3 gap-3">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-9 h-9 rounded-full bg-amber-500 text-black flex items-center justify-center font-black text-sm shrink-0">
-                        {c.nombre?.[0]?.toUpperCase()}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-white text-sm font-bold truncate">{c.nombre}</p>
-                        <p className="text-zinc-500 text-xs truncate">{c.telefono || c.email || '—'}</p>
-                      </div>
-                    </div>
-                    <div className="flex gap-1.5 shrink-0">
-                      {c.telefono && (
-                        <a href={`https://wa.me/${c.telefono.replace(/\D/g, '')}`} target="_blank" rel="noreferrer"
-                          className="bg-green-600 hover:bg-green-500 text-white px-2.5 py-1.5 rounded-xl text-xs font-black transition-colors">
-                          💬
-                        </a>
-                      )}
-                      {c.telefono && (
-                        <a href={`tel:${c.telefono}`}
-                          className="bg-zinc-700 hover:bg-zinc-600 text-white px-2.5 py-1.5 rounded-xl text-xs font-black transition-colors">
-                          📞
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* ══ SEGUIMIENTO FANTASMA ══ */}
-          {fantasmas.length > 0 && (
-            <section className="mb-6">
-              <div className="bg-red-950/40 border-2 border-red-900/50 rounded-3xl p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <span className="text-xl">👻</span>
-                    <span className="text-red-300 font-black text-sm uppercase tracking-wider">Clientes Fantasma</span>
-                    <span className="bg-red-600 text-white text-xs font-black px-2.5 py-0.5 rounded-full">{fantasmas.length}</span>
-                  </div>
-                  <Link href="/clients" className="text-zinc-400 hover:text-amber-400 text-xs uppercase tracking-wider transition-colors font-bold">
-                    Ver →
-                  </Link>
-                </div>
-                <div className="flex flex-col gap-2">
-                  {fantasmas.slice(0, 5).map((c: any) => (
-                    <div key={c.id} className="flex items-center justify-between bg-red-950/30 border border-red-900/40 rounded-2xl px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center text-red-400 text-sm font-bold">
-                          {c.nombre?.[0]?.toUpperCase()}
-                        </div>
-                        <div>
-                          <p className="text-white text-sm font-bold">{c.nombre}</p>
-                          <p className="text-red-400 text-xs">Sin contacto +7 días</p>
-                        </div>
-                      </div>
-                      <a href={`https://wa.me/${c.telefono?.replace(/\D/g, '')}`} target="_blank" rel="noreferrer"
-                        className="bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded-xl text-xs font-black transition-colors">
-                        WhatsApp
-                      </a>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </section>
-          )}
-
-          {/* ══ 2. CLIENTES SIN CONTACTAR ══ */}
-          {sinContactar.length > 0 && (
-            <section className="mb-6">
-              <div className="bg-orange-950/60 border-2 border-orange-700/50 rounded-3xl p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-3 h-3 rounded-full bg-orange-500 animate-pulse" />
-                    <span className="text-orange-300 font-black text-sm uppercase tracking-wider">
-                      Clientes sin contactar
-                    </span>
-                    <span className="bg-orange-600 text-white text-xs font-black px-2.5 py-0.5 rounded-full">
-                      {sinContactar.length}
-                    </span>
-                  </div>
-                  <Link href="/clients" className="text-zinc-400 hover:text-amber-400 text-xs uppercase tracking-wider transition-colors font-bold">
-                    Ver →
-                  </Link>
-                </div>
-                <div className="flex flex-col gap-2">
-                  {sinContactar.slice(0, 4).map((c: any) => {
-                    const delCliente = contactos.filter((ct: any) => ct.cliente_id === c.id)
-                    const dias = delCliente.length === 0 ? null : Math.floor(
-                      (Date.now() - new Date(
-                        delCliente.sort((a: any, b: any) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())[0].fecha
-                      ).getTime()) / (1000 * 60 * 60 * 24)
-                    )
-                    return (
-                      <div key={c.id} className="flex items-center justify-between bg-black/30 border border-orange-900/40 rounded-2xl px-4 py-3 gap-3">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-8 h-8 rounded-full bg-amber-500 text-black flex items-center justify-center font-black text-sm shrink-0">
-                            {c.nombre?.[0]?.toUpperCase()}
-                          </div>
-                          <div className="min-w-0">
-                            <p className="text-white text-sm font-bold truncate">{c.nombre}</p>
-                            <p className="text-orange-400 text-xs">
-                              {dias === null ? 'Sin contacto registrado' : `${dias} días sin contacto`}
-                            </p>
-                          </div>
-                        </div>
-                        {c.telefono && (
-                          <a href={`https://wa.me/${c.telefono.replace(/\D/g, '')}?text=${encodeURIComponent(`Hola ${c.nombre}, te contacto de HOMVI. ¿Tienes un momento?`)}`}
-                            target="_blank" rel="noreferrer"
-                            className="shrink-0 bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded-xl text-xs font-black transition-colors">
-                            💬
-                          </a>
-                        )}
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            </section>
-          )}
-
-          {/* ══ 3. MATCHMAKER ══ */}
-          {clientesConMatch.length > 0 && (
-            <section className="mb-6">
-              <div className="bg-gradient-to-br from-amber-950/80 to-zinc-900 border-2 border-amber-600/50 rounded-3xl p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <span className="text-xl animate-pulse">🔥</span>
-                    <span className="text-amber-300 font-black text-sm uppercase tracking-wider">
-                      ¡Tienes Matches!
-                    </span>
-                    <span className="bg-amber-500 text-black text-xs font-black px-2.5 py-0.5 rounded-full">
-                      {totalMatches}
-                    </span>
-                  </div>
-                  <Link href="/clients" className="text-zinc-400 hover:text-amber-400 text-xs uppercase tracking-wider transition-colors font-bold">
-                    Ver →
-                  </Link>
-                </div>
-                <div className="flex flex-col gap-2">
-                  {clientesConMatch.slice(0, 3).map((c: any) => {
-                    const matchCount = properties.filter(p => calcularMatch(c, p) > 0).length
-                    return (
-                      <div key={c.id} className="flex items-center justify-between bg-black/30 border border-amber-800/30 rounded-2xl px-4 py-3 gap-3">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-8 h-8 rounded-full bg-amber-500 text-black flex items-center justify-center font-black text-sm shrink-0">
-                            {c.nombre?.[0]?.toUpperCase()}
-                          </div>
-                          <div className="min-w-0">
-                            <p className="text-white text-sm font-bold truncate">{c.nombre}</p>
-                            <p className="text-amber-400 text-xs">
-                              {matchCount} propiedad{matchCount !== 1 ? 'es' : ''} compatible{matchCount !== 1 ? 's' : ''}
-                            </p>
-                          </div>
-                        </div>
-                        <Link href="/clients"
-                          className="shrink-0 bg-amber-500 hover:bg-white text-black px-3 py-1.5 rounded-xl text-xs font-black transition-colors">
-                          Ver →
-                        </Link>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            </section>
-          )}
-
-          {/* ══ 4. AGENDA DE HOY ══ */}
-          <section className="mb-6">
-            <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-3xl p-6">
-              <div className="flex items-center justify-between mb-5">
-                <div className="flex items-center gap-3">
-                  <span className="text-xl">📅</span>
-                  <span className="text-white font-black text-sm uppercase tracking-wider">Agenda de hoy</span>
-                  {followupsHoy.length > 0 && (
-                    <span className="bg-amber-500 text-black text-xs font-black px-2.5 py-0.5 rounded-full">
-                      {followupsHoy.length}
-                    </span>
-                  )}
-                </div>
-                <Link href="/hoy" className="text-zinc-400 hover:text-amber-400 text-xs uppercase tracking-wider transition-colors shrink-0 font-bold">
-                  Ver →
-                </Link>
-              </div>
-              {followupsHoy.length === 0 ? (
-                <p className="text-zinc-500 text-sm text-center py-4">Sin eventos programados para hoy</p>
-              ) : (
-                <div className="flex flex-col gap-2">
-                  {followupsHoy.map(f => (
-                    <div key={f.id} className="flex items-center gap-3 bg-zinc-900/60 border border-zinc-700 rounded-2xl px-4 py-3">
-                      <span className="text-xl shrink-0">{tipoIcono[f.tipo] || '📌'}</span>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-white text-sm font-bold truncate">{f.titulo}</p>
-                        <p className="text-amber-400 text-xs font-mono">{f.hora}</p>
-                      </div>
-                      <Link href="/hoy" className="shrink-0 bg-amber-500/20 hover:bg-amber-500 text-amber-400 hover:text-black px-3 py-1.5 rounded-xl text-xs font-black transition-all">
-                        Ver
-                      </Link>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </section>
-
-          {/* ══ 5. CLIENTES ACTIVOS + PIPELINE ══ */}
-          <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-3xl p-6">
-              <div className="flex items-center justify-between mb-5">
-                <div className="flex items-center gap-2">
-                  <span>👥</span>
-                  <h3 className="text-white font-black text-sm uppercase tracking-wider">Clientes activos</h3>
-                </div>
-                <Link href="/pipeline" className="text-zinc-400 hover:text-amber-400 text-xs uppercase transition-colors shrink-0 font-bold">Ver →</Link>
-              </div>
-              {clientesActivos.length === 0 ? (
-                <p className="text-zinc-500 text-sm text-center py-4">Sin clientes activos</p>
-              ) : (
-                <div className="flex flex-col gap-2">
-                  {clientesActivos.slice(0, 4).map(c => (
-                    <div key={c.id} className="flex items-center justify-between bg-zinc-900/60 rounded-2xl px-3 py-2.5 gap-2">
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="w-8 h-8 rounded-full bg-amber-500 text-black flex items-center justify-center font-black text-sm shrink-0">
-                          {c.nombre?.[0]?.toUpperCase()}
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-white text-xs font-bold truncate">{c.nombre}</p>
-                          <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${etapaColor[c.etapa] || 'bg-zinc-700 text-zinc-300'}`}>
-                            {c.etapa}
-                          </span>
-                        </div>
-                      </div>
-                      {c.telefono && (
-                        <a href={`https://wa.me/${c.telefono.replace(/\D/g, '')}`} target="_blank" rel="noreferrer"
-                          className="shrink-0 bg-green-700 hover:bg-green-600 text-white px-2.5 py-1.5 rounded-xl text-[10px] font-black transition-colors">
-                          💬
-                        </a>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-3xl p-6">
-              <div className="flex items-center gap-2 mb-5">
-                <span>📊</span>
-                <h3 className="text-white font-black text-sm uppercase tracking-wider">Pipeline</h3>
-              </div>
-              <div className="flex flex-col gap-4">
-                {clientesPorEtapa.map(e => (
-                  <div key={e.etapa}>
-                    <div className="flex justify-between items-center mb-1.5">
-                      <span className="text-zinc-400 text-xs uppercase tracking-wide">{e.etapa}</span>
-                      <span className="text-white font-black">{e.total}</span>
-                    </div>
-                    <div className="h-2 bg-zinc-700/50 rounded-full overflow-hidden">
-                      <div className={`h-full rounded-full transition-all ${etapaBarColor[e.etapa]}`}
-                        style={{ width: `${(e.total / maxEtapa) * 100}%` }} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* ══ 6. ACTIVIDAD RECIENTE ══ */}
-          <section className="mb-6">
-            <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-3xl p-6">
-              <div className="flex items-center gap-2 mb-5">
-                <span>⚡</span>
-                <h3 className="text-white font-black text-sm uppercase tracking-wider">Actividad reciente</h3>
-              </div>
-              <div className="flex flex-col divide-y divide-zinc-700/50">
-                {[
-                  ...leads.slice(0, 2).map(c => ({
-                    id: 'lead-' + c.id, icon: '🟠',
-                    texto: `Nuevo lead: ${c.nombre}`,
-                    sub: c.telefono || c.email || '',
-                    tiempo: 'pendiente', color: 'text-amber-400'
-                  })),
-                  ...followupsHoy.slice(0, 2).map(f => ({
-                    id: 'fu-' + f.id, icon: '📞',
-                    texto: f.titulo,
-                    sub: `Follow-up · ${f.hora}`,
-                    tiempo: f.hora, color: 'text-blue-400'
-                  })),
-                  ...properties.filter(p => p.estado === 'disponible').slice(0, 1).map(p => ({
-                    id: 'prop-' + p.id, icon: '🏠',
-                    texto: p.title,
-                    sub: `${p.sector || p.location || ''} · disponible`,
-                    tiempo: 'activa', color: 'text-green-400'
-                  })),
-                ].slice(0, 5).map(a => (
-                  <div key={a.id} className="flex items-center gap-3 py-3 min-w-0">
-                    <span className="text-xl shrink-0">{a.icon}</span>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-white text-sm font-medium truncate">{a.texto}</p>
-                      {a.sub && <p className="text-zinc-500 text-xs truncate">{a.sub}</p>}
-                    </div>
-                    <span className={`text-[10px] uppercase font-bold shrink-0 ${a.color}`}>{a.tiempo}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
- {/* ══ 7. SECTORES ══ */}
-          <section className="mb-6">
-            <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-3xl p-6">
-              <div className="flex justify-between items-center mb-4">
-                <div className="flex items-center gap-2">
-                  <span>🏙️</span>
-<h3 className="text-amber-400 font-black text-sm uppercase tracking-wider">Distrito Nacional</h3>                </div>
-              </div>
-              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
-                {SECTORES.map(s => (
-                  <Link key={s} href={`/properties?sector=${encodeURIComponent(s)}`}
-                    className="bg-zinc-700/50 hover:bg-amber-500 hover:text-black text-zinc-300 text-center py-2.5 px-1 rounded-xl text-xs font-black uppercase tracking-wide transition-all truncate">
-                    {s}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </section>
-
-         {/* ══ 8. SECTORES SDE ══ */}
-          <section className="mb-6">
-            <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-3xl p-6">
-              <div className="flex justify-between items-center mb-4">
-                <div className="flex items-center gap-2">
-                  <span>🌅</span>
-<h3 className="text-blue-400 font-black text-sm uppercase tracking-wider">Santo Domingo Este</h3>                </div>
-              </div>
-              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
-                {SECTORES_SDE.map(s => (
-                  <Link key={s} href={`/properties?sector=${encodeURIComponent(s)}`}
-                    className="bg-zinc-700/50 hover:bg-amber-500 hover:text-black text-zinc-300 text-center py-2.5 px-1 rounded-xl text-xs font-black uppercase tracking-wide transition-all truncate">
-                    {s}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* ══ 9. SECTORES SDN ══ */}
-          <section className="mb-6">
-            <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-3xl p-6">
-              <div className="flex justify-between items-center mb-4">
-                <div className="flex items-center gap-2">
-                  <span>🌇</span>
-<h3 className="text-green-400 font-black text-sm uppercase tracking-wider">Santo Domingo Norte</h3>                </div>
-              </div>
-              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
-                {SECTORES_SDN.map(s => (
-                  <Link key={s} href={`/properties?sector=${encodeURIComponent(s)}`}
-                    className="bg-zinc-700/50 hover:bg-amber-500 hover:text-black text-zinc-300 text-center py-2.5 px-1 rounded-xl text-xs font-black uppercase tracking-wide transition-all truncate">
-                    {s}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* ══ 10. SECTORES SDO ══ */}
-          <section className="mb-6">
-            <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-3xl p-6">
-              <div className="flex justify-between items-center mb-4">
-                <div className="flex items-center gap-2">
-                  <span>🌆</span>
-<h3 className="text-purple-400 font-black text-sm uppercase tracking-wider">Santo Domingo Oeste</h3>                </div>
-              </div>
-              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
-                {SECTORES_SDO.map(s => (
-                  <Link key={s} href={`/properties?sector=${encodeURIComponent(s)}`}
-                    className="bg-zinc-700/50 hover:bg-amber-500 hover:text-black text-zinc-300 text-center py-2.5 px-1 rounded-xl text-xs font-black uppercase tracking-wide transition-all truncate">
-                    {s}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </section>
-          {/* Acciones rápidas */}
-          <section className="mb-6">
-            <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-3xl p-6">
-              <h3 className="text-zinc-500 font-black uppercase text-xs tracking-widest mb-4">Acciones rápidas</h3>
-              <div className="flex flex-wrap gap-3">
-                {[
-                  { label: '+ Nueva propiedad', href: '/properties', style: 'bg-zinc-700/80 text-white hover:bg-zinc-600' },
-                  { label: '+ Nuevo evento', href: '/hoy', style: 'bg-zinc-700/80 text-white hover:bg-zinc-600' },
-                  { label: 'Ver pipeline', href: '/pipeline', style: 'bg-zinc-700/80 text-white hover:bg-zinc-600' },
-                  { label: 'Reportes', href: '/reports', style: 'bg-zinc-700/80 text-white hover:bg-zinc-600' },
-                ].map(a => (
-                  <Link key={a.label} href={a.href}
-                    className={`px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all ${a.style}`}>
-                    {a.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </section>
-
+    <div className="space-y-8 animate-fadeIn">
+      
+      {/* ── ENCABEZADO ────────────────────────────────────────────────── */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-black tracking-tight">{saludo}, Asesor Premium 👋</h1>
+          <p className="text-zinc-500 text-xs uppercase tracking-widest mt-1">Tu central de mando para el mercado de lujo en RD</p>
+        </div>
+        <div className="text-right hidden md:block">
+          <p className="text-xs font-mono text-zinc-500">FASE DE PRELANZAMIENTO</p>
+          <p className="text-[#CCFF00] text-xs font-bold font-mono">© 2026 HOMVI</p>
         </div>
       </div>
-      {/* Botón flotante — Solo visible en desktop */}
-      <Link href="/clients"
-        className="hidden md:flex fixed bottom-8 right-8 z-50 bg-amber-500 hover:bg-white text-black px-4 py-2.5 rounded-xl font-black text-xs uppercase shadow-xl shadow-amber-500/40 transition-all items-center gap-1.5">
-        <span className="text-sm font-black">+</span>
-        Nuevo Lead
-      </Link>
-    </>
+
+      {/* ── ALERTA CRÍTICA: LEADS SIN RESPONDER ─────────────────────────── */}
+      <div className="bg-red-500/10 border-2 border-red-500/20 rounded-2xl p-4 flex items-start gap-4 shadow-lg shadow-red-500/2">
+        <div className="p-2 bg-red-500/20 rounded-xl text-red-400 flex-shrink-0">
+          <AlertCircle className="w-5 h-5 animate-pulse" />
+        </div>
+        <div className="flex-1">
+          <h3 className="text-sm font-black text-red-400 uppercase tracking-wider">Atención Inmediata Requerida</h3>
+          <p className="text-zinc-400 text-xs mt-0.5 leading-relaxed">
+            Tienes <span className="text-white font-bold underline">3 leads calificados</span> esperando respuesta en WhatsApp. No dejes que otro broker se quede con la comisión de esas unidades.
+          </p>
+        </div>
+      </div>
+
+      {/* ── TARJETAS DE MÉTRICAS ROBINHOOD STYLE ───────────────────────── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {stats.map((stat, idx) => (
+          <div key={idx} className="bg-black/30 backdrop-blur-sm border border-zinc-800/80 rounded-2xl p-6 hover:border-zinc-700/80 transition-all duration-300 shadow-xl group">
+            <div className="flex justify-between items-start mb-4">
+              <span className="text-zinc-500 text-[10px] uppercase tracking-widest font-bold">{stat.name}</span>
+              <stat.icon className={`w-4 h-4 ${stat.color} group-hover:scale-110 transition-transform`} />
+            </div>
+            <div className="space-y-1">
+              <h4 className="text-2xl font-black tracking-tight font-mono">{stat.value}</h4>
+              <p className="text-zinc-400 text-xs font-medium flex items-center gap-1">
+                <span className={`${idx === 0 ? 'text-[#CCFF00]' : 'text-zinc-400'} font-bold`}>{stat.change}</span>
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ── BLOQUE DIVIDIDO: LEADS URGENTES Y TAREAS DEL DÍA ───────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        {/* Lista de Leads Calientes (Ocupa 2 columnas en pantallas grandes) */}
+        <div className="lg:col-span-2 bg-black/20 border border-zinc-800/60 rounded-2xl p-6 flex flex-col shadow-xl">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h2 className="text-lg font-black uppercase tracking-wider text-zinc-200">Leads Calientes Recientes</h2>
+              <p className="text-zinc-500 text-[11px]">Entraron hoy por campañas o portal exclusivo</p>
+            </div>
+            <button className="text-xs font-bold uppercase tracking-wider text-[#CCFF00] hover:text-white flex items-center gap-1 transition-colors">
+              Ver todos <ArrowRight className="w-3 h-3" />
+            </button>
+          </div>
+
+          <div className="space-y-3 flex-1">
+            {urgentLeads.map((lead) => (
+              <div key={lead.id} className="bg-[#110E08]/60 border border-zinc-800/80 rounded-xl p-4 hover:border-[#CCFF00]/20 transition-all flex items-center justify-between gap-4 flex-wrap sm:flex-nowrap">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-sm text-zinc-100">{lead.name}</span>
+                    <span className="text-[9px] bg-zinc-800 text-zinc-400 font-mono px-1.5 py-0.5 rounded font-bold uppercase">{lead.sector}</span>
+                  </div>
+                  <p className="text-zinc-400 text-xs">Interesado en: <span className="text-zinc-300 font-medium">{lead.project}</span></p>
+                </div>
+                <div className="text-left sm:text-right space-y-1 w-full sm:w-auto flex sm:flex-col justify-between items-center sm:items-end">
+                  <span className="text-[#CCFF00] font-mono text-xs font-black block">{lead.budget}</span>
+                  <span className="text-zinc-500 text-[10px] font-mono flex items-center gap-1">
+                    <Clock className="w-3 h-3 text-zinc-600" /> {lead.time}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Agenda Express del Día */}
+        <div className="bg-black/20 border border-zinc-800/60 rounded-2xl p-6 flex flex-col shadow-xl">
+          <div className="mb-6">
+            <h2 className="text-lg font-black uppercase tracking-wider text-zinc-200">Próximas Acciones</h2>
+            <p className="text-zinc-500 text-[11px]">Tu bloque de enfoque para las próximas horas</p>
+          </div>
+
+          <div className="space-y-3 flex-1">
+            {todayTasks.map((task) => (
+              <div key={task.id} className="bg-[#110E08]/60 border border-zinc-800/80 rounded-xl p-4 flex flex-col gap-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-[10px] font-mono font-black px-2 py-0.5 rounded uppercase tracking-wider bg-[#CCFF00]/10 text-[#CCFF00]">
+                    {task.type}
+                  </span>
+                  <span className="text-zinc-400 font-mono text-[11px] font-bold">{task.time}</span>
+                </div>
+                <p className="text-zinc-300 text-xs leading-relaxed font-medium">{task.desc}</p>
+                {task.phone && (
+                  <a 
+                    href={`tel:${task.phone}`}
+                    className="mt-1 w-full bg-zinc-900 hover:bg-[#CCFF00] hover:text-black transition-all border border-zinc-800 hover:border-transparent rounded-lg py-2 flex items-center justify-center gap-2 text-[11px] font-bold uppercase tracking-wider"
+                  >
+                    <Phone className="w-3 h-3" /> Llamar por Teléfono
+                  </a>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+      </div>
+
+    </div>
   )
 }
