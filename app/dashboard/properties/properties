@@ -1,0 +1,64 @@
+'use client'
+import React, { useEffect, useState } from 'react'
+import { Building2, Plus, MapPin, Search } from 'lucide-react'
+import { supabase } from '../../lib/supabase'
+
+export default function PropertiesPage() {
+  const [properties, setProperties] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchProperties() {
+      try {
+        const { data, error } = await supabase
+          .from('properties')
+          .select('*')
+        if (error) throw error
+        setProperties(data || [])
+      } catch (err) {
+        console.error('Error cargando propiedades:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchProperties()
+  }, [])
+
+  return (
+    <div className="space-y-6 animate-fadeIn">
+      <div className="flex items-center justify-between border-b border-zinc-900 pb-5">
+        <div>
+          <h1 className="text-2xl font-black tracking-tight">Inventario Inmobiliario</h1>
+          <p className="text-zinc-500 text-xs uppercase tracking-widest mt-1">Catálogo de propiedades exclusivas en RD</p>
+        </div>
+        <button className="bg-[#CCFF00] text-black px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider hover:bg-white transition-all flex items-center gap-2 shadow-md">
+          <Plus className="w-4 h-4 stroke-[3]" /> Registrar Propiedad
+        </button>
+      </div>
+
+      {loading ? (
+        <p className="text-zinc-500 text-xs uppercase tracking-widest animate-pulse">Cargando catálogo...</p>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {properties.map((prop) => (
+            <div key={prop.id} className="bg-black/20 border border-zinc-900 rounded-2xl p-5 space-y-4 hover:border-zinc-800 transition-all">
+              <div>
+                <span className="text-[9px] font-mono font-bold bg-zinc-900 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800 uppercase">
+                  {prop.type || 'Inmueble'}
+                </span>
+                <h3 className="text-base font-bold text-zinc-200 mt-2 line-clamp-1">{prop.title}</h3>
+                <p className="text-zinc-500 text-xs flex items-center gap-1 mt-1">
+                  <MapPin className="w-3.5 h-3.5 text-zinc-600" /> {prop.sector || 'Santo Domingo'}
+                </p>
+              </div>
+              <div className="pt-3 border-t border-zinc-900/60 flex items-center justify-between">
+                <span className="text-xs text-zinc-500 font-bold uppercase tracking-wider">Precio</span>
+                <span className="text-sm font-mono font-black text-[#CCFF00]">{prop.price}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
