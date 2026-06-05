@@ -1,405 +1,587 @@
-'use client';
+'use client'
+import { supabase } from '../lib/supabase'
+import { useState, useEffect, useRef } from 'react'
+import Link from 'next/link'
+import { LayoutDashboard, Sun, Users, Building2, TrendingUp, Calendar, BarChart3, ChevronDown, ArrowRight, CheckCircle2 } from 'lucide-react'
 
-import { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
-import { 
-  LayoutDashboard, 
-  Sun, 
-  Users, 
-  Building2, 
-  TrendingUp, 
-  Calendar, 
-  BarChart3, 
-  ChevronDown, 
-  ArrowRight, 
-  CheckCircle2 
-} from 'lucide-react';
-
-// — Typewriter hook nativo original
+// ── Typewriter hook ──────────────────────────────────────────────────────────
 function useTypewriter(text: string, speed = 40, delay = 500) {
-  const [displayed, setDisplayed] = useState('');
-  const [done, setDone] = useState(false);
+  const [displayed, setDisplayed] = useState('')
+  const [done, setDone] = useState(false)
   useEffect(() => {
-    setDisplayed('');
-    setDone(false);
+    setDisplayed('')
+    setDone(false)
     const timeout = setTimeout(() => {
-      let i = 0;
+      let i = 0
       const interval = setInterval(() => {
-        setDisplayed(text.slice(0, i + 1));
-        i++;
-        if (i >= text.length) {
-          clearInterval(interval);
-          setDone(true);
-        }
-      }, speed);
-      return () => clearInterval(interval);
-    }, delay);
-    return () => clearTimeout(timeout);
-  }, [text, speed, delay]);
-  return { displayed, done };
+        setDisplayed(text.slice(0, i + 1))
+        i++
+        if (i >= text.length) { clearInterval(interval); setDone(true) }
+      }, speed)
+      return () => clearInterval(interval)
+    }, delay)
+    return () => clearTimeout(timeout)
+  }, [text, speed, delay])
+  return { displayed, done }
 }
 
-// — FadeIn component nativo original
-function FadeIn({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
-  const [visible, setVisible] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+// ── FadeIn component ─────────────────────────────────────────────────────────
+function FadeIn({ children, delay = 0, className = '' }: { children: React.ReactNode, delay?: number, className?: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [visible, setVisible] = useState(false)
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        setVisible(true);
-        observer.disconnect();
-      }
-    }, { threshold: 0.1 });
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, []);
+      if (entry.isIntersecting) { setVisible(true); observer.disconnect() }
+    }, { threshold: 0.1 })
+    if (ref.current) observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [])
   return (
     <div ref={ref} className={className} style={{
       opacity: visible ? 1 : 0,
       transform: visible ? 'translateY(0)' : 'translateY(24px)',
-      transition: `opacity 0.6s ease ${delay}ms, transform 0.6s ease ${delay}ms`
+      transition: `opacity 0.6s ease ${delay}ms, transform 0.6s ease ${delay}ms`,
     }}>
       {children}
     </div>
-  );
+  )
 }
 
-// DICCIONARIO DE IDIOMAS DE ALTO NIVEL
 const content = {
   es: {
     nav: { features: 'Funciones', faq: 'FAQ', cta: 'Solicitar Acceso' },
     prelaunsch: '🚀 FASE DE PRELANZAMIENTO — Cupos limitados para la Beta Privada en RD',
     hero: {
-      badge: '🇩🇴 CRM & Inteligencia Inmobiliaria · Santo Domingo',
-      h1a: 'El sistema definitivo para los',
-      h1b: 'Top Producers.',
-      desc: 'Deja de pelear con hojas de cálculo y herramientas genéricas. Gestiona tu cartera del Polígono Central con emparejamiento bimonetario, bitácoras inteligentes y control absoluto de tus cierres.',
-      btnPrimary: 'Obtener Reporte + Acceso Beta',
+      badge: '🇩🇴 CRM Inmobiliario · Santo Domingo',
+      h1a: 'Tu cartera de clientes,',
+      h1b: 'bajo control total.',
+      desc: 'Homvi es el CRM diseñado para agentes inmobiliarios que operan con estándares de lujo. Pipeline visual, seguimiento preciso, cierre inteligente.',
+      btnPrimary: 'Solicitar Acceso Anticipado',
       btnSecondary: 'Ver Funciones',
     },
-    features: {
-      title: 'Diseñado para la velocidad del mercado dominicano',
-      subtitle: 'Deja atrás los sistemas genéricos. Homvi entiende las dinámicas reales de los Brokers en Santo Domingo.',
-      f1Title: 'Matching Bimonetario Automático',
-      f1Desc: 'Cruza requerimientos en USD y DOP al instante. El sistema calcula tasas y encuentra la coincidencia perfecta sin errores de conversión.',
-      f2Title: 'Bitácoras de Seguimiento Inteligentes',
-      f2Desc: 'Registra interacciones en segundos desde tu móvil. Historial limpio por cliente para saber exactamente cuándo reactivar un lead.',
-      f3Title: 'Control de Cierres e Histórico',
-      f3Desc: 'Visualiza tus comisiones proyectadas, divide honorarios con cobrokers y mantén un registro histórico impecable de cada propiedad.',
+    stats: [
+      ['5 min', 'Configuración inicial sin fricción'],
+      ['1 clic', 'Para enviar fichas técnicas por WhatsApp'],
+      ['7 en 1', 'Todo tu ecosistema centralizado'],
+      ['0%', 'Distracciones. Diseñado para el cierre'],
+    ],
+    featuresBadge: 'Todo lo que necesitas',
+    featuresTitle: '7 herramientas. Un solo lugar.',
+    faqBadge: 'Preguntas frecuentes',
+    faqTitle: 'Todo lo que necesitas saber',
+    ctaTitle: 'Únete antes que todos.',
+    ctaDesc: 'Cupos limitados para la beta privada. Sin tarjeta de crédito.',
+    ctaPlaceholder: 'tu@email.com',
+    ctaBtn: 'Unirse a la Lista de Espera',
+    ctaSent: '✓ ¡Apuntado! Te avisamos pronto.',
+    ctaLoading: 'Guardando...',
+    footer: '© 2026 HOMVI · CRM Inmobiliario · Santo Domingo',
+    rd: {
+      title: 'Construido para el ecosistema inmobiliario de la República Dominicana',
+      subtitle: 'Desde Piantini hasta Punta Cana, HOMVI conoce tu territory.',
+      desc: 'Configurado con los sectores donde se mueve el dinero real:',
+      sectors: 'Piantini, Naco, Bella Vista, Serralles, Los Cacicazgos, La Esperilla, Mirador Norte',
+      tourism: '— y los destinos de inversión turística como',
+      tourismPlaces: 'Punta Cana, Bávaro y Boca Chica',
     },
-    reportSection: {
-      title: 'Descarga el Reporte Inmobiliario del Polígono Central 2026',
-      subtitle: 'Analizamos más de 500 propiedades en Naco, Piantini y Bella Vista. Descubre las tendencias de precios, zonas de mayor absorción y datos reales para cerrar más exclusivas.',
-      placeholderName: 'Tu nombre completo',
-      placeholderEmail: 'Tu correo profesional',
-      btn: 'Enviar Reporte + Aplicar a la Beta',
-      success: '🎉 ¡Registro completado! Hemos enviado el reporte a tu correo y guardado tu cupo para la Beta Privada.',
-    },
-    faq: {
-      title: 'Preguntas Frecuentes',
-      q1: '¿Qué es la Beta Privada y quién puede entrar?',
-      a1: 'Es un acceso anticipado y exclusivo para un grupo selecto de Brokers independientes y agencias "Top Producers" en Santo Domingo. Buscamos feedback real antes del lanzamiento oficial.',
-      q2: '¿El reporte inmobiliario es gratuito?',
-      a2: 'Sí. Es un análisis de datos real recopilado por nuestro algoritmo de inteligencia inmobiliaria sobre el comportamiento del Polígono Central. Te llegará directo al correo al registrarte.',
-      q3: '¿Cómo funciona el soporte local?',
-      a3: 'Homvi es desarrollado localmente. Entendemos el mercado de RD (tasas, cobrokeraje, zonas). Tendrás soporte directo vía WhatsApp sin lidiar con bots internacionales.',
-    }
+    features: [
+      { numero: '01', titulo: 'Dashboard', subtitulo: 'Visión total de tu negocio en un vistazo', descripcion: 'El dashboard de HOMVI te muestra en tiempo real todo lo que importa: leads sin responder, seguimientos del día, clientes activos y propiedades disponibles. Sin distracciones, solo lo esencial para tomar decisiones rápidas.', puntos: ['Leads sin responder destacados', 'Seguimientos pendientes del día', 'Pipeline de clientes activo', 'Propiedades disponibles vs vendidas'] },
+      { numero: '02', titulo: 'Hoy', subtitulo: 'Tu agenda diaria inteligente', descripcion: 'La vista de Hoy centraliza todas tus actividades del día: citas, llamadas, cierres y notas rápidas. Programa nuevas actividades en segundos y marca lo completado sin salir de la pantalla.', puntos: ['Citas y llamadas del día ordenadas por hora', 'Notas rápidas que se guardan al instante', 'Programar nuevas actividades con modal rápido', 'Etiquetas por tipo: cita, llamada, urgente, cierre'] },
+      { numero: '03', titulo: 'Clientes', subtitulo: 'Tu cartera completa, siempre organizada', descripcion: 'Gestiona cada cliente con su perfil completo: presupuesto, zonas de interés, tipo de propiedad y etapa en el proceso de compra. Asigna propiedades directamente desde el perfil del cliente.', puntos: ['Perfil completo con presupuesto y preferencias', 'Zonas de interés por sector', 'Asignación directa de propiedades', 'Etapas: Lead, Buscando, En Oferta, Cierre'] },
+      { numero: '04', titulo: 'Propiedades', subtitulo: 'Catálogo de lujo siempre actualizado', descripcion: 'Administra tu inventario de propiedades con fotos, precio, sector, tipo y características. Filtra por cualquier criterio y conecta propiedades con los clientes correctos en segundos.', puntos: ['Fotos, precio y características completas', 'Filtros por sector, tipo y precio', 'Conexión directa cliente-propiedad', 'Historial de asignaciones'] },
+      { numero: '05', titulo: 'Pipeline', subtitulo: 'El estado de cada negociación en tiempo real', descripcion: 'El pipeline visual te muestra en qué etapa está cada cliente. Arrastra, actualiza y prioriza sin esfuerzo. Nunca pierdas de vista una oportunidad de cierre.', puntos: ['Vista Kanban por etapas', 'Arrastrar y soltar entre etapas', 'Valor estimado por etapa', 'Alertas de clientes sin actividad'] },
+      { numero: '06', titulo: 'Calendario', subtitulo: 'Todas tus citas en un solo lugar', descripcion: 'El calendario de HOMVI centraliza tus citas, visitas y seguimientos. Visualiza tu semana o mes completo y nunca llegues a una reunión sin estar preparado.', puntos: ['Vista semanal y mensual', 'Citas vinculadas a clientes', 'Recordatorios automáticos', 'Sincronización con tus actividades diarias'] },
+      { numero: '07', titulo: 'Reportes', subtitulo: 'Métricas que impulsan tu crecimiento', descripcion: 'Analiza tu rendimiento con reportes por etapa, sector y período. Identifica qué zonas generan más cierres, cuánto tiempo tarda un lead en convertirse y cuáles son tus propiedades más solicitadas.', puntos: ['Reportes por etapa del pipeline', 'Análisis por sector geográfico', 'Tiempo promedio de conversión', 'Propiedades más consultadas'] },
+    ],
+    faqs: [
+      { pregunta: '¿Necesito instalar algo?', respuesta: 'No. HOMVI es 100% web. Accedes desde cualquier navegador en tu computadora o teléfono, sin descargas ni instalaciones.' },
+      { pregunta: '¿Puedo usar HOMVI con mi equipo?', respuesta: 'Sí. HOMVI soporta múltiples agentes. Cada uno tiene su propia cuenta y ve solo sus clientes, propiedades y actividades.' },
+      { pregunta: '¿Mis datos están seguros?', respuesta: 'Totalmente. Usamos Supabase con Row Level Security, lo que significa que cada agente solo accede a sus propios datos. Toda la información está encriptada.' },
+      { pregunta: '¿Puedo importar mis clientes actuales?', respuesta: 'Sí. HOMVI permite importar clientes desde Excel o CSV. También puedes agregarlos manualmente uno por uno desde la sección de Clientes.' },
+      { pregunta: '¿Funciona en el teléfono?', respuesta: 'Sí. HOMVI tiene diseño responsivo y una navegación móvil optimizada para que puedas gestionar tu cartera desde cualquier lugar.' },
+      { pregunta: '¿Qué pasa si tengo muchas propiedades?', respuesta: 'No hay límite. Puedes agregar todas las propiedades que necesites, con fotos, precios y características. El sistema está diseñado para manejar catálogos grandes sin perder velocidad.' },
+    ],
   },
   en: {
     nav: { features: 'Features', faq: 'FAQ', cta: 'Request Access' },
-    prelaunsch: '🚀 PRE-LAUNCH PHASE — Limited slots for Private Beta in RD',
+    prelaunsch: '🚀 PRE-LAUNCH PHASE — Limited spots for the Private Beta in DR',
     hero: {
-      badge: '🇩🇴 CRM & Real Estate Intelligence · Santo Domingo',
-      h1a: 'The definitive system for',
-      h1b: 'Top Producers.',
-      desc: 'Stop fighting with spreadsheets and generic tools. Manage your portfolio of the Polígono Central with bi-currency matching, smart logs, and absolute control over your closings.',
-      btnPrimary: 'Get Report + Beta Access',
-      btnSecondary: 'View Features',
+      badge: '🇩🇴 Real Estate CRM · Santo Domingo',
+      h1a: 'Your client portfolio,',
+      h1b: 'under total control.',
+      desc: 'Homvi is the CRM designed for real estate agents who operate at luxury standards. Visual pipeline, precise follow-ups, intelligent closing.',
+      btnPrimary: 'Request Early Access',
+      btnSecondary: 'See Features',
     },
-    features: {
-      title: 'Built for the speed of the Dominican market',
-      subtitle: 'Leave generic software behind. Homvi understands the real dynamics of Brokers in Santo Domingo.',
-      f1Title: 'Automatic Bi-Currency Matching',
-      f1Desc: 'Match requirements in USD and DOP instantly. The system calculates rates and finds the perfect match without conversion errors.',
-      f2Title: 'Smart Tracking Logs',
-      f2Desc: 'Log interactions in seconds from your mobile. Clean history per client to know exactly when to reactivate a lead.',
-      f3Title: 'Closing Control & Historical Records',
-      f3Desc: 'Visualize your projected commissions, split fees with co-brokers, and keep an impeccable historical record of every property.',
+    stats: [
+      ['5 min', 'Frictionless initial setup'],
+      ['1 click', 'To share property sheets via WhatsApp'],
+      ['7 in 1', 'Your entire ecosystem in one place'],
+      ['0%', 'Distractions. Built for closing deals'],
+    ],
+    featuresBadge: 'Everything you need',
+    featuresTitle: '7 tools. One place.',
+    faqBadge: 'Frequently asked questions',
+    faqTitle: 'Everything you need to know',
+    ctaTitle: 'Join before everyone else.',
+    ctaDesc: 'Limited spots for the private beta. No credit card required.',
+    ctaPlaceholder: 'you@email.com',
+    ctaBtn: 'Join the Waitlist',
+    ctaSent: '✓ You\'re in! We\'ll be in touch soon.',
+    ctaLoading: 'Saving...',
+    footer: '© 2026 HOMVI · Real Estate CRM · Santo Domingo',
+    rd: {
+      title: 'Built for the Dominican Republic real estate ecosystem',
+      subtitle: 'From Piantini to Punta Cana, HOMVI knows your territory.',
+      desc: 'Configured with the sectors where the real money moves:',
+      sectors: 'Piantini, Naco, Bella Vista, Serralles, Los Cacicazgos, La Esperilla, Mirador Norte',
+      tourism: '— and tourist investment destinations like',
+      tourismPlaces: 'Punta Cana, Bávaro and Boca Chica',
     },
-    reportSection: {
-      title: 'Download the 2026 Polígono Central Real Estate Report',
-      subtitle: 'We analyzed over 500 properties in Naco, Piantini, and Bella Vista. Discover price trends, highest absorption areas, and real data to close more exclusive listings.',
-      placeholderName: 'Your full name',
-      placeholderEmail: 'Your professional email',
-      btn: 'Send Report + Apply for Beta',
-      success: '🎉 Registration complete! We have sent the report to your email and reserved your spot for the Private Beta.',
-    },
-    faq: {
-      title: 'Frequently Asked Questions',
-      q1: 'What is the Private Beta and who can join?',
-      a1: 'It is an exclusive, early access program for a select group of independent Brokers and "Top Producer" agencies in Santo Domingo. We look for real feedback before the official launch.',
-      q2: 'Is the real estate report free?',
-      a2: 'Yes. It is a real data analysis compiled by our real estate intelligence algorithm regarding the behavior of the Polígono Central. It will be sent directly to your email upon registration.',
-      q3: 'How does local support work?',
-      a3: 'Homvi is developed locally. We understand the DR market (rates, co-brokering, sectors). You will have direct support via WhatsApp without dealing with international bots.',
-    }
+    features: [
+      { numero: '01', titulo: 'Dashboard', subtitulo: 'Total view of your business at a glance', descripcion: 'HOMVI\'s dashboard shows you in real time everything that matters: unanswered leads, today\'s follow-ups, active clients and available properties. No distractions, just what you need to make fast decisions.', puntos: ['Unanswered leads highlighted', 'Pending follow-ups for today', 'Active client pipeline', 'Available vs sold properties'] },
+      { numero: '02', titulo: 'Today', subtitulo: 'Your smart daily agenda', descripcion: 'The Today view centralizes all your daily activities: appointments, calls, closings and quick notes. Schedule new activities in seconds and mark completed ones without leaving the screen.', puntos: ['Appointments and calls sorted by time', 'Quick notes saved instantly', 'Schedule new activities with quick modal', 'Tags by type: appointment, call, urgent, closing'] },
+      { numero: '03', titulo: 'Clients', subtitulo: 'Your full portfolio, always organized', descripcion: 'Manage each client with their complete profile: budget, areas of interest, property type and stage in the buying process. Assign properties directly from the client profile.', puntos: ['Full profile with budget and preferences', 'Areas of interest by neighborhood', 'Direct property assignment', 'Stages: Lead, Searching, In Offer, Closing'] },
+      { numero: '04', titulo: 'Properties', subtitulo: 'Luxury catalog always up to date', descripcion: 'Manage your property inventory with photos, price, area, type and features. Filter by any criteria and connect properties with the right clients in seconds.', puntos: ['Full photos, price and features', 'Filters by area, type and price', 'Direct client-property connection', 'Assignment history'] },
+      { numero: '05', titulo: 'Pipeline', subtitulo: 'Status of every negotiation in real time', descripcion: 'The visual pipeline shows you what stage each client is at. Drag, update and prioritize effortlessly. Never lose sight of a closing opportunity.', puntos: ['Kanban view by stage', 'Drag and drop between stages', 'Estimated value per stage', 'Alerts for inactive clients'] },
+      { numero: '06', titulo: 'Calendar', subtitulo: 'All your appointments in one place', descripcion: 'HOMVI\'s calendar centralizes your appointments, visits and follow-ups. View your full week or month and never arrive at a meeting unprepared.', puntos: ['Weekly and monthly view', 'Appointments linked to clients', 'Automatic reminders', 'Sync with your daily activities'] },
+      { numero: '07', titulo: 'Reports', subtitulo: 'Metrics that drive your growth', descripcion: 'Analyze your performance with reports by stage, area and period. Identify which zones generate more closings, how long a lead takes to convert and which properties are most requested.', puntos: ['Reports by pipeline stage', 'Analysis by geographic area', 'Average conversion time', 'Most viewed properties'] },
+    ],
+    faqs: [
+      { pregunta: 'Do I need to install anything?', respuesta: 'No. HOMVI is 100% web-based. Access it from any browser on your computer or phone, no downloads or installations needed.' },
+      { pregunta: 'Can I use HOMVI with my team?', respuesta: 'Yes. HOMVI supports multiple agents. Each one has their own account and only sees their own clients, properties and activities.' },
+      { pregunta: 'Is my data secure?', respuesta: 'Absolutely. We use Supabase with Row Level Security, meaning each agent can only access their own data. All information is encrypted.' },
+      { pregunta: 'Can I import my current clients?', respuesta: 'Yes. HOMVI allows you to import clients from Excel or CSV. You can also add them manually one by one from the Clients section.' },
+      { pregunta: 'Does it work on mobile?', respuesta: 'Yes. HOMVI has a responsive design and an optimized mobile navigation so you can manage your portfolio from anywhere.' },
+      { pregunta: 'What if I have many properties?', respuesta: 'No limit. You can add as many properties as you need, with photos, prices and features. The system is designed to handle large catalogs without losing speed.' },
+    ],
+  },
+}
+
+const icons = [LayoutDashboard, Sun, Users, Building2, TrendingUp, Calendar, BarChart3]
+
+export default function Page() {
+  const [email, setEmail] = useState('')
+  const [enviado, setEnviado] = useState(false)
+  const [cargando, setCargando] = useState(false)
+  const [faqAbierto, setFaqAbierto] = useState<number | null>(null)
+  const [lang, setLang] = useState<'es' | 'en'>('es')
+
+  // Estados para simular interactividad viva en los mockups
+  const [activeTab, setActiveTab] = useState(0)
+  const [completedTask, setCompletedTask] = useState<boolean[]>([false, false, false])
+
+  const t = content[lang]
+  const { displayed: typedH1b, done: typedDone } = useTypewriter(t.hero.h1b, 45, 800)
+
+  // Efecto automático para cambiar tabs de reportes o simular interacción periódica
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveTab((prev) => (prev + 1) % 3)
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [])
+
+  // Simulación de completar tareas en la vista 'Hoy'
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCompletedTask((prev) => {
+        const next = [...prev]
+        const firstFalseIndex = next.indexOf(false)
+        if (firstFalseIndex !== -1) {
+          next[firstFalseIndex] = true
+        } else {
+          return [false, false, false]
+        }
+        return next
+      })
+    }, 2500)
+    return () => clearInterval(interval)
+  }, [])
+
+  const guardarEmail = async () => {
+    if (!email.trim()) return
+    setCargando(true)
+    await supabase.from('beta_emails').insert({ email: email.trim() })
+    setEnviado(true)
+    setCargando(false)
   }
-};
-
-export default function LandingPage() {
-  const [lang, setLang] = useState<'es' | 'en'>('es');
-  const [formData, setFormData] = useState({ name: '', email: '' });
-  const [isSubmitted, setIsSubmitted] = useState(false);
-
-  const t = content[lang];
-  const { displayed: typedH1b } = useTypewriter(t.hero.h1b, 50, 600);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (formData.name && formData.email) {
-      setIsSubmitted(true);
-    }
-  };
 
   return (
-    <div className="min-h-screen bg-[#090a0f] text-zinc-100 font-sans antialiased selection:bg-[#d5fd51]/30 selection:text-[#d5fd51] overflow-x-hidden">
+    <div className="min-h-screen bg-[#110E08] text-white font-sans overflow-x-hidden selection:bg-[#CCFF00]/30 selection:text-[#CCFF00]">
       
-      {/* CINTILLO PRELANZAMIENTO ROBINHOOD */}
-      <div className="bg-[#d5fd51]/10 border-b border-[#d5fd51]/20 py-2.5 px-4 text-center relative z-50">
-        <p className="text-[#d5fd51] text-xs font-bold uppercase tracking-widest">{t.prelaunsch}</p>
+      {/* Estilos CSS Inyectados para el Slider/Marquee infinito del Pipeline */}
+      <style jsx global>{`
+        @keyframes marquee {
+          0% { transform: translateX(0%); }
+          100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+          display: flex;
+          width: max-content;
+          animation: marquee 25s linear infinite;
+        }
+        .animate-marquee:hover {
+          animation-play-state: paused;
+        }
+      `}</style>
+
+      {/* Gradiente sutil de fondo al estilo Trading de Robinhood */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#CCFF00]/3 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-[#CCFF00]/2 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
       </div>
 
-      {/* GRADIENTES FLUIDOS DE INTERFAZ FINANCIERA */}
-      <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-[#d5fd51]/5 rounded-full blur-[140px] animate-pulse pointer-events-none" />
-      <div className="absolute top-40 right-1/4 w-[400px] h-[400px] bg-[#eb522a]/3 rounded-full blur-[120px] animate-pulse delay-1000 pointer-events-none" />
+      <div className="relative z-10">
 
-      {/* NAVBAR */}
-      <header className="border-b border-zinc-900 bg-[#090a0f]/90 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl font-black tracking-tighter text-white">
-              HOM<span className="text-[#d5fd51]">VI</span>
-            </span>
-          </div>
-          
-          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-400">
-            <a href="#features" className="hover:text-[#d5fd51] transition-colors">{t.nav.features}</a>
-            <a href="#faq" className="hover:text-[#d5fd51] transition-colors">{t.nav.faq}</a>
-          </nav>
-
-          <div className="flex items-center gap-4">
-            <button 
-              onClick={() => setLang(lang === 'es' ? 'en' : 'es')}
-              className="text-xs font-bold bg-zinc-900/60 border border-zinc-800 hover:border-[#d5fd51]/30 px-3 py-1.5 rounded-lg text-zinc-300 transition-all"
-            >
-              {lang === 'es' ? 'EN' : 'ES'}
-            </button>
-            <a 
-              href="#report" 
-              className="bg-[#d5fd51] hover:bg-[#c2eb42] text-[#090a0f] text-xs font-bold px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-[#d5fd51]/10"
-            >
-              {t.nav.cta}
-            </a>
-          </div>
+        {/* Cintillo prelanzamiento */}
+        <div className="bg-[#CCFF00]/10 border-b border-[#CCFF00]/20 py-2.5 px-4 text-center">
+          <p className="text-[#CCFF00] text-xs font-bold uppercase tracking-widest">{t.prelaunsch}</p>
         </div>
-      </header>
 
-      {/* HERO SECTION COMPLETO */}
-      <section className="relative pt-24 pb-28 md:pt-36 md:pb-44 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
-        <FadeIn>
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-full bg-[#d5fd51]/10 text-[#d5fd51] border border-[#d5fd51]/20 mb-8 backdrop-blur-md">
-            {t.hero.badge}
+        {/* Nav */}
+        <nav className="flex justify-between items-center p-6 max-w-7xl mx-auto border-b border-zinc-800/60">
+          <div className="text-2xl font-black tracking-tighter text-[#CCFF00]">HOMVI</div>
+          <div className="hidden md:flex gap-8 text-xs uppercase tracking-widest text-zinc-500">
+            <a href="#features" className="hover:text-white cursor-pointer transition-colors">{t.nav.features}</a>
+            <a href="#faq" className="hover:text-white cursor-pointer transition-colors">{t.nav.faq}</a>
           </div>
-        </FadeIn>
-        
-        <FadeIn delay={200}>
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white max-w-5xl mx-auto leading-[1.1] mb-8">
-            {t.hero.h1a} <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#d5fd51] to-white min-h-[1.2em] inline-block">
-              {typedH1b}
-              <span className="animate-ping ml-1 text-[#d5fd51]">|</span>
-            </span>
-          </h1>
-        </FadeIn>
-
-        <FadeIn delay={400}>
-          <p className="text-zinc-400 text-lg sm:text-xl max-w-3xl mx-auto font-normal leading-relaxed mb-12">
-            {t.hero.desc}
-          </p>
-        </FadeIn>
-
-        <FadeIn delay={600}>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto sm:max-w-none">
-            <a 
-              href="#report" 
-              className="px-8 py-4 bg-[#d5fd51] hover:bg-[#c2eb42] text-[#090a0f] font-bold rounded-xl transition-all shadow-lg shadow-[#d5fd51]/20 hover:scale-[1.02] text-center"
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setLang(lang === 'es' ? 'en' : 'es')}
+              className="text-xs font-bold text-zinc-400 hover:text-[#CCFF00] transition-colors border border-zinc-800 hover:border-[#CCFF00] px-3 py-1.5 rounded-lg"
             >
-              {t.hero.btnPrimary}
-            </a>
-            <a 
-              href="#features" 
-              className="px-8 py-4 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 font-semibold rounded-xl border border-zinc-800 hover:border-[#eb522a]/40 transition-all text-center"
-            >
-              {t.hero.btnSecondary}
-            </a>
+              {lang === 'es' ? '🇺🇸 EN' : '🇩🇴 ES'}
+            </button>
+            <Link href="/dashboard" className="bg-[#CCFF00] text-black px-5 py-2 rounded-lg text-xs font-bold hover:bg-white transition-all uppercase tracking-wider">
+              {t.nav.cta}
+            </Link>
           </div>
-        </FadeIn>
-      </section>
+        </nav>
 
-      {/* SECCIÓN DETALLADA DE CARACTERÍSTICAS CORPORATIVAS */}
-      <section id="features" className="py-28 border-t border-zinc-900 bg-zinc-950/40 relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <FadeIn>
-            <div className="text-center max-w-3xl mx-auto mb-24">
-              <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-white mb-4">{t.features.title}</h2>
-              <p className="text-zinc-400 text-lg">{t.features.subtitle}</p>
+        {/* Hero */}
+        <section className="pt-20 pb-10 px-6 text-center max-w-4xl mx-auto">
+          <FadeIn delay={0}>
+            <span className="text-[#CCFF00] text-xs uppercase tracking-widest font-bold mb-4 block">{t.hero.badge}</span>
+          </FadeIn>
+          <FadeIn delay={200}>
+            <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-8 leading-tight">
+              {t.hero.h1a}{' '}
+              <span className="text-[#CCFF00]">
+                {typedH1b}
+                {!typedDone && <span className="animate-pulse">|</span>}
+              </span>
+            </h1>
+          </FadeIn>
+          <FadeIn delay={400}>
+            <p className="text-zinc-400 text-lg mb-10 max-w-2xl mx-auto leading-relaxed">{t.hero.desc}</p>
+          </FadeIn>
+          <FadeIn delay={600}>
+            <div className="flex flex-col md:flex-row gap-4 justify-center">
+              <a href="#contacto" className="bg-[#CCFF00] text-black px-8 py-4 rounded-xl font-black hover:bg-white transition-all text-sm uppercase tracking-wider shadow-lg shadow-[#CCFF00]/10">
+                {t.hero.btnPrimary}
+              </a>
+              <a href="#features" className="border border-zinc-800 px-8 py-4 rounded-xl font-bold hover:border-[#CCFF00] hover:text-[#CCFF00] transition-all text-sm uppercase tracking-wider">
+                {t.hero.btnSecondary}
+              </a>
             </div>
           </FadeIn>
+        </section>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Card 1 */}
-            <FadeIn delay={100} className="flex">
-              <div className="bg-zinc-900/30 border border-zinc-800/60 p-8 rounded-2xl hover:border-[#d5fd51]/30 transition-all group flex flex-col justify-between w-full">
-                <div>
-                  <div className="w-12 h-12 rounded-xl bg-[#d5fd51]/10 border border-[#d5fd51]/20 flex items-center justify-center text-[#d5fd51] font-bold mb-6 group-hover:bg-[#d5fd51] group-hover:text-[#090a0f] transition-all">
-                    <TrendingUp className="w-5 h-5" />
-                  </div>
-                  <h3 className="text-xl font-bold text-white mb-3">{t.features.f1Title}</h3>
-                  <p className="text-zinc-400 text-sm leading-relaxed">{t.features.f1Desc}</p>
-                </div>
-                <div className="mt-6 flex items-center gap-2 text-xs font-semibold text-[#d5fd51] opacity-0 group-hover:opacity-100 transition-opacity">
-                  Trading Activo <ArrowRight className="w-3 h-3" />
-                </div>
-              </div>
-            </FadeIn>
+        {/* RD Section */}
+        <FadeIn>
+          <section className="py-12 px-6 max-w-4xl mx-auto text-center">
+            <span className="text-2xl mb-4 block animate-bounce">🇩🇴</span>
+            <h2 className="text-2xl md:text-3xl font-black mb-3">{t.rd.title}</h2>
+            <p className="text-zinc-400 text-sm mb-6 italic">{t.rd.subtitle}</p>
+            <div className="bg-black/40 backdrop-blur border border-zinc-800/80 rounded-2xl p-6 max-w-2xl mx-auto shadow-inner">
+              <p className="text-zinc-300 text-sm leading-relaxed">
+                {t.rd.desc}{' '}
+                <span className="text-[#CCFF00] font-bold underline decoration-[#CCFF00]/30">{t.rd.sectors}</span>
+                {' '}{t.rd.tourism}{' '}
+                <span className="text-[#CCFF00] font-bold underline decoration-[#CCFF00]/30">{t.rd.tourismPlaces}</span>.
+              </p>
+            </div>
+          </section>
+        </FadeIn>
 
-            {/* Card 2 */}
-            <FadeIn delay={200} className="flex">
-              <div className="bg-zinc-900/30 border border-zinc-800/60 p-8 rounded-2xl hover:border-[#d5fd51]/30 transition-all group flex flex-col justify-between w-full">
-                <div>
-                  <div className="w-12 h-12 rounded-xl bg-[#d5fd51]/10 border border-[#d5fd51]/20 flex items-center justify-center text-[#d5fd51] font-bold mb-6 group-hover:bg-[#d5fd51] group-hover:text-[#090a0f] transition-all">
-                    <LayoutDashboard className="w-5 h-5" />
-                  </div>
-                  <h3 className="text-xl font-bold text-white mb-3">{t.features.f2Title}</h3>
-                  <p className="text-zinc-400 text-sm leading-relaxed">{t.features.f2Desc}</p>
-                </div>
-                <div className="mt-6 flex items-center gap-2 text-xs font-semibold text-[#d5fd51] opacity-0 group-hover:opacity-100 transition-opacity">
-                  Optimización Movil <ArrowRight className="w-3 h-3" />
-                </div>
+        {/* Stats */}
+        <section className="py-10 px-6 max-w-6xl mx-auto border-y border-zinc-800/60">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {t.stats.map(([num, label]) => (
+              <div key={label} className="text-center group cursor-default">
+                <p className="text-4xl font-black mb-2 text-[#CCFF00] group-hover:scale-110 transition-transform duration-300">{num}</p>
+                <p className="text-zinc-400 text-xs uppercase tracking-widest leading-relaxed">{label}</p>
               </div>
-            </FadeIn>
-
-            {/* Card 3 */}
-            <FadeIn delay={300} className="flex">
-              <div className="bg-zinc-900/30 border border-zinc-800/60 p-8 rounded-2xl hover:border-[#d5fd51]/30 transition-all group flex flex-col justify-between w-full">
-                <div>
-                  <div className="w-12 h-12 rounded-xl bg-[#d5fd51]/10 border border-[#d5fd51]/20 flex items-center justify-center text-[#d5fd51] font-bold mb-6 group-hover:bg-[#d5fd51] group-hover:text-[#090a0f] transition-all">
-                    <BarChart3 className="w-5 h-5" />
-                  </div>
-                  <h3 className="text-xl font-bold text-white mb-3">{t.features.f3Title}</h3>
-                  <p className="text-zinc-400 text-sm leading-relaxed">{t.features.f3Desc}</p>
-                </div>
-                <div className="mt-6 flex items-center gap-2 text-xs font-semibold text-[#d5fd51] opacity-0 group-hover:opacity-100 transition-opacity">
-                  Libro de Órdenes <ArrowRight className="w-3 h-3" />
-                </div>
-              </div>
-            </FadeIn>
+            ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* SECCIÓN LEAD MAGNET - CAPTURA DE REPORTES */}
-      <section id="report" className="py-28 border-t border-zinc-900 relative z-10">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#d5fd51]/2 to-transparent pointer-events-none" />
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        {/* Features */}
+        <section id="features" className="py-20 px-6 max-w-6xl mx-auto">
           <FadeIn>
-            <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-white mb-4">{t.reportSection.title}</h2>
-            <p className="text-zinc-400 text-lg max-w-2xl mx-auto mb-14">{t.reportSection.subtitle}</p>
+            <div className="text-center mb-16">
+              <span className="text-[#CCFF00] text-xs uppercase tracking-widest font-bold mb-3 block">{t.featuresBadge}</span>
+              <h2 className="text-4xl font-black">{t.featuresTitle}</h2>
+            </div>
           </FadeIn>
+          <div className="space-y-6">
+            {t.features.map((f, i) => {
+              const Icon = icons[i]
+              return (
+                <FadeIn key={i} delay={i * 80}>
+                  <div className="bg-black/40 backdrop-blur-sm border border-zinc-800/80 rounded-2xl p-8 hover:border-[#CCFF00]/30 transition-all group duration-300 shadow-xl">
+                    <div className="flex items-start gap-6 flex-col lg:flex-row">
+                      <div className="flex-1 w-full">
+                        <div className="flex items-center gap-3 mb-2 flex-wrap">
+                          <span className="text-[#CCFF00] text-xs font-black bg-[#CCFF00]/10 px-2 py-0.5 rounded">{f.numero}</span>
+                          <h3 className="text-xl font-black group-hover:text-[#CCFF00] transition-colors">{f.titulo}</h3>
+                          <span className="text-zinc-500 text-sm">— {f.subtitulo}</span>
+                        </div>
+                        <p className="text-zinc-400 text-sm leading-relaxed mb-4">{f.descripcion}</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
+                          {f.puntos.map((p, j) => (
+                            <div key={j} className="flex items-center gap-2 text-sm text-zinc-300">
+                              <span className="w-1.5 h-1.5 bg-[#CCFF00] rounded-full flex-shrink-0" />
+                              {p}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
 
-          <FadeIn delay={200}>
-            <div className="bg-[#13151a] border border-zinc-800 p-8 sm:p-14 rounded-3xl max-w-xl mx-auto shadow-2xl relative">
-              <div className="absolute top-0 right-12 w-24 h-px bg-gradient-to-r from-transparent to-[#d5fd51]/40" />
-              {!isSubmitted ? (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <input 
-                    type="text" 
-                    placeholder={t.reportSection.placeholderName}
-                    required
-                    value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full bg-[#090a0f] border border-zinc-800 focus:border-[#d5fd51] focus:ring-1 focus:ring-[#d5fd51] text-zinc-100 rounded-xl px-4 py-4 text-sm transition-all outline-none"
-                  />
-                  <input 
-                    type="email" 
-                    placeholder={t.reportSection.placeholderEmail}
-                    required
-                    value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    className="w-full bg-[#090a0f] border border-zinc-800 focus:border-[#d5fd51] focus:ring-1 focus:ring-[#d5fd51] text-zinc-100 rounded-xl px-4 py-4 text-sm transition-all outline-none"
-                  />
-                  <button 
-                    type="submit"
-                    className="w-full bg-[#d5fd51] hover:bg-[#c2eb42] text-[#090a0f] font-bold py-4 rounded-xl transition-all shadow-lg shadow-[#d5fd51]/10 hover:scale-[1.01] mt-2 text-sm uppercase tracking-wider"
+                      {/* Mockup visual dinámico (Estructura Responsive lg:w-80 impecable) */}
+                      <div className="w-full lg:w-80 flex-shrink-0 rounded-xl overflow-hidden border border-zinc-800 bg-[#110E08] shadow-2xl transition-all group-hover:border-zinc-700">
+                        {i === 0 && (
+                          <div className="p-4 space-y-2.5">
+                            <div className="flex gap-2">
+                              {['Leads', 'Clientes', 'Propied.', 'Seguim.'].map((l, k) => (
+                                <div key={k} className="flex-1 bg-black/40 rounded-lg p-2 text-center border border-zinc-800/60">
+                                  <div className="text-[#CCFF00] font-black text-sm">{[3,12,8,5][k]}</div>
+                                  <div className="text-zinc-500 text-[9px] uppercase tracking-wider">{l}</div>
+                                </div>
+                              ))}
+                            </div>
+                            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-2.5 flex items-center justify-between transition-all">
+                              <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+                                <span className="text-red-400 text-xs font-medium">3 leads sin responder</span>
+                              </div>
+                              <span className="text-[10px] bg-red-500 text-white font-bold px-1.5 py-0.5 rounded-full animate-pulse">¡Atender!</span>
+                            </div>
+                          </div>
+                        )}
+                        {i === 1 && (
+                          <div className="p-4 space-y-2">
+                            {[
+                              ['📞', 'Llamada a María G.', '09:00', 'text-cyan-400'],
+                              ['🏠', 'Visita Piantini', '11:30', 'text-[#CCFF00]'],
+                              ['📄', 'Firma contrato', '15:00', 'text-[#CCFF00]']
+                            ].map(([icon, txt, hora, color], k) => (
+                              <div 
+                                key={k} 
+                                className={`flex items-center gap-2 bg-black/30 rounded-lg px-3 py-2 border transition-all duration-500 ${completedTask[k] ? 'border-[#CCFF00]/30 opacity-40 bg-zinc-900/20' : 'border-zinc-800/80'}`}
+                              >
+                                {completedTask[k] ? (
+                                  <CheckCircle2 className="w-4 h-4 text-[#CCFF00] flex-shrink-0 animate-scale" />
+                                ) : (
+                                  <span className="text-sm flex-shrink-0">{icon}</span>
+                                )}
+                                <span className={`text-xs flex-1 transition-all ${completedTask[k] ? 'line-through text-zinc-600' : 'text-zinc-300'}`}>{txt}</span>
+                                <span className={`${completedTask[k] ? 'text-zinc-600' : color} text-[10px] font-mono`}>{hora}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {i === 2 && (
+                          <div className="p-4 space-y-2">
+                            {[
+                              ['L', 'Lizmarie B.', 'Buscando', 'bg-blue-950/40 text-blue-400 border-blue-900/40'],
+                              ['J', 'Jean L.', 'En Oferta', 'bg-[#CCFF00]/10 text-[#CCFF00] border-[#CCFF00]/20'],
+                              ['M', 'María N.', 'Lead', 'bg-black/30 text-zinc-400 border-zinc-800/80']
+                            ].map(([ini, nom, etapa, color], k) => (
+                              <div key={k} className="flex items-center gap-2 bg-black/30 rounded-lg px-3 py-2 border border-zinc-800/80 hover:translate-x-1 transition-transform">
+                                <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#CCFF00] to-white text-black flex items-center justify-center text-[10px] font-black">{ini}</div>
+                                <span className="text-zinc-300 text-xs flex-1 font-medium">{nom}</span>
+                                <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold border ${color}`}>{etapa}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {i === 3 && (
+                          <div className="p-4 space-y-2">
+                            {[
+                              ['Penthouse en Piantini', 'US$350,000', 'Dispon.'],
+                              ['Apto en Naco', 'US$185,000', 'Dispon.'],
+                              ['Casa Arroyo Hondo', 'US$420,000', 'Reserv.']
+                            ].map(([nom, precio, estado], k) => (
+                              <div key={k} className="bg-black/30 rounded-lg p-2.5 border border-zinc-800/80 flex flex-col gap-1">
+                                <div className="flex justify-between items-center">
+                                  <span className="text-zinc-300 text-xs font-bold truncate max-w-[120px]">{nom}</span>
+                                  <span className={`text-[8px] px-1.5 py-0.2 rounded font-bold ${estado === 'Dispon.' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}`}>{estado}</span>
+                                </div>
+                                <span className="text-[#CCFF00] text-[11px] font-mono font-black">{precio}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {i === 4 && (
+                          /* MARQUEE INFINITO DEL PIPELINE VISUAL */
+                          <div className="py-4 overflow-hidden relative bg-[#110E08] h-28 flex items-center">
+                            <div className="absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-[#110E08] to-transparent z-10 pointer-events-none" />
+                            <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-[#110E08] to-transparent z-10 pointer-events-none" />
+                            <div className="animate-marquee gap-3 flex">
+                              {[
+                                { n: 'Luis B.', e: 'Lead → Buscando', p: 'US$215k' },
+                                { n: 'Lizmarie B.', e: 'Buscando → Oferta', p: 'US$450k' },
+                                { n: 'Jean L.', e: 'Oferta → Cierre 🎉', p: 'US$135k' },
+                                { n: 'Maria N.', e: 'Nuevo Lead', p: 'US$300k' }
+                              ].map((item, idx) => (
+                                <div key={idx} className="bg-black/40 border border-zinc-800/80 rounded-xl p-3 w-40 shadow-xl flex flex-col gap-1">
+                                  <div className="text-zinc-300 font-bold text-xs">{item.n}</div>
+                                  <div className="text-[10px] text-[#CCFF00] flex items-center gap-1 font-medium">{item.e}</div>
+                                  <div className="text-[10px] font-mono font-black text-zinc-500">{item.p}</div>
+                                </div>
+                              ))}
+                              {/* Duplicado para loop infinito */}
+                              {[
+                                { n: 'Luis B.', e: 'Lead → Buscando', p: 'US$215k' },
+                                { n: 'Lizmarie B.', e: 'Buscando → Oferta', p: 'US$450k' },
+                                { n: 'Jean L.', e: 'Oferta → Cierre 🎉', p: 'US$135k' },
+                                { n: 'Maria N.', e: 'Nuevo Lead', p: 'US$300k' }
+                              ].map((item, idx) => (
+                                <div key={`dup-${idx}`} className="bg-black/40 border border-zinc-800/80 rounded-xl p-3 w-40 shadow-xl flex flex-col gap-1">
+                                  <div className="text-zinc-300 font-bold text-xs">{item.n}</div>
+                                  <div className="text-[10px] text-[#CCFF00] flex items-center gap-1 font-medium">{item.e}</div>
+                                  <div className="text-[10px] font-mono font-black text-zinc-500">{item.p}</div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {i === 5 && (
+                          <div className="p-4">
+                            <div className="grid grid-cols-7 gap-0.5 mb-1.5">
+                              {['D','L','M','M','J','V','S'].map((d,k) => (
+                                <div key={k} className="text-center text-zinc-600 text-[9px] font-bold">{d}</div>
+                              ))}
+                            </div>
+                            <div className="grid grid-cols-7 gap-1">
+                              {Array.from({length: 28}, (_,k) => (
+                                <div key={k} className={`text-center text-[9px] rounded-md py-1 transition-all duration-300 ${k===14 ? 'bg-[#CCFF00] text-black font-black shadow-lg shadow-[#CCFF00]/20' : k===8||k===21 ? 'bg-[#CCFF00]/10 text-[#CCFF00] border border-[#CCFF00]/20 font-bold animate-pulse' : 'text-zinc-500 bg-black/30'}`}>
+                                  {k+1}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {i === 6 && (
+                          <div className="p-4 space-y-2">
+                            <div className="flex gap-1.5 bg-black/40 p-1 rounded-lg border border-zinc-800/80">
+                              {['Mensual', 'Sectores', 'Conversión'].map((tab, idx) => (
+                                <button key={idx} className={`flex-1 text-[9px] font-bold uppercase py-1 rounded transition-colors ${activeTab === idx ? 'bg-[#CCFF00] text-black' : 'text-zinc-500'}`}>
+                                  {tab.slice(0, 5)}
+                                </button>
+                              ))}
+                            </div>
+                            <div className="bg-black/20 rounded-lg p-2.5 border border-zinc-800/80 h-16 flex flex-col justify-center">
+                              {activeTab === 0 && (
+                                <div>
+                                  <div className="text-zinc-500 text-[8px] uppercase tracking-wider">Cierres del Mes</div>
+                                  <div className="text-emerald-400 text-sm font-black font-mono">US$1,225,000</div>
+                                </div>
+                              )}
+                              {activeTab === 1 && (
+                                <div>
+                                  <div className="text-zinc-500 text-[8px] uppercase tracking-wider">Top Sector Activo</div>
+                                  <div className="text-[#CCFF00] text-xs font-bold truncate">Piantini & Naco (64%)</div>
+                                </div>
+                              )}
+                              {activeTab === 2 && (
+                                <div>
+                                  <div className="text-zinc-500 text-[8px] uppercase tracking-wider">Velocidad de Cierre</div>
+                                  <div className="text-cyan-400 text-xs font-mono font-bold">2.4 días por Lead</div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </FadeIn>
+              )
+            })}
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section id="faq" className="py-20 px-6 max-w-3xl mx-auto">
+          <FadeIn>
+            <div className="text-center mb-12">
+              <span className="text-[#CCFF00] text-xs uppercase tracking-widest font-bold mb-3 block">{t.faqBadge}</span>
+              <h2 className="text-4xl font-black">{t.faqTitle}</h2>
+            </div>
+          </FadeIn>
+          <div className="space-y-3">
+            {t.faqs.map((faq, i) => (
+              <FadeIn key={i} delay={i * 60}>
+                <div className="bg-black/20 border border-zinc-800/80 rounded-2xl overflow-hidden transition-all duration-300">
+                  <button
+                    onClick={() => setFaqAbierto(faqAbierto === i ? null : i)}
+                    className="w-full flex items-center justify-between p-6 text-left hover:bg-black/40 transition-all"
                   >
-                    {t.reportSection.btn}
+                    <span className="font-bold text-sm text-zinc-200">{faq.pregunta}</span>
+                    <ChevronDown className={`w-4 h-4 text-[#CCFF00] flex-shrink-0 transition-transform duration-300 ${faqAbierto === i ? 'rotate-180' : ''}`} />
                   </button>
-                </form>
-              ) : (
-                <div className="py-8 text-center flex flex-col items-center gap-4">
-                  <CheckCircle2 className="w-12 h-12 text-[#d5fd51]" />
-                  <p className="text-zinc-200 font-medium text-lg leading-relaxed max-w-md">{t.reportSection.success}</p>
+                  <div className={`overflow-hidden transition-all duration-300 ${faqAbierto === i ? 'max-h-48' : 'max-h-0'}`}>
+                    <div className="px-6 pb-6 border-t border-zinc-800/40 pt-2">
+                      <p className="text-zinc-400 text-sm leading-relaxed">{faq.respuesta}</p>
+                    </div>
+                  </div>
                 </div>
+              </FadeIn>
+            ))}
+          </div>
+        </section>
+
+        {/* CTA */}
+        <FadeIn>
+          <section id="contacto" className="py-16 px-6 text-center bg-[#CCFF00]/5 border-t border-[#CCFF00]/10 relative overflow-hidden">
+            <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-[#CCFF00]/10 rounded-full blur-2xl" />
+            <h2 className="text-4xl font-black mb-4">{t.ctaTitle}</h2>
+            <p className="text-zinc-400 mb-10 max-w-md mx-auto text-sm">{t.ctaDesc}</p>
+            <div className="max-w-md mx-auto flex flex-col gap-4 relative z-10">
+              <div className="relative">
+                <input
+                  type="email"
+                  placeholder={t.ctaPlaceholder}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-black/40 border-2 border-zinc-800 rounded-xl px-6 py-4 text-sm focus:border-[#CCFF00] outline-none transition-all placeholder-zinc-600 focus:ring-1 focus:ring-[#CCFF00]/20"
+                />
+              </div>
+              <button
+                onClick={guardarEmail}
+                disabled={cargando || enviado}
+                className="bg-[#CCFF00] text-black px-8 py-4 rounded-xl text-sm font-black hover:bg-white transition-all disabled:opacity-50 uppercase tracking-wider shadow-lg shadow-[#CCFF00]/20"
+              >
+                {enviado ? t.ctaSent : cargando ? t.ctaLoading : t.ctaBtn}
+              </button>
+              {!enviado && (
+                <p className="text-zinc-600 text-xs">Sin spam. Sin tarjeta de crédito. Solo acceso anticipado.</p>
               )}
             </div>
-          </FadeIn>
-        </div>
-      </section>
+          </section>
+        </FadeIn>
 
-      {/* SECCIÓN FAQ INTEGRA */}
-      <section id="faq" className="py-28 border-t border-zinc-900 bg-zinc-950/20 relative z-10">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <FadeIn>
-            <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-white text-center mb-20">{t.faq.title}</h2>
-          </FadeIn>
-          
-          <div className="space-y-6">
-            <FadeIn delay={100}>
-              <div className="bg-[#13151a]/40 border border-zinc-900 rounded-2xl p-6 sm:p-8">
-                <h3 className="text-lg font-bold text-white mb-3 flex items-start gap-3">
-                  <span className="text-[#d5fd51]">•</span> {t.faq.q1}
-                </h3>
-                <p className="text-zinc-400 text-sm leading-relaxed pl-4">{t.faq.a1}</p>
-              </div>
-            </FadeIn>
-            <FadeIn delay={200}>
-              <div className="bg-[#13151a]/40 border border-zinc-900 rounded-2xl p-6 sm:p-8">
-                <h3 className="text-lg font-bold text-white mb-3 flex items-start gap-3">
-                  <span className="text-[#d5fd51]">•</span> {t.faq.q2}
-                </h3>
-                <p className="text-zinc-400 text-sm leading-relaxed pl-4">{t.faq.a2}</p>
-              </div>
-            </FadeIn>
-            <FadeIn delay={300}>
-              <div className="bg-[#13151a]/40 border border-zinc-900 rounded-2xl p-6 sm:p-8">
-                <h3 className="text-lg font-bold text-white mb-3 flex items-start gap-3">
-                  <span className="text-[#d5fd51]">•</span> {t.faq.q3}
-                </h3>
-                <p className="text-zinc-400 text-sm leading-relaxed pl-4">{t.faq.a3}</p>
-              </div>
-            </FadeIn>
-          </div>
-        </div>
-      </section>
+        <footer className="py-8 text-center text-zinc-600 text-xs tracking-widest uppercase border-t border-zinc-800/60">
+          <p>{t.footer}</p>
+        </footer>
 
-      {/* FOOTER CORPORATIVO */}
-      <footer className="border-t border-zinc-900 bg-[#090a0f] py-12 text-center text-xs text-zinc-500 relative z-10">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-zinc-400">
-          <span className="font-bold text-white">HOM<span className="text-[#d5fd51]">VI</span></span>
-          <p>© {new Date().getFullYear()} HOMVI. Todos los derechos reservados. Diseñado para Top Producers en SD.</p>
-        </div>
-      </footer>
-
+        <a href="#" className="fixed bottom-6 right-6 bg-[#CCFF00] text-black w-10 h-10 rounded-full flex items-center justify-center hover:bg-white transition-all shadow-lg z-50 text-lg font-black transform hover:scale-110 active:scale-95 duration-200">
+          ↑
+        </a>
+      </div>
     </div>
-  );
+  )
 }
