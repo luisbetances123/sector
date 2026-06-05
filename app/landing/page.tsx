@@ -60,46 +60,46 @@ const content = {
       btnSecondary: 'Ver Funciones',
     },
     stats: [
-      ['5 min', 'Configuración inicial sin fricción'],
-      ['1 clic', 'Para enviar fichas técnicas por WhatsApp'],
-      ['7 en 1', 'Todo tu ecosistema centralizado'],
-      ['0%', 'Distracciones. Diseñado para el cierre'],
+      ['5 min', 'Configuración inicial cero drama. Entras y produces'],
+      ['1 clic', 'Envía fichas técnicas estéticas por WhatsApp. Cierra en caliente'],
+      ['7 en 1', 'Facturación, leads y pipeline. Deja de regalar comisiones por desorden'],
+      ['0%', 'Distracciones. Una interfaz diseñada exclusivamente para facturar'],
     ],
     featuresBadge: 'Todo lo que necesitas',
-    featuresTitle: '7 herramientas. Un solo lugar.',
+    featuresTitle: '7 herramientas de alto rendimiento. Un solo lugar.',
     faqBadge: 'Preguntas frecuentes',
     faqTitle: 'Todo lo que necesitas saber',
     ctaTitle: 'Únete antes que todos.',
-    ctaDesc: 'Cupos limitados para la beta privada. Sin tarjeta de crédito.',
+    ctaDesc: 'Cupos limitados para la beta privada. Domina tu mercado antes de que lo haga tu competencia.',
     ctaPlaceholder: 'tu@email.com',
-    ctaBtn: 'Unirse a la Lista de Espera',
-    ctaSent: '✓ ¡Apuntado! Te avisamos pronto.',
+    ctaBtn: 'Asegurar mi Acceso Anticipado',
+    ctaSent: '✓ ¡Cupo reservado! Te vemos dentro.',
     ctaLoading: 'Guardando...',
     footer: '© 2026 HOMVI · CRM Inmobiliario · Santo Domingo',
     rd: {
       title: 'Construido para el ecosistema inmobiliario de la República Dominicana',
-      subtitle: 'Desde Piantini hasta Punta Cana, HOMVI conoce tu territory.',
-      desc: 'Configurado con los sectores donde se mueve el dinero real:',
-      sectors: 'Piantini, Naco, Bella Vista, Serralles, Los Cacicazgos, La Esperilla, Mirador Norte',
-      tourism: '— y los destinos de inversión turística como',
-      tourismPlaces: 'Punta Cana, Bávaro y Boca Chica',
+      subtitle: 'De costa a costa, HOMVI conoce dónde se mueve el negocio grande.',
+      desc: 'Configurado con los sectores donde se mueve el dinero real y nacen nuevas torres:',
+      sectors: 'Piantini, Naco, Bella Vista, Serrallés, Los Cacicazgos, La Esperilla, Mirador Norte',
+      tourism: '— así como los polos de mayor plusvalía e inversión turística:',
+      tourismPlaces: 'Santiago, Las Terrenas, Juan Dolio, Punta Cana y Bávaro',
     },
     features: [
-      { numero: '01', titulo: 'Dashboard', subtitulo: 'Visión total de tu negocio en un vistazo', descripcion: 'El dashboard de HOMVI te muestra en tiempo real todo lo que importa: leads sin responder, seguimientos del día, clientes activos y propiedades disponibles. Sin distracciones, solo lo esencial para tomar decisiones rápidas.', puntos: ['Leads sin responder destacados', 'Seguimientos pendientes del día', 'Pipeline de clientes activo', 'Propiedades disponibles vs vendidas'] },
-      { numero: '02', titulo: 'Hoy', subtitulo: 'Tu agenda diaria inteligente', descripcion: 'La vista de Hoy centraliza todas tus actividades del día: citas, llamadas, cierres y notas rápidas. Programa nuevas actividades en segundos y marca lo completado sin salir de la pantalla.', puntos: ['Citas y llamadas del día ordenadas por hora', 'Notas rápidas que se guardan al instante', 'Programar nuevas actividades con modal rápido', 'Etiquetas por tipo: cita, llamada, urgente, cierre'] },
-      { numero: '03', titulo: 'Clientes', subtitulo: 'Tu cartera completa, siempre organizada', descripcion: 'Gestiona cada cliente con su perfil completo: presupuesto, zonas de interés, tipo de propiedad y etapa en el proceso de compra. Asigna propiedades directamente desde el perfil del cliente.', puntos: ['Perfil completo con presupuesto y preferencias', 'Zonas de interés por sector', 'Asignación directa de propiedades', 'Etapas: Lead, Buscando, En Oferta, Cierre'] },
-      { numero: '04', titulo: 'Propiedades', subtitulo: 'Catálogo de lujo siempre actualizado', descripcion: 'Administra tu inventario de propiedades con fotos, precio, sector, tipo y características. Filtra por cualquier criterio y conecta propiedades con los clientes correctos en segundos.', puntos: ['Fotos, precio y características completas', 'Filtros por sector, tipo y precio', 'Conexión directa cliente-propiedad', 'Historial de asignaciones'] },
-      { numero: '05', titulo: 'Pipeline', subtitulo: 'El estado de cada negociación en tiempo real', descripcion: 'El pipeline visual te muestra en qué etapa está cada cliente. Arrastra, actualiza y prioriza sin esfuerzo. Nunca pierdas de vista una oportunidad de cierre.', puntos: ['Vista Kanban por etapas', 'Arrastrar y soltar entre etapas', 'Valor estimado por etapa', 'Alertas de clientes sin actividad'] },
-      { numero: '06', titulo: 'Calendario', subtitulo: 'Todas tus citas en un solo lugar', descripcion: 'El calendario de HOMVI centraliza tus citas, visitas y seguimientos. Visualiza tu semana o mes completo y nunca llegues a una reunión sin estar preparado.', puntos: ['Vista semanal y mensual', 'Citas vinculadas a clientes', 'Recordatorios automáticos', 'Sincronización con tus actividades diarias'] },
-      { numero: '07', titulo: 'Reportes', subtitulo: 'Métricas que impulsan tu crecimiento', descripcion: 'Analiza tu rendimiento con reportes por etapa, sector y período. Identifica qué zonas generan más cierres, cuánto tiempo tarda un lead en convertirse y cuáles son tus propiedades más solicitadas.', puntos: ['Reportes por etapa del pipeline', 'Análisis por sector geográfico', 'Tiempo promedio de conversión', 'Propiedades más consultadas'] },
+      { numero: '01', titulo: 'Dashboard', subtitulo: 'Visión total de tu negocio en un vistazo', descripcion: 'El centro de mando de HOMVI. Te muestra en tiempo real lo que deja dinero: leads sin responder en rojo, seguimientos urgentes del día y el estatus real de tus negociaciones. Cero métricas de vanidad.', puntos: ['Leads fríos y calientes destacados', 'Alertas de seguimiento inmediato', 'Pipeline activo consolidado', 'Métricas de inventario disponible'] },
+      { numero: '02', titulo: 'Mis Tareas', subtitulo: 'Tu agenda diaria inteligente', descripcion: 'Diseñado para el ritmo del broker moderno. Centraliza citas de captación, llamadas de seguimiento y cierres programados. Agenda en segundos y limpia tu pantalla a medida que avanzas el día.', puntos: ['Citas de proyectos ordenadas por hora', 'Block de notas rápidas integrado', 'Programación de llamadas con un clic', 'Etiquetas de urgencia (Cierre, Alerta)'] },
+      { numero: '03', titulo: 'Leads y Contactos', subtitulo: 'Tu cartera completa, blindada', descripcion: 'Gestiona el perfil patrimonial de tus compradores: presupuestos, sectores específicos de interés, método de pago y nivel de urgencia. Conecta clientes con propiedades al instante.', puntos: ['Perfil con presupuesto bimonetario', 'Preferencia exacta de sectores', 'Historial de interacciones por cliente', 'Segmentación por origen del lead'] },
+      { numero: '04', titulo: 'Inventario', subtitulo: 'Catálogo de propiedades premium', descripcion: 'Administra tus exclusivas y propiedades disponibles de forma visual. Filtros ultra rápidos por sector, precio y tipología para que le respondas al cliente de inmediato cuando pida opciones.', puntos: ['Fichas de propiedades optimizadas', 'Filtros dinámicos por zona y torre', 'Match automático con compradores', 'Control de estatus: Disponible o Reservado'] },
+      { numero: '05', titulo: 'Pipeline', subtitulo: 'El estado de tus comisiones en tiempo real', descripcion: 'El corazón comercial de tu negocio. Una vista tipo Kanban que te permite arrastrar a tus clientes desde el primer contacto hasta el cobro de la comisión. Controla tu flujo de caja visualmente.', puntos: ['Vista visual por fases de venta', 'Movimiento drag-and-drop intuitivo', 'Cálculo automático de volumen de cierre', 'Alertas por estancamiento de prospectos'] },
+      { numero: '06', titulo: 'Calendario', subtitulo: 'Citas y visitas bajo control', descripcion: 'Organiza tus recorridos y reuniones sin solapamientos. Vinculado directamente con los perfiles de tus clientes para que sepas exactamente qué propiedad vas a mostrar antes de llegar.', puntos: ['Vista ágil semanal y mensual', 'Eventos enlazados a clientes reales', 'Recordatorios de visitas a proyectos', 'Bloqueo de horas de alta productividad'] },
+      { numero: '07', titulo: 'Métricas', subtitulo: 'Datos crudos que multiplican cierres', descripcion: 'Deja de adivinar qué funciona. Analiza tus tiempos de respuesta, qué sectores están rindiendo más comisiones este trimestre y de dónde están saliendo tus leads más calificados.', puntos: ['Rendimiento por zona geográfica', 'Tasa de conversión de leads a cierres', 'Volumen financiero total en negociación', 'Análisis de efectividad comercial'] },
     ],
     faqs: [
-      { pregunta: '¿Necesito instalar algo?', respuesta: 'No. HOMVI es 100% web. Accedes desde cualquier navegador en tu computadora o teléfono, sin descargas ni instalaciones.' },
-      { pregunta: '¿Puedo usar HOMVI con mi equipo?', respuesta: 'Sí. HOMVI soporta múltiples agentes. Cada uno tiene su propia cuenta y ve solo sus clientes, propiedades y actividades.' },
-      { pregunta: '¿Mis datos están seguros?', respuesta: 'Totalmente. Usamos Supabase con Row Level Security, lo que significa que cada agente solo accede a sus propios datos. Toda la información está encriptada.' },
-      { pregunta: '¿Puedo importar mis clientes actuales?', respuesta: 'Sí. HOMVI permite importar clientes desde Excel o CSV. También puedes agregarlos manualmente uno por uno desde la sección de Clientes.' },
-      { pregunta: '¿Funciona en el teléfono?', respuesta: 'Sí. HOMVI tiene diseño responsivo y una navegación móvil optimizada para que puedas gestionar tu cartera desde cualquier lugar.' },
-      { pregunta: '¿Qué pasa si tengo muchas propiedades?', respuesta: 'No hay límite. Puedes agregar todas las propiedades que necesites, con fotos, precios y características. El sistema está diseñado para manejar catálogos grandes sin perder velocidad.' },
+      { pregunta: '¿Necesito instalar algo?', respuesta: 'No. HOMVI es 100% en la nube. Accedes desde tu iPhone, iPad o computadora desde cualquier lugar de Santo Domingo o el interior, sin descargar nada.' },
+      { pregunta: '¿Puedo usar HOMVI con mi equipo de brokers?', respuesta: 'Sí. El sistema está hecho para agencias o equipos de alto rendimiento. Cada asesor maneja sus propios clientes con total privacidad de datos mediante seguridad avanzada.' },
+      { pregunta: '¿Mis datos de clientes están protegidos?', respuesta: 'Totalmente. Implementamos encriptación de nivel bancario y políticas estrictas de privacidad en Supabase. Tu cartera es tu activo más valioso, y nadie más tiene acceso a ella.' },
+      { pregunta: '¿Cómo migro mis clientes desde un Excel?', respuesta: 'Facilísimo. HOMVI cuenta con un importador nativo de archivos CSV y Excel. Sube tu base de datos actual y estarás operando en menos de 5 minutos.' },
+      { pregunta: '¿Cómo funciona el envío por WhatsApp?', respuesta: 'Desde la ficha de cualquier propiedad en tu Inventario, haces clic en el botón de compartir y HOMVI te genera un enlace estético, limpio y profesional optimizado para móvil listo para enviar.' },
+      { pregunta: '¿Hay un límite de propiedades o captaciones?', respuesta: 'Ninguno. Sube todo el inventario de preventas, reventas y proyectos turísticos que manejes. La plataforma procesa catálogos masivos sin perder un solo milisegundo de velocidad.' },
     ],
   },
   en: {
@@ -114,46 +114,46 @@ const content = {
       btnSecondary: 'See Features',
     },
     stats: [
-      ['5 min', 'Frictionless initial setup'],
-      ['1 click', 'To share property sheets via WhatsApp'],
-      ['7 in 1', 'Your entire ecosystem in one place'],
-      ['0%', 'Distractions. Built for closing deals'],
+      ['5 min', 'Zero-friction initial setup. Get in and produce'],
+      ['1 click', 'Share aesthetic property sheets via WhatsApp. Close deals on the go'],
+      ['7 in 1', 'Invoicing, leads, and pipeline. Stop losing commissions due to chaos'],
+      ['0%', 'Distractions. An interface built exclusively for revenue generation'],
     ],
     featuresBadge: 'Everything you need',
-    featuresTitle: '7 tools. One place.',
+    featuresTitle: '7 high-performance tools. One place.',
     faqBadge: 'Frequently asked questions',
     faqTitle: 'Everything you need to know',
     ctaTitle: 'Join before everyone else.',
-    ctaDesc: 'Limited spots for the private beta. No credit card required.',
+    ctaDesc: 'Limited spots for the private beta. Dominate your market before your competition does.',
     ctaPlaceholder: 'you@email.com',
-    ctaBtn: 'Join the Waitlist',
-    ctaSent: '✓ You\'re in! We\'ll be in touch soon.',
+    ctaBtn: 'Secure My Early Access',
+    ctaSent: '✓ Spot reserved! See you inside.',
     ctaLoading: 'Saving...',
     footer: '© 2026 HOMVI · Real Estate CRM · Santo Domingo',
     rd: {
       title: 'Built for the Dominican Republic real estate ecosystem',
-      subtitle: 'From Piantini to Punta Cana, HOMVI knows your territory.',
-      desc: 'Configured with the sectors where the real money moves:',
-      sectors: 'Piantini, Naco, Bella Vista, Serralles, Los Cacicazgos, La Esperilla, Mirador Norte',
-      tourism: '— and tourist investment destinations like',
-      tourismPlaces: 'Punta Cana, Bávaro and Boca Chica',
+      subtitle: 'From coast to coast, HOMVI knows where the big business moves.',
+      desc: 'Configured with the areas where real money flows and new towers rise:',
+      sectors: 'Piantini, Naco, Bella Vista, Serrallés, Los Cacicazgos, La Esperilla, Mirador Norte',
+      tourism: '— as well as the highest growth tourist investment destinations:',
+      tourismPlaces: 'Santiago, Las Terrenas, Juan Dolio, Punta Cana, and Bávaro',
     },
     features: [
-      { numero: '01', titulo: 'Dashboard', subtitulo: 'Total view of your business at a glance', descripcion: 'HOMVI\'s dashboard shows you in real time everything that matters: unanswered leads, today\'s follow-ups, active clients and available properties. No distractions, just what you need to make fast decisions.', puntos: ['Unanswered leads highlighted', 'Pending follow-ups for today', 'Active client pipeline', 'Available vs sold properties'] },
-      { numero: '02', titulo: 'Today', subtitulo: 'Your smart daily agenda', descripcion: 'The Today view centralizes all your daily activities: appointments, calls, closings and quick notes. Schedule new activities in seconds and mark completed ones without leaving the screen.', puntos: ['Appointments and calls sorted by time', 'Quick notes saved instantly', 'Schedule new activities with quick modal', 'Tags by type: appointment, call, urgent, closing'] },
-      { numero: '03', titulo: 'Clients', subtitulo: 'Your full portfolio, always organized', descripcion: 'Manage each client with their complete profile: budget, areas of interest, property type and stage in the buying process. Assign properties directly from the client profile.', puntos: ['Full profile with budget and preferences', 'Areas of interest by neighborhood', 'Direct property assignment', 'Stages: Lead, Searching, In Offer, Closing'] },
-      { numero: '04', titulo: 'Properties', subtitulo: 'Luxury catalog always up to date', descripcion: 'Manage your property inventory with photos, price, area, type and features. Filter by any criteria and connect properties with the right clients in seconds.', puntos: ['Full photos, price and features', 'Filters by area, type and price', 'Direct client-property connection', 'Assignment history'] },
-      { numero: '05', titulo: 'Pipeline', subtitulo: 'Status of every negotiation in real time', descripcion: 'The visual pipeline shows you what stage each client is at. Drag, update and prioritize effortlessly. Never lose sight of a closing opportunity.', puntos: ['Kanban view by stage', 'Drag and drop between stages', 'Estimated value per stage', 'Alerts for inactive clients'] },
-      { numero: '06', titulo: 'Calendar', subtitulo: 'All your appointments in one place', descripcion: 'HOMVI\'s calendar centralizes your appointments, visits and follow-ups. View your full week or month and never arrive at a meeting unprepared.', puntos: ['Weekly and monthly view', 'Appointments linked to clients', 'Automatic reminders', 'Sync with your daily activities'] },
-      { numero: '07', titulo: 'Reports', subtitulo: 'Metrics that drive your growth', descripcion: 'Analyze your performance with reports by stage, area and period. Identify which zones generate more closings, how long a lead takes to convert and which properties are most requested.', puntos: ['Reports by pipeline stage', 'Analysis by geographic area', 'Average conversion time', 'Most viewed properties'] },
+      { numero: '01', titulo: 'Dashboard', subtitulo: 'Total view of your business at a glance', descripcion: 'HOMVI\'s command center. It shows you what makes money in real time: red-highlighted unanswered leads, urgent daily follow-ups, and the real status of your negotiations. Zero vanity metrics.', puntos: ['Hot and cold leads highlighted', 'Immediate follow-up alerts', 'Consolidated active pipeline', 'Available inventory metrics'] },
+      { numero: '02', titulo: 'Mis Tareas', subtitulo: 'Your smart daily agenda', descripcion: 'Built for the modern broker\'s rhythm. Centralizes project viewings, follow-up calls, and scheduled closings. Schedule in seconds and clear your screen as the day moves forward.', puntos: ['Project appointments sorted by hour', 'Integrated quick notepad', 'One-click call scheduling', 'Urgency tags (Closing, Alert)'] },
+      { numero: '03', titulo: 'Leads y Contactos', subtitulo: 'Your full portfolio, locked down', descripcion: 'Manage your buyer\'s wealth profile: budgets, specific areas of interest, payment method, and urgency level. Pair clients with properties instantly.', puntos: ['Dual-currency budget profile', 'Exact neighborhood preference', 'Interaction history per client', 'Lead source segmentation'] },
+      { numero: '04', titulo: 'Inventario', subtitulo: 'Premium property catalog', descripcion: 'Manage your listings and available inventory visually. Ultra-fast filtering by sector, price, and type so you can respond to the client immediately when they request options.', puntos: ['Optimized property sheets', 'Dynamic filters by zone and tower', 'Automatic matching with buyers', 'Status control: Available or Reserved'] },
+      { numero: '05', titulo: 'Pipeline', subtitulo: 'Track your commissions in real time', descripcion: 'The commercial heart of your business. A Kanban view that lets you drag your clients from the first touchpoint down to the commission check. Manage your cash flow visually.', puntos: ['Visual sales stages view', 'Intuitive drag-and-drop movement', 'Automatic closing volume calculation', 'Alerts for stalled prospects'] },
+      { numero: '06', titulo: 'Calendario', subtitulo: 'Viewings and meetings under control', descripcion: 'Organize your property tours and meetings without overlaps. Connected directly with your client profiles so you know exactly what listing you are showing before arriving.', puntos: ['Agile weekly and monthly view', 'Events linked to real clients', 'Project visit reminders', 'High-productivity hours blocking'] },
+      { numero: '07', titulo: 'Métricas', subtitulo: 'Raw data that multiplies closings', descripcion: 'Stop guessing what works. Analyze response times, which neighborhoods are yielding the highest commissions this quarter, and where your most qualified leads are coming from.', puntos: ['Performance by geographic zone', 'Lead-to-close conversion rate', 'Total pipeline financial volume', 'Sales effectiveness analysis'] },
     ],
     faqs: [
-      { pregunta: 'Do I need to install anything?', respuesta: 'No. HOMVI is 100% web-based. Access it from any browser on your computer or phone, no downloads or installations needed.' },
-      { pregunta: 'Can I use HOMVI with my team?', respuesta: 'Yes. HOMVI supports multiple agents. Each one has their own account and only sees their own clients, properties and activities.' },
-      { pregunta: 'Is my data secure?', respuesta: 'Absolutely. We use Supabase with Row Level Security, meaning each agent can only access their own data. All information is encrypted.' },
-      { pregunta: 'Can I import my current clients?', respuesta: 'Yes. HOMVI allows you to import clients from Excel or CSV. You can also add them manually one by one from the Clients section.' },
-      { pregunta: 'Does it work on mobile?', respuesta: 'Yes. HOMVI has a responsive design and an optimized mobile navigation so you can manage your portfolio from anywhere.' },
-      { pregunta: 'What if I have many properties?', respuesta: 'No limit. You can add as many properties as you need, with photos, prices and features. The system is designed to handle large catalogs without losing speed.' },
+      { pregunta: 'Do I need to install anything?', respuesta: 'No. HOMVI is 100% cloud-based. Access it from your iPhone, iPad, or laptop from anywhere in Santo Domingo or across the country without downloading a thing.' },
+      { pregunta: 'Can I use HOMVI with my team of brokers?', respuesta: 'Yes. The system is custom-built for high-performance agencies or teams. Each advisor manages their own database with absolute data privacy via advanced security layers.' },
+      { pregunta: 'Is my client data protected?', respuesta: 'Absolutely. We implement bank-level encryption and strict privacy rules via Supabase. Your database is your most valuable asset, and nobody else has access to it.' },
+      { pregunta: 'How do I migrate my clients from Excel?', respuesta: 'Extremely easy. HOMVI features a native CSV and Excel importer. Upload your current database and you will be up and running in less than 5 minutes.' },
+      { pregunta: 'How does the WhatsApp share feature work?', respuesta: 'From any listing page in your Inventario, just click the share button and HOMVI will instantly generate a beautiful, clean, mobile-optimized link ready to send.' },
+      { pregunta: 'Is there a limit on properties or listings?', respuesta: 'None at all. Upload all pre-constructions, resales, and tourist projects you handle. The platform processes massive catalogs without losing a single millisecond of speed.' },
     ],
   },
 }
@@ -349,7 +349,7 @@ export default function Page() {
                         </div>
                       </div>
 
-                      {/* Mockup visual dinámico (Estructura Responsive lg:w-80 impecable) */}
+                      {/* Mockup visual dinámico */}
                       <div className="w-full lg:w-80 flex-shrink-0 rounded-xl overflow-hidden border border-zinc-800 bg-[#110E08] shadow-2xl transition-all group-hover:border-zinc-700">
                         {i === 0 && (
                           <div className="p-4 space-y-2.5">
@@ -382,7 +382,7 @@ export default function Page() {
                                 className={`flex items-center gap-2 bg-black/30 rounded-lg px-3 py-2 border transition-all duration-500 ${completedTask[k] ? 'border-[#CCFF00]/30 opacity-40 bg-zinc-900/20' : 'border-zinc-800/80'}`}
                               >
                                 {completedTask[k] ? (
-                                  <CheckCircle2 className="w-4 h-4 text-[#CCFF00] flex-shrink-0 animate-scale" />
+                                  <CheckCircle2 className="w-4 h-4 text-[#CCFF00] flex-shrink-0" />
                                 ) : (
                                   <span className="text-sm flex-shrink-0">{icon}</span>
                                 )}
@@ -425,7 +425,6 @@ export default function Page() {
                           </div>
                         )}
                         {i === 4 && (
-                          /* MARQUEE INFINITO DEL PIPELINE VISUAL */
                           <div className="py-4 overflow-hidden relative bg-[#110E08] h-28 flex items-center">
                             <div className="absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-[#110E08] to-transparent z-10 pointer-events-none" />
                             <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-[#110E08] to-transparent z-10 pointer-events-none" />
@@ -442,7 +441,6 @@ export default function Page() {
                                   <div className="text-[10px] font-mono font-black text-zinc-500">{item.p}</div>
                                 </div>
                               ))}
-                              {/* Duplicado para loop infinito */}
                               {[
                                 { n: 'Luis B.', e: 'Lead → Buscando', p: 'US$215k' },
                                 { n: 'Lizmarie B.', e: 'Buscando → Oferta', p: 'US$450k' },
@@ -467,7 +465,7 @@ export default function Page() {
                             </div>
                             <div className="grid grid-cols-7 gap-1">
                               {Array.from({length: 28}, (_,k) => (
-                                <div key={k} className={`text-center text-[9px] rounded-md py-1 transition-all duration-300 ${k===14 ? 'bg-[#CCFF00] text-black font-black shadow-lg shadow-[#CCFF00]/20' : k===8||k===21 ? 'bg-[#CCFF00]/10 text-[#CCFF00] border border-[#CCFF00]/20 font-bold animate-pulse' : 'text-zinc-500 bg-black/30'}`}>
+                                <div key={k} className={`text-center text-[9px] rounded-md py-1 transition-all duration-300 ${k===14 ? 'bg-[#CCFF00] text-black font-black shadow-lg shadow-[#CCFF00]/20' : k===8||k===21 ? 'bg-[#CCFF00]/10 text-[#CCFF00] border border-[#CCFF00]/20 font-bold' : 'text-zinc-500 bg-black/30'}`}>
                                   {k+1}
                                 </div>
                               ))}
