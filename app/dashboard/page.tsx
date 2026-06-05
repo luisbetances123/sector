@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 
 export default function DashboardPage() {
+export default function DashboardPage() {
   const [saludo, setSaludo] = useState('Buenos días')
 
   useEffect(() => {
