@@ -1,8 +1,7 @@
 'use client'
 import { useEffect, useState, Suspense, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { supabase } from '../lib/supabase'
-
+import { supabase } from '../../lib/supabase'
 type PropertyEstado = 'disponible' | 'en_proceso' | 'vendida' | 'rentada' | 'reservada'
 type PropertyType = 'APARTAMENTO' | 'CASA' | 'LOCAL' | 'TERRENO' | 'OFICINA' | 'BODEGA'
 
