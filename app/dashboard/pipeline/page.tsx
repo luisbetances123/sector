@@ -8,7 +8,8 @@ import {
   Plus,
   AlertTriangle,
   Clock,
-  Briefcase
+  Briefcase,
+  Search
 } from 'lucide-react'
 
 interface Lead {
@@ -19,19 +20,19 @@ interface Lead {
   budget: string
   sector: string
   updatedAt: string
-  priority: 'critico' | 'seguimiento' | 'nuevo' | 'normal' // Estados financieros inteligentes
+  priority: 'critico' | 'seguimiento' | 'nuevo' | 'buscando' | 'normal' // Estados financieros inteligentes completos
   statusLabel: string // Ej: "SIN RESPONDER", "BUSCANDO", "PROPUESTA"
 }
 
 export default function PipelinePage() {
-  // Estado local con las prioridades de color ajustadas
+  // Estado local con todas las prioridades de color ajustadas al 100%
   const [columns, setColumns] = useState<{ [key: string]: Lead[] }>({
     'Prospectos': [
       { id: '1', name: 'Carlos Mendoza', project: 'Torre Naco Luxury', propertyType: 'Apartamento', budget: 'US$280,000', sector: 'Naco', updatedAt: 'Hace 2h', priority: 'critico', statusLabel: 'SIN RESPONDER' },
       { id: '2', name: 'Alejandro Sanz', project: 'Villa Las Terrenas', propertyType: 'Villa / Casa', budget: 'US$650,000', sector: 'Las Terrenas', updatedAt: 'Hace 5h', priority: 'nuevo', statusLabel: 'NUEVO LEAD' },
     ],
     'Calificados': [
-      { id: '3', name: 'Luis Betances', project: 'Regatta Blue', propertyType: 'Penthouse', budget: 'US$450,000', sector: 'Piantini', updatedAt: 'Ayer', priority: 'normal', statusLabel: 'BUSCANDO' },
+      { id: '3', name: 'Luis Betances', project: 'Regatta Blue', propertyType: 'Penthouse', budget: 'US$450,000', sector: 'Piantini', updatedAt: 'Ayer', priority: 'buscando', statusLabel: 'BUSCANDO' },
     ],
     'En Propuesta': [
       { id: '4', name: 'Jean Lizardo', project: 'Penthouse Serrallés', propertyType: 'Apartamento', budget: 'US$890,000', sector: 'Serrallés', updatedAt: 'Hace 15m', priority: 'seguimiento', statusLabel: 'PROPUESTA' },
@@ -89,6 +90,12 @@ export default function PipelinePage() {
           border: 'border-cyan-500/30 bg-gradient-to-b from-[#110E08] to-cyan-950/5', 
           text: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20', 
           icon: Briefcase 
+        }
+      case 'buscando': // Azul Cobalto - Perfilamiento y búsqueda activa
+        return { 
+          border: 'border-blue-500/30 bg-gradient-to-b from-[#110E08] to-blue-950/5', 
+          text: 'text-blue-400 bg-blue-500/10 border-blue-500/20', 
+          icon: Search 
         }
       default: // Normal / Gris Neutro Elegante
         return { 
