@@ -18,7 +18,7 @@ type Property = {
   banos?: number
   estacionamientos?: number
   descripcion?: string
-  imagenes?: string[] // Actualizado a array de strings para Claude
+  imagenes?: string[]
   moneda: string
   created_at?: string
 }
@@ -59,7 +59,7 @@ const EMPTY_FORM = {
   estacionamientos: '', 
   descripcion: '', 
   moneda: 'USD', 
-  imagenes: [] as string[] // Cambiado a array de URLs
+  imagenes: [] as string[]
 }
 
 type FormData = typeof EMPTY_FORM
@@ -95,8 +95,6 @@ function PropertyModal({ open, initial, onClose, onSave }: ModalProps) {
   const [form, setForm] = useState<FormData>(EMPTY_FORM)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
-
-  // Temporal para manejar la entrada de texto de URLs en el formulario antes de que Claude haga la lista dinámica
   const [tempUrl, setTempUrl] = useState('')
 
   useEffect(() => {
@@ -133,11 +131,10 @@ function PropertyModal({ open, initial, onClose, onSave }: ModalProps) {
     setSaving(true)
     setError('')
     try {
-      // Si el usuario escribió una url en el input, nos aseguramos de meterla al array antes de salvar
-const finalImages = tempUrl.trim()
-  ? [...new Set([tempUrl.trim(), ...form.imagenes.filter(u => u && u !== tempUrl.trim())])]
-  : form.imagenes
-await onSave({ ...form, imagenes: finalImages })
+      const finalImages = tempUrl.trim()
+        ? [...new Set([tempUrl.trim(), ...form.imagenes.filter(u => u && u !== tempUrl.trim())])]
+        : form.imagenes
+      await onSave({ ...form, imagenes: finalImages })
       onClose()
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Error al guardar')
@@ -146,14 +143,14 @@ await onSave({ ...form, imagenes: finalImages })
     }
   }
 
-  const inputCls = 'bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none text-sm w-full placeholder:text-zinc-500'
+  const inputCls = 'bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-[#CCFF00] outline-none text-sm w-full placeholder:text-zinc-500 transition-colors'
   const labelCls = 'text-zinc-400 text-xs uppercase tracking-wider font-bold mb-1 block'
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-zinc-900 border border-zinc-700 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-zinc-800">
-          <h2 className="text-lg font-black text-amber-500 uppercase tracking-tight">
+          <h2 className="text-lg font-black text-[#CCFF00] uppercase tracking-tight">
             {initial ? 'Editar Propiedad' : 'Nueva Propiedad'}
           </h2>
           <button onClick={onClose} className="text-zinc-500 hover:text-white transition-colors p-1">
@@ -238,50 +235,50 @@ await onSave({ ...form, imagenes: finalImages })
             </div>
           </div>
 
-     <div>
-  <label className={labelCls}>Fotos de la propiedad</label>
-  <div className="space-y-2">
-    {(form.imagenes.length > 0 ? form.imagenes : ['']).map((url, i) => (
-      <div key={i} className="flex gap-2">
-        <input
-          value={url}
-          onChange={e => {
-            const arr = [...form.imagenes]
-            if (arr.length === 0) arr.push('')
-            arr[i] = e.target.value
-            set('imagenes', arr)
-          }}
-          placeholder={i === 0 ? 'URL foto principal...' : `URL foto ${i + 1}...`}
-          className={inputCls}
-        />
-        {i > 0 && (
-          <button
-            type="button"
-            onClick={() => set('imagenes', form.imagenes.filter((_, j) => j !== i))}
-            className="px-3 bg-zinc-800 text-red-400 rounded-xl hover:bg-zinc-700 transition-colors shrink-0"
-          >
-            ✕
-          </button>
-        )}
-      </div>
-    ))}
-    <button
-      type="button"
-      onClick={() => set('imagenes', [...form.imagenes, ''])}
-      className="w-full py-2 border border-dashed border-zinc-700 text-zinc-500 text-xs rounded-xl hover:border-amber-500 hover:text-amber-500 transition-colors"
-    >
-      + Agregar otra foto
-    </button>
-  </div>
-  {form.imagenes[0] && (
-    <img
-      src={form.imagenes[0]}
-      alt="Preview"
-      className="mt-3 w-full h-32 object-cover rounded-xl border border-zinc-700"
-      onError={e => (e.currentTarget.style.display = 'none')}
-    />
-  )}
-</div>
+          <div>
+            <label className={labelCls}>Fotos de la propiedad</label>
+            <div className="space-y-2">
+              {(form.imagenes.length > 0 ? form.imagenes : ['']).map((url, i) => (
+                <div key={i} className="flex gap-2">
+                  <input
+                    value={url}
+                    onChange={e => {
+                      const arr = [...form.imagenes]
+                      if (arr.length === 0) arr.push('')
+                      arr[i] = e.target.value
+                      set('imagenes', arr)
+                    }}
+                    placeholder={i === 0 ? 'URL foto principal...' : `URL foto ${i + 1}...`}
+                    className={inputCls}
+                  />
+                  {i > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => set('imagenes', form.imagenes.filter((_, j) => j !== i))}
+                      className="px-3 bg-zinc-800 text-red-400 rounded-xl hover:bg-zinc-700 transition-colors shrink-0"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => set('imagenes', [...form.imagenes, ''])}
+                className="w-full py-2 border border-dashed border-zinc-700 text-zinc-500 text-xs rounded-xl hover:border-[#CCFF00] hover:text-[#CCFF00] transition-colors"
+              >
+                + Agregar otra foto
+              </button>
+            </div>
+            {form.imagenes[0] && (
+              <img
+                src={form.imagenes[0]}
+                alt="Preview"
+                className="mt-3 w-full h-32 object-cover rounded-xl border border-zinc-700"
+                onError={e => (e.currentTarget.style.display = 'none')}
+              />
+            )}
+          </div>
 
           <div>
             <label className={labelCls}>Descripción</label>
@@ -300,7 +297,7 @@ await onSave({ ...form, imagenes: finalImages })
               Cancelar
             </button>
             <button onClick={handleSave} disabled={saving}
-              className="flex-1 bg-amber-500 text-black py-3 rounded-xl font-black text-sm uppercase hover:bg-white transition-all disabled:opacity-50">
+              className="flex-1 bg-[#CCFF00] text-black py-3 rounded-xl font-black text-sm uppercase hover:bg-white transition-all disabled:opacity-50">
               {saving ? 'Guardando...' : initial ? 'Guardar cambios' : 'Crear propiedad'}
             </button>
           </div>
@@ -321,12 +318,11 @@ interface CardProps {
 
 function PropertyCard({ property: p, onClick, onEdit, onDelete }: CardProps) {
   const hasMeta = p.recamaras || p.banos || p.estacionamientos || p.m2
-  // Usar la primera imagen del array si existe
   const imagenPrincipal = p.imagenes && p.imagenes.length > 0 ? p.imagenes[0] : null
 
   return (
     <div onClick={onClick}
-      className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden cursor-pointer hover:border-amber-500/50 transition-all group relative">
+      className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden cursor-pointer hover:border-[#CCFF00]/50 transition-all group relative">
       {imagenPrincipal ? (
         <div className="h-44 overflow-hidden">
           <img src={imagenPrincipal} alt={p.title}
@@ -347,7 +343,7 @@ function PropertyCard({ property: p, onClick, onEdit, onDelete }: CardProps) {
 
       <div className="absolute top-3 right-3 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
         <button onClick={onEdit}
-          className="p-1.5 bg-zinc-900/90 backdrop-blur-sm rounded-lg text-zinc-400 hover:text-amber-400 border border-zinc-700 transition-colors">
+          className="p-1.5 bg-zinc-900/90 backdrop-blur-sm rounded-lg text-zinc-400 hover:text-[#CCFF00] border border-zinc-700 transition-colors">
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
           </svg>
@@ -362,15 +358,15 @@ function PropertyCard({ property: p, onClick, onEdit, onDelete }: CardProps) {
 
       <div className="p-4">
         <div className="flex items-start justify-between gap-2 mb-1">
-          <h3 className="text-white font-bold text-sm leading-tight line-clamp-2">{p.title}</h3>
-          <span className="shrink-0 text-zinc-500 text-[10px] uppercase tracking-wider bg-zinc-800 px-2 py-0.5 rounded-md font-bold">
+          <h3 className="text-white font-bold text-sm leading-tight line-clamp-2 transition-colors group-hover:text-[#CCFF00]">{p.title}</h3>
+          <span className="shrink-0 text-zinc-400 text-[10px] uppercase tracking-wider bg-zinc-800 px-2 py-0.5 rounded-md font-bold">
             {p.type}
           </span>
         </div>
 
         {(p.location || p.sector) && (
-          <p className="text-zinc-500 text-xs mb-3 flex items-center gap-1">
-            <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <p className="text-zinc-300 text-xs mb-3 flex items-center gap-1 font-medium">
+            <svg className="w-3 h-3 shrink-0 text-[#CCFF00]/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
@@ -379,7 +375,7 @@ function PropertyCard({ property: p, onClick, onEdit, onDelete }: CardProps) {
         )}
 
         {hasMeta && (
-          <div className="flex gap-3 text-xs text-zinc-500 mb-3 flex-wrap">
+          <div className="flex gap-3 text-xs text-zinc-400 mb-3 flex-wrap">
             {p.recamaras != null && <span>🛏 {p.recamaras}</span>}
             {p.banos != null && <span>🚿 {p.banos}</span>}
             {p.estacionamientos != null && <span>🚗 {p.estacionamientos}</span>}
@@ -388,7 +384,7 @@ function PropertyCard({ property: p, onClick, onEdit, onDelete }: CardProps) {
         )}
 
         <div className="border-t border-zinc-800 pt-3 mt-3">
-          <span className="text-amber-400 font-black text-base">
+          <span className="text-[#CCFF00] font-black text-base">
             {formatPrice(p.price, p.moneda)}
           </span>
         </div>
@@ -412,7 +408,7 @@ function StatsBar({ properties }: { properties: Property[] }) {
       {[
         { label: 'Total',       value: stats.total,       color: 'text-white' },
         { label: 'Disponibles', value: stats.disponibles, color: 'text-emerald-400' },
-        { label: 'En proceso',  value: stats.en_proceso,  color: 'text-amber-400' },
+        { label: 'En proceso',  value: stats.en_proceso,  color: 'text-[#CCFF00]' },
         { label: 'Cerradas',    value: stats.vendidas,    color: 'text-zinc-400' },
       ].map(s => (
         <div key={s.label} className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2.5">
@@ -463,9 +459,9 @@ function PropertiesContent() {
       recamaras: form.recamaras ? parseInt(form.recamaras as string) : null,
       banos: form.banos ? parseFloat(form.banos as string) : null,
       estacionamientos: form.estacionamientos ? parseInt(form.estacionamientos as string) : null,
-     descripcion: form.descripcion || null,
-imagen_url: form.imagenes?.[0] || null,
-imagenes: form.imagenes || [],
+      descripcion: form.descripcion || null,
+      imagen_url: form.imagenes?.[0] || null,
+      imagenes: form.imagenes || [],
     }
 
     try {
@@ -491,7 +487,7 @@ imagenes: form.imagenes || [],
       }
     } catch (error) {
       console.error("Error al guardar en Supabase:", error)
-      alert("Hubo un error al guardar la propiedad. Pásale este log a Claude.")
+      alert("Hubo un error al guardar la propiedad.")
     }
   }
 
@@ -527,12 +523,12 @@ imagenes: form.imagenes || [],
       {/* Header */}
       <div className="flex justify-between items-start mb-6">
         <div>
-          <h1 className="text-2xl md:text-4xl font-black italic text-amber-500 tracking-tighter uppercase mb-2">
+          <h1 className="text-2xl md:text-4xl font-black italic text-[#CCFF00] tracking-tighter uppercase mb-2">
             PROPIEDADES
           </h1>
           <div className="flex items-center gap-3">
             <a href="/listings" target="_blank"
-              className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 hover:bg-amber-500 text-zinc-300 hover:text-black rounded-xl text-xs font-bold uppercase tracking-wider transition-all">
+              className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 hover:bg-[#CCFF00] text-zinc-300 hover:text-black rounded-xl text-xs font-bold uppercase tracking-wider transition-all">
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>
@@ -544,7 +540,7 @@ imagenes: form.imagenes || [],
           </div>
         </div>
         <button onClick={openNew}
-          className="bg-amber-500 text-black px-4 py-2.5 rounded-xl font-black text-xs uppercase hover:bg-white transition-all shadow-lg shadow-amber-500/20">
+          className="bg-[#CCFF00] text-black px-4 py-2.5 rounded-xl font-black text-xs uppercase hover:bg-white transition-all shadow-lg shadow-[#CCFF00]/10">
           + Nueva
         </button>
       </div>
@@ -559,7 +555,7 @@ imagenes: form.imagenes || [],
         </svg>
         <input value={search} onChange={e => setSearch(e.target.value)}
           placeholder="Buscar por nombre, ubicación, sector..."
-          className="w-full bg-zinc-900 border border-zinc-800 text-white pl-10 pr-4 py-2.5 rounded-xl text-sm focus:outline-none focus:border-amber-500 placeholder:text-zinc-600 transition-colors" />
+          className="w-full bg-zinc-900 border border-zinc-800 text-white pl-10 pr-4 py-2.5 rounded-xl text-sm focus:outline-none focus:border-[#CCFF00] placeholder:text-zinc-600 transition-colors" />
         {search && (
           <button onClick={() => setSearch('')}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors">
@@ -574,16 +570,16 @@ imagenes: form.imagenes || [],
       <div className="flex flex-col gap-3 mb-6">
         <div className="flex gap-2 flex-wrap">
           <button onClick={() => setSectorActivo('')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-black uppercase transition-all ${!sectorActivo ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'}`}>
+            className={`px-3 py-1.5 rounded-xl text-xs font-black uppercase transition-all ${!sectorActivo ? 'bg-[#CCFF00] text-black' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'}`}>
             Todos
           </button>
         </div>
         <div className="flex flex-col gap-1">
-          <span className="text-amber-400 text-[10px] font-black uppercase tracking-widest">🏙️ Distrito Nacional</span>
+          <span className="text-[#CCFF00] text-[10px] font-black uppercase tracking-widest">🏙️ Distrito Nacional</span>
           <div className="flex gap-2 flex-wrap">
             {['Piantini','Naco','Bella Vista','Evaristo Morales','Serralles','Los Cacicazgos','Arroyo Hondo','Viejo Arroyo Hondo','La Esperilla','El Millon','Mirador Norte','Mirador Sur','Paraíso','La Castellana','Jardines del Norte','Los Prados','Gazcue','Ensanche Quisqueya','Los Restauradores','Zona Colonial','Arroyo Manzano','Colinas de los Ríos','Fernández','Renacimiento'].map(s => (
               <button key={s} onClick={() => setSectorActivo(sectorActivo === s ? '' : s)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-black uppercase transition-all ${sectorActivo === s ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'}`}>
+                className={`px-3 py-1.5 rounded-xl text-xs font-black uppercase transition-all ${sectorActivo === s ? 'bg-[#CCFF00] text-black' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'}`}>
                 {s}
               </button>
             ))}
@@ -648,7 +644,7 @@ imagenes: form.imagenes || [],
           </p>
           {!search && !sectorActivo && (
             <button onClick={openNew}
-              className="px-4 py-2 bg-amber-500 text-black text-sm font-black uppercase rounded-xl hover:bg-white transition-all">
+              className="px-4 py-2 bg-[#CCFF00] text-black text-sm font-black uppercase rounded-xl hover:bg-white transition-all">
               + Nueva propiedad
             </button>
           )}
