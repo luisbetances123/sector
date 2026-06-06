@@ -71,25 +71,25 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* LEADS RECIENTES */}
-        <div className="lg:col-span-2 bg-zinc-950/40 border border-zinc-800/80 rounded-2xl p-6 space-y-4 shadow-xl">
+        {/* LEADS RECIENTES (REQUERIMIENTOS URGENTES) */}
+        <div className="lg:col-span-2 bg-zinc-950/60 border border-zinc-800/80 rounded-2xl p-6 space-y-4 shadow-xl">
           <div className="flex items-center justify-between">
             <h3 className="text-xs font-black uppercase tracking-wider text-white flex items-center gap-2">
               <AlertCircle className="w-4 h-4 text-[#CCFF00]" /> Requerimientos Urgentes
             </h3>
           </div>
-          <div className="divide-y divide-zinc-900">
+          <div className="divide-y divide-zinc-900/80">
             {urgentLeads.map((lead) => (
               <div key={lead.id} className="flex items-center justify-between py-4 first:pt-0 last:pb-0">
                 <div>
                   <h4 className="text-sm font-black text-white">{lead.name}</h4>
                   <p className="text-xs text-zinc-300 font-medium mt-1">
-                    {lead.project} <span className="text-zinc-500">•</span> <span className="text-[#CCFF00] font-semibold">{lead.sector}</span>
+                    {lead.project} <span className="text-zinc-500">•</span> <span className="text-[#CCFF00] font-bold">{lead.sector}</span>
                   </p>
                 </div>
                 <div className="text-right">
-                  <span className="text-sm font-mono font-black text-[#CCFF00] bg-[#CCFF00]/5 px-2 py-0.5 rounded border border-[#CCFF00]/20">{lead.budget}</span>
-                  <p className="text-xs text-zinc-200 font-medium mt-1">{lead.time}</p>
+                  <span className="text-xs font-mono font-black text-[#CCFF00] bg-[#CCFF00]/10 px-2 py-1 rounded border border-[#CCFF00]/20">{lead.budget}</span>
+                  <p className="text-[11px] text-zinc-400 font-medium mt-1.5">{lead.time}</p>
                 </div>
               </div>
             ))}
@@ -97,7 +97,7 @@ export default function DashboardPage() {
         </div>
 
         {/* TAREAS DEL DIA */}
-        <div className="bg-zinc-950/40 border border-zinc-800/80 rounded-2xl p-6 space-y-4 shadow-xl">
+        <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-2xl p-6 space-y-4 shadow-xl">
           <h3 className="text-xs font-black uppercase tracking-wider text-white flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-cyan-400" /> Agenda de Hoy
           </h3>
