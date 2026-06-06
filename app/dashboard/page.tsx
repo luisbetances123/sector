@@ -220,18 +220,18 @@ export default function PropertiesPage() {
               <p><strong className="text-white">Precio de Venta:</strong> <span className="text-[#CCFF00] font-bold text-sm">{selectedProperty.price}</span></p>
               {selectedProperty.confotur && (
                 <div className="mt-2 text-[10px] bg-[#CCFF00]/10 text-[#CCFF00] px-2.5 py-1 rounded border border-[#CCFF00]/20 inline-block font-sans font-medium">
-                  ✓ Exención fiscal CONFOTUR Disponible
+                  ✓ Exención fiscal CONFOTUR Available
                 </div>
               )}
             </div>
 
-                      {/* --- MAPA DE GOOGLE EMBED --- */}
+            {/* --- MAPA DE GOOGLE EMBED --- */}
             <div className="w-full h-[240px] rounded-xl overflow-hidden border border-zinc-800 bg-zinc-900 relative">
               <div className="absolute top-2.5 left-2.5 z-10 bg-black/80 backdrop-blur-sm text-[9px] text-[#CCFF00] font-mono px-2.5 py-1 rounded-full border border-zinc-800">
                 📍 {selectedProperty.sector}
               </div>
 
-                            <GoogleMapsEmbed
+              <GoogleMapsEmbed
                 apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY ?? ''}
                 height="100%"
                 width="100%"
@@ -244,11 +244,14 @@ export default function PropertiesPage() {
 
             {/* Botón de ruta en tiempo real para Waze / Google Maps nativo */}
             <button 
-              onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedProperty.address + ', Santo Domingo, RD')}`, '_blank')}
+              onClick={() => {
+                const targetUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedProperty.address + ', Santo Domingo, RD')}`;
+                window.open(targetUrl, '_blank');
+              }}
               className="w-full bg-[#CCFF00] hover:bg-[#b3df00] text-black font-bold py-3 rounded-xl transition-colors text-xs tracking-wide uppercase font-mono shadow-md shadow-[#CCFF00]/10"
             >
               Iniciar Navegación GPS
-            </button>>
+            </button>
 
           </div>
         </div>
