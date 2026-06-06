@@ -8,11 +8,9 @@ import {
   Tag, 
   X, 
   UserPlus,
-  Building2,
-  DollarSign,
   ShieldCheck,
   Flame,
-  Briefcase
+  Edit2
 } from 'lucide-react'
 
 interface Cliente {
@@ -28,14 +26,16 @@ interface Cliente {
 }
 
 export default function ClientsPage() {
-  // Datos iniciales con la nueva estructura avanzada
+  // Datos iniciales
   const [clientes, setClientes] = useState<Cliente[]>([
     { id: 1, name: 'Luis Betances', email: 'luis@homvi.com', phone: '+1 809-555-0123', status: 'Inversionista', motivoCompra: 'Renta Corta (Airbnb)', origenFondos: 'Fondos Propios', confotur: true, temperatura: 'caliente' },
     { id: 2, name: 'Jean Lizardo', email: 'jean@homvi.com', phone: '+1 829-555-4567', status: 'Comprador', motivoCompra: 'Vivienda Principal', origenFondos: 'Financiamiento Bancario', confotur: false, temperatura: 'tibio' },
   ])
 
-  // Estados del Modal
+  // Estados del Modal y Control de Edición
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingId, setEditingId] = useState<number | null>(null) // Guarda el ID si estamos editando
+  
   const [nuevoCliente, setNuevoCliente] = useState({
     name: '',
     email: '',
@@ -47,23 +47,9 @@ export default function ClientsPage() {
     temperatura: 'caliente' as 'caliente' | 'tibio' | 'frio'
   })
 
-  const handleCrearCliente = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!nuevoCliente.name || !nuevoCliente.email) return
-
-    const nuevoObj: Cliente = {
-      id: Date.now(),
-      name: nuevoCliente.name,
-      email: nuevoCliente.email,
-      phone: nuevoCliente.phone || '+1 809-000-0000',
-      status: nuevoCliente.status,
-      motivoCompra: nuevoCliente.motivoCompra,
-      origenFondos: nuevoCliente.origenFondos,
-      confotur: nuevoCliente.confotur,
-      temperatura: nuevoCliente.temperatura
-    }
-
-    setClientes([nuevoObj, ...clientes])
+  // Abrir el modal en modo CREAR
+  const abrirModalCrear = () => {
+    setEditingId(null)
     setNuevoCliente({
       name: '',
       email: '',
@@ -74,7 +60,44 @@ export default function ClientsPage() {
       confotur: false,
       temperatura: 'caliente'
     })
+    setIsModalOpen(true)
+  }
+
+  // Abrir el modal en modo EDITAR (Carga los datos existentes)
+  const abrirModalEditar = (cliente: Cliente) => {
+    setEditingId(cliente.id)
+    setNuevoCliente({
+      name: cliente.name,
+      email: cliente.email,
+      phone: cliente.phone,
+      status: cliente.status,
+      motivoCompra: cliente.motivoCompra,
+      origenFondos: cliente.origenFondos,
+      confotur: cliente.confotur,
+      temperatura: cliente.temperatura
+    })
+    setIsModalOpen(true)
+  }
+
+  // Guardar (tanto para nuevo cliente como para edición)
+  const handleGuardarCliente = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!nuevoCliente.name || !nuevoCliente.email) return
+
+    if (editingId !== null) {
+      // Modo EDICIÓN: Actualiza el cliente existente en el array
+      setClientes(clientes.map(c => c.id === editingId ? { ...c, ...nuevoCliente } : c))
+    } else {
+      // Modo CREACIÓN: Inserta uno nuevo arriba
+      const nuevoObj: Cliente = {
+        id: Date.now(),
+        ...nuevoCliente
+      }
+      setClientes([nuevoObj, ...clientes])
+    }
+
     setIsModalOpen(false)
+    setEditingId(null)
   }
 
   const getTempStyles = (temp: string) => {
@@ -98,26 +121,26 @@ export default function ClientsPage() {
         </div>
         <button 
           type="button"
-          onClick={() => setIsModalOpen(true)}
+          onClick={abrirModalCrear}
           className="bg-[#CCFF00] text-black px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider hover:bg-white transition-all flex items-center gap-2 cursor-pointer shadow-md"
         >
           <Plus className="w-4 h-4 stroke-[3]" /> Nuevo Cliente
         </button>
       </div>
 
-      {/* LISTADO DE CLIENTES AVANZADO */}
+      {/* LISTADO DE CLIENTES CON ACCIÓN DE EDICIÓN */}
       <div className="bg-black/20 border border-zinc-900 rounded-2xl overflow-hidden shadow-xl">
         <div className="divide-y divide-zinc-900">
           {clientes.map((cliente) => (
-            <div key={cliente.id} className="p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-6 hover:bg-zinc-900/10 transition-all">
+            <div key={cliente.id} className="p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-6 hover:bg-zinc-900/10 transition-all group">
               
-              {/* Bloque Identidad */}
-              <div className="flex items-start gap-4 min-w-[280px]">
+              {/* Identidad */}
+              <div className="flex items-start gap-4 min-w-[250px]">
                 <div className="w-11 h-11 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center font-mono font-black text-white text-base flex-shrink-0">
                   {cliente.name.charAt(0)}
                 </div>
                 <div>
-                  <h3 className="text-sm font-black text-white tracking-tight group-hover:text-[#CCFF00]">{cliente.name}</h3>
+                  <h3 className="text-sm font-black text-white tracking-tight">{cliente.name}</h3>
                   <div className="flex flex-wrap gap-1.5 mt-1.5">
                     <span className="inline-flex items-center gap-1 text-[9px] font-mono bg-zinc-900 text-zinc-300 px-2 py-0.5 rounded border border-zinc-800 font-bold uppercase tracking-wider">
                       <Tag className="w-2.5 h-2.5" /> {cliente.status}
@@ -129,8 +152,8 @@ export default function ClientsPage() {
                 </div>
               </div>
 
-              {/* Bloque Perfil Financiero */}
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 flex-1 max-w-2xl text-xs">
+              {/* Perfil Financiero */}
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 flex-1 max-w-xl text-xs">
                 <div>
                   <span className="text-[10px] uppercase font-mono font-bold text-zinc-600 block">Objetivo</span>
                   <span className="text-zinc-300 font-medium">{cliente.motivoCompra}</span>
@@ -149,14 +172,25 @@ export default function ClientsPage() {
                 </div>
               </div>
 
-              {/* Bloque Contactos */}
-              <div className="flex flex-row lg:flex-col items-center lg:items-end justify-between lg:justify-center gap-2 text-xs font-mono border-t lg:border-t-0 border-zinc-900 pt-3 lg:pt-0">
-                <span className="flex items-center gap-1.5 text-zinc-400 hover:text-white transition-colors">
-                  <Mail className="w-3.5 h-3.5 text-zinc-500" /> {cliente.email}
-                </span>
-                <span className="flex items-center gap-1.5 text-zinc-400 hover:text-white transition-colors">
-                  <Phone className="w-3.5 h-3.5 text-zinc-500" /> {cliente.phone}
-                </span>
+              {/* Contactos y Botón Editar */}
+              <div className="flex flex-row lg:flex-col items-center lg:items-end justify-between lg:justify-center gap-3 text-xs font-mono border-t lg:border-t-0 border-zinc-900 pt-3 lg:pt-0 min-w-[200px]">
+                <div className="flex flex-col items-start lg:items-end gap-1 text-zinc-400">
+                  <span className="flex items-center gap-1.5 hover:text-white transition-colors">
+                    <Mail className="w-3.5 h-3.5 text-zinc-500" /> {cliente.email}
+                  </span>
+                  <span className="flex items-center gap-1.5 hover:text-white transition-colors">
+                    <Phone className="w-3.5 h-3.5 text-zinc-500" /> {cliente.phone}
+                  </span>
+                </div>
+
+                {/* Botón interactivo de edición rápida */}
+                <button
+                  type="button"
+                  onClick={() => abrirModalEditar(cliente)}
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-zinc-900 hover:bg-[#CCFF00] text-zinc-400 hover:text-black border border-zinc-800 transition-all font-sans font-bold text-[11px] uppercase tracking-wider cursor-pointer shadow-sm"
+                >
+                  <Edit2 className="w-3 h-3" /> Editar
+                </button>
               </div>
 
             </div>
@@ -164,7 +198,7 @@ export default function ClientsPage() {
         </div>
       </div>
 
-      {/* MODAL AVANZADO PRESET (Z-INDEX ABSOLUTO) */}
+      {/* MODAL MULTIFUNCIÓN (CREAR/EDITAR) */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto" style={{ zIndex: 99999 }}>
           <div className="bg-zinc-950 border border-zinc-800 w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl my-auto">
@@ -172,9 +206,12 @@ export default function ClientsPage() {
             <div className="p-5 border-b border-zinc-900 flex justify-between items-center">
               <div>
                 <h2 className="text-base font-black text-white flex items-center gap-2">
-                  <UserPlus className="w-4 h-4 text-[#CCFF00]" /> Perfilamiento Avanzado de Lead
+                  <UserPlus className="w-4 h-4 text-[#CCFF00]" /> 
+                  {editingId !== null ? 'Modificar Perfil Inmobiliario' : 'Perfilamiento Avanzado de Lead'}
                 </h2>
-                <p className="text-zinc-500 text-[10px] uppercase font-mono tracking-wider">Cualificación patrimonial y de intenciones</p>
+                <p className="text-zinc-500 text-[10px] uppercase font-mono tracking-wider">
+                  {editingId !== null ? 'Actualizando datos en tiempo real' : 'Cualificación patrimonial y de intenciones'}
+                </p>
               </div>
               <button 
                 type="button"
@@ -185,7 +222,7 @@ export default function ClientsPage() {
               </button>
             </div>
 
-            <form onSubmit={handleCrearCliente} className="p-5 space-y-5">
+            <form onSubmit={handleGuardarCliente} className="p-5 space-y-5">
               
               {/* SECCIÓN 1: DATOS BÁSICOS */}
               <div className="space-y-3">
@@ -278,13 +315,13 @@ export default function ClientsPage() {
                 </div>
               </div>
 
-              {/* BOTÓN SUBMIT */}
+              {/* BOTÓN SUBMIT COMPARTIDO */}
               <div className="pt-2">
                 <button 
                   type="submit"
                   className="w-full bg-[#CCFF00] text-black font-black uppercase text-xs tracking-widest py-3 rounded-xl hover:bg-white transition-all cursor-pointer shadow-md"
                 >
-                  Inyectar Perfil al Directorio
+                  {editingId !== null ? 'Confirmar Modificaciones' : 'Inyectar Perfil al Directorio'}
                 </button>
               </div>
             </form>
