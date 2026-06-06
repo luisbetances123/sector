@@ -26,7 +26,6 @@ interface Lead {
 }
 
 export default function PipelinePage() {
-  // Estado para controlar el Tablero Kanban
   const [columns, setColumns] = useState<{ [key: string]: Lead[] }>({
     'Prospectos': [
       { id: '1', name: 'Carlos Mendoza', project: 'Torre Naco Luxury', propertyType: 'Apartamento', budget: 'US$280,000', sector: 'Naco', updatedAt: 'Hace 2h', priority: 'critico', statusLabel: 'SIN RESPONDER' },
@@ -43,7 +42,7 @@ export default function PipelinePage() {
     ],
   })
 
-  // Estados para controlar el Modal de Nuevo Cliente
+  // Control directo del modal
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [nuevoLead, setNuevoLead] = useState({
     name: '',
@@ -53,7 +52,6 @@ export default function PipelinePage() {
     sector: ''
   })
 
-  // Función para mover leads entre columnas
   const moverLead = (currentColumn: string, leadId: string, direccion: 'adelante' | 'atras') => {
     const colKeys = Object.keys(columns)
     const currentIdx = colKeys.indexOf(currentColumn)
@@ -74,7 +72,6 @@ export default function PipelinePage() {
     }
   }
 
-  // Función para manejar la creación de un cliente nuevo
   const handleCrearLead = (e: React.FormEvent) => {
     e.preventDefault()
     if (!nuevoLead.name || !nuevoLead.project) return
@@ -89,7 +86,7 @@ export default function PipelinePage() {
       budget: formatoBudget,
       sector: nuevoLead.sector || 'Naco',
       updatedAt: '¡Ahora mismo!',
-      priority: 'nuevo', // Entra directo con el color Cian Eléctrico
+      priority: 'nuevo',
       statusLabel: 'NUEVO LEAD'
     }
 
@@ -98,7 +95,6 @@ export default function PipelinePage() {
       'Prospectos': [nuevoObjetoLead, ...columns['Prospectos']]
     })
 
-    // Limpiar formulario y cerrar modal
     setNuevoLead({ name: '', project: '', propertyType: 'Apartamento', budget: '', sector: '' })
     setIsModalOpen(false)
   }
@@ -127,7 +123,7 @@ export default function PipelinePage() {
   }
 
   return (
-    <div className="space-y-8 animate-fadeIn relative">
+    <div className="space-y-8 relative">
       
       {/* Encabezado */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -137,7 +133,7 @@ export default function PipelinePage() {
         </div>
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="bg-[#CCFF00] text-black px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider hover:bg-white transition-all flex items-center gap-2 self-start sm:self-auto shadow-md"
+          className="bg-[#CCFF00] text-black px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider hover:bg-white transition-all flex items-center gap-2 self-start sm:self-auto shadow-md z-10"
         >
           <Plus className="w-4 h-4 stroke-[3]" /> Nuevo Cliente
         </button>
@@ -243,10 +239,10 @@ export default function PipelinePage() {
         })}
       </div>
 
-      {/* MODAL DE NUEVO CLIENTE (Estilo Robinhood Premium) */}
+      {/* MODAL CORREGIDO (Clases nativas de Tailwind estables de alto impacto) */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-zinc-950 border border-zinc-800 w-full max-w-md rounded-2xl overflow-hidden shadow-2xl animate-scaleIn">
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4" style={{ zIndex: 9999 }}>
+          <div className="bg-zinc-950 border border-zinc-800 w-full max-w-md rounded-2xl overflow-hidden shadow-2xl">
             
             <div className="p-5 border-b border-zinc-900 flex justify-between items-center">
               <div>
@@ -254,8 +250,9 @@ export default function PipelinePage() {
                 <p className="text-zinc-500 text-[10px] uppercase font-mono tracking-wider">Inyectar registro al Pipeline</p>
               </div>
               <button 
+                type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="text-zinc-400 hover:text-white p-1 rounded-lg bg-zinc-900 border border-zinc-800"
+                className="text-zinc-400 hover:text-white p-1.5 rounded-lg bg-zinc-900 border border-zinc-800"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -313,7 +310,7 @@ export default function PipelinePage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 mb-1.5">Presupuesto (Sólo número)</label>
+                  <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 mb-1.5">Presupuesto (Número)</label>
                   <input 
                     type="number" 
                     required
@@ -328,7 +325,7 @@ export default function PipelinePage() {
               <div className="pt-2">
                 <button 
                   type="submit"
-                  className="w-full bg-[#CCFF00] text-black font-black uppercase text-xs tracking-widest py-3 rounded-xl hover:bg-white transition-all"
+                  className="w-full bg-[#CCFF00] text-black font-black uppercase text-xs tracking-widest py-3 rounded-xl hover:bg-white transition-all cursor-pointer"
                 >
                   Insertar en Pipeline
                 </button>
