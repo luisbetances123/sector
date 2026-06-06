@@ -74,8 +74,8 @@ export default function PipelinePage() {
       {/* Encabezado del Módulo */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-black tracking-tight">Pipeline Visual</h1>
-          <p className="text-zinc-500 text-xs uppercase tracking-widest mt-1">Controla el flujo de tus comisiones y cierres activos</p>
+          <h1 className="text-2xl md:text-3xl font-black tracking-tight text-white">Pipeline Visual</h1>
+          <p className="text-zinc-400 text-xs uppercase tracking-widest mt-1 font-bold">Controla el flujo de tus comisiones y cierres activos</p>
         </div>
         <button className="bg-[#CCFF00] text-black px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider hover:bg-white transition-all flex items-center gap-2 self-start sm:self-auto shadow-md shadow-[#CCFF00]/5">
           <Plus className="w-4 h-4 stroke-[3]" /> Crear Oportunidad
@@ -100,7 +100,7 @@ export default function PipelinePage() {
                   </h3>
                   <span className="text-[10px] font-mono text-zinc-500 font-bold block mt-0.5">{leads.length} {leads.length === 1 ? 'caso' : 'casos'}</span>
                 </div>
-                <span className={`text-xs font-mono font-black ${isCierre ? 'text-[#CCFF00]' : 'text-zinc-400'}`}>
+                <span className={`text-xs font-mono font-black ${isCierre ? 'text-[#CCFF00]' : 'text-zinc-300'}`}>
                   {calcularTotalColumna(leads)}
                 </span>
               </div>
@@ -119,14 +119,15 @@ export default function PipelinePage() {
                     >
                       <div className="space-y-2">
                         <div className="flex justify-between items-start gap-2">
-                          <h4 className="text-sm font-black text-zinc-100 group-hover:text-[#CCFF00] transition-colors truncate">{lead.name}</h4>
-                          <span className="text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded bg-zinc-900 text-zinc-400 border border-zinc-800 flex-shrink-0">
+                          <h4 className="text-sm font-black text-white group-hover:text-[#CCFF00] transition-colors truncate">{lead.name}</h4>
+                          <span className="text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded bg-zinc-900 text-[#CCFF00] border border-zinc-800 flex-shrink-0">
                             {lead.sector}
                           </span>
                         </div>
 
-                        <div className="flex items-center gap-1.5 text-xs text-zinc-400">
-                          <Building className="w-3.5 h-3.5 text-zinc-600 flex-shrink-0" />
+                        {/* Aquí subimos el brillo al icono y al nombre de la propiedad */}
+                        <div className="flex items-center gap-1.5 text-xs text-zinc-300 font-medium">
+                          <Building className="w-3.5 h-3.5 text-zinc-400 flex-shrink-0" />
                           <span className="truncate">{lead.project}</span>
                         </div>
 
@@ -135,7 +136,7 @@ export default function PipelinePage() {
                           
                           {/* Contenedor de botones de acción */}
                           <div className="flex items-center gap-1.5">
-                            {/* Botón Atrás: No se muestra si es la primera columna */}
+                            {/* Botón Atrás */}
                             {!isPrimeraColumna && (
                               <button 
                                 onClick={() => moverLead(colName, lead.id, 'atras')}
@@ -146,7 +147,7 @@ export default function PipelinePage() {
                               </button>
                             )}
 
-                            {/* Botón Adelante: Muestra Check si ya llegó a Cierre */}
+                            {/* Botón Adelante */}
                             {!isCierre ? (
                               <button 
                                 onClick={() => moverLead(colName, lead.id, 'adelante')}
@@ -163,7 +164,7 @@ export default function PipelinePage() {
                           </div>
                         </div>
                       </div>
-                      <div className="text-[9px] text-zinc-600 font-mono text-right mt-1.5 block">{lead.updatedAt}</div>
+                      <div className="text-[9px] text-zinc-500 font-mono text-right mt-1.5 block">{lead.updatedAt}</div>
                     </div>
                   ))
                 )}
