@@ -14,7 +14,6 @@ import {
   MapPin,
   Globe
 } from 'lucide-react'
-// Importamos el componente optimizado de mapas de Next.js
 import { GoogleMapsEmbed } from '@next/third-parties/google'
 
 interface Cliente {
@@ -27,33 +26,23 @@ interface Cliente {
   origenFondos: string
   confotur: boolean
   temperatura: 'caliente' | 'tibio' | 'frio'
-  ubicacionInteres: string // Nueva propiedad para mapear
+  ubicacionInteres: string
 }
 
 export default function ClientsPage() {
-  // Datos iniciales incluyendo las zonas calientes de inversión en RD
   const [clientes, setClientes] = useState<Cliente[]>([
     { id: 1, name: 'Luis Betances', email: 'luis@homvi.com', phone: '+1 809-555-0123', status: 'Inversionista', motivoCompra: 'Renta Corta (Airbnb)', origenFondos: 'Fondos Propios', confotur: true, temperatura: 'caliente', ubicacionInteres: 'Piantini, Santo Domingo' },
     { id: 2, name: 'Jean Lizardo', email: 'jean@homvi.com', phone: '+1 829-555-4567', status: 'Comprador', motivoCompra: 'Vivienda Principal', origenFondos: 'Financiamiento Bancario', confotur: false, temperatura: 'tibio', ubicacionInteres: 'Las Terrenas, Samana' },
   ])
 
-  // Control del Mapa Activo (Muestra la ubicación del último cliente seleccionado)
   const [mapaQuery, setMapaQuery] = useState('Piantini, Santo Domingo, RD')
-
-  // Estados del Modal y Control de Edición
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
   
   const [nuevoCliente, setNuevoCliente] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    status: 'Inversionista',
-    motivoCompra: 'Renta Corta (Airbnb)',
-    origenFondos: 'Fondos Propios',
-    confotur: false,
-    temperatura: 'caliente' as 'caliente' | 'tibio' | 'frio',
-    ubicacionInteres: 'Piantini, Santo Domingo'
+    name: '', email: '', phone: '', status: 'Inversionista',
+    motivoCompra: 'Renta Corta (Airbnb)', origenFondos: 'Fondos Propios',
+    confotur: false, temperatura: 'caliente' as 'caliente' | 'tibio' | 'frio', ubicacionInteres: 'Piantini, Santo Domingo'
   })
 
   const abrirModalCrear = () => {
@@ -87,7 +76,6 @@ export default function ClientsPage() {
       setClientes([nuevoObj, ...clientes])
     }
 
-    // Centrar automáticamente el mapa en el sector del cliente guardado
     setMapaQuery(`${nuevoCliente.ubicacionInteres}, RD`)
     setIsModalOpen(false)
     setEditingId(null)
@@ -100,6 +88,9 @@ export default function ClientsPage() {
       default: return 'text-blue-400 bg-blue-500/10 border-blue-500/20'
     }
   }
+
+  // Capturamos la API key directamente del entorno
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
 
   return (
     <div className="space-y-6 animate-fadeIn min-h-screen pb-12">
@@ -130,7 +121,6 @@ export default function ClientsPage() {
               onClick={() => setMapaQuery(`${cliente.ubicacionInteres}, RD`)}
               className="p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-6 hover:bg-zinc-900/20 transition-all group cursor-pointer"
             >
-              {/* Identidad */}
               <div className="flex items-start gap-4 min-w-[230px]">
                 <div className="w-11 h-11 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center font-mono font-black text-white text-base flex-shrink-0">
                   {cliente.name.charAt(0)}
@@ -148,7 +138,6 @@ export default function ClientsPage() {
                 </div>
               </div>
 
-              {/* Perfil Financiero */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 flex-1 text-xs">
                 <div>
                   <span className="text-[10px] uppercase font-mono font-bold text-zinc-600 block">Objetivo</span>
@@ -172,7 +161,6 @@ export default function ClientsPage() {
                 </div>
               </div>
 
-              {/* Contactos e Interacciones */}
               <div className="flex flex-row lg:flex-col items-center lg:items-end justify-between lg:justify-center gap-3 text-xs font-mono border-t lg:border-t-0 border-zinc-900 pt-3 lg:pt-0 min-w-[180px]">
                 <div className="flex flex-col items-start lg:items-end gap-0.5 text-zinc-400 text-[11px]">
                   <span className="flex items-center gap-1.5 hover:text-white transition-colors"><Mail className="w-3 h-3 text-zinc-600" /> {cliente.email}</span>
@@ -181,7 +169,7 @@ export default function ClientsPage() {
                 <button
                   type="button"
                   onClick={(e) => {
-                    e.stopPropagation(); // Evita que se dispare el click de la fila
+                    e.stopPropagation();
                     abrirModalEditar(cliente);
                   }}
                   className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-zinc-900 hover:bg-[#CCFF00] text-zinc-400 hover:text-black border border-zinc-800 transition-all font-sans font-bold text-[10px] uppercase tracking-wider cursor-pointer"
@@ -194,7 +182,7 @@ export default function ClientsPage() {
         </div>
       </div>
 
-      {/* SECCIÓN REACTIVADA DE GOOGLE MAPS (Estilo Panel de Control) */}
+      {/* SECCIÓN DEL MAPA INTERACTIVO */}
       <div className="bg-black/20 border border-zinc-900 rounded-2xl p-5 shadow-xl space-y-4">
         <div className="flex items-center justify-between border-b border-zinc-900 pb-3">
           <div>
@@ -206,15 +194,18 @@ export default function ClientsPage() {
           <span className="text-[9px] font-mono bg-[#CCFF00]/10 text-[#CCFF00] border border-[#CCFF00]/20 px-2 py-0.5 rounded font-bold uppercase tracking-widest">Google Maps API OK</span>
         </div>
         
-        {/* Renderizado Fluido del Mapa Flotante */}
         <div className="w-full rounded-xl overflow-hidden border border-zinc-800 bg-zinc-950 shadow-inner grayscale contrast-125 opacity-80 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
-          <GoogleMapsEmbed
-            apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''} // Usará tu API Key configurada
-            height={300}
-            width="100%"
-            mode="place"
-            q={mapaQuery}
-          />
+          {apiKey ? (
+            <GoogleMapsEmbed
+              apiKey={apiKey}
+              height={300}
+              width="100%"
+              mode="place"
+              q={mapaQuery}
+            />
+          ) : (
+            <div className="p-8 text-center text-zinc-500 text-xs font-mono">Cargando credenciales del mapa...</div>
+          )}
         </div>
       </div>
 
@@ -264,7 +255,7 @@ export default function ClientsPage() {
                 <h4 className="text-[10px] uppercase tracking-widest text-cyan-400 font-black font-mono">02. Calificación Patrimonial</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[9px] font-mono font-bold uppercase tracking-wider text-zinc-500 mb-1">Ubicación de Interés (Para Google Maps)</label>
+                    <label className="block text-[9px] font-mono font-bold uppercase tracking-wider text-zinc-500 mb-1">Ubicación de Interés</label>
                     <select value={nuevoCliente.ubicacionInteres} onChange={(e) => setNuevoCliente({...nuevoCliente, ubicacionInteres: e.target.value})} className="w-full bg-black border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#CCFF00]">
                       <option value="Piantini, Santo Domingo">Piantini, Santo Domingo</option>
                       <option value="Naco, Santo Domingo">Naco, Santo Domingo</option>
