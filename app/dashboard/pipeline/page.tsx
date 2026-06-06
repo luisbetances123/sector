@@ -19,21 +19,22 @@ interface Lead {
   budget: string
   sector: string
   updatedAt: string
-  priority: 'critico' | 'seguimiento' | 'normal' // Código de color financiero inteligente
-  statusLabel: string // Ej: "BUSCANDO", "PROPUESTA ENVIADA"
+  priority: 'critico' | 'seguimiento' | 'nuevo' | 'normal' // Estados financieros inteligentes
+  statusLabel: string // Ej: "SIN RESPONDER", "BUSCANDO", "PROPUESTA"
 }
 
 export default function PipelinePage() {
+  // Estado local con las prioridades de color ajustadas
   const [columns, setColumns] = useState<{ [key: string]: Lead[] }>({
     'Prospectos': [
       { id: '1', name: 'Carlos Mendoza', project: 'Torre Naco Luxury', propertyType: 'Apartamento', budget: 'US$280,000', sector: 'Naco', updatedAt: 'Hace 2h', priority: 'critico', statusLabel: 'SIN RESPONDER' },
-      { id: '2', name: 'Alejandro Sanz', project: 'Villa Las Terrenas', propertyType: 'Villa / Casa', budget: 'US$650,000', sector: 'Las Terrenas', updatedAt: 'Hace 5h', priority: 'normal', statusLabel: 'NUEVO LEAD' },
+      { id: '2', name: 'Alejandro Sanz', project: 'Villa Las Terrenas', propertyType: 'Villa / Casa', budget: 'US$650,000', sector: 'Las Terrenas', updatedAt: 'Hace 5h', priority: 'nuevo', statusLabel: 'NUEVO LEAD' },
     ],
     'Calificados': [
-      { id: '3', name: 'Luis Betances', project: 'Regatta Blue', propertyType: 'Penthouse', budget: 'US$450,000', sector: 'Piantini', updatedAt: 'Ayer', priority: 'seguimiento', statusLabel: 'BUSCANDO' },
+      { id: '3', name: 'Luis Betances', project: 'Regatta Blue', propertyType: 'Penthouse', budget: 'US$450,000', sector: 'Piantini', updatedAt: 'Ayer', priority: 'normal', statusLabel: 'BUSCANDO' },
     ],
     'En Propuesta': [
-      { id: '4', name: 'Jean Lizardo', project: 'Penthouse Serrallés', propertyType: 'Apartamento', budget: 'US$890,000', sector: 'Serrallés', updatedAt: 'Hace 15m', priority: 'normal', statusLabel: 'PROPUESTA' },
+      { id: '4', name: 'Jean Lizardo', project: 'Penthouse Serrallés', propertyType: 'Apartamento', budget: 'US$890,000', sector: 'Serrallés', updatedAt: 'Hace 15m', priority: 'seguimiento', statusLabel: 'PROPUESTA' },
     ],
     'Cierre 🎉': [
       { id: '5', name: 'Mariela Núñez', project: 'Juan Dolio Beach Front', propertyType: 'Solar / Playa', budget: 'US$310,000', sector: 'Juan Dolio', updatedAt: 'Esta semana', priority: 'normal', statusLabel: 'CONTRATO' },
@@ -68,15 +69,33 @@ export default function PipelinePage() {
     return `US$${total.toLocaleString()}`
   }
 
-  // Helper para asignar los estilos de prioridad financiera sin romper el estilo Robinhood
+  // Mapeo preciso de colores estilo terminal financiera Bloomberg/Robinhood
   const getPriorityStyles = (priority: string) => {
     switch(priority) {
-      case 'critico': 
-        return { border: 'border-red-500/30 bg-gradient-to-b from-[#110E08] to-red-950/5', text: 'text-red-400 bg-red-500/10 border-red-500/20', icon: AlertTriangle }
-      case 'seguimiento': 
-        return { border: 'border-amber-500/30 bg-gradient-to-b from-[#110E08] to-amber-950/5', text: 'text-amber-400 bg-amber-500/10 border-amber-500/20', icon: Clock }
-      default: 
-        return { border: 'border-zinc-800/80 bg-[#110E08]/80', text: 'text-zinc-400 bg-zinc-900 border-zinc-800', icon: Briefcase }
+      case 'critico': // Rojo Neón - Sin responder
+        return { 
+          border: 'border-red-500/30 bg-gradient-to-b from-[#110E08] to-red-950/5', 
+          text: 'text-red-400 bg-red-500/10 border-red-500/20', 
+          icon: AlertTriangle 
+        }
+      case 'seguimiento': // Ámbar / Naranja - En Propuesta / Pendientes
+        return { 
+          border: 'border-amber-500/30 bg-gradient-to-b from-[#110E08] to-amber-950/5', 
+          text: 'text-amber-400 bg-amber-500/10 border-amber-500/20', 
+          icon: Clock 
+        }
+      case 'nuevo': // Cian / Azul Eléctrico - Leads Recientes / Entrada
+        return { 
+          border: 'border-cyan-500/30 bg-gradient-to-b from-[#110E08] to-cyan-950/5', 
+          text: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20', 
+          icon: Briefcase 
+        }
+      default: // Normal / Gris Neutro Elegante
+        return { 
+          border: 'border-zinc-800/80 bg-[#110E08]/80', 
+          text: 'text-zinc-400 bg-zinc-900 border-zinc-800', 
+          icon: Briefcase 
+        }
     }
   }
 
@@ -135,13 +154,13 @@ export default function PipelinePage() {
                       >
                         <div className="space-y-2.5">
                           
-                          {/* Fila Superior: Nombre y Sector */}
+                          {/* Fila Superior: Nombre y Etiquetas */}
                           <div className="flex justify-between items-start gap-2">
                             <div>
                               <h4 className="text-sm font-black text-white group-hover:text-[#CCFF00] transition-colors truncate">{lead.name}</h4>
                               
-                              {/* Estado Dinámico basado en diseño viejo */}
-                              <span className={`inline-block text-[9px] font-mono font-extrabold px-1.5 py-0.5 rounded border mt-1 ${isCierre ? 'text-[#CCFF00] bg-[#CCFF00]/10 border-[#CCFF00]/20' : styles.text}`}>
+                              {/* Etiqueta de Estado con color inyectado */}
+                              <span className={`inline-block text-[9px] font-mono font-extrabold px-1.5 py-0.5 rounded border mt-1 tracking-wider ${isCierre ? 'text-[#CCFF00] bg-[#CCFF00]/10 border-[#CCFF00]/20' : styles.text}`}>
                                 {lead.statusLabel}
                               </span>
                             </div>
@@ -150,7 +169,7 @@ export default function PipelinePage() {
                             </span>
                           </div>
 
-                          {/* Fila Central: Proyecto e Iconos con información incrementada */}
+                          {/* Fila Central: Proyecto e Info Extra */}
                           <div className="space-y-1">
                             <div className="flex items-center gap-1.5 text-xs text-zinc-300 font-medium">
                               <Building className="w-3.5 h-3.5 text-zinc-400 flex-shrink-0" />
