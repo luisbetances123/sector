@@ -9,23 +9,24 @@ import {
   AlertTriangle,
   Clock,
   Briefcase,
-  Search
+  Search,
+  X
 } from 'lucide-react'
 
 interface Lead {
   id: string
   name: string
   project: string
-  propertyType: string // Traído del diseño viejo (Casa, Ap, Penthouse)
+  propertyType: string
   budget: string
   sector: string
   updatedAt: string
-  priority: 'critico' | 'seguimiento' | 'nuevo' | 'buscando' | 'normal' // Estados financieros inteligentes completos
-  statusLabel: string // Ej: "SIN RESPONDER", "BUSCANDO", "PROPUESTA"
+  priority: 'critico' | 'seguimiento' | 'nuevo' | 'buscando' | 'normal'
+  statusLabel: string
 }
 
 export default function PipelinePage() {
-  // Estado local con todas las prioridades de color ajustadas al 100%
+  // Estado para controlar el Tablero Kanban
   const [columns, setColumns] = useState<{ [key: string]: Lead[] }>({
     'Prospectos': [
       { id: '1', name: 'Carlos Mendoza', project: 'Torre Naco Luxury', propertyType: 'Apartamento', budget: 'US$280,000', sector: 'Naco', updatedAt: 'Hace 2h', priority: 'critico', statusLabel: 'SIN RESPONDER' },
@@ -42,6 +43,17 @@ export default function PipelinePage() {
     ],
   })
 
+  // Estados para controlar el Modal de Nuevo Cliente
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [nuevoLead, setNuevoLead] = useState({
+    name: '',
+    project: '',
+    propertyType: 'Apartamento',
+    budget: '',
+    sector: ''
+  })
+
+  // Función para mover leads entre columnas
   const moverLead = (currentColumn: string, leadId: string, direccion: 'adelante' | 'atras') => {
     const colKeys = Object.keys(columns)
     const currentIdx = colKeys.indexOf(currentColumn)
@@ -62,6 +74,35 @@ export default function PipelinePage() {
     }
   }
 
+  // Función para manejar la creación de un cliente nuevo
+  const handleCrearLead = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!nuevoLead.name || !nuevoLead.project) return
+
+    const formatoBudget = nuevoLead.budget.startsWith('US$') ? nuevoLead.budget : `US$${Number(nuevoLead.budget).toLocaleString()}`
+
+    const nuevoObjetoLead: Lead = {
+      id: Date.now().toString(),
+      name: nuevoLead.name,
+      project: nuevoLead.project,
+      propertyType: nuevoLead.propertyType,
+      budget: formatoBudget,
+      sector: nuevoLead.sector || 'Naco',
+      updatedAt: '¡Ahora mismo!',
+      priority: 'nuevo', // Entra directo con el color Cian Eléctrico
+      statusLabel: 'NUEVO LEAD'
+    }
+
+    setColumns({
+      ...columns,
+      'Prospectos': [nuevoObjetoLead, ...columns['Prospectos']]
+    })
+
+    // Limpiar formulario y cerrar modal
+    setNuevoLead({ name: '', project: '', propertyType: 'Apartamento', budget: '', sector: '' })
+    setIsModalOpen(false)
+  }
+
   const calcularTotalColumna = (leads: Lead[]) => {
     const total = leads.reduce((acc, lead) => {
       const num = parseInt(lead.budget.replace(/[^0-9]/g, ''), 10)
@@ -70,44 +111,23 @@ export default function PipelinePage() {
     return `US$${total.toLocaleString()}`
   }
 
-  // Mapeo preciso de colores estilo terminal financiera Bloomberg/Robinhood
   const getPriorityStyles = (priority: string) => {
     switch(priority) {
-      case 'critico': // Rojo Neón - Sin responder
-        return { 
-          border: 'border-red-500/30 bg-gradient-to-b from-[#110E08] to-red-950/5', 
-          text: 'text-red-400 bg-red-500/10 border-red-500/20', 
-          icon: AlertTriangle 
-        }
-      case 'seguimiento': // Ámbar / Naranja - En Propuesta / Pendientes
-        return { 
-          border: 'border-amber-500/30 bg-gradient-to-b from-[#110E08] to-amber-950/5', 
-          text: 'text-amber-400 bg-amber-500/10 border-amber-500/20', 
-          icon: Clock 
-        }
-      case 'nuevo': // Cian / Azul Eléctrico - Leads Recientes / Entrada
-        return { 
-          border: 'border-cyan-500/30 bg-gradient-to-b from-[#110E08] to-cyan-950/5', 
-          text: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20', 
-          icon: Briefcase 
-        }
-      case 'buscando': // Azul Cobalto - Perfilamiento y búsqueda activa
-        return { 
-          border: 'border-blue-500/30 bg-gradient-to-b from-[#110E08] to-blue-950/5', 
-          text: 'text-blue-400 bg-blue-500/10 border-blue-500/20', 
-          icon: Search 
-        }
-      default: // Normal / Gris Neutro Elegante
-        return { 
-          border: 'border-zinc-800/80 bg-[#110E08]/80', 
-          text: 'text-zinc-400 bg-zinc-900 border-zinc-800', 
-          icon: Briefcase 
-        }
+      case 'critico':
+        return { border: 'border-red-500/30 bg-gradient-to-b from-[#110E08] to-red-950/5', text: 'text-red-400 bg-red-500/10 border-red-500/20', icon: AlertTriangle }
+      case 'seguimiento':
+        return { border: 'border-amber-500/30 bg-gradient-to-b from-[#110E08] to-amber-950/5', text: 'text-amber-400 bg-amber-500/10 border-amber-500/20', icon: Clock }
+      case 'nuevo':
+        return { border: 'border-cyan-500/30 bg-gradient-to-b from-[#110E08] to-cyan-950/5', text: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20', icon: Briefcase }
+      case 'buscando':
+        return { border: 'border-blue-500/30 bg-gradient-to-b from-[#110E08] to-blue-950/5', text: 'text-blue-400 bg-blue-500/10 border-blue-500/20', icon: Search }
+      default:
+        return { border: 'border-zinc-800/80 bg-[#110E08]/80', text: 'text-zinc-400 bg-zinc-900 border-zinc-800', icon: Briefcase }
     }
   }
 
   return (
-    <div className="space-y-8 animate-fadeIn">
+    <div className="space-y-8 animate-fadeIn relative">
       
       {/* Encabezado */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -115,8 +135,11 @@ export default function PipelinePage() {
           <h1 className="text-2xl md:text-3xl font-black tracking-tight text-white">Pipeline Visual</h1>
           <p className="text-zinc-400 text-xs uppercase tracking-widest mt-1 font-bold">Panel de Control de Datos e Inteligencia de Negociación</p>
         </div>
-        <button className="bg-[#CCFF00] text-black px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider hover:bg-white transition-all flex items-center gap-2 self-start sm:self-auto shadow-md">
-          <Plus className="w-4 h-4 stroke-[3]" /> Crear Oportunidad
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="bg-[#CCFF00] text-black px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider hover:bg-white transition-all flex items-center gap-2 self-start sm:self-auto shadow-md"
+        >
+          <Plus className="w-4 h-4 stroke-[3]" /> Nuevo Cliente
         </button>
       </div>
 
@@ -129,7 +152,6 @@ export default function PipelinePage() {
           return (
             <div key={colName} className="bg-zinc-950/40 border border-zinc-900/60 rounded-2xl p-4 flex flex-col min-h-[520px] shadow-xl">
               
-              {/* Info de la Columna */}
               <div className="flex justify-between items-center mb-4 pb-2 border-b border-zinc-900">
                 <div>
                   <h3 className="text-xs font-black uppercase tracking-widest text-zinc-200 flex items-center gap-2">
@@ -143,7 +165,6 @@ export default function PipelinePage() {
                 </span>
               </div>
 
-              {/* Tarjetas de Leads */}
               <div className="space-y-3 flex-1 overflow-y-auto max-h-[550px] pr-1">
                 {leads.length === 0 ? (
                   <div className="border border-dashed border-zinc-900 rounded-xl p-8 text-center flex flex-col items-center justify-center h-32">
@@ -160,13 +181,9 @@ export default function PipelinePage() {
                         className={`border ${isCierre ? 'border-[#CCFF00]/30 bg-gradient-to-b from-[#110E08] to-[#CCFF00]/4' : styles.border} rounded-xl p-4 shadow-md group relative hover:border-zinc-700 transition-all`}
                       >
                         <div className="space-y-2.5">
-                          
-                          {/* Fila Superior: Nombre y Etiquetas */}
                           <div className="flex justify-between items-start gap-2">
                             <div>
                               <h4 className="text-sm font-black text-white group-hover:text-[#CCFF00] transition-colors truncate">{lead.name}</h4>
-                              
-                              {/* Etiqueta de Estado con color inyectado */}
                               <span className={`inline-block text-[9px] font-mono font-extrabold px-1.5 py-0.5 rounded border mt-1 tracking-wider ${isCierre ? 'text-[#CCFF00] bg-[#CCFF00]/10 border-[#CCFF00]/20' : styles.text}`}>
                                 {lead.statusLabel}
                               </span>
@@ -176,7 +193,6 @@ export default function PipelinePage() {
                             </span>
                           </div>
 
-                          {/* Fila Central: Proyecto e Info Extra */}
                           <div className="space-y-1">
                             <div className="flex items-center gap-1.5 text-xs text-zinc-300 font-medium">
                               <Building className="w-3.5 h-3.5 text-zinc-400 flex-shrink-0" />
@@ -188,7 +204,6 @@ export default function PipelinePage() {
                             </div>
                           </div>
 
-                          {/* Fila Inferior: Presupuesto y Controles */}
                           <div className="flex justify-between items-center pt-2 border-t border-zinc-900/60 mt-1">
                             <span className="text-xs font-mono font-black text-[#CCFF00]">{lead.budget}</span>
                             
@@ -216,7 +231,6 @@ export default function PipelinePage() {
                               )}
                             </div>
                           </div>
-
                         </div>
                         <div className="text-[9px] text-zinc-600 font-mono text-right mt-1.5 block">{lead.updatedAt}</div>
                       </div>
@@ -224,11 +238,105 @@ export default function PipelinePage() {
                   })
                 )}
               </div>
-
             </div>
           )
         })}
       </div>
+
+      {/* MODAL DE NUEVO CLIENTE (Estilo Robinhood Premium) */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-zinc-950 border border-zinc-800 w-full max-w-md rounded-2xl overflow-hidden shadow-2xl animate-scaleIn">
+            
+            <div className="p-5 border-b border-zinc-900 flex justify-between items-center">
+              <div>
+                <h2 className="text-lg font-black text-white">Alta de Oportunidad</h2>
+                <p className="text-zinc-500 text-[10px] uppercase font-mono tracking-wider">Inyectar registro al Pipeline</p>
+              </div>
+              <button 
+                onClick={() => setIsModalOpen(false)}
+                className="text-zinc-400 hover:text-white p-1 rounded-lg bg-zinc-900 border border-zinc-800"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCrearLead} className="p-5 space-y-4">
+              <div>
+                <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 mb-1.5">Nombre del Cliente</label>
+                <input 
+                  type="text" 
+                  required
+                  placeholder="Ej. Juan Pérez"
+                  value={nuevoLead.name}
+                  onChange={(e) => setNuevoLead({...nuevoLead, name: e.target.value})}
+                  className="w-full bg-[#110E08] border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[#CCFF00] transition-colors placeholder:text-zinc-700"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 mb-1.5">Proyecto</label>
+                  <input 
+                    type="text" 
+                    required
+                    placeholder="Ej. Regatta Blue"
+                    value={nuevoLead.project}
+                    onChange={(e) => setNuevoLead({...nuevoLead, project: e.target.value})}
+                    className="w-full bg-[#110E08] border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[#CCFF00] transition-colors placeholder:text-zinc-700"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 mb-1.5">Sector</label>
+                  <input 
+                    type="text" 
+                    placeholder="Ej. Piantini"
+                    value={nuevoLead.sector}
+                    onChange={(e) => setNuevoLead({...nuevoLead, sector: e.target.value})}
+                    className="w-full bg-[#110E08] border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[#CCFF00] transition-colors placeholder:text-zinc-700"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 mb-1.5">Tipo Propiedad</label>
+                  <select 
+                    value={nuevoLead.propertyType}
+                    onChange={(e) => setNuevoLead({...nuevoLead, propertyType: e.target.value})}
+                    className="w-full bg-[#110E08] border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[#CCFF00] transition-colors"
+                  >
+                    <option value="Apartamento">Apartamento</option>
+                    <option value="Penthouse">Penthouse</option>
+                    <option value="Villa / Casa">Villa / Casa</option>
+                    <option value="Solar / Playa">Solar / Playa</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 mb-1.5">Presupuesto (Sólo número)</label>
+                  <input 
+                    type="number" 
+                    required
+                    placeholder="250000"
+                    value={nuevoLead.budget}
+                    onChange={(e) => setNuevoLead({...nuevoLead, budget: e.target.value})}
+                    className="w-full bg-[#110E08] border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[#CCFF00] transition-colors placeholder:text-zinc-700"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <button 
+                  type="submit"
+                  className="w-full bg-[#CCFF00] text-black font-black uppercase text-xs tracking-widest py-3 rounded-xl hover:bg-white transition-all"
+                >
+                  Insertar en Pipeline
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
     </div>
   )
