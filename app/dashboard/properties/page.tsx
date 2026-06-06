@@ -270,14 +270,22 @@ function PropertyModal({ open, initial, onClose, onSave }: ModalProps) {
                 + Agregar otra foto
               </button>
             </div>
-            {form.imagenes[0] && (
-              <img
-                src={form.imagenes[0]}
-                alt="Preview"
-                className="mt-3 w-full h-32 object-cover rounded-xl border border-zinc-700"
-                onError={e => (e.currentTarget.style.display = 'none')}
-              />
-            )}
+            {form.imagenes && form.imagenes.filter(url => url.trim() !== '').length > 0 && (
+  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-3">
+    {form.imagenes
+      .filter(url => url.trim() !== '')
+      .map((url, index) => (
+        <div key={index} className="relative aspect-video w-full overflow-hidden rounded-xl border border-zinc-700 bg-zinc-950">
+          <img
+            src={url}
+            alt={`Preview ${index + 1}`}
+            className="h-full w-full object-cover"
+            onError={(e) => { e.currentTarget.style.display = 'none'; }}
+          />
+        </div>
+      ))}
+  </div>
+)}
           </div>
 
           <div>
