@@ -225,7 +225,7 @@ export default function PropertiesPage() {
               )}
             </div>
 
-            {/* --- MAPA DE GOOGLE EMBED --- */}
+                       {/* --- MAPA DE GOOGLE EMBED --- */}
             <div className="w-full h-[240px] rounded-xl overflow-hidden border border-zinc-800 bg-zinc-900 relative">
               <div className="absolute top-2.5 left-2.5 z-10 bg-black/80 backdrop-blur-sm text-[9px] text-[#CCFF00] font-mono px-2.5 py-1 rounded-full border border-zinc-800">
                 📍 {selectedProperty.sector}
@@ -237,11 +237,10 @@ export default function PropertiesPage() {
                 width="100%"
                 mode="place"
                 q={`${selectedProperty.address}, Santo Domingo, Republica Dominicana`}
-                allowFullScreen={false}
+                allowfullscreen=""
                 style="border:0; filter: invert(90%) hue-rotate(180deg) saturate(150%);"
               />
             </div>
-
             {/* Botón de ruta en tiempo real para Waze / Google Maps nativo */}
             <button 
               onClick={() => {
