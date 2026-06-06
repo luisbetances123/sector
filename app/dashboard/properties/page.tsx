@@ -651,15 +651,17 @@ function PropertiesContent() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map(p => (
             <PropertyCard
               key={p.id}
               property={p}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map(p => (
-            <PropertyCard
-              key={p.id}
-              property={p}
+              onClick={() => { setEditingProperty(p); setModalOpen(true); }}
+              onEdit={e => openEdit(e, p)}
+              onDelete={e => handleDelete(e, p.id, p.title)}
+            />
+          ))}
+        </div>
               onClick={(e) => openEdit(e, p)} // <--- CAMBIA ESTA LÍNEA AQUÍ
               onEdit={e => openEdit(e, p)}
               onDelete={e => handleDelete(e, p.id, p.title)}
