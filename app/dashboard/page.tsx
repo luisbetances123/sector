@@ -231,7 +231,7 @@ export default function PropertiesPage() {
                 📍 {selectedProperty.sector}
               </div>
 
-              <GoogleMapsEmbed
+                            <GoogleMapsEmbed
                 apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY ?? ''}
                 height="100%"
                 width="100%"
@@ -248,7 +248,7 @@ export default function PropertiesPage() {
               className="w-full bg-[#CCFF00] hover:bg-[#b3df00] text-black font-bold py-3 rounded-xl transition-colors text-xs tracking-wide uppercase font-mono shadow-md shadow-[#CCFF00]/10"
             >
               Iniciar Navegación GPS
-            </button>
+            </button>>
 
           </div>
         </div>
