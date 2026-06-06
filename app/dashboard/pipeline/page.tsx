@@ -1,13 +1,10 @@
 'use client'
 import { useState } from 'react'
 import { 
-  DollarSign, 
-  User, 
-  ArrowRight, 
   Building, 
-  Briefcase, 
   CheckCircle2, 
   ChevronRight,
+  ChevronLeft,
   Plus
 } from 'lucide-react'
 
@@ -21,7 +18,7 @@ interface Lead {
 }
 
 export default function PipelinePage() {
-  // Estado local para simular interactividad viva arrastrando/moviendo leads
+  // Estado local para simular interactividad viva
   const [columns, setColumns] = useState<{ [key: string]: Lead[] }>({
     'Prospectos': [
       { id: '1', name: 'Carlos Mendoza', project: 'Torre Naco Luxury', budget: 'US$280,000', sector: 'Naco', updatedAt: 'Hace 2h' },
@@ -38,22 +35,26 @@ export default function PipelinePage() {
     ],
   })
 
-  // Función rápida para simular el avance de un lead por el embudo comercial
-  const avanzarLead = (currentColumn: string, leadId: string) => {
+  // Nueva función bidireccional (soporta 'adelante' y 'atras')
+  const moverLead = (currentColumn: string, leadId: string, direccion: 'adelante' | 'atras') => {
     const colKeys = Object.keys(columns)
     const currentIdx = colKeys.indexOf(currentColumn)
-    if (currentIdx === colKeys.length - 1) return // Ya está en cierre
+    
+    // Calcular el nuevo índice según la dirección elegida
+    const nuevoIdx = direccion === 'adelante' ? currentIdx + 1 : currentIdx - 1
 
-    const nextColumn = colKeys[currentIdx + 1]
+    // Validar límites del tablero
+    if (nuevoIdx < 0 || nuevoIdx >= colKeys.length) return 
+
+    const targetColumn = colKeys[nuevoIdx]
     const leadToMove = columns[currentColumn].find(l => l.id === leadId)
     
     if (leadToMove) {
-      // Actualizar marcas de tiempo estéticas
       const leadActualizado = { ...leadToMove, updatedAt: '¡Ahora mismo!' }
       setColumns({
         ...columns,
         [currentColumn]: columns[currentColumn].filter(l => l.id !== leadId),
-        [nextColumn]: [...columns[nextColumn], leadActualizado]
+        [targetColumn]: [...columns[targetColumn], leadActualizado]
       })
     }
   }
@@ -83,8 +84,10 @@ export default function PipelinePage() {
 
       {/* Tablero Kanban */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 items-start">
-        {Object.entries(columns).map(([colName, leads]) => {
+        {Object.entries(columns).map(([colName, leads], colIdx) => {
           const isCierre = colName.includes('Cierre')
+          const isPrimeraColumna = colIdx === 0
+          
           return (
             <div key={colName} className="bg-black/20 border border-zinc-800/60 rounded-2xl p-4 flex flex-col min-h-[450px] shadow-xl">
               
@@ -130,20 +133,34 @@ export default function PipelinePage() {
                         <div className="flex justify-between items-center pt-2 border-t border-zinc-900/60 mt-1">
                           <span className="text-xs font-mono font-black text-[#CCFF00]">{lead.budget}</span>
                           
-                          {/* Botón de acción rápido para avanzar de etapa */}
-                          {!isCierre ? (
-                            <button 
-                              onClick={() => avanzarLead(colName, lead.id)}
-                              className="p-1.5 bg-zinc-900 text-zinc-400 hover:text-black hover:bg-[#CCFF00] rounded-lg transition-all border border-zinc-800 hover:border-transparent flex items-center justify-center"
-                              title="Avanzar etapa"
-                            >
-                              <ChevronRight className="w-3.5 h-3.5 stroke-[2.5]" />
-                            </button>
-                          ) : (
-                            <span className="text-emerald-400 p-1 flex items-center justify-center">
-                              <CheckCircle2 className="w-4 h-4" />
-                            </span>
-                          )}
+                          {/* Contenedor de botones de acción */}
+                          <div className="flex items-center gap-1.5">
+                            {/* Botón Atrás: No se muestra si es la primera columna */}
+                            {!isPrimeraColumna && (
+                              <button 
+                                onClick={() => moverLead(colName, lead.id, 'atras')}
+                                className="p-1.5 bg-zinc-900 text-zinc-400 hover:text-black hover:bg-[#CCFF00] rounded-lg transition-all border border-zinc-800 hover:border-transparent flex items-center justify-center"
+                                title="Retroceder etapa"
+                              >
+                                <ChevronLeft className="w-3.5 h-3.5 stroke-[2.5]" />
+                              </button>
+                            )}
+
+                            {/* Botón Adelante: Muestra Check si ya llegó a Cierre */}
+                            {!isCierre ? (
+                              <button 
+                                onClick={() => moverLead(colName, lead.id, 'adelante')}
+                                className="p-1.5 bg-zinc-900 text-zinc-400 hover:text-black hover:bg-[#CCFF00] rounded-lg transition-all border border-zinc-800 hover:border-transparent flex items-center justify-center"
+                                title="Avanzar etapa"
+                              >
+                                <ChevronRight className="w-3.5 h-3.5 stroke-[2.5]" />
+                              </button>
+                            ) : (
+                              <span className="text-emerald-400 p-1 flex items-center justify-center">
+                                <CheckCircle2 className="w-4 h-4" />
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                       <div className="text-[9px] text-zinc-600 font-mono text-right mt-1.5 block">{lead.updatedAt}</div>
