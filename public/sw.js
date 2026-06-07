@@ -1,6 +1,6 @@
 self.addEventListener('push', function(event) {
   const data = event.data ? event.data.json() : {}
-  const title = data.title || 'HOMVI'
+  const title = data.title || 'SECTOR'
   const options = {
     body: data.body || 'Tienes una alerta nueva',
     icon: '/favicon.ico',

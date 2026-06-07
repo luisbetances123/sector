@@ -29,7 +29,7 @@ export default function FichaTecnica() {
 
   if (loading) return (
     <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
-      <p className="text-amber-500 font-black text-2xl animate-pulse">HOMVI</p>
+      <p className="text-amber-500 font-black text-2xl animate-pulse">SECTOR</p>
     </div>
   )
 
@@ -50,7 +50,7 @@ export default function FichaTecnica() {
     <div className="min-h-screen bg-zinc-950 text-white">
       <div className="bg-zinc-900 border-b border-zinc-800 sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
-          <span className="text-amber-500 font-black text-xl tracking-tight">HOMVI</span>
+          <span className="text-amber-500 font-black text-xl tracking-tight">SECTOR</span>
           <a href={whatsappUrl} target="_blank" rel="noreferrer"
             className="flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-xl text-sm font-black transition-all">
             💬 Consultar
@@ -102,7 +102,7 @@ export default function FichaTecnica() {
       </div>
 
       <div className="border-t border-zinc-800 mt-8 py-6 text-center">
-        <p className="text-zinc-600 text-xs">© 2026 HOMVI · Santo Domingo, RD</p>
+        <p className="text-zinc-600 text-xs">© 2026 SECTOR · Santo Domingo, RD</p>
       </div>
     </div>
   )

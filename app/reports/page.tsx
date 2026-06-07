@@ -25,7 +25,7 @@ export default function ReportsPage() {
 
   if (loading) return (
     <div className="flex items-center justify-center min-h-screen bg-black">
-      <p className="text-amber-500 font-black text-2xl animate-pulse">HOMVI</p>
+      <p className="text-amber-500 font-black text-2xl animate-pulse">SECTOR</p>
     </div>
   )
 

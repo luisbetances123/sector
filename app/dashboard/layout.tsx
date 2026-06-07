@@ -36,7 +36,7 @@ export default function DashboardLayout({
       <header className="md:hidden w-full border-b border-zinc-900 bg-black/60 backdrop-blur-md px-6 py-4 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-3">
           <div className="w-2.5 h-2.5 rounded-full bg-[#CCFF00] animate-pulse" />
-          <span className="text-base font-black tracking-tighter uppercase">HOMVI</span>
+          <span className="text-base font-black tracking-tighter uppercase">SECTOR</span>
         </div>
         <button 
           onClick={() => setIsOpen(!isOpen)}
@@ -89,7 +89,7 @@ export default function DashboardLayout({
           {/* Logo Premium */}
           <div className="flex items-center gap-3 px-2">
             <div className="w-3 h-3 rounded-full bg-[#CCFF00] animate-pulse" />
-            <span className="text-lg font-black tracking-tighter uppercase">HOMVI</span>
+            <span className="text-lg font-black tracking-tighter uppercase">SECTOR</span>
           </div>
 
           {/* Lista de Navegación */}

@@ -50,7 +50,7 @@ export default function ListingsPage() {
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-black text-gray-900">HOMVI</h1>
+            <h1 className="text-2xl font-black text-gray-900">SECTOR</h1>
             <p className="text-xs text-gray-500">Propiedades en Santo Domingo</p>
           </div>
           <a href={`https://wa.me/${WHATSAPP}`} target="_blank"
@@ -128,7 +128,7 @@ export default function ListingsPage() {
       </div>
 
       <div className="border-t border-gray-200 bg-white mt-8 py-6 text-center">
-        <p className="text-gray-400 text-sm">© 2026 HOMVI · Santo Domingo, RD</p>
+        <p className="text-gray-400 text-sm">© 2026 SECTOR · Santo Domingo, RD</p>
         <a href={`https://wa.me/${WHATSAPP}`} target="_blank" className="text-green-500 text-sm font-bold mt-1 block hover:underline">
           Contactar agente: +1 (929) 305-6500
         </a>

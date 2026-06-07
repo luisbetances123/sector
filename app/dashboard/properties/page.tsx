@@ -427,7 +427,7 @@ function PropertyModal({ open, initial, onClose, onSave }: ModalProps) {
           <div className="relative max-w-4xl w-full max-h-[80vh] flex items-center justify-center select-none" onClick={(e) => e.stopPropagation()}>
             <img 
               src={activeLightboxImage} 
-              alt="Propiedad HOMVI full view" 
+              alt="Propiedad SECTOR full view" 
               className="max-w-full max-h-[80vh] object-contain rounded-2xl border border-zinc-800 shadow-2xl"
             />
           </div>

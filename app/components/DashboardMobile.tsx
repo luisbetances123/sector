@@ -171,7 +171,7 @@ export default function DashboardMobile({
             {/* ── HEADER GIGANTE ── */}
             <div className="mb-6">
               <p className="text-zinc-500 text-xs uppercase tracking-widest font-black">BUENOS DÍAS, LUIS 👋</p>
-              <h1 className="text-4xl font-black text-white tracking-tighter mt-0.5">HOMVI<br/>CENTER</h1>
+              <h1 className="text-4xl font-black text-white tracking-tighter mt-0.5">SECTOR<br/>CENTER</h1>
             </div>
 
             {/* ── BLOQUES DEL DASHBOARD INTERACTIVOS GIGANTES ── */}

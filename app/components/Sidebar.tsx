@@ -17,7 +17,7 @@ export default function Sidebar() {
   return (
     <div className="hidden md:flex w-56 bg-zinc-950 border-r border-zinc-800 flex-col h-screen p-4 sticky top-0">
       <div className="flex items-center justify-between mb-8 px-2">
-        <span className="text-amber-500 font-bold text-xl">HOMVI</span>
+        <span className="text-amber-500 font-bold text-xl">SECTOR</span>
         <NotificationBell />
       </div>
       <nav className="flex flex-col space-y-1 flex-1">

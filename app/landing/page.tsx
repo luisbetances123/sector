@@ -55,7 +55,7 @@ const content = {
       badge: '🇩🇴 CRM Inmobiliario · Santo Domingo',
       h1a: 'Tu cartera de clientes,',
       h1b: 'bajo control total.',
-      desc: 'Homvi es el CRM diseñado para agentes inmobiliarios que operan con estándares de lujo. Pipeline visual, seguimiento preciso, cierre inteligente.',
+      desc: 'SECTOR es el CRM diseñado para agentes inmobiliarios que operan con estándares de lujo. Pipeline visual, seguimiento preciso, cierre inteligente.',
       btnPrimary: 'Solicitar Acceso Anticipado',
       btnSecondary: 'Ver Funciones',
     },
@@ -75,17 +75,17 @@ const content = {
     ctaBtn: 'Asegurar mi Acceso Anticipado',
     ctaSent: '✓ ¡Cupo reservado! Te vemos dentro.',
     ctaLoading: 'Guardando...',
-    footer: '© 2026 HOMVI · CRM Inmobiliario · Santo Domingo',
+    footer: '© 2026 SECTOR · CRM Inmobiliario · Santo Domingo',
     rd: {
       title: 'Construido para el ecosistema inmobiliario de la República Dominicana',
-      subtitle: 'De costa a costa, HOMVI conoce dónde se mueve el negocio grande.',
+      subtitle: 'De costa a costa, SECTOR conoce dónde se mueve el negocio grande.',
       desc: 'Configurado con los sectores donde se mueve el dinero real y nacen nuevas torres:',
       sectors: 'Piantini, Naco, Bella Vista, Serrallés, Los Cacicazgos, La Esperilla, Mirador Norte',
       tourism: '— así como los polos de mayor plusvalía e inversión turística:',
       tourismPlaces: 'Santiago, Las Terrenas, Juan Dolio, Punta Cana y Bávaro',
     },
     features: [
-      { numero: '01', titulo: 'Dashboard', subtitulo: 'Visión total de tu negocio en un vistazo', descripcion: 'El centro de mando de HOMVI. Te muestra en tiempo real lo que deja dinero: leads sin responder en rojo, seguimientos urgentes del día y el estatus real de tus negociaciones. Cero métricas de vanidad.', puntos: ['Leads fríos y calientes destacados', 'Alertas de seguimiento inmediato', 'Pipeline activo consolidado', 'Métricas de inventario disponible'] },
+      { numero: '01', titulo: 'Dashboard', subtitulo: 'Visión total de tu negocio en un vistazo', descripcion: 'El centro de mando de SECTOR. Te muestra en tiempo real lo que deja dinero: leads sin responder en rojo, seguimientos urgentes del día y el estatus real de tus negociaciones. Cero métricas de vanidad.', puntos: ['Leads fríos y calientes destacados', 'Alertas de seguimiento inmediato', 'Pipeline activo consolidado', 'Métricas de inventario disponible'] },
       { numero: '02', titulo: 'Mis Tareas', subtitulo: 'Tu agenda diaria inteligente', descripcion: 'Diseñado para el ritmo del broker moderno. Centraliza citas de captación, llamadas de seguimiento y cierres programados. Agenda en segundos y limpia tu pantalla a medida que avanzas el día.', puntos: ['Citas de proyectos ordenadas por hora', 'Block de notas rápidas integrado', 'Programación de llamadas con un clic', 'Etiquetas de urgencia (Cierre, Alerta)'] },
       { numero: '03', titulo: 'Leads y Contactos', subtitulo: 'Tu cartera completa, blindada', descripcion: 'Gestiona el perfil patrimonial de tus compradores: presupuestos, sectores específicos de interés, método de pago y nivel de urgencia. Conecta clientes con propiedades al instante.', puntos: ['Perfil con presupuesto bimonetario', 'Preferencia exacta de sectores', 'Historial de interacciones por cliente', 'Segmentación por origen del lead'] },
       { numero: '04', titulo: 'Inventario', subtitulo: 'Catálogo de propiedades premium', descripcion: 'Administra tus exclusivas y propiedades disponibles de forma visual. Filtros ultra rápidos por sector, precio y tipología para que le respondas al cliente de inmediato cuando pida opciones.', puntos: ['Fichas de propiedades optimizadas', 'Filtros dinámicos por zona y torre', 'Match automático con compradores', 'Control de estatus: Disponible o Reservado'] },
@@ -94,11 +94,11 @@ const content = {
       { numero: '07', titulo: 'Métricas', subtitulo: 'Datos crudos que multiplican cierres', descripcion: 'Deja de adivinar qué funciona. Analiza tus tiempos de respuesta, qué sectores están rindiendo más comisiones este trimestre y de dónde están saliendo tus leads más calificados.', puntos: ['Rendimiento por zona geográfica', 'Tasa de conversión de leads a cierres', 'Volumen financiero total en negociación', 'Análisis de efectividad comercial'] },
     ],
     faqs: [
-      { pregunta: '¿Necesito instalar algo?', respuesta: 'No. HOMVI es 100% en la nube. Accedes desde tu iPhone, iPad o computadora desde cualquier lugar de Santo Domingo o el interior, sin descargar nada.' },
-      { pregunta: '¿Puedo usar HOMVI con mi equipo de brokers?', respuesta: 'Sí. El sistema está hecho para agencias o equipos de alto rendimiento. Cada asesor maneja sus propios clientes con total privacidad de datos mediante seguridad avanzada.' },
+      { pregunta: '¿Necesito instalar algo?', respuesta: 'No. SECTOR es 100% en la nube. Accedes desde tu iPhone, iPad o computadora desde cualquier lugar de Santo Domingo o el interior, sin descargar nada.' },
+      { pregunta: '¿Puedo usar SECTOR con mi equipo de brokers?', respuesta: 'Sí. El sistema está hecho para agencias o equipos de alto rendimiento. Cada asesor maneja sus propios clientes con total privacidad de datos mediante seguridad avanzada.' },
       { pregunta: '¿Mis datos de clientes están protegidos?', respuesta: 'Totalmente. Implementamos encriptación de nivel bancario y políticas estrictas de privacidad en Supabase. Tu cartera es tu activo más valioso, y nadie más tiene acceso a ella.' },
-      { pregunta: '¿Cómo migro mis clientes desde un Excel?', respuesta: 'Facilísimo. HOMVI cuenta con un importador nativo de archivos CSV y Excel. Sube tu base de datos actual y estarás operando en menos de 5 minutos.' },
-      { pregunta: '¿Cómo funciona el envío por WhatsApp?', respuesta: 'Desde la ficha de cualquier propiedad en tu Inventario, haces clic en el botón de compartir y HOMVI te genera un enlace estético, limpio y profesional optimizado para móvil listo para enviar.' },
+      { pregunta: '¿Cómo migro mis clientes desde un Excel?', respuesta: 'Facilísimo. SECTOR cuenta con un importador nativo de archivos CSV y Excel. Sube tu base de datos actual y estarás operando en menos de 5 minutos.' },
+      { pregunta: '¿Cómo funciona el envío por WhatsApp?', respuesta: 'Desde la ficha de cualquier propiedad en tu Inventario, haces clic en el botón de compartir y SECTOR te genera un enlace estético, limpio y profesional optimizado para móvil listo para enviar.' },
       { pregunta: '¿Hay un límite de propiedades o captaciones?', respuesta: 'Ninguno. Sube todo el inventario de preventas, reventas y proyectos turísticos que manejes. La plataforma procesa catálogos masivos sin perder un solo milisegundo de velocidad.' },
     ],
   },
@@ -109,7 +109,7 @@ const content = {
       badge: '🇩🇴 Real Estate CRM · Santo Domingo',
       h1a: 'Your client portfolio,',
       h1b: 'under total control.',
-      desc: 'Homvi is the CRM designed for real estate agents who operate at luxury standards. Visual pipeline, precise follow-ups, intelligent closing.',
+      desc: 'SECTOR is the CRM designed for real estate agents who operate at luxury standards. Visual pipeline, precise follow-ups, intelligent closing.',
       btnPrimary: 'Request Early Access',
       btnSecondary: 'See Features',
     },
@@ -129,17 +129,17 @@ const content = {
     ctaBtn: 'Secure My Early Access',
     ctaSent: '✓ Spot reserved! See you inside.',
     ctaLoading: 'Saving...',
-    footer: '© 2026 HOMVI · Real Estate CRM · Santo Domingo',
+    footer: '© 2026 SECTOR · Real Estate CRM · Santo Domingo',
     rd: {
       title: 'Built for the Dominican Republic real estate ecosystem',
-      subtitle: 'From coast to coast, HOMVI knows where the big business moves.',
+      subtitle: 'From coast to coast, SECTOR knows where the big business moves.',
       desc: 'Configured with the areas where real money flows and new towers rise:',
       sectors: 'Piantini, Naco, Bella Vista, Serrallés, Los Cacicazgos, La Esperilla, Mirador Norte',
       tourism: '— as well as the highest growth tourist investment destinations:',
       tourismPlaces: 'Santiago, Las Terrenas, Juan Dolio, Punta Cana, and Bávaro',
     },
     features: [
-      { numero: '01', titulo: 'Dashboard', subtitulo: 'Total view of your business at a glance', descripcion: 'HOMVI\'s command center. It shows you what makes money in real time: red-highlighted unanswered leads, urgent daily follow-ups, and the real status of your negotiations. Zero vanity metrics.', puntos: ['Hot and cold leads highlighted', 'Immediate follow-up alerts', 'Consolidated active pipeline', 'Available inventory metrics'] },
+      { numero: '01', titulo: 'Dashboard', subtitulo: 'Total view of your business at a glance', descripcion: 'SECTOR\'s command center. It shows you what makes money in real time: red-highlighted unanswered leads, urgent daily follow-ups, and the real status of your negotiations. Zero vanity metrics.', puntos: ['Hot and cold leads highlighted', 'Immediate follow-up alerts', 'Consolidated active pipeline', 'Available inventory metrics'] },
       { numero: '02', titulo: 'Mis Tareas', subtitulo: 'Your smart daily agenda', descripcion: 'Built for the modern broker\'s rhythm. Centralizes project viewings, follow-up calls, and scheduled closings. Schedule in seconds and clear your screen as the day moves forward.', puntos: ['Project appointments sorted by hour', 'Integrated quick notepad', 'One-click call scheduling', 'Urgency tags (Closing, Alert)'] },
       { numero: '03', titulo: 'Leads y Contactos', subtitulo: 'Your full portfolio, locked down', descripcion: 'Manage your buyer\'s wealth profile: budgets, specific areas of interest, payment method, and urgency level. Pair clients with properties instantly.', puntos: ['Dual-currency budget profile', 'Exact neighborhood preference', 'Interaction history per client', 'Lead source segmentation'] },
       { numero: '04', titulo: 'Inventario', subtitulo: 'Premium property catalog', descripcion: 'Manage your listings and available inventory visually. Ultra-fast filtering by sector, price, and type so you can respond to the client immediately when they request options.', puntos: ['Optimized property sheets', 'Dynamic filters by zone and tower', 'Automatic matching with buyers', 'Status control: Available or Reserved'] },
@@ -148,11 +148,11 @@ const content = {
       { numero: '07', titulo: 'Métricas', subtitulo: 'Raw data that multiplies closings', descripcion: 'Stop guessing what works. Analyze response times, which neighborhoods are yielding the highest commissions this quarter, and where your most qualified leads are coming from.', puntos: ['Performance by geographic zone', 'Lead-to-close conversion rate', 'Total pipeline financial volume', 'Sales effectiveness analysis'] },
     ],
     faqs: [
-      { pregunta: 'Do I need to install anything?', respuesta: 'No. HOMVI is 100% cloud-based. Access it from your iPhone, iPad, or laptop from anywhere in Santo Domingo or across the country without downloading a thing.' },
-      { pregunta: 'Can I use HOMVI with my team of brokers?', respuesta: 'Yes. The system is custom-built for high-performance agencies or teams. Each advisor manages their own database with absolute data privacy via advanced security layers.' },
+      { pregunta: 'Do I need to install anything?', respuesta: 'No. SECTOR is 100% cloud-based. Access it from your iPhone, iPad, or laptop from anywhere in Santo Domingo or across the country without downloading a thing.' },
+      { pregunta: 'Can I use SECTOR with my team of brokers?', respuesta: 'Yes. The system is custom-built for high-performance agencies or teams. Each advisor manages their own database with absolute data privacy via advanced security layers.' },
       { pregunta: 'Is my client data protected?', respuesta: 'Absolutely. We implement bank-level encryption and strict privacy rules via Supabase. Your database is your most valuable asset, and nobody else has access to it.' },
-      { pregunta: 'How do I migrate my clients from Excel?', respuesta: 'Extremely easy. HOMVI features a native CSV and Excel importer. Upload your current database and you will be up and running in less than 5 minutes.' },
-      { pregunta: 'How does the WhatsApp share feature work?', respuesta: 'From any listing page in your Inventario, just click the share button and HOMVI will instantly generate a beautiful, clean, mobile-optimized link ready to send.' },
+      { pregunta: 'How do I migrate my clients from Excel?', respuesta: 'Extremely easy. SECTOR features a native CSV and Excel importer. Upload your current database and you will be up and running in less than 5 minutes.' },
+      { pregunta: 'How does the WhatsApp share feature work?', respuesta: 'From any listing page in your Inventario, just click the share button and SECTOR will instantly generate a beautiful, clean, mobile-optimized link ready to send.' },
       { pregunta: 'Is there a limit on properties or listings?', respuesta: 'None at all. Upload all pre-constructions, resales, and tourist projects you handle. The platform processes massive catalogs without losing a single millisecond of speed.' },
     ],
   },
@@ -241,7 +241,7 @@ export default function Page() {
 
         {/* Nav */}
         <nav className="flex justify-between items-center p-6 max-w-7xl mx-auto border-b border-zinc-800/60">
-          <div className="text-2xl font-black tracking-tighter text-[#CCFF00]">HOMVI</div>
+          <div className="text-2xl font-black tracking-tighter text-[#CCFF00]">SECTOR</div>
           <div className="hidden md:flex gap-8 text-xs uppercase tracking-widest text-zinc-500">
             <a href="#features" className="hover:text-white cursor-pointer transition-colors">{t.nav.features}</a>
             <a href="#faq" className="hover:text-white cursor-pointer transition-colors">{t.nav.faq}</a>

@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { supabase } from '../../lib/supabase'
+import { supabase } from '../lib/supabase'
 
 interface FollowUp {
   id: string
@@ -26,7 +26,7 @@ const tipoIcono: Record<string, string> = {
 
 const tipoColor: Record<string, string> = {
   llamada: 'bg-blue-400',
-  visita: 'bg-[#CCFF00]',
+  visita: 'bg-amber-400',
   documento: 'bg-purple-400',
   otro: 'bg-zinc-400',
   movimiento: 'bg-zinc-500',
@@ -34,14 +34,14 @@ const tipoColor: Record<string, string> = {
 
 const tipoBorde: Record<string, string> = {
   llamada: 'border-l-blue-400',
-  visita: 'border-l-[#CCFF00]',
+  visita: 'border-l-amber-400',
   documento: 'border-l-purple-400',
   otro: 'border-l-zinc-400',
 }
 
 const urgenciaColor: Record<string, string> = {
   alta: 'bg-red-900 text-red-300',
-  media: 'bg-zinc-800 text-zinc-300 border border-zinc-700',
+  media: 'bg-amber-900 text-amber-300',
   baja: 'bg-green-900 text-green-300',
   LEAD: 'bg-zinc-800 text-zinc-400 border border-zinc-700',
   BUSCANDO: 'bg-blue-950 text-blue-400 border border-blue-900',
@@ -67,6 +67,7 @@ export default function CalendarPage() {
   const [diaSeleccionado, setDiaSeleccionado] = useState<string | null>(hoy.toISOString().split('T')[0])
   const [showForm, setShowForm] = useState(false)
   const [saving, setSaving] = useState(false)
+  // Añadimos phone a la interfaz local del estado de clientes
   const [clientes, setClientes] = useState<{id: string, name: string, phone?: string}[]>([])
   const hoyStr = hoy.toISOString().split('T')[0]
   const [form, setForm] = useState({ cliente_id: '', tipo: 'llamada', titulo: '', detalle: '', fecha: hoyStr, hora: '09:00', urgencia: 'media' })
@@ -78,6 +79,7 @@ export default function CalendarPage() {
   }, [])
 
   async function fetchClientes() {
+    // Jalamos también el campo 'phone' para poder disparar los WhatsApps
     const { data } = await supabase.from('clients').select('id, name, phone')
     if (data) setClientes(data)
   }
@@ -145,6 +147,7 @@ export default function CalendarPage() {
     setFollowups(prev => prev.map(f => f.id === id ? { ...f, hecho: !f.hecho } : f))
   }
 
+  // Función mágica para disparar recordatorios por WhatsApp
   const enviarRecordatorioWhatsApp = (f: FollowUp) => {
     const clienteObj = clientes.find(c => c.id === f.cliente_id)
     if (!clienteObj || !clienteObj.phone) {
@@ -152,12 +155,16 @@ export default function CalendarPage() {
       return
     }
 
+    // Limpiamos el número por seguridad (quitando espacios o guiones)
     const numeroLimpio = clienteObj.phone.replace(/[^0-9]/g, '')
+    
+    // Formateamos la fecha amigable
     const fechaAmigable = new Date(f.fecha + 'T12:00:00').toLocaleDateString('es-DO', { 
       day: 'numeric', 
       month: 'long' 
     })
 
+    // Construimos la plantilla automática dependiendo del tipo de cita
     let mensaje = `Hola ${clienteObj.name}, te saludo de SECTOR. `
     if (f.tipo === 'visita') {
       mensaje += `Te confirmo nuestra cita programada para ver la propiedad el próximo ${fechaAmigable} a las ${f.hora}. ¡Nos vemos allá!`
@@ -188,13 +195,13 @@ export default function CalendarPage() {
     <div className="p-4 md:p-8">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl md:text-4xl font-black italic text-[#CCFF00] tracking-tighter uppercase">CALENDARIO</h1>
+          <h1 className="text-2xl md:text-4xl font-black italic text-amber-500 tracking-tighter uppercase">CALENDARIO</h1>
           <p className="text-zinc-500 text-xs mt-1 uppercase tracking-widest">{pendientes} pendientes · {completados} completados</p>
         </div>
-        <button onClick={() => { setShowForm(true); setForm(f => ({ ...f, fecha: diaSeleccionado || hoyStr })) }} className="bg-[#CCFF00] text-black px-4 py-2 rounded-xl font-black text-xs uppercase hover:bg-white transition-all">+ Evento</button>
+        <button onClick={() => { setShowForm(true); setForm(f => ({ ...f, fecha: diaSeleccionado || hoyStr })) }} className="bg-amber-500 text-black px-3 py-2 rounded-xl font-black text-xs uppercase hover:bg-white transition-all">+ Evento</button>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-6">
-        {[{ label: 'Total', value: followups.length, color: 'text-white' },{ label: 'Pendientes', value: pendientes, color: 'text-[#CCFF00]' },{ label: 'Completados', value: completados, color: 'text-green-400' },{ label: 'Hoy', value: followups.filter(f => f.fecha === hoyStr).length, color: 'text-blue-400' }].map(s => (
+        {[{ label: 'Total', value: followups.length, color: 'text-white' },{ label: 'Pendientes', value: pendientes, color: 'text-amber-500' },{ label: 'Completados', value: completados, color: 'text-green-400' },{ label: 'Hoy', value: followups.filter(f => f.fecha === hoyStr).length, color: 'text-blue-400' }].map(s => (
           <div key={s.label} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-3">
             <p className="text-zinc-500 text-xs uppercase tracking-wider mb-1">{s.label}</p>
             <p className={`text-2xl md:text-3xl font-black ${s.color}`}>{s.value}</p>
@@ -218,7 +225,7 @@ export default function CalendarPage() {
                 const esHoy = fechaStr === hoyStr
                 const esSel = fechaStr === diaSeleccionado
                 return (
-                  <button key={i} onClick={() => setDiaSeleccionado(fechaStr)} className={`relative p-1 rounded-lg text-xs font-bold transition-all min-h-[44px] flex flex-col items-center ${esSel ? 'bg-[#CCFF00] text-black' : esHoy ? 'bg-zinc-700 text-white' : 'text-zinc-400 hover:bg-zinc-800'}`}>
+                  <button key={i} onClick={() => setDiaSeleccionado(fechaStr)} className={`relative p-1 rounded-lg text-xs font-bold transition-all min-h-[44px] flex flex-col items-center ${esSel ? 'bg-amber-500 text-black' : esHoy ? 'bg-zinc-700 text-white' : 'text-zinc-400 hover:bg-zinc-800'}`}>
                     <span>{dia}</span>
                     {eventos.length > 0 && (
                       <div className="flex gap-0.5 mt-0.5 flex-wrap justify-center">
@@ -250,7 +257,9 @@ export default function CalendarPage() {
                         <span className={`text-sm font-bold ${f.hecho && !f.isMovement ? 'line-through text-zinc-500' : 'text-white'}`}>{f.titulo}</span>
                       </div>
                       
+                      {/* Contenedor de Botones de Acción */}
                       <div className="flex items-center gap-2 flex-shrink-0">
+                        {/* BOTÓN DE WHATSAPP AUTOMÁTICO (Solo aparece si tiene cliente asignado y no es un movimiento crudo de pipeline) */}
                         {f.cliente_id && !f.isMovement && (
                           <button 
                             onClick={() => enviarRecordatorioWhatsApp(f)}
@@ -269,7 +278,7 @@ export default function CalendarPage() {
                         )}
                       </div>
                     </div>
-                    {f.hora && <p className="text-[#CCFF00] text-xs font-mono mt-1">{f.hora}</p>}
+                    {f.hora && <p className="text-amber-500 text-xs font-mono mt-1">{f.hora}</p>}
                     {f.cliente_id && nombreCliente(f.cliente_id) && <p className="text-zinc-400 text-xs mt-1">👤 {nombreCliente(f.cliente_id)}</p>}
                     {f.detalle && <p className="text-zinc-500 text-xs mt-1">{f.detalle}</p>}
                     <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold mt-2 inline-block ${urgenciaColor[f.urgencia] || urgenciaColor.media}`}>{f.urgencia}</span>
@@ -284,35 +293,35 @@ export default function CalendarPage() {
       {showForm && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
           <div className="bg-zinc-900 border border-zinc-700 rounded-2xl p-6 w-full ">
-            <h2 className="text-xl font-black text-[#CCFF00] uppercase mb-6">Nuevo Evento</h2>
+            <h2 className="text-xl font-black text-amber-500 uppercase mb-6">Nuevo Evento</h2>
             <div className="flex flex-col gap-4">
-              <input placeholder="Titulo *" value={form.titulo} onChange={e => setForm({...form, titulo: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-[#CCFF00] outline-none" />
-              <select value={form.cliente_id} onChange={e => setForm({...form, cliente_id: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-[#CCFF00] outline-none">
+              <input placeholder="Titulo *" value={form.titulo} onChange={e => setForm({...form, titulo: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none" />
+              <select value={form.cliente_id} onChange={e => setForm({...form, cliente_id: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none">
                 <option value="">Sin cliente</option>
                 {clientes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
               <div className="grid grid-cols-2 gap-2">
-                <select value={form.tipo} onChange={e => setForm({...form, tipo: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-[#CCFF00] outline-none">
+                <select value={form.tipo} onChange={e => setForm({...form, tipo: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none">
                   <option value="llamada">📞 Llamada</option>
                   <option value="visita">🏠 Visita</option>
                   <option value="documento">📄 Documento</option>
                   <option value="otro">📌 Otro</option>
                 </select>
-                <select value={form.urgencia} onChange={e => setForm({...form, urgencia: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-[#CCFF00] outline-none">
+                <select value={form.urgencia} onChange={e => setForm({...form, urgencia: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none">
                   <option value="alta">🔴 Alta</option>
                   <option value="media">🟡 Media</option>
                   <option value="baja">🟢 Baja</option>
                 </select>
               </div>
               <div className="grid grid-cols-2 gap-2">
-                <input type="date" value={form.fecha} onChange={e => setForm({...form, fecha: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-[#CCFF00] outline-none" />
-                <input type="time" value={form.hora} onChange={e => setForm({...form, hora: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-[#CCFF00] outline-none" />
+                <input type="date" value={form.fecha} onChange={e => setForm({...form, fecha: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none" />
+                <input type="time" value={form.hora} onChange={e => setForm({...form, hora: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none" />
               </div>
-              <textarea placeholder="Detalle (opcional)" value={form.detalle} onChange={e => setForm({...form, detalle: e.target.value})} rows={2} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-[#CCFF00] outline-none resize-none" />
+              <textarea placeholder="Detalle (opcional)" value={form.detalle} onChange={e => setForm({...form, detalle: e.target.value})} rows={2} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-amber-500 outline-none resize-none" />
             </div>
             <div className="flex gap-3 mt-6">
               <button onClick={() => setShowForm(false)} className="flex-1 bg-zinc-800 text-white py-3 rounded-xl font-bold text-sm hover:bg-zinc-700 transition-all">Cancelar</button>
-              <button onClick={saveFollowup} disabled={saving} className="flex-1 bg-[#CCFF00] text-black py-3 rounded-xl font-black text-sm uppercase hover:bg-white transition-all disabled:opacity-50">{saving ? 'Guardando...' : 'Guardar'}</button>
+              <button onClick={saveFollowup} disabled={saving} className="flex-1 bg-amber-500 text-black py-3 rounded-xl font-black text-sm uppercase hover:bg-white transition-all disabled:opacity-50">{saving ? 'Guardando...' : 'Guardar'}</button>
             </div>
           </div>
         </div>

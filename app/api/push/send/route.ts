@@ -11,7 +11,7 @@ const vapidPublic = process.env.VAPID_PUBLIC_KEY || ''
 const vapidPrivate = process.env.VAPID_PRIVATE_KEY || ''
 
 if (vapidPublic && vapidPrivate) {
-  webpush.setVapidDetails('mailto:admin@homvi.app', vapidPublic, vapidPrivate)
+  webpush.setVapidDetails('mailto:admin@SECTOR.app', vapidPublic, vapidPrivate)
 }
 
 export async function POST(request: Request) {

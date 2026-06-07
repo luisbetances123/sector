@@ -13,7 +13,7 @@ export default async function ClientesPage() {
           <div>
             <span className="text-sm font-mono text-[#CCFF00] uppercase tracking-widest">Inteligencia Patrimonial</span>
             <h1 className="text-5xl font-extrabold tracking-tighter text-white mt-2">👥 Directorio De Clientes</h1>
-            <p className="text-sm text-zinc-400 mt-2 max-w-2xl">Segmentación avanzada y gestión de perfiles de alta gama de HOMVI.</p>
+            <p className="text-sm text-zinc-400 mt-2 max-w-2xl">Segmentación avanzada y gestión de perfiles de alta gama de SECTOR.</p>
           </div>
           <button className="bg-[#CCFF00] hover:bg-[#b8e600] text-black font-mono font-bold text-xs uppercase tracking-wider py-4 px-6 rounded-xl flex items-center gap-3 transition-all cursor-pointer shadow-[0_4px_30px_rgba(204,255,0,0.15)]">
             <span>+ Nuevo Cliente</span>

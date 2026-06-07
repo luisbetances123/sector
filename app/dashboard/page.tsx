@@ -13,9 +13,9 @@ export default function DashboardPage() {
 
   const recentActivity = [
     { id: 1, user: 'Luis Betances', action: 'movió propiedad a', target: 'En Proceso', time: '14:32' },
-    { id: 2, user: 'Sistema HOMVI', action: 'registró nuevo lead desde', target: 'Landing Page', time: '12:05' },
+    { id: 2, user: 'Sistema SECTOR', action: 'registró nuevo lead desde', target: 'Landing Page', time: '12:05' },
     { id: 3, user: 'Jean Lizardo', action: 'actualizó estatus de cliente', target: 'Inversionista', time: '09:45' },
-    { id: 4, user: 'Sistema HOMVI', action: 'detectó interacción en pipeline con', target: 'Torre Piantini', time: '08:15' },
+    { id: 4, user: 'Sistema SECTOR', action: 'detectó interacción en pipeline con', target: 'Torre Piantini', time: '08:15' },
   ];
 
   return (
@@ -27,7 +27,7 @@ export default function DashboardPage() {
           <div>
             <span className="text-sm font-mono text-[#CCFF00] uppercase tracking-widest">Escritorio Interno</span>
             <h1 className="text-5xl font-extrabold tracking-tighter text-white mt-2">Dashboard</h1>
-            <p className="text-sm text-zinc-400 mt-2 max-w-2xl">Bienvenido a HOMVI, Luis. Esta es tu central de control inmobiliario premium.</p>
+            <p className="text-sm text-zinc-400 mt-2 max-w-2xl">Bienvenido a SECTOR, Luis. Esta es tu central de control inmobiliario premium.</p>
           </div>
           <div className="flex items-center gap-4 font-mono text-sm text-zinc-400 bg-zinc-900/60 px-5 py-3 rounded-full border border-zinc-800 shadow-inner">
             <span className="w-3 h-3 rounded-full bg-[#CCFF00] animate-pulse"></span>

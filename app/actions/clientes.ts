@@ -42,7 +42,7 @@ export async function getPremiumClients() {
       return {
         id: c.id,
         name: c.nombre || 'Sin Nombre',
-        email: c.email || 'sin-email@homvi.com',
+        email: c.email || 'sin-email@SECTOR.com',
         phone: c.telefono || 'Sin Teléfono',
         objetivo: propertyType ? `Interés: ${propertyType}` : 'Inversión Inmobiliaria',
         estructura: c.financiamiento || 'Fondos Propios',
