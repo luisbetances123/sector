@@ -1,510 +1,204 @@
-'use client'
-import { useState } from 'react'
-import { 
-  Building, 
-  CheckCircle2, 
-  ChevronRight,
-  ChevronLeft,
-  Plus,
-  AlertTriangle,
-  Clock,
-  Briefcase,
-  Search,
-  X
-} from 'lucide-react'
+'use client';
 
-interface Lead {
-  id: string
-  name: string
-  project: string
-  propertyType: string
-  budget: string
-  sector: string
-  updatedAt: string
-  priority: 'critico' | 'seguimiento' | 'nuevo' | 'buscando' | 'normal'
-  statusLabel: string
-}
+import React from 'react';
 
 export default function PipelinePage() {
-  const [columns, setColumns] = useState<{ [key: string]: Lead[] }>({
-    'Prospectos': [
-      { id: '1', name: 'Carlos Mendoza', project: 'Torre Naco Luxury', propertyType: 'Apartamento', budget: 'US$280,000', sector: 'Naco', updatedAt: 'Hace 2h', priority: 'critico', statusLabel: 'SIN RESPONDER' },
-      { id: '2', name: 'Alejandro Sanz', project: 'Villa Las Terrenas', propertyType: 'Villa / Casa', budget: 'US$650,000', sector: 'Las Terrenas', updatedAt: 'Hace 5h', priority: 'nuevo', statusLabel: 'NUEVO LEAD' },
-    ],
-    'Calificados': [
-      { id: '3', name: 'Luis Betances', project: 'Regatta Blue', propertyType: 'Penthouse', budget: 'US$450,000', sector: 'Piantini', updatedAt: 'Ayer', priority: 'buscando', statusLabel: 'BUSCANDO' },
-    ],
-    'En Propuesta': [
-      { id: '4', name: 'Jean Lizardo', project: 'Penthouse Serrallés', propertyType: 'Apartamento', budget: 'US$890,000', sector: 'Serrallés', updatedAt: 'Hace 15m', priority: 'seguimiento', statusLabel: 'PROPUESTA' },
-    ],
-    'Cierre 🎉': [
-      { id: '5', name: 'Mariela Núñez', project: 'Juan Dolio Beach Front', propertyType: 'Solar / Playa', budget: 'US$310,000', sector: 'Juan Dolio', updatedAt: 'Esta semana', priority: 'normal', statusLabel: 'CONTRATO' },
-    ],
-  })
-
-  // Modal 1: Crear Nuevo Lead
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [nuevoLead, setNuevoLead] = useState({
-    name: '',
-    project: '',
-    propertyType: 'Apartamento',
-    budget: '',
-    sector: ''
-  })
-
-  // Modal 2: Slide-over de Edición de Lead existente
-  const [leadAEditar, setLeadAEditar] = useState<Lead | null>(null)
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-  const [columnaDelLeadAEditar, setColumnaDelLeadAEditar] = useState<string>('')
-
-  const handleEditClick = (lead: Lead, columnName: string) => {
-    setLeadAEditar({ ...lead })
-    setColumnaDelLeadAEditar(columnName)
-    setIsEditModalOpen(true)
-  }
-
-  const handleUpdateLead = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!leadAEditar || !columnaDelLeadAEditar) return
-
-    // Aseguramos formato de moneda al editar presupuesto
-    let budgetFormateado = leadAEditar.budget
-    if (!budgetFormateado.startsWith('US$')) {
-      const num = parseInt(budgetFormateado.replace(/[^0-9]/g, ''), 10)
-      budgetFormateado = isNaN(num) ? leadAEditar.budget : `US$${num.toLocaleString()}`
-    }
-
-    const leadActualizado = {
-      ...leadAEditar,
-      budget: budgetFormateado,
-      updatedAt: '¡Editado ahora!'
-    }
-
-    setColumns({
-      ...columns,
-      [columnaDelLeadAEditar]: columns[columnaDelLeadAEditar].map(l => l.id === leadAEditar.id ? leadActualizado : l)
-    })
-
-    setIsEditModalOpen(false)
-    setLeadAEditar(null)
-  }
-
-  const moverLead = (currentColumn: string, leadId: string, direccion: 'adelante' | 'atras') => {
-    const colKeys = Object.keys(columns)
-    const currentIdx = colKeys.indexOf(currentColumn)
-    const nuevoIdx = direccion === 'adelante' ? currentIdx + 1 : currentIdx - 1
-
-    if (nuevoIdx < 0 || nuevoIdx >= colKeys.length) return 
-
-    const targetColumn = colKeys[nuevoIdx]
-    const leadToMove = columns[currentColumn].find(l => l.id === leadId)
-    
-    if (leadToMove) {
-      const leadActualizado = { ...leadToMove, updatedAt: '¡Movido ahora mismo!' }
-      setColumns({
-        ...columns,
-        [currentColumn]: columns[currentColumn].filter(l => l.id !== leadId),
-        [targetColumn]: [...columns[targetColumn], leadActualizado]
-      })
-    }
-  }
-
-  const handleCrearLead = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!nuevoLead.name || !nuevoLead.project) return
-
-    const formatoBudget = nuevoLead.budget.startsWith('US$') ? nuevoLead.budget : `US$${Number(nuevoLead.budget).toLocaleString()}`
-
-    const nuevoObjetoLead: Lead = {
-      id: Date.now().toString(),
-      name: nuevoLead.name,
-      project: nuevoLead.project,
-      propertyType: nuevoLead.propertyType,
-      budget: formatoBudget,
-      sector: nuevoLead.sector || 'Naco',
-      updatedAt: '¡Ahora mismo!',
-      priority: 'nuevo',
-      statusLabel: 'NUEVO LEAD'
-    }
-
-    setColumns({
-      ...columns,
-      'Prospectos': [nuevoObjetoLead, ...columns['Prospectos']]
-    })
-
-    setNuevoLead({ name: '', project: '', propertyType: 'Apartamento', budget: '', sector: '' })
-    setIsModalOpen(false)
-  }
-
-  const calcularTotalColumna = (leads: Lead[]) => {
-    const total = leads.reduce((acc, lead) => {
-      const num = parseInt(lead.budget.replace(/[^0-9]/g, ''), 10)
-      return acc + (isNaN(num) ? 0 : num)
-    }, 0)
-    return `US$${total.toLocaleString()}`
-  }
-
-  const getPriorityStyles = (priority: string) => {
-    switch(priority) {
-      case 'critico':
-        return { border: 'border-red-500/30 bg-gradient-to-b from-[#110E08] to-red-950/5', text: 'text-red-400 bg-red-500/10 border-red-500/20', icon: AlertTriangle }
-      case 'seguimiento':
-        return { border: 'border-amber-500/30 bg-gradient-to-b from-[#110E08] to-amber-950/5', text: 'text-amber-400 bg-amber-500/10 border-amber-500/20', icon: Clock }
-      case 'nuevo':
-        return { border: 'border-cyan-500/30 bg-gradient-to-b from-[#110E08] to-cyan-950/5', text: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20', icon: Briefcase }
-      case 'buscando':
-        return { border: 'border-blue-500/30 bg-gradient-to-b from-[#110E08] to-blue-950/5', text: 'text-blue-400 bg-blue-500/10 border-blue-500/20', icon: Search }
-      default:
-        return { border: 'border-zinc-800/80 bg-[#110E08]/80', text: 'text-zinc-400 bg-zinc-900 border-zinc-800', icon: Briefcase }
-    }
-  }
+  // Estructura de columnas y tarjetas calcada de tu captura con esteroides visuales
+  const columns = [
+    {
+      id: 'prospectos',
+      title: '● PROSPECTOS',
+      count: '2 casos',
+      totalValue: 'US$930,000',
+      deals: [
+        {
+          id: 'd1',
+          client: 'Carlos Mendoza',
+          tag: 'NACO',
+          status: 'SIN RESPONDER',
+          statusType: 'danger',
+          property: 'Torre Naco Luxury',
+          type: '🏢 Apartamento',
+          value: 'US$280,000',
+          time: 'Hace 2h',
+        },
+        {
+          id: 'd2',
+          client: 'Alejandro Sanz',
+          tag: 'LAS TERRENAS',
+          status: 'NUEVO LEAD',
+          statusType: 'info',
+          property: 'Villa Las Terrenas',
+          type: '🏡 Villa / Casa',
+          value: 'US$650,000',
+          time: 'Hace 5h',
+        },
+      ],
+    },
+    {
+      id: 'calificados',
+      title: '● CALIFICADOS',
+      count: '1 caso',
+      totalValue: 'US$450,000',
+      deals: [
+        {
+          id: 'd3',
+          client: 'Luis Betances',
+          tag: 'PIANTINI',
+          status: 'BUSCANDO',
+          statusType: 'success',
+          property: 'Regatta Blue',
+          type: '🔍 Penthouse',
+          value: 'US$450,000',
+          time: 'Ayer',
+        },
+      ],
+    },
+    {
+      id: 'en-propuesta',
+      title: '● EN PROPUESTA',
+      count: '1 caso',
+      totalValue: 'US$890,000',
+      deals: [
+        {
+          id: 'd4',
+          client: 'Jean Lizardo',
+          tag: 'SERRALLÉS',
+          status: 'PROPUESTA',
+          statusType: 'warning',
+          property: 'Penthouse Serrallés',
+          type: '🏢 Apartamento',
+          value: 'US$890,000',
+          time: 'Hace 15m',
+        },
+      ],
+    },
+    {
+      id: 'cierre',
+      title: '● CIERRE 🎉',
+      count: '1 caso',
+      totalValue: 'US$310,000',
+      deals: [
+        {
+          id: 'd5',
+          client: 'Mariela Núñez',
+          tag: 'JUAN DOLIO',
+          status: 'CONTRATO',
+          statusType: 'premium',
+          property: 'Juan Dolio Beach Front',
+          type: '🏖️ Solar / Playa',
+          value: 'US$310,000',
+          time: 'Esta semana',
+        },
+      ],
+    },
+  ];
 
   return (
-    <div className="space-y-8 relative">
-      
-      {/* Encabezado */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-black tracking-tight text-white">Pipeline Visual</h1>
-          <p className="text-zinc-400 text-xs uppercase tracking-widest mt-1 font-bold">Panel de Control de Datos e Inteligencia de Negociación</p>
-        </div>
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="bg-[#CCFF00] text-black px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider hover:bg-white transition-all flex items-center gap-2 self-start sm:self-auto shadow-md z-10"
-        >
-          <Plus className="w-4 h-4 stroke-[3]" /> Nuevo Cliente
-        </button>
-      </div>
+    <div className="min-h-screen text-zinc-100 p-8 font-sans selection:bg-[#CCFF00] selection:text-black">
+      <div className="max-w-7xl mx-auto space-y-12">
+        
+        {/* HEADER MONUMENTAL DEL PIPELINE */}
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-zinc-900 pb-10">
+          <div>
+            <span className="text-sm font-mono text-[#CCFF00] uppercase tracking-widest">Inteligencia de Negociación</span>
+            <h1 className="text-5xl font-extrabold tracking-tighter text-white mt-2">Pipeline Visual</h1>
+            <p className="text-sm text-zinc-400 mt-2 max-w-2xl">Panel de control de datos, flujo de cierres corporativos e inteligencia comercial.</p>
+          </div>
+          <button className="bg-[#CCFF00] hover:bg-[#b8e600] text-black font-mono font-bold text-xs uppercase tracking-wider py-4 px-6 rounded-xl flex items-center gap-3 transition-all cursor-pointer shadow-[0_4px_30px_rgba(204,255,0,0.15)]">
+            <span>+ Nuevo Cliente</span>
+          </button>
+        </header>
 
-      {/* Tablero Kanban */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 items-start">
-        {Object.entries(columns).map(([colName, leads], colIdx) => {
-          const isCierre = colName.includes('Cierre')
-          const isPrimeraColumna = colIdx === 0
-          
-          return (
-            <div key={colName} className="bg-zinc-950/40 border border-zinc-900/60 rounded-2xl p-4 flex flex-col min-h-[520px] shadow-xl">
+        {/* KANBAN GRID - Columnas monumentales estiradas al fondo */}
+        <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
+          {columns.map((col) => (
+            <div key={col.id} className="flex flex-col space-y-4 h-full min-h-[650px] bg-zinc-950/20 p-2 rounded-2xl border border-transparent">
               
-              <div className="flex justify-between items-center mb-4 pb-2 border-b border-zinc-900">
-                <div>
-                  <h3 className="text-xs font-black uppercase tracking-widest text-zinc-200 flex items-center gap-2">
-                    <span className={`w-2 h-2 rounded-full ${isCierre ? 'bg-[#CCFF00]' : 'bg-zinc-500'}`} />
-                    {colName}
-                  </h3>
-                  <span className="text-[10px] font-mono text-zinc-500 font-bold block mt-0.5">{leads.length} {leads.length === 1 ? 'caso' : 'casos'}</span>
+              {/* Encabezado de la columna */}
+              <div className="px-2 pb-2 border-b border-zinc-900/80 flex flex-col gap-1">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-xs font-mono font-black tracking-wider text-zinc-400 uppercase">{col.title}</h3>
+                  <span className="text-[11px] font-mono font-bold text-white bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800">
+                    {col.totalValue}
+                  </span>
                 </div>
-                <span className={`text-xs font-mono font-black ${isCierre ? 'text-[#CCFF00]' : 'text-white'}`}>
-                  {calcularTotalColumna(leads)}
-                </span>
+                <span className="text-[11px] font-mono text-zinc-600">{col.count}</span>
               </div>
 
-              <div className="space-y-3 flex-1 overflow-y-auto max-h-[550px] pr-1">
-                {leads.length === 0 ? (
-                  <div className="border border-dashed border-zinc-900 rounded-xl p-8 text-center flex flex-col items-center justify-center h-32">
-                    <span className="text-zinc-700 text-xs font-medium uppercase tracking-wider">Vacío</span>
-                  </div>
-                ) : (
-                  leads.map((lead) => {
-                    const styles = getPriorityStyles(lead.priority)
-                    const PriorityIcon = styles.icon
+              {/* Contenedor de Tarjetas */}
+              <div className="space-y-4 flex-1">
+                {col.deals.map((deal) => (
+                  <div 
+                    key={deal.id}
+                    className="bg-zinc-950 border border-zinc-900 hover:border-zinc-700 p-6 rounded-2xl relative overflow-hidden group transition-all duration-300 shadow-xl flex flex-col justify-between min-h-[220px] cursor-grab active:cursor-grabbing"
+                  >
+                    {/* Efecto Glow en Hover */}
+                    <div className="absolute -inset-px bg-gradient-to-r from-[#CCFF00]/5 to-transparent opacity-0 group-hover:opacity-100 transition-duration-500 rounded-2xl pointer-events-none"></div>
 
-                    return (
-                      <div 
-                        key={lead.id} 
-                        onClick={() => handleEditClick(lead, colName)}
-                        className={`border ${isCierre ? 'border-[#CCFF00]/30 bg-gradient-to-b from-[#110E08] to-[#CCFF00]/4' : styles.border} rounded-xl p-4 shadow-md group relative hover:border-zinc-500 transition-all cursor-pointer`}
-                      >
-                        <div className="space-y-2.5">
-                          <div className="flex justify-between items-start gap-2">
-                            <div>
-                              <h4 className="text-sm font-black text-white group-hover:text-[#CCFF00] transition-colors truncate">{lead.name}</h4>
-                              <span className={`inline-block text-[9px] font-mono font-extrabold px-1.5 py-0.5 rounded border mt-1 tracking-wider ${isCierre ? 'text-[#CCFF00] bg-[#CCFF00]/10 border-[#CCFF00]/20' : styles.text}`}>
-                                {lead.statusLabel}
-                              </span>
-                            </div>
-                            <span className="text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded bg-zinc-900 text-zinc-300 border border-zinc-800 flex-shrink-0">
-                              {lead.sector}
-                            </span>
-                          </div>
-
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-1.5 text-xs text-zinc-300 font-medium">
-                              <Building className="w-3.5 h-3.5 text-zinc-400 flex-shrink-0" />
-                              <span className="truncate">{lead.project}</span>
-                            </div>
-                            <div className="flex items-center gap-1.5 text-[11px] text-zinc-400 font-mono pl-0.5">
-                              <PriorityIcon className="w-3 h-3 text-zinc-500 flex-shrink-0" />
-                              <span className="truncate">{lead.propertyType}</span>
-                            </div>
-                          </div>
-
-                          <div className="flex justify-between items-center pt-2 border-t border-zinc-900/60 mt-1">
-                            <span className="text-xs font-mono font-black text-[#CCFF00]">{lead.budget}</span>
-                            
-                            {/* e.stopPropagation() previene que al hacer clic en las flechas se abra el modal */}
-                            <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
-                              {!isPrimeraColumna && (
-                                <button 
-                                  onClick={() => moverLead(colName, lead.id, 'atras')}
-                                  className="p-1.5 bg-zinc-900 text-zinc-400 hover:text-black hover:bg-[#CCFF00] rounded-lg transition-all border border-zinc-800"
-                                >
-                                  <ChevronLeft className="w-3.5 h-3.5 stroke-[2.5]" />
-                                </button>
-                              )}
-
-                              {!isCierre ? (
-                                <button 
-                                  onClick={() => moverLead(colName, lead.id, 'adelante')}
-                                  className="p-1.5 bg-zinc-900 text-zinc-400 hover:text-black hover:bg-[#CCFF00] rounded-lg transition-all border border-zinc-800"
-                                >
-                                  <ChevronRight className="w-3.5 h-3.5 stroke-[2.5]" />
-                                </button>
-                              ) : (
-                                <span className="text-[#CCFF00] p-1 flex items-center justify-center">
-                                  <CheckCircle2 className="w-4 h-4" />
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="text-[9px] text-zinc-600 font-mono text-right mt-1.5 block">{lead.updatedAt}</div>
+                    {/* Fila Superior: Cliente y Tag Geográfico */}
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between items-start gap-2">
+                        <h4 className="text-lg font-bold text-white tracking-tight truncate">{deal.client}</h4>
+                        <span className="text-[9px] font-mono font-black bg-zinc-900 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800 tracking-wider uppercase shrink-0">
+                          {deal.tag}
+                        </span>
                       </div>
-                    )
-                  })
+
+                      {/* Badge de Estado Dinámico */}
+                      <div className="inline-block">
+                        <span className={`text-[10px] font-mono font-bold tracking-widest px-2.5 py-0.5 rounded uppercase ${
+                          deal.statusType === 'danger' ? 'bg-red-950/50 text-red-400 border border-red-900/40' :
+                          deal.statusType === 'info' ? 'bg-blue-950/50 text-blue-400 border border-blue-900/40' :
+                          deal.statusType === 'success' ? 'bg-[#CCFF00]/10 text-[#CCFF00] border border-[#CCFF00]/20' :
+                          deal.statusType === 'warning' ? 'bg-amber-950/50 text-amber-400 border border-amber-900/40' :
+                          'bg-purple-950/50 text-purple-400 border border-purple-900/40' // Premium Cierre
+                        }`}>
+                          {deal.status}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Información del Inmueble (Centro) */}
+                    <div className="my-4 space-y-1 font-sans">
+                      <p className="text-sm font-semibold text-zinc-300 flex items-center gap-1">
+                        🏢 <span className="text-white">{deal.property}</span>
+                      </p>
+                      <p className="text-xs text-zinc-500 font-mono pl-5">// {deal.type}</p>
+                    </div>
+
+                    {/* Fila Inferior: Monto (Gigante) y Tiempo */}
+                    <div className="border-t border-zinc-900/60 pt-4 flex justify-between items-center mt-auto">
+                      <span className="text-xl font-black font-mono text-[#CCFF00] tracking-tight drop-shadow">
+                        {deal.value}
+                      </span>
+                      
+                      <div className="flex items-center gap-3">
+                        <span className="text-[11px] font-mono text-zinc-600">{deal.time}</span>
+                        <button className="bg-zinc-900 hover:bg-zinc-850 p-2 rounded-xl border border-zinc-800 hover:border-zinc-700 text-zinc-400 hover:text-white transition-all">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-4 h-4">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+
+                  </div>
+                ))}
+
+                {/* Zona fantasma para rellenar visualmente la columna si está vacía o tiene pocos elementos */}
+                {col.deals.length < 2 && (
+                  <div className="border border-dashed border-zinc-900/60 h-[220px] rounded-2xl flex items-center justify-center text-zinc-800 font-mono text-xs select-none">
+                    // SOLTAR CASO AQUÍ
+                  </div>
                 )}
               </div>
+
             </div>
-          )
-        })}
+          ))}
+        </main>
+
       </div>
-
-      {/* MODAL 1: ALTA DE NUEVA OPORTUNIDAD */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4" style={{ zIndex: 9999 }}>
-          <div className="bg-zinc-950 border border-zinc-800 w-full max-w-md rounded-2xl overflow-hidden shadow-2xl">
-            
-            <div className="p-5 border-b border-zinc-900 flex justify-between items-center">
-              <div>
-                <h2 className="text-lg font-black text-white">Alta de Oportunidad</h2>
-                <p className="text-zinc-500 text-[10px] uppercase font-mono tracking-wider">Inyectar registro al Pipeline</p>
-              </div>
-              <button 
-                type="button"
-                onClick={() => setIsModalOpen(false)}
-                className="text-zinc-400 hover:text-white p-1.5 rounded-lg bg-zinc-900 border border-zinc-800"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <form onSubmit={handleCrearLead} className="p-5 space-y-4">
-              <div>
-                <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 mb-1.5">Nombre del Cliente</label>
-                <input 
-                  type="text" 
-                  required
-                  placeholder="Ej. Juan Pérez"
-                  value={nuevoLead.name}
-                  onChange={(e) => setNuevoLead({...nuevoLead, name: e.target.value})}
-                  className="w-full bg-[#110E08] border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[#CCFF00] transition-colors placeholder:text-zinc-700"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 mb-1.5">Proyecto</label>
-                  <input 
-                    type="text" 
-                    required
-                    placeholder="Ej. Regatta Blue"
-                    value={nuevoLead.project}
-                    onChange={(e) => setNuevoLead({...nuevoLead, project: e.target.value})}
-                    className="w-full bg-[#110E08] border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[#CCFF00] transition-colors placeholder:text-zinc-700"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 mb-1.5">Sector</label>
-                  <input 
-                    type="text" 
-                    placeholder="Ej. Piantini"
-                    value={nuevoLead.sector}
-                    onChange={(e) => setNuevoLead({...nuevoLead, sector: e.target.value})}
-                    className="w-full bg-[#110E08] border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[#CCFF00] transition-colors placeholder:text-zinc-700"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 mb-1.5">Tipo Propiedad</label>
-                  <select 
-                    value={nuevoLead.propertyType}
-                    onChange={(e) => setNuevoLead({...nuevoLead, propertyType: e.target.value})}
-                    className="w-full bg-[#110E08] border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[#CCFF00] transition-colors"
-                  >
-                    <option value="Apartamento">Apartamento</option>
-                    <option value="Penthouse">Penthouse</option>
-                    <option value="Villa / Casa">Villa / Casa</option>
-                    <option value="Solar / Playa">Solar / Playa</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 mb-1.5">Presupuesto (Número)</label>
-                  <input 
-                    type="number" 
-                    required
-                    placeholder="250000"
-                    value={nuevoLead.budget}
-                    onChange={(e) => setNuevoLead({...nuevoLead, budget: e.target.value})}
-                    className="w-full bg-[#110E08] border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[#CCFF00] transition-colors placeholder:text-zinc-700"
-                  />
-                </div>
-              </div>
-
-              <div className="pt-2">
-                <button 
-                  type="submit"
-                  className="w-full bg-[#CCFF00] text-black font-black uppercase text-xs tracking-widest py-3 rounded-xl hover:bg-white transition-all cursor-pointer"
-                >
-                  Insertar en Pipeline
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL 2: SLIDE-OVER LATERAL DE EDICIÓN DE CASOS */}
-      {isEditModalOpen && leadAEditar && (
-        <>
-          {/* Fondo oscuro traslúcido */}
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" style={{ zIndex: 9998 }} onClick={() => setIsEditModalOpen(false)} />
-
-          <div className="fixed inset-y-0 right-0 w-full max-w-md bg-[#0f0f0f] border-l border-zinc-800 shadow-2xl p-6 flex flex-col justify-between animate-in slide-in-from-right duration-200" style={{ zIndex: 9999 }}>
-            <div>
-              <div className="flex justify-between items-center mb-6">
-                <div>
-                  <h3 className="text-base font-black text-white tracking-tight">Editar Oportunidad</h3>
-                  <p className="text-[11px] text-zinc-500 mt-0.5 uppercase font-mono">Modificando perfil de negociación de {leadAEditar.name}</p>
-                </div>
-                <button 
-                  onClick={() => setIsEditModalOpen(false)} 
-                  className="text-zinc-500 hover:text-white bg-zinc-900 p-1.5 rounded-md border border-zinc-800 text-xs"
-                >
-                  ✕
-                </button>
-              </div>
-
-              <form id="edit-lead-form" onSubmit={handleUpdateLead} className="space-y-4">
-                {/* Nombre */}
-                <div>
-                  <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 font-mono">Nombre Completo</label>
-                  <input 
-                    type="text" 
-                    value={leadAEditar.name}
-                    onChange={(e) => setLeadAEditar({...leadAEditar, name: e.target.value})}
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-[#CCFF00]" 
-                  />
-                </div>
-
-                {/* Fila: Etiqueta de Estado y Prioridad */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 font-mono">Etiqueta Interna</label>
-                    <input 
-                      type="text" 
-                      value={leadAEditar.statusLabel}
-                      onChange={(e) => setLeadAEditar({...leadAEditar, statusLabel: e.target.value.toUpperCase()})}
-                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-[#CCFF00]" 
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 font-mono">Prioridad / Filtro</label>
-                    <select 
-                      value={leadAEditar.priority}
-                      onChange={(e) => setLeadAEditar({...leadAEditar, priority: e.target.value as any})}
-                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-[#CCFF00]"
-                    >
-                      <option value="nuevo">💎 Nuevo Lead</option>
-                      <option value="buscando">🔍 Buscando</option>
-                      <option value="seguimiento">⏱️ Seguimiento</option>
-                      <option value="critico">🔥 Crítico</option>
-                      <option value="normal">⚪ Normal</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Proyecto de Interés */}
-                <div>
-                  <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 font-mono">Proyecto de Interés</label>
-                  <input 
-                    type="text" 
-                    value={leadAEditar.project}
-                    onChange={(e) => setLeadAEditar({...leadAEditar, project: e.target.value})}
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-[#CCFF00]" 
-                  />
-                </div>
-
-                {/* Fila: Sector e Inversión */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 font-mono">Sector</label>
-                    <input 
-                      type="text" 
-                      value={leadAEditar.sector}
-                      onChange={(e) => setLeadAEditar({...leadAEditar, sector: e.target.value})}
-                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-[#CCFF00]" 
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 font-mono">Presupuesto (Inversión)</label>
-                    <input 
-                      type="text" 
-                      value={leadAEditar.budget}
-                      onChange={(e) => setLeadAEditar({...leadAEditar, budget: e.target.value})}
-                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-[#CCFF00]" 
-                    />
-                  </div>
-                </div>
-
-                {/* Tipo Propiedad */}
-                <div>
-                  <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 font-mono">Tipo de Unidad</label>
-                  <select 
-                    value={leadAEditar.propertyType}
-                    onChange={(e) => setLeadAEditar({...leadAEditar, propertyType: e.target.value})}
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-[#CCFF00]"
-                  >
-                    <option value="Apartamento">Apartamento</option>
-                    <option value="Penthouse">Penthouse</option>
-                    <option value="Villa / Casa">Villa / Casa</option>
-                    <option value="Solar / Playa">Solar / Playa</option>
-                  </select>
-                </div>
-              </form>
-            </div>
-
-            {/* Botones de Acción de Edición */}
-            <div className="border-t border-zinc-900 pt-4 flex gap-3">
-              <button 
-                type="button" 
-                onClick={() => setIsEditModalOpen(false)}
-                className="w-1/2 border border-zinc-850 text-zinc-400 rounded-xl py-2.5 text-xs font-black uppercase tracking-wider hover:bg-zinc-900/50 transition-all"
-              >
-                Cancelar
-              </button>
-              <button 
-                type="submit" 
-                form="edit-lead-form"
-                className="w-1/2 bg-[#CCFF00] text-black font-black text-xs uppercase tracking-wider rounded-xl py-2.5 hover:bg-white transition-all"
-              >
-                Guardar Datos
-              </button>
-            </div>
-          </div>
-        </>
-      )}
-
     </div>
-  )
+  );
 }
