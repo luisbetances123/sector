@@ -2,6 +2,8 @@
 import { useEffect, useState, Suspense, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '../../lib/supabase'
+import { GoogleMapsEmbed } from '@next/third-parties/google'
+
 type PropertyEstado = 'disponible' | 'en_proceso' | 'vendida' | 'rentada' | 'reservada'
 type PropertyType = 'APARTAMENTO' | 'CASA' | 'LOCAL' | 'TERRENO' | 'OFICINA' | 'BODEGA'
 
@@ -82,7 +84,85 @@ function BadgeEstado({ estado }: { estado: string }) {
   )
 }
 
-// ── Modal ──────────────────────────────────────────────────────────────────────
+// ── Modal de Vista Detalle con Google Maps ───────────────────────────────────
+interface ViewModalProps {
+  open: boolean
+  property: Property | null
+  onClose: () => void
+}
+
+function PropertyViewModal({ open, property: p, onClose }: ViewModalProps) {
+  if (!open || !p) return null
+
+  return (
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div className="bg-zinc-950 w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl border-t sm:border border-zinc-800 p-6 max-h-[92vh] overflow-y-auto flex flex-col gap-5 shadow-2xl text-white">
+        
+        {/* Cabecera */}
+        <div className="flex justify-between items-start border-b border-zinc-900 pb-3">
+          <div>
+            <span className="text-[9px] text-[#CCFF00] font-mono tracking-wider uppercase border border-[#CCFF00]/20 bg-[#CCFF00]/5 px-2 py-0.5 rounded">
+              {p.type}
+            </span>
+            <h2 className="text-xl font-bold mt-2">{p.title}</h2>
+          </div>
+          <button 
+            onClick={onClose}
+            className="bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white h-8 w-8 rounded-full flex items-center justify-center transition-colors text-xs"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Características */}
+        <div className="grid grid-cols-4 gap-2 text-center text-[11px] bg-zinc-900/40 p-3 rounded-xl border border-zinc-900 font-mono">
+          <div><span className="block font-bold text-sm text-white">{p.recamaras ?? 0}</span> Hab</div>
+          <div><span className="block font-bold text-sm text-white">{p.banos ?? 0}</span> Baños</div>
+          <div><span className="block font-bold text-sm text-white">{p.estacionamientos ?? 0}</span> Parq</div>
+          <div><span className="block font-bold text-sm text-white">{p.m2 ?? 0}</span> m²</div>
+        </div>
+
+        {/* Detalles financieros y dirección */}
+        <div className="text-xs space-y-2 text-zinc-400 bg-zinc-900/20 p-3 rounded-xl border border-zinc-900/50">
+          <p><strong className="text-white">Dirección:</strong> {p.location || 'No especificada'} {p.sector ? `(${p.sector})` : ''}</p>
+          <p><strong className="text-white">Precio:</strong> <span className="text-[#CCFF00] font-bold text-sm">{formatPrice(p.price, p.moneda)}</span></p>
+          {p.descripcion && <p className="mt-2 border-t border-zinc-800 pt-2"><strong className="text-white">Descripción:</strong> {p.descripcion}</p>}
+        </div>
+
+        {/* --- MAPA DE GOOGLE EMBED --- */}
+        <div className="w-full h-[240px] rounded-xl overflow-hidden border border-zinc-800 bg-zinc-900 relative">
+          <div className="absolute top-2.5 left-2.5 z-10 bg-black/80 backdrop-blur-sm text-[9px] text-[#CCFF00] font-mono px-2.5 py-1 rounded-full border border-zinc-800">
+            📍 {p.sector || 'Santo Domingo'}
+          </div>
+
+          <GoogleMapsEmbed
+            apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY ?? ''}
+            height="100%"
+            width="100%"
+            mode="place"
+            q={`${p.location || p.sector || ''}, Santo Domingo, Republica Dominicana`}
+            allowfullscreen={true}
+            style="border:0; filter: invert(90%) hue-rotate(180deg) saturate(150%);"
+          />
+        </div>
+
+        {/* Botón de ruta en tiempo real */}
+        <button 
+          onClick={() => {
+            const targetUrl = `http://googleusercontent.com/maps.google.com/maps?q=${encodeURIComponent((p.location || p.sector) + ', Santo Domingo, RD')}`;
+            window.open(targetUrl, '_blank');
+          }}
+          className="w-full bg-[#CCFF00] hover:bg-[#b3df00] text-black font-bold py-3 rounded-xl transition-colors text-xs tracking-wide uppercase font-mono shadow-md shadow-[#CCFF00]/10"
+        >
+          Iniciar Navegación GPS
+        </button>
+
+      </div>
+    </div>
+  )
+}
+
+// ── Modal Formulario (Crear/Editar) ──────────────────────────────────────────
 
 interface ModalProps {
   open: boolean
@@ -271,21 +351,21 @@ function PropertyModal({ open, initial, onClose, onSave }: ModalProps) {
               </button>
             </div>
             {form.imagenes && form.imagenes.filter(url => url.trim() !== '').length > 0 && (
-  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-3">
-    {form.imagenes
-      .filter(url => url.trim() !== '')
-      .map((url, index) => (
-        <div key={index} className="relative aspect-video w-full overflow-hidden rounded-xl border border-zinc-700 bg-zinc-950">
-          <img
-            src={url}
-            alt={`Preview ${index + 1}`}
-            className="h-full w-full object-cover"
-            onError={(e) => { e.currentTarget.style.display = 'none'; }}
-          />
-        </div>
-      ))}
-  </div>
-)}
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-3">
+                {form.imagenes
+                  .filter(url => url.trim() !== '')
+                  .map((url, index) => (
+                    <div key={index} className="relative aspect-video w-full overflow-hidden rounded-xl border border-zinc-700 bg-zinc-950">
+                      <img
+                        src={url}
+                        alt={`Preview ${index + 1}`}
+                        className="h-full w-full object-cover"
+                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                      />
+                    </div>
+                  ))}
+              </div>
+            )}
           </div>
 
           <div>
@@ -349,7 +429,7 @@ function PropertyCard({ property: p, onClick, onEdit, onDelete }: CardProps) {
         <BadgeEstado estado={p.estado ?? 'disponible'} />
       </div>
 
-      <div className="absolute top-3 right-3 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="absolute top-3 right-3 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity z-10">
         <button onClick={onEdit}
           className="p-1.5 bg-zinc-900/90 backdrop-blur-sm rounded-lg text-zinc-400 hover:text-[#CCFF00] border border-zinc-700 transition-colors">
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -434,7 +514,9 @@ function PropertiesContent() {
   const [properties, setProperties] = useState<Property[]>([])
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
+  const [viewOpen, setViewOpen] = useState(false)
   const [editingProperty, setEditingProperty] = useState<Property | null>(null)
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null)
   const [sectorActivo, setSectorActivo] = useState('')
   const [search, setSearch] = useState('')
   const router = useRouter()
@@ -515,6 +597,11 @@ function PropertiesContent() {
   function openNew() {
     setEditingProperty(null)
     setModalOpen(true)
+  }
+
+  function openView(property: Property) {
+    setSelectedProperty(property)
+    setViewOpen(true)
   }
 
   const filtered = useMemo(() => {
@@ -657,24 +744,33 @@ function PropertiesContent() {
             </button>
           )}
         </div>
-            ) : (
+      ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map(p => (
             <PropertyCard
               key={p.id}
               property={p}
-              onClick={() => { setEditingProperty(p); setModalOpen(true); }}
+              onClick={() => openView(p)}
               onEdit={e => openEdit(e, p)}
               onDelete={e => handleDelete(e, p.id, p.title)}
             />
           ))}
         </div>
       )}
+
+      {/* Formulario Crear / Editar */}
       <PropertyModal
         open={modalOpen}
         initial={editingProperty}
         onClose={() => { setModalOpen(false); setEditingProperty(null) }}
         onSave={handleSave}
+      />
+
+      {/* Detalle de Visualización y Mapa */}
+      <PropertyViewModal
+        open={viewOpen}
+        property={selectedProperty}
+        onClose={() => { setViewOpen(false); setSelectedProperty(null) }}
       />
     </div>
   )
