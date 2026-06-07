@@ -46,7 +46,7 @@ export default function DashboardPage() {
               {/* Tarjeta 1: Volumen de Cartera */}
               <div className="bg-zinc-950 border border-zinc-900 p-6 rounded-xl relative overflow-hidden group hover:border-zinc-800 transition-all duration-300">
                 <div className="absolute -inset-px bg-gradient-to-r from-[#CCFF00]/5 to-transparent opacity-0 group-hover:opacity-100 transition-duration-500 rounded-xl pointer-events-none"></div>
-                <div class="flex justify-between items-start">
+                <div className="flex justify-between items-start">
                   <p className="text-[10px] uppercase tracking-wider text-zinc-400 font-mono">Volumen Cartera Activa</p>
                   <span className="text-[10px] font-mono bg-[#CCFF00]/10 text-[#CCFF00] px-2 py-0.5 rounded border border-[#CCFF00]/20">+18.2%</span>
                 </div>
@@ -57,7 +57,7 @@ export default function DashboardPage() {
               {/* Tarjeta 2: Comisiones Estimadas */}
               <div className="bg-zinc-950 border border-zinc-900 p-6 rounded-xl relative overflow-hidden group hover:border-zinc-800 transition-all duration-300">
                 <div className="absolute -inset-px bg-gradient-to-r from-[#CCFF00]/5 to-transparent opacity-0 group-hover:opacity-100 transition-duration-500 rounded-xl pointer-events-none"></div>
-                <div class="flex justify-between items-start">
+                <div className="flex justify-between items-start">
                   <p className="text-[10px] uppercase tracking-wider text-zinc-400 font-mono">Comisiones Est. (Pipeline)</p>
                   <span className="text-[10px] font-mono bg-zinc-900 text-zinc-400 px-2 py-0.5 rounded border border-zinc-800">Proyección</span>
                 </div>
@@ -67,8 +67,8 @@ export default function DashboardPage() {
 
               {/* Tarjeta 3: Leads Calificados */}
               <div className="bg-zinc-950 border border-zinc-900 p-6 rounded-xl relative overflow-hidden group hover:border-zinc-800 transition-all duration-300">
-                <div class="absolute -inset-px bg-gradient-to-r from-[#CCFF00]/5 to-transparent opacity-0 group-hover:opacity-100 transition-duration-500 rounded-xl pointer-events-none"></div>
-                <div class="flex justify-between items-start">
+                <div className="absolute -inset-px bg-gradient-to-r from-[#CCFF00]/5 to-transparent opacity-0 group-hover:opacity-100 transition-duration-500 rounded-xl pointer-events-none"></div>
+                <div className="flex justify-between items-start">
                   <p className="text-[10px] uppercase tracking-wider text-zinc-400 font-mono">Leads Calificados</p>
                   <span className="text-[10px] font-mono bg-[#CCFF00]/10 text-[#CCFF00] px-2 py-0.5 rounded border border-[#CCFF00]/20">Este mes</span>
                 </div>
@@ -115,7 +115,7 @@ export default function DashboardPage() {
             
             {/* SECCIÓN 3: ACCIONES RÁPIDAS PREMIUM */}
             <div className="bg-zinc-950 border border-zinc-900 p-6 rounded-xl space-y-4">
-              <h2 class="text-xs uppercase tracking-wider text-zinc-400 font-mono">// Acciones Rápidas</h2>
+              <h2 className="text-xs uppercase tracking-wider text-zinc-400 font-mono">// Acciones Rápidas</h2>
               
               <div className="grid grid-cols-1 gap-2">
                 {/* Botón Principal Destacado */}
@@ -147,7 +147,7 @@ export default function DashboardPage() {
 
             {/* SECCIÓN 4: FEED DE ACTIVIDAD RECIENTE */}
             <div className="bg-zinc-950 border border-zinc-900 p-6 rounded-xl space-y-4">
-              <h2 class="text-xs uppercase tracking-wider text-zinc-400 font-mono">// Actividad en Tiempo Real</h2>
+              <h2 className="text-xs uppercase tracking-wider text-zinc-400 font-mono">// Actividad en Tiempo Real</h2>
               
               <div className="relative border-l border-zinc-800 ml-2 pl-4 space-y-6 pt-2">
                 {recentActivity.map((activity) => (
