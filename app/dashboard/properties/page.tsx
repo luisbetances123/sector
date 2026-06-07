@@ -146,20 +146,21 @@ function PropertyViewModal({ open, property: p, onClose }: ViewModalProps) {
           />
         </div>
 
-        {/* Botón de ruta en tiempo real */}
-        <button 
-          onClick={() => {
-            const targetUrl = `http://googleusercontent.com/maps.google.com/maps?q=${encodeURIComponent((p.location || p.sector) + ', Santo Domingo, RD')}`;
-            window.open(targetUrl, '_blank');
-          }}
-          className="w-full bg-[#CCFF00] hover:bg-[#b3df00] text-black font-bold py-3 rounded-xl transition-colors text-xs tracking-wide uppercase font-mono shadow-md shadow-[#CCFF00]/10"
-        >
-          Iniciar Navegación GPS
-        </button>
+            {/* Botón de ruta en tiempo real */}
+      <button 
+        onClick={() => {
+          const direccionCompleta = `${p.location || p.sector}, Santo Domingo, Republica Dominicana`;
+          const targetUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccionCompleta)}`;
+          window.open(targetUrl, '_blank');
+        }}
+        className="w-full bg-[#CCFF00] hover:bg-[#b3df00] text-black font-bold py-3 rounded-xl transition-colors text-xs tracking-wide uppercase font-mono shadow-md shadow-[#CCFF00]/10"
+      >
+        Iniciar Navegación GPS
+      </button>
 
-      </div>
     </div>
-  )
+  </div>
+)
 }
 
 // ── Modal Formulario (Crear/Editar) ──────────────────────────────────────────
