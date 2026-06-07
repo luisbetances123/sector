@@ -177,8 +177,8 @@ export default function ClientesModule() {
       {/* 3. SLIDE-OVER MODAL DE EDICIÓN */}
       {isModalOpen && clienteAEditar && (
         <>
-          {/* Backdrop traslúcido */}
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40" onClick={() => setIsOpen(false)} />
+  {/* Backdrop traslúcido */}
+<div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40" onClick={() => setIsModalOpen(false)} />
 
           <div className="fixed inset-y-0 right-0 w-full max-w-md bg-[#0f0f0f] border-l border-zinc-800 shadow-2xl z-50 p-6 flex flex-col justify-between animate-in slide-in-from-right duration-200">
             <div>
