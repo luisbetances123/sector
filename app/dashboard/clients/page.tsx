@@ -1,49 +1,8 @@
-'use client';
+import React from 'react';
+import { getPremiumClients } from '@/app/actions /clientes';
 
-import React, { useState } from 'react';
-
-// Tipado del Cliente
-interface Cliente {
-  id: string;
-  nombre: string;
-  email: string;
-  telefono: string;
-  perfil: 'INVERSIONISTA' | 'COMPRADOR' | 'VENDEDOR';
-  temperatura: 'CALIENTE' | 'TIBIO' | 'FRIO';
-  objetivo: string;
-  estructuraFinanciera: string;
-  zonaInteres: string;
-  confotur: boolean;
-}
-
-export default function ClientesPage() {
-  // Datos simulados idénticos a tu estructura actual
-  const [clientes, setClientes] = useState<Cliente[]>([
-    {
-      id: '1',
-      nombre: 'Luis Betances',
-      email: 'luis@homvi.com',
-      telefono: '+1 809-555-0123',
-      perfil: 'INVERSIONISTA',
-      temperatura: 'CALIENTE',
-      objetivo: 'Renta Corta (Airbnb)',
-      estructuraFinanciera: 'Fondos Propios',
-      zonaInteres: 'Piantini, Santo Domingo',
-      confotur: true,
-    },
-    {
-      id: '2',
-      nombre: 'Jean Lizardo',
-      email: 'jean@homvi.com',
-      telefono: '+1 829-555-4567',
-      perfil: 'COMPRADOR',
-      temperatura: 'TIBIO',
-      objetivo: 'Vivienda Principal',
-      estructuraFinanciera: 'Financiamiento Bancario',
-      zonaInteres: 'Las Terrenas, Samaná',
-      confotur: false,
-    },
-  ]);
+export default async function ClientesPage() {
+  const clients = await getPremiumClients();
 
   return (
     <div className="min-h-screen text-zinc-100 p-8 font-sans selection:bg-[#CCFF00] selection:text-black">
@@ -61,103 +20,78 @@ export default function ClientesPage() {
           </button>
         </header>
 
-        {/* LISTADO DE CLIENTES - Tarjetas masivas con alta legibilidad */}
-        <section className="space-y-6">
-          {clientes.map((cliente) => (
-            <div 
-              key={cliente.id} 
-              className="bg-zinc-950 border border-zinc-900 p-8 rounded-2xl relative overflow-hidden group hover:border-zinc-700 transition-all duration-300 shadow-xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-center"
-            >
-              {/* Avatar e Identificación Principal (Col 3) */}
-              <div className="lg:col-span-3 flex items-center gap-5">
-                <div className="w-14 h-14 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center font-mono font-bold text-lg text-[#CCFF00] shadow-inner">
-                  {cliente.nombre.split(' ').map(n => n[0]).join('')}
+        {/* LISTADO DE CLIENTES */}
+        <main className="space-y-6">
+          {clients.length === 0 ? (
+            <div className="text-center py-20 border border-dashed border-zinc-800 rounded-2xl text-zinc-500 font-mono">
+              // NO SE DETECTARON CLIENTES EN LA TABLA REAL DE SUPABASE
+            </div>
+          ) : (
+            clients.map((client) => (
+              <div 
+                key={client.id} 
+                className="bg-zinc-950 border border-zinc-900 p-8 rounded-2xl flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 transition-all group relative overflow-hidden shadow-2xl hover:border-zinc-700 duration-300"
+              >
+                <div className="flex items-center gap-6 max-w-md">
+                  <div className="w-14 h-14 bg-zinc-900 group-hover:bg-zinc-850 border border-zinc-800 rounded-full flex items-center justify-center font-mono font-black text-zinc-400 group-hover:text-[#CCFF00] text-xl transition-all shrink-0">
+                    {client.name.charAt(0)}
+                  </div>
+                  <div className="space-y-1.5">
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <h3 className="text-xl font-bold text-white tracking-tight">{client.name}</h3>
+                      <span className="text-[10px] font-mono font-black tracking-widest bg-zinc-900 text-zinc-400 px-2.5 py-0.5 rounded border border-zinc-800 uppercase">
+                        {client.perfil}
+                      </span>
+                      <span className={`text-[10px] font-mono font-black tracking-widest px-2.5 py-0.5 rounded border uppercase ${
+                        client.temperatura === 'CALIENTE' ? 'bg-red-950/40 text-red-400 border-red-900/30' : 'bg-amber-950/40 text-amber-400 border-amber-900/30'
+                      }`}>
+                        {client.temperatura}
+                      </span>
+                    </div>
+                    <div className="text-xs font-mono text-zinc-500 space-y-0.5">
+                      <p className="hover:text-white transition-colors">✉ {client.email}</p>
+                      <p>📞 {client.phone}</p>
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-1">
-                  <h3 className="text-xl font-bold text-white tracking-tight">{cliente.nombre}</h3>
-                  <div className="flex gap-2 items-center">
-                    <span className="text-[10px] font-mono font-bold tracking-wider px-2.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400">
-                      {cliente.perfil}
-                    </span>
-                    <span className={`text-[10px] font-mono font-bold tracking-wider px-2.5 py-0.5 rounded ${
-                      cliente.temperatura === 'CALIENTE' 
-                        ? 'bg-red-950/40 border border-red-900/50 text-red-400' 
-                        : 'bg-amber-950/40 border border-amber-900/50 text-amber-400'
-                    }`}>
-                      🔥 {cliente.temperatura}
-                    </span>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-8 gap-y-4 border-t lg:border-t-0 border-zinc-900 pt-6 lg:pt-0 w-full lg:w-auto flex-1 max-w-3xl">
+                  <div>
+                    <span className="block text-[10px] font-mono text-zinc-600 uppercase tracking-wider">Objetivo</span>
+                    <span className="text-sm font-semibold text-zinc-200 truncate block">{client.objetivo}</span>
+                  </div>
+                  <div>
+                    <span className="block text-[10px] font-mono text-zinc-600 uppercase tracking-wider">Estructura</span>
+                    <span className="text-sm font-semibold text-zinc-200 truncate block">{client.estructura}</span>
+                  </div>
+                  <div>
+                    <span className="block text-[10px] font-mono text-zinc-600 uppercase tracking-wider">Zona de Interés</span>
+                    <span className="text-sm font-semibold text-[#CCFF00] truncate block">📍 {client.zonaInteres}</span>
+                  </div>
+                  <div>
+                    <span className="block text-[10px] font-mono text-zinc-600 uppercase tracking-wider">Incentivo Fiscal</span>
+                    <span className="text-sm font-semibold text-zinc-200 truncate block">{client.incentivoFiscal}</span>
                   </div>
                 </div>
               </div>
+            ))
+          )}
+        </main>
 
-              {/* Objetivos y Estructura (Col 4) */}
-              <div className="lg:col-span-4 grid grid-cols-2 gap-4 border-l border-zinc-900 pl-6">
-                <div>
-                  <span className="text-[10px] uppercase font-mono tracking-wider text-zinc-500 block">Objetivo</span>
-                  <span className="text-sm font-semibold text-zinc-200 block mt-1">{cliente.objetivo}</span>
-                </div>
-                <div>
-                  <span className="text-[10px] uppercase font-mono tracking-wider text-zinc-500 block">Estructura</span>
-                  <span className="text-sm font-semibold text-zinc-200 block mt-1">{cliente.estructuraFinanciera}</span>
-                </div>
-              </div>
-
-              {/* Zona e Incentivo Fiscal (Col 3) */}
-              <div className="lg:col-span-3 space-y-3 border-l border-zinc-900 pl-6">
-                <div>
-                  <span className="text-[10px] uppercase font-mono tracking-wider text-zinc-500 block">Zona de Interés</span>
-                  <span className="text-sm text-zinc-300 flex items-center gap-1.5 mt-1">
-                    📍 <span className="font-medium text-white">{cliente.zonaInteres}</span>
-                  </span>
-                </div>
-                <div>
-                  <span className="text-[10px] uppercase font-mono tracking-wider text-zinc-500 block">Incentivo Fiscal</span>
-                  {cliente.confotur ? (
-                    <span className="text-[11px] font-mono font-bold text-[#CCFF00] bg-[#CCFF00]/5 px-2 py-0.5 rounded border border-[#CCFF00]/10 inline-block mt-1">
-                      🛡️ CONFOTUR APLICA
-                    </span>
-                  ) : (
-                    <span className="text-[11px] font-mono text-zinc-500 inline-block mt-1">No Aplica</span>
-                  )}
-                </div>
-              </div>
-
-              {/* Datos de Contacto Resaltados y Acción (Col 2) */}
-              <div className="lg:col-span-2 flex flex-col items-end gap-3 justify-center border-l border-zinc-900 pl-6 h-full">
-                <div className="text-right space-y-1 w-full">
-                  <span className="text-xs font-mono text-zinc-300 block truncate hover:text-[#CCFF00] transition-colors">
-                    ✉️ {cliente.email}
-                  </span>
-                  <span className="text-xs font-mono text-zinc-400 block">
-                    📞 {cliente.telefono}
-                  </span>
-                </div>
-                <button className="w-full bg-zinc-900 hover:bg-zinc-850 text-zinc-200 font-mono text-xs py-2.5 px-4 rounded-xl border border-zinc-800 hover:border-zinc-700 transition-all cursor-pointer text-center font-bold">
-                  ✏️ EDITAR
-                </button>
-              </div>
-
-            </div>
-          ))}
-        </section>
-
-        {/* SECCIÓN DEL MAPA - Monumentalizada */}
+        {/* SECCIÓN DEL MAPA */}
         <section className="bg-zinc-950 border border-zinc-900 p-8 rounded-2xl space-y-6 shadow-xl">
           <div className="flex justify-between items-center">
             <div>
               <h2 className="text-xl font-black text-white tracking-tighter">🌐 Geolocalización Inmobiliaria Activa</h2>
-              <p className="text-xs text-zinc-500 font-mono mt-1">// Enfocado actualmente en: Piantini, Santo Domingo, RD</p>
+              <p className="text-xs text-zinc-500 font-mono mt-1">// Ecosistema de cobertura patrimonial</p>
             </div>
             <span className="text-[10px] font-mono bg-zinc-900 text-[#CCFF00] px-3 py-1 rounded-full border border-zinc-800 font-bold">
-              GOOGLE MAPS API OK
+              GOOGLE MAPS API READY
             </span>
           </div>
-          
-          {/* El contenedor del mapa ahora es masivo */}
           <div className="w-full bg-zinc-900/50 h-[350px] rounded-xl border border-zinc-900 flex items-center justify-center relative overflow-hidden group shadow-inner">
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-zinc-950/20 pointer-events-none"></div>
             <span className="text-sm font-mono text-zinc-500 tracking-widest uppercase animate-pulse">
-              [ Mapa interactivo de cobertura patrimonial ]
+              [ Mapa interactivo activo ]
             </span>
           </div>
         </section>
