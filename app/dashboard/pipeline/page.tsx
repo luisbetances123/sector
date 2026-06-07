@@ -21,10 +21,9 @@ export default async function PipelinePage() {
         </header>
 
         {/* KANBAN GRID */}
-        {/* KANBAN GRID */}
         <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
           {columns.map((col) => {
-            // Lógica de Mock Data: Solo se activa si la columna está vacía
+            // Lógica de Mock Data
             const displayDeals = col.deals.length > 0 ? col.deals : [
               {
                 id: 'demo-1',
@@ -88,6 +87,7 @@ export default async function PipelinePage() {
             );
           })}
         </main>
+      </div>
     </div>
   );
 }
