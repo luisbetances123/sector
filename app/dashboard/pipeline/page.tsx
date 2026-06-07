@@ -42,7 +42,7 @@ export default function PipelinePage() {
     ],
   })
 
-  // Control directo del modal
+  // Modal 1: Crear Nuevo Lead
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [nuevoLead, setNuevoLead] = useState({
     name: '',
@@ -51,6 +51,43 @@ export default function PipelinePage() {
     budget: '',
     sector: ''
   })
+
+  // Modal 2: Slide-over de Edición de Lead existente
+  const [leadAEditar, setLeadAEditar] = useState<Lead | null>(null)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [columnaDelLeadAEditar, setColumnaDelLeadAEditar] = useState<string>('')
+
+  const handleEditClick = (lead: Lead, columnName: string) => {
+    setLeadAEditar({ ...lead })
+    setColumnaDelLeadAEditar(columnName)
+    setIsEditModalOpen(true)
+  }
+
+  const handleUpdateLead = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!leadAEditar || !columnaDelLeadAEditar) return
+
+    // Aseguramos formato de moneda al editar presupuesto
+    let budgetFormateado = leadAEditar.budget
+    if (!budgetFormateado.startsWith('US$')) {
+      const num = parseInt(budgetFormateado.replace(/[^0-9]/g, ''), 10)
+      budgetFormateado = isNaN(num) ? leadAEditar.budget : `US$${num.toLocaleString()}`
+    }
+
+    const leadActualizado = {
+      ...leadAEditar,
+      budget: budgetFormateado,
+      updatedAt: '¡Editado ahora!'
+    }
+
+    setColumns({
+      ...columns,
+      [columnaDelLeadAEditar]: columns[columnaDelLeadAEditar].map(l => l.id === leadAEditar.id ? leadActualizado : l)
+    })
+
+    setIsEditModalOpen(false)
+    setLeadAEditar(null)
+  }
 
   const moverLead = (currentColumn: string, leadId: string, direccion: 'adelante' | 'atras') => {
     const colKeys = Object.keys(columns)
@@ -63,7 +100,7 @@ export default function PipelinePage() {
     const leadToMove = columns[currentColumn].find(l => l.id === leadId)
     
     if (leadToMove) {
-      const leadActualizado = { ...leadToMove, updatedAt: '¡Ahora mismo!' }
+      const leadActualizado = { ...leadToMove, updatedAt: '¡Movido ahora mismo!' }
       setColumns({
         ...columns,
         [currentColumn]: columns[currentColumn].filter(l => l.id !== leadId),
@@ -174,7 +211,8 @@ export default function PipelinePage() {
                     return (
                       <div 
                         key={lead.id} 
-                        className={`border ${isCierre ? 'border-[#CCFF00]/30 bg-gradient-to-b from-[#110E08] to-[#CCFF00]/4' : styles.border} rounded-xl p-4 shadow-md group relative hover:border-zinc-700 transition-all`}
+                        onClick={() => handleEditClick(lead, colName)}
+                        className={`border ${isCierre ? 'border-[#CCFF00]/30 bg-gradient-to-b from-[#110E08] to-[#CCFF00]/4' : styles.border} rounded-xl p-4 shadow-md group relative hover:border-zinc-500 transition-all cursor-pointer`}
                       >
                         <div className="space-y-2.5">
                           <div className="flex justify-between items-start gap-2">
@@ -203,7 +241,8 @@ export default function PipelinePage() {
                           <div className="flex justify-between items-center pt-2 border-t border-zinc-900/60 mt-1">
                             <span className="text-xs font-mono font-black text-[#CCFF00]">{lead.budget}</span>
                             
-                            <div className="flex items-center gap-1.5">
+                            {/* e.stopPropagation() previene que al hacer clic en las flechas se abra el modal */}
+                            <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
                               {!isPrimeraColumna && (
                                 <button 
                                   onClick={() => moverLead(colName, lead.id, 'atras')}
@@ -239,7 +278,7 @@ export default function PipelinePage() {
         })}
       </div>
 
-      {/* MODAL CORREGIDO (Clases nativas de Tailwind estables de alto impacto) */}
+      {/* MODAL 1: ALTA DE NUEVA OPORTUNIDAD */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4" style={{ zIndex: 9999 }}>
           <div className="bg-zinc-950 border border-zinc-800 w-full max-w-md rounded-2xl overflow-hidden shadow-2xl">
@@ -333,6 +372,137 @@ export default function PipelinePage() {
             </form>
           </div>
         </div>
+      )}
+
+      {/* MODAL 2: SLIDE-OVER LATERAL DE EDICIÓN DE CASOS */}
+      {isEditModalOpen && leadAEditar && (
+        <>
+          {/* Fondo oscuro traslúcido */}
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" style={{ zIndex: 9998 }} onClick={() => setIsEditModalOpen(false)} />
+
+          <div className="fixed inset-y-0 right-0 w-full max-w-md bg-[#0f0f0f] border-l border-zinc-800 shadow-2xl p-6 flex flex-col justify-between animate-in slide-in-from-right duration-200" style={{ zIndex: 9999 }}>
+            <div>
+              <div className="flex justify-between items-center mb-6">
+                <div>
+                  <h3 className="text-base font-black text-white tracking-tight">Editar Oportunidad</h3>
+                  <p className="text-[11px] text-zinc-500 mt-0.5 uppercase font-mono">Modificando perfil de negociación de {leadAEditar.name}</p>
+                </div>
+                <button 
+                  onClick={() => setIsEditModalOpen(false)} 
+                  className="text-zinc-500 hover:text-white bg-zinc-900 p-1.5 rounded-md border border-zinc-800 text-xs"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <form id="edit-lead-form" onSubmit={handleUpdateLead} className="space-y-4">
+                {/* Nombre */}
+                <div>
+                  <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 font-mono">Nombre Completo</label>
+                  <input 
+                    type="text" 
+                    value={leadAEditar.name}
+                    onChange={(e) => setLeadAEditar({...leadAEditar, name: e.target.value})}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-[#CCFF00]" 
+                  />
+                </div>
+
+                {/* Fila: Etiqueta de Estado y Prioridad */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 font-mono">Etiqueta Interna</label>
+                    <input 
+                      type="text" 
+                      value={leadAEditar.statusLabel}
+                      onChange={(e) => setLeadAEditar({...leadAEditar, statusLabel: e.target.value.toUpperCase()})}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-[#CCFF00]" 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 font-mono">Prioridad / Filtro</label>
+                    <select 
+                      value={leadAEditar.priority}
+                      onChange={(e) => setLeadAEditar({...leadAEditar, priority: e.target.value as any})}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-[#CCFF00]"
+                    >
+                      <option value="nuevo">💎 Nuevo Lead</option>
+                      <option value="buscando">🔍 Buscando</option>
+                      <option value="seguimiento">⏱️ Seguimiento</option>
+                      <option value="critico">🔥 Crítico</option>
+                      <option value="normal">⚪ Normal</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Proyecto de Interés */}
+                <div>
+                  <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 font-mono">Proyecto de Interés</label>
+                  <input 
+                    type="text" 
+                    value={leadAEditar.project}
+                    onChange={(e) => setLeadAEditar({...leadAEditar, project: e.target.value})}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-[#CCFF00]" 
+                  />
+                </div>
+
+                {/* Fila: Sector e Inversión */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 font-mono">Sector</label>
+                    <input 
+                      type="text" 
+                      value={leadAEditar.sector}
+                      onChange={(e) => setLeadAEditar({...leadAEditar, sector: e.target.value})}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-[#CCFF00]" 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 font-mono">Presupuesto (Inversión)</label>
+                    <input 
+                      type="text" 
+                      value={leadAEditar.budget}
+                      onChange={(e) => setLeadAEditar({...leadAEditar, budget: e.target.value})}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-[#CCFF00]" 
+                    />
+                  </div>
+                </div>
+
+                {/* Tipo Propiedad */}
+                <div>
+                  <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 font-mono">Tipo de Unidad</label>
+                  <select 
+                    value={leadAEditar.propertyType}
+                    onChange={(e) => setLeadAEditar({...leadAEditar, propertyType: e.target.value})}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-[#CCFF00]"
+                  >
+                    <option value="Apartamento">Apartamento</option>
+                    <option value="Penthouse">Penthouse</option>
+                    <option value="Villa / Casa">Villa / Casa</option>
+                    <option value="Solar / Playa">Solar / Playa</option>
+                  </select>
+                </div>
+              </form>
+            </div>
+
+            {/* Botones de Acción de Edición */}
+            <div className="border-t border-zinc-900 pt-4 flex gap-3">
+              <button 
+                type="button" 
+                onClick={() => setIsEditModalOpen(false)}
+                className="w-1/2 border border-zinc-850 text-zinc-400 rounded-xl py-2.5 text-xs font-black uppercase tracking-wider hover:bg-zinc-900/50 transition-all"
+              >
+                Cancelar
+              </button>
+              <button 
+                type="submit" 
+                form="edit-lead-form"
+                className="w-1/2 bg-[#CCFF00] text-black font-black text-xs uppercase tracking-wider rounded-xl py-2.5 hover:bg-white transition-all"
+              >
+                Guardar Datos
+              </button>
+            </div>
+          </div>
+        </>
       )}
 
     </div>
