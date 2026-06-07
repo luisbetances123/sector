@@ -146,21 +146,21 @@ function PropertyViewModal({ open, property: p, onClose }: ViewModalProps) {
           />
         </div>
 
-            {/* Botón de ruta en tiempo real */}
-      <button 
-        onClick={() => {
-          const direccionCompleta = `${p.location || p.sector}, Santo Domingo, Republica Dominicana`;
-          const targetUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccionCompleta)}`;
-          window.open(targetUrl, '_blank');
-        }}
-        className="w-full bg-[#CCFF00] hover:bg-[#b3df00] text-black font-bold py-3 rounded-xl transition-colors text-xs tracking-wide uppercase font-mono shadow-md shadow-[#CCFF00]/10"
-      >
-        Iniciar Navegación GPS
-      </button>
+        {/* Botón de ruta en tiempo real */}
+        <button 
+          onClick={() => {
+            const direccionCompleta = `${p.location || p.sector}, Santo Domingo, Republica Dominicana`;
+            const targetUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccionCompleta)}`;
+            window.open(targetUrl, '_blank');
+          }}
+          className="w-full bg-[#CCFF00] hover:bg-[#b3df00] text-black font-bold py-3 rounded-xl transition-colors text-xs tracking-wide uppercase font-mono shadow-md shadow-[#CCFF00]/10"
+        >
+          Iniciar Navegación GPS
+        </button>
 
+      </div>
     </div>
-  </div>
-)
+  )
 }
 
 // ── Modal Formulario (Crear/Editar) ──────────────────────────────────────────
@@ -177,6 +177,9 @@ function PropertyModal({ open, initial, onClose, onSave }: ModalProps) {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [tempUrl, setTempUrl] = useState('')
+  
+  // Estado para el visor de imagen expandido de la miniatura
+  const [activeLightboxImage, setActiveLightboxImage] = useState<string | null>(null)
 
   useEffect(() => {
     if (initial) {
@@ -228,171 +231,213 @@ function PropertyModal({ open, initial, onClose, onSave }: ModalProps) {
   const labelCls = 'text-zinc-400 text-xs uppercase tracking-wider font-bold mb-1 block'
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-zinc-900 border border-zinc-700 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-zinc-800">
-          <h2 className="text-lg font-black text-[#CCFF00] uppercase tracking-tight">
-            {initial ? 'Editar Propiedad' : 'Nueva Propiedad'}
-          </h2>
-          <button onClick={onClose} className="text-zinc-500 hover:text-white transition-colors p-1">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-
-        <div className="px-6 py-5 space-y-4">
-          <div>
-            <label className={labelCls}>Título *</label>
-            <input value={form.title} onChange={e => set('title', e.target.value)}
-              placeholder="Ej: Penthouse en Piantini" className={inputCls} />
+    <>
+      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="bg-zinc-900 border border-zinc-700 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+          <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-zinc-800">
+            <h2 className="text-lg font-black text-[#CCFF00] uppercase tracking-tight">
+              {initial ? 'Editar Propiedad' : 'Nueva Propiedad'}
+            </h2>
+            <button onClick={onClose} className="text-zinc-500 hover:text-white transition-colors p-1">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="px-6 py-5 space-y-4">
             <div>
-              <label className={labelCls}>Tipo</label>
-              <select value={form.type} onChange={e => set('type', e.target.value as PropertyType)} className={inputCls}>
-                {TIPOS.map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
+              <label className={labelCls}>Título *</label>
+              <input value={form.title} onChange={e => set('title', e.target.value)}
+                placeholder="Ej: Penthouse en Piantini" className={inputCls} />
             </div>
-            <div>
-              <label className={labelCls}>Estado</label>
-              <select value={form.estado} onChange={e => set('estado', e.target.value as PropertyEstado)} className={inputCls}>
-                {ESTADOS.map(e => <option key={e.value} value={e.value}>{e.label}</option>)}
-              </select>
-            </div>
-          </div>
 
-          <div className="grid grid-cols-3 gap-3">
-            <div className="col-span-2">
-              <label className={labelCls}>Precio</label>
-              <input value={form.price} onChange={e => set('price', e.target.value)}
-                placeholder="350000" className={inputCls} />
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className={labelCls}>Tipo</label>
+                <select value={form.type} onChange={e => set('type', e.target.value as PropertyType)} className={inputCls}>
+                  {TIPOS.map(t => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className={labelCls}>Estado</label>
+                <select value={form.estado} onChange={e => set('estado', e.target.value as PropertyEstado)} className={inputCls}>
+                  {ESTADOS.map(e => <option key={e.value} value={e.value}>{e.label}</option>)}
+                </select>
+              </div>
             </div>
-            <div>
-              <label className={labelCls}>Moneda</label>
-              <select value={form.moneda} onChange={e => set('moneda', e.target.value)} className={inputCls}>
-                <option value="USD">USD</option>
-                <option value="DOP">DOP</option>
-                <option value="EUR">EUR</option>
-              </select>
-            </div>
-          </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className={labelCls}>Sector</label>
-              <select value={form.sector} onChange={e => set('sector', e.target.value)} className={inputCls}>
-                <option value="">Sin sector</option>
-                {SECTORES.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="col-span-2">
+                <label className={labelCls}>Precio</label>
+                <input value={form.price} onChange={e => set('price', e.target.value)}
+                  placeholder="350000" className={inputCls} />
+              </div>
+              <div>
+                <label className={labelCls}>Moneda</label>
+                <select value={form.moneda} onChange={e => set('moneda', e.target.value)} className={inputCls}>
+                  <option value="USD">USD</option>
+                  <option value="DOP">DOP</option>
+                  <option value="EUR">EUR</option>
+                </select>
+              </div>
             </div>
-            <div>
-              <label className={labelCls}>Ubicación</label>
-              <input value={form.location} onChange={e => set('location', e.target.value)}
-                placeholder="Av. Winston Churchill" className={inputCls} />
-              <p className="text-zinc-600 text-[10px] mt-1">📍 Dirección completa para ubicar en el mapa con precisión</p>
-            </div>
-          </div>
 
-          <div>
-            <label className={labelCls}>Características</label>
-            <div className="grid grid-cols-4 gap-2">
-              {[
-                { key: 'recamaras', label: '🛏', placeholder: 'Rec.' },
-                { key: 'banos', label: '🚿', placeholder: 'Baños' },
-                { key: 'estacionamientos', label: '🚗', placeholder: 'Est.' },
-                { key: 'm2', label: '📐', placeholder: 'm²' },
-              ].map(({ key, label, placeholder }) => (
-                <div key={key} className="relative">
-                  <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-sm">{label}</span>
-                  <input type="number" min={0}
-                    value={form[key as keyof FormData] as string}
-                    onChange={e => set(key as keyof FormData, e.target.value)}
-                    placeholder={placeholder}
-                    className={`${inputCls} pl-8 text-center`} />
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className={labelCls}>Sector</label>
+                <select value={form.sector} onChange={e => set('sector', e.target.value)} className={inputCls}>
+                  <option value="">Sin sector</option>
+                  {SECTORES.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className={labelCls}>Ubicación</label>
+                <input value={form.location} onChange={e => set('location', e.target.value)}
+                  placeholder="Av. Winston Churchill" className={inputCls} />
+                <p className="text-zinc-600 text-[10px] mt-1">📍 Dirección completa para ubicar en el mapa con precisión</p>
+              </div>
+            </div>
+
+            <div>
+              <label className={labelCls}>Características</label>
+              <div className="grid grid-cols-4 gap-2">
+                {[
+                  { key: 'recamaras', label: '🛏', placeholder: 'Rec.' },
+                  { key: 'banos', label: '🚿', placeholder: 'Baños' },
+                  { key: 'estacionamientos', label: '🚗', placeholder: 'Est.' },
+                  { key: 'm2', label: '📐', placeholder: 'm²' },
+                ].map(({ key, label, placeholder }) => (
+                  <div key={key} className="relative">
+                    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-sm">{label}</span>
+                    <input type="number" min={0}
+                      value={form[key as keyof FormData] as string}
+                      onChange={e => set(key as keyof FormData, e.target.value)}
+                      placeholder={placeholder}
+                      className={`${inputCls} pl-8 text-center`} />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className={labelCls}>Fotos de la propiedad</label>
+              <div className="space-y-2">
+                {(form.imagenes.length > 0 ? form.imagenes : ['']).map((url, i) => (
+                  <div key={i} className="flex gap-2">
+                    <input
+                      value={url}
+                      onChange={e => {
+                        const arr = [...form.imagenes]
+                        if (arr.length === 0) arr.push('')
+                        arr[i] = e.target.value
+                        set('imagenes', arr)
+                      }}
+                      placeholder={i === 0 ? 'URL foto principal...' : `URL foto ${i + 1}...`}
+                      className={inputCls}
+                    />
+                    {i > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => set('imagenes', form.imagenes.filter((_, j) => j !== i))}
+                        className="px-3 bg-zinc-800 text-red-400 rounded-xl hover:bg-zinc-700 transition-colors shrink-0"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => set('imagenes', [...form.imagenes, ''])}
+                  className="w-full py-2 border border-dashed border-zinc-700 text-zinc-500 text-xs rounded-xl hover:border-[#CCFF00] hover:text-[#CCFF00] transition-colors"
+                >
+                  + Agregar otra foto
+                </button>
+              </div>
+              {form.imagenes && form.imagenes.filter(url => url.trim() !== '').length > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-3">
+                  {form.imagenes
+                    .filter(url => url.trim() !== '')
+                    .map((url, index) => (
+                      <div 
+                        key={index} 
+                        onClick={() => setActiveLightboxImage(url)}
+                        className="relative aspect-video w-full overflow-hidden rounded-xl border border-zinc-700 bg-zinc-950 cursor-pointer group hover:border-[#CCFF00]/60 transition-all shadow-md"
+                        title="Clic para expandir imagen"
+                      >
+                        <img
+                          src={url}
+                          alt={`Preview ${index + 1}`}
+                          className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                        />
+                        {/* Overlay sutil indicando interactividad de lupa */}
+                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all">
+                          <span className="text-white text-[10px] font-mono font-bold bg-black/70 px-2 py-1 rounded-md border border-zinc-800 tracking-wider">
+                            🔍 EXPANDIR
+                          </span>
+                        </div>
+                      </div>
+                    ))}
                 </div>
-              ))}
+              )}
             </div>
-          </div>
 
-          <div>
-            <label className={labelCls}>Fotos de la propiedad</label>
-            <div className="space-y-2">
-              {(form.imagenes.length > 0 ? form.imagenes : ['']).map((url, i) => (
-                <div key={i} className="flex gap-2">
-                  <input
-                    value={url}
-                    onChange={e => {
-                      const arr = [...form.imagenes]
-                      if (arr.length === 0) arr.push('')
-                      arr[i] = e.target.value
-                      set('imagenes', arr)
-                    }}
-                    placeholder={i === 0 ? 'URL foto principal...' : `URL foto ${i + 1}...`}
-                    className={inputCls}
-                  />
-                  {i > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => set('imagenes', form.imagenes.filter((_, j) => j !== i))}
-                      className="px-3 bg-zinc-800 text-red-400 rounded-xl hover:bg-zinc-700 transition-colors shrink-0"
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => set('imagenes', [...form.imagenes, ''])}
-                className="w-full py-2 border border-dashed border-zinc-700 text-zinc-500 text-xs rounded-xl hover:border-[#CCFF00] hover:text-[#CCFF00] transition-colors"
-              >
-                + Agregar otra foto
+            <div>
+              <label className={labelCls}>Descripción</label>
+              <textarea value={form.descripcion} onChange={e => set('descripcion', e.target.value)}
+                rows={3} placeholder="Detalles de la propiedad..."
+                className={`${inputCls} resize-none`} />
+            </div>
+
+            {error && (
+              <p className="text-red-400 text-sm bg-red-400/10 border border-red-400/20 px-3 py-2 rounded-xl">{error}</p>
+            )}
+
+            <div className="flex gap-3 pt-2">
+              <button onClick={onClose}
+                className="flex-1 bg-zinc-800 text-white py-3 rounded-xl font-bold text-sm hover:bg-zinc-700 transition-all">
+                Cancelar
+              </button>
+              <button onClick={handleSave} disabled={saving}
+                className="flex-1 bg-[#CCFF00] text-black py-3 rounded-xl font-black text-sm uppercase hover:bg-white transition-all disabled:opacity-50">
+                {saving ? 'Guardando...' : initial ? 'Guardar cambios' : 'Crear propiedad'}
               </button>
             </div>
-            {form.imagenes && form.imagenes.filter(url => url.trim() !== '').length > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-3">
-                {form.imagenes
-                  .filter(url => url.trim() !== '')
-                  .map((url, index) => (
-                    <div key={index} className="relative aspect-video w-full overflow-hidden rounded-xl border border-zinc-700 bg-zinc-950">
-                      <img
-                        src={url}
-                        alt={`Preview ${index + 1}`}
-                        className="h-full w-full object-cover"
-                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                      />
-                    </div>
-                  ))}
-              </div>
-            )}
-          </div>
-
-          <div>
-            <label className={labelCls}>Descripción</label>
-            <textarea value={form.descripcion} onChange={e => set('descripcion', e.target.value)}
-              rows={3} placeholder="Detalles de la propiedad..."
-              className={`${inputCls} resize-none`} />
-          </div>
-
-          {error && (
-            <p className="text-red-400 text-sm bg-red-400/10 border border-red-400/20 px-3 py-2 rounded-xl">{error}</p>
-          )}
-
-          <div className="flex gap-3 pt-2">
-            <button onClick={onClose}
-              className="flex-1 bg-zinc-800 text-white py-3 rounded-xl font-bold text-sm hover:bg-zinc-700 transition-all">
-              Cancelar
-            </button>
-            <button onClick={handleSave} disabled={saving}
-              className="flex-1 bg-[#CCFF00] text-black py-3 rounded-xl font-black text-sm uppercase hover:bg-white transition-all disabled:opacity-50">
-              {saving ? 'Guardando...' : initial ? 'Guardar cambios' : 'Crear propiedad'}
-            </button>
           </div>
         </div>
       </div>
-    </div>
+
+      {/* ── LIGHTBOX INTEGRADO EN TIEMPO REAL ── */}
+      {activeLightboxImage && (
+        <div 
+          className="fixed inset-0 bg-black/95 backdrop-blur-md z-[100] flex flex-col items-center justify-center p-4 animate-in fade-in duration-200"
+          onClick={() => setActiveLightboxImage(null)}
+        >
+          {/* Botón de cierre superior */}
+          <button 
+            onClick={() => setActiveLightboxImage(null)}
+            className="absolute top-4 right-4 bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white font-mono text-xs px-3 py-2 rounded-xl transition-all shadow-xl z-10"
+          >
+            CERRAR ✕
+          </button>
+          
+          {/* Contenedor de la foto maximizada */}
+          <div className="relative max-w-4xl w-full max-h-[80vh] flex items-center justify-center select-none" onClick={(e) => e.stopPropagation()}>
+            <img 
+              src={activeLightboxImage} 
+              alt="Propiedad HOMVI full view" 
+              className="max-w-full max-h-[80vh] object-contain rounded-2xl border border-zinc-800 shadow-2xl"
+            />
+          </div>
+          
+          <p className="text-zinc-500 font-mono text-[10px] uppercase tracking-widest mt-4">
+            Haz clic en cualquier lado para regresar al formulario
+          </p>
+        </div>
+      )}
+    </>
   )
 }
 
