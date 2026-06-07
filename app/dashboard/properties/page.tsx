@@ -129,20 +129,20 @@ function PropertyViewModal({ open, property: p, onClose }: ViewModalProps) {
           {p.descripcion && <p className="mt-2 border-t border-zinc-800 pt-2"><strong className="text-white">Descripción:</strong> {p.descripcion}</p>}
         </div>
 
-            {/* --- MAPA DE GOOGLE EMBED --- */}
-        <div className="w-full h-[240px] rounded-xl overflow-hidden border border-zinc-800 bg-zinc-900 relative [&_iframe]:!h-full [&_iframe]:!w-full">
+        {/* --- MAPA DE GOOGLE EMBED --- */}
+        <div className="w-full h-[240px] rounded-xl overflow-hidden border border-zinc-800 bg-zinc-900 relative">
           <div className="absolute top-2.5 left-2.5 z-10 bg-black/80 backdrop-blur-sm text-[9px] text-[#CCFF00] font-mono px-2.5 py-1 rounded-full border border-zinc-800">
             📍 {p.sector || 'Santo Domingo'}
           </div>
 
-          <GoogleMapsEmbed
-            apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY ?? ''}
-            height="100%"
+          <iframe
             width="100%"
-            mode="place"
-            q={`${p.location || p.sector || ''}, Santo Domingo, Republica Dominicana`}
-            allowfullscreen={true}
-            style="border:0; filter: invert(90%) hue-rotate(180deg) saturate(150%);"
+            height="100%"
+            style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg) saturate(150%)' }}
+            loading="lazy"
+            allowFullScreen
+            referrerPolicy="no-referrer-when-downgrade"
+            src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY ?? ''}&q=${encodeURIComponent((p.location || p.sector || '') + ', Santo Domingo, Republica Dominicana')}`}
           />
         </div>
 
