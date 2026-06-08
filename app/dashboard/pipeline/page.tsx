@@ -14,34 +14,83 @@ interface ClientDeal {
 }
 
 export default function PipelinePage() {
-  // Datos de prueba calibrados para activar los diferentes estados
+  // 8 CLIENTES PARA IMPRESIONAR (Showroom Edition)
   const [deals, setDeals] = useState<ClientDeal[]>([
+    // --- PROSPECTOS ---
     {
-      id: "deal-1",
+      id: "d1",
+      name: "Juan Manuel Peralta",
+      property: "Torre Serralles - 3BR",
+      price: 325000,
+      priceStr: "US$ 325,000",
+      stageId: "1",
+      updatedAt: new Date().toISOString() // 🟢 NUEVO
+    },
+    {
+      id: "d2",
+      name: "Elena de los Santos",
+      property: "Penthouse Evaristo Morales",
+      price: 540000,
+      priceStr: "US$ 540,000",
+      stageId: "1",
+      updatedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString() // 🔴 ESTANCADO
+    },
+    // --- VISITAS ---
+    {
+      id: "d3",
       name: "Inversiones Piantini",
-      property: "Torre Naco",
+      property: "Torre Naco Luxury",
       price: 450000,
       priceStr: "US$ 450,000",
       stageId: "2",
-      updatedAt: "2026-06-02T10:00:00.000Z" // 6 días (🥶 Estancado - Rojo)
+      updatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString() // 🔴 ESTANCADO
     },
     {
-      id: "deal-2",
-      name: "Carlos Mendoza",
-      property: "Penthouse Piantini",
-      price: 850000,
-      priceStr: "US$ 850,000",
-      stageId: "1",
-      updatedAt: new Date().toISOString() // 0 días (🟢 Nuevo - Verde)
+      id: "d4",
+      name: "Dr. Marcos Rossi",
+      property: "Blue Mall Residences",
+      price: 580000,
+      priceStr: "US$ 580,000",
+      stageId: "2",
+      updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString() // ⚡ ACTIVO
     },
+    // --- NEGOCIACIÓN ---
     {
-      id: "deal-3",
+      id: "d5",
       name: "Sofía Rodríguez",
-      property: "Apartamento Bella Vista",
+      property: "Apt Bella Vista Vista Mar",
       price: 280000,
       priceStr: "US$ 280,000",
-      stageId: "1",
-      updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() // 2 días (⚡ Activo - Gris)
+      stageId: "3",
+      updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() // ⚡ ACTIVO
+    },
+    {
+      id: "d6",
+      name: "David Chen",
+      property: "Villa en Cap Cana",
+      price: 1250000,
+      priceStr: "US$ 1,250,000",
+      stageId: "3",
+      updatedAt: new Date().toISOString() // 🟢 NUEVO (HOT DEAL)
+    },
+    // --- CIERRE ---
+    {
+      id: "d7",
+      name: "Ricardo Arjona",
+      property: "Casa de Campo - Dye Fore",
+      price: 3500000,
+      priceStr: "US$ 3,500,000",
+      stageId: "4",
+      updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString() // ⚡ ACTIVO
+    },
+    {
+      id: "d8",
+      name: "Familia Bisonó",
+      property: "Prados del Este - Casa",
+      price: 195000,
+      priceStr: "US$ 195,000",
+      stageId: "4",
+      updatedAt: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString() // 🔴 ESTANCADO (TEMA LEGAL)
     }
   ]);
 
@@ -77,15 +126,13 @@ export default function PipelinePage() {
 
   const copyAISuggestion = (deal: ClientDeal) => {
     let text = "";
-    if (deal.stageId === "1") {
-      text = `Hola ${deal.name}, veo que te interesó la propiedad *${deal.property}*. ¿Te gustaría agendar una visita virtual o presencial esta semana?`;
-    } else if (deal.stageId === "2") {
-      text = `Hola ${deal.name}, un placer saludarte tras nuestra visita a *${deal.property}*. Quedo a tu orden si tienes dudas del metraje o las amenidades.`;
-    } else {
-      text = `Hola ${deal.name}, espero estés excelente. Estoy revisando los últimos detalles del contrato para *${deal.property}*. ¿Conversamos hoy?`;
-    }
+    if (deal.stageId === "1") text = `Hola ${deal.name}, veo que te interesó *${deal.property}*. ¿Agendamos visita?`;
+    else if (deal.stageId === "2") text = `Hola ${deal.name}, ¿qué te pareció la visita a *${deal.property}*?`;
+    else if (deal.stageId === "3") text = `Hola ${deal.name}, estoy revisando la oferta por *${deal.property}*.`;
+    else text = `Hola ${deal.name}, felicidades por tu nueva propiedad en *${deal.property}*!`;
+    
     navigator.clipboard.writeText(text);
-    alert(`🤖 Propuesta de IA copiada al portapapeles para ${deal.name}`);
+    alert(`🤖 Sugerencia IA copiada para ${deal.name}`);
   };
 
   const processedColumns = columnsDefinition.map(col => {
@@ -102,14 +149,20 @@ export default function PipelinePage() {
   return (
     <div className="min-h-screen text-zinc-100 p-8 font-sans selection:bg-[#CCFF00] selection:text-black">
       <div className="max-w-7xl mx-auto space-y-12">
-        <header className="border-b border-zinc-900 pb-10">
-          <span className="text-sm font-mono text-[#CCFF00] uppercase tracking-widest">Inteligencia de Negociación</span>
-          <h1 className="text-5xl font-extrabold tracking-tighter text-white mt-2">Pipeline Visual</h1>
+        <header className="border-b border-zinc-900 pb-10 flex justify-between items-end">
+          <div>
+            <span className="text-sm font-mono text-[#CCFF00] uppercase tracking-widest">Inteligencia de Negociación</span>
+            <h1 className="text-5xl font-extrabold tracking-tighter text-white mt-2">Pipeline Visual</h1>
+          </div>
+          <div className="text-right">
+             <p className="text-xs font-mono text-zinc-500 uppercase">Volumen Total en Pipeline</p>
+             <p className="text-2xl font-black text-white">US$ {deals.reduce((s,d)=>s+d.price,0).toLocaleString()}</p>
+          </div>
         </header>
 
         <main className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {processedColumns.map((col) => (
-            <div key={col.id} className="bg-zinc-950/20 p-4 rounded-2xl min-h-[600px] border border-zinc-900/50 flex flex-col">
+            <div key={col.id} className="bg-zinc-950/20 p-4 rounded-2xl min-h-[700px] border border-zinc-900/50 flex flex-col">
               <div className="flex justify-between items-center mb-6">
                 <div>
                   <h3 className="text-xs font-mono font-black text-zinc-400 uppercase">{col.title}</h3>
@@ -121,80 +174,42 @@ export default function PipelinePage() {
               <div className="space-y-4 flex-1">
                 {col.deals.map((deal) => {
                   const days = getDaysInStage(deal.updatedAt);
-                  
-                  // Lógica matemática de estados
                   const isNew = days === 0;
                   const isCold = days >= 4;
-                  const isNormal = !isNew && !isCold;
 
-                  // Definición dinámica de estilos CSS según el estado de CRM
-                  let cardStyles = "border-zinc-800 bg-zinc-950"; // Normal
+                  let cardStyles = "border-zinc-800 bg-zinc-950";
                   if (isNew) cardStyles = "border-[#CCFF00]/40 bg-gradient-to-b from-[#CCFF00]/5 to-zinc-950 shadow-[#CCFF00]/5";
                   if (isCold) cardStyles = "border-red-500/50 bg-gradient-to-b from-red-950/20 to-zinc-950 shadow-red-950/10";
 
                   return (
-                    <div key={deal.id} className={`border p-5 rounded-xl shadow-lg flex flex-col justify-between min-h-[210px] transition-all duration-300 ${cardStyles}`}>
+                    <div key={deal.id} className={`border p-4 rounded-xl shadow-lg flex flex-col justify-between min-h-[220px] transition-all duration-300 ${cardStyles}`}>
                       <div>
                         <div className="flex justify-between items-start gap-2">
-                          <h4 className="font-bold text-white text-sm leading-tight">{deal.name}</h4>
-                          
-                          {/* Badge del Semáforo Inteligente */}
-                          <span className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-full flex items-center gap-1.5 ${
+                          <h4 className="font-bold text-white text-[13px] leading-tight">{deal.name}</h4>
+                          <span className={`text-[8px] font-mono font-bold px-1.5 py-0.5 rounded-full flex items-center gap-1 ${
                             isNew ? 'bg-[#CCFF00]/10 text-[#CCFF00] border border-[#CCFF00]/20 animate-pulse' :
                             isCold ? 'bg-red-500/10 text-red-400 border border-red-500/20 animate-pulse' :
-                            'bg-zinc-900 text-zinc-400 border border-zinc-800'
+                            'bg-zinc-900 text-zinc-500 border border-zinc-800'
                           }`}>
-                            {isNew && <span className="w-1.5 h-1.5 rounded-full bg-[#CCFF00] block shrink-0" />}
-                            {isCold && <span className="w-1.5 h-1.5 rounded-full bg-red-500 block shrink-0" />}
-                            
-                            {isNew ? '🟢 Nuevo' : isCold ? `🥶 Estancado (${days}d)` : `⚡ Activo (${days}d)`}
+                            {isNew ? '🟢 NUEVO' : isCold ? `🥶 COLD (${days}d)` : `⚡ ACTIVO`}
                           </span>
                         </div>
-                        <p className="text-xs text-zinc-400 mt-1">{deal.property}</p>
+                        <p className="text-[11px] text-zinc-500 mt-1 truncate">{deal.property}</p>
                         <p className="text-[#CCFF00] font-black mt-2 text-sm">{deal.priceStr}</p>
                       </div>
 
                       <div className="mt-4 space-y-2">
-                        <div className="flex gap-2">
-                          <a
-                            href={generateWhatsAppLink({
-                              phone: "18095551234", 
-                              clientName: deal.name,
-                              propertyName: deal.property,
-                              propertyPrice: deal.priceStr
-                            })}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-black bg-[#CCFF00] hover:bg-[#b5e600] rounded-lg transition-colors text-center"
-                          >
-                            💬 WhatsApp
+                        <div className="flex gap-1.5">
+                          <a href={generateWhatsAppLink({phone: "18095551234", clientName: deal.name, propertyName: deal.property, propertyPrice: deal.priceStr})} target="_blank" rel="noopener noreferrer"
+                            className="flex-1 inline-flex items-center justify-center gap-1 px-2 py-1.5 text-[9px] font-bold uppercase text-black bg-[#CCFF00] rounded-lg">
+                            💬 WA
                           </a>
-
-                          <button
-                            onClick={() => copyAISuggestion(deal)}
-                            className="px-2.5 py-2 text-[10px] font-bold bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-zinc-300 rounded-lg transition-colors"
-                            title="Generar copy con IA para esta etapa"
-                          >
-                            🪄 AI
-                          </button>
+                          <button onClick={() => copyAISuggestion(deal)} className="px-2 py-1.5 text-[9px] font-bold bg-zinc-900 border border-zinc-800 text-zinc-300 rounded-lg">🪄 AI</button>
                         </div>
-
-                        <div className="flex justify-between items-center pt-2 border-t border-zinc-900 gap-2">
-                          <button 
-                            disabled={col.id === '1'}
-                            onClick={() => moveDeal(deal.id, deal.stageId, 'backward')}
-                            className="text-[10px] px-2 py-1 bg-zinc-900 hover:bg-zinc-800 rounded disabled:opacity-20 text-zinc-400 hover:text-white transition-colors"
-                          >
-                            ◀
-                          </button>
-                          <span className="text-[9px] font-mono text-zinc-600 uppercase tracking-widest">Mover etapa</span>
-                          <button 
-                            disabled={col.id === '4'}
-                            onClick={() => moveDeal(deal.id, deal.stageId, 'forward')}
-                            className="text-[10px] px-2 py-1 bg-zinc-900 hover:bg-zinc-800 rounded disabled:opacity-20 text-zinc-400 hover:text-white transition-colors"
-                          >
-                            ▶
-                          </button>
+                        <div className="flex justify-between items-center pt-2 border-t border-zinc-900 gap-1.5">
+                          <button disabled={col.id === '1'} onClick={() => moveDeal(deal.id, deal.stageId, 'backward')} className="text-[9px] p-1 bg-zinc-900 rounded disabled:opacity-10 text-zinc-400">◀</button>
+                          <span className="text-[8px] font-mono text-zinc-600 uppercase">Mover</span>
+                          <button disabled={col.id === '4'} onClick={() => moveDeal(deal.id, deal.stageId, 'forward')} className="text-[9px] p-1 bg-zinc-900 rounded disabled:opacity-10 text-zinc-400">▶</button>
                         </div>
                       </div>
                     </div>
