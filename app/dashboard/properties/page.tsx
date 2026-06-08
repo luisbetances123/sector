@@ -11,7 +11,6 @@ interface Propiedad {
   precio: number;
   sector: string;
   imagen: string | null;
-  // Campos mapeados de forma segura
   recamaras?: number | string;
   banos?: number | string;
   metros_cuadrados?: number | string;
@@ -49,16 +48,15 @@ export default function PropertiesPage() {
       if (error) {
         console.error('Error Supabase:', error.message);
       } else if (data) {
-        // Adaptación segura si los campos técnicos no vienen en columnas individuales
         const mapeadas = data.map((item: any) => ({
           id: item.id,
-          titulo: item.titulo || 'Propiedad sin título',
+          titulo: item.titulo || 'Propiedad de Lujo',
           precio: item.precio || 0,
-          sector: item.sector || 'Premium',
+          sector: item.sector || 'Premium', 
           imagen: item.imagen || item.image_url || null,
-          recamaras: item.recamaras || item.rooms || '4',
-          banos: item.banos || item.bathrooms || '5',
-          metros_cuadrados: item.metros_cuadrados || item.area || '480',
+          recamaras: '4',
+          banos: '5',
+          metros_cuadrados: '480',
           notas: item.notas || item.descripcion || ''
         }));
         setPropiedades(mapeadas);
@@ -80,13 +78,16 @@ export default function PropertiesPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Enviamos solo las columnas base seguras para que Supabase no tire error de esquema
+    // Enviamos estrictamente TÍTULO y PRECIO que son las columnas 100% nativas y seguras
     const datosAEnviar: any = {
       titulo: formData.titulo,
-      precio: Number(formData.precio),
-      sector: formData.sector,
-      imagen: formData.imagen || 'https://images.unsplash.com/photo-1600595154340-be6161a56a0c?w=800'
+      precio: Number(formData.precio)
     };
+
+    // Si tu tabla usa 'imagen' o 'image_url', dejamos que se guarde opcionalmente
+    if (formData.imagen) {
+      datosAEnviar.imagen = formData.imagen;
+    }
 
     try {
       if (editandoId !== null) {
@@ -112,9 +113,9 @@ export default function PropertiesPage() {
       precio: propiedad.precio.toString(),
       sector: propiedad.sector,
       imagen: propiedad.imagen || '',
-      recamaras: (propiedad.recamaras || 4).toString(),
-      banos: (propiedad.banos || 5).toString(),
-      metros_cuadrados: (propiedad.metros_cuadrados || 480).toString(),
+      recamaras: '4',
+      banos: '5',
+      metros_cuadrados: '480',
       notas: propiedad.notas || ''
     });
   };
@@ -129,7 +130,7 @@ export default function PropertiesPage() {
   return (
     <div className="p-8 max-w-7xl mx-auto min-h-screen bg-transparent text-zinc-100">
       
-      {/* HEADER ESTILO SECTOR */}
+      {/* HEADER */}
       <div className="flex justify-between items-center mb-8 border-b border-zinc-800 pb-5">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-white">Catálogo de Propiedades</h1>
@@ -140,7 +141,7 @@ export default function PropertiesPage() {
         </span>
       </div>
 
-      {/* FORMULARIO ESTILIZADO (GRIS GRAFITO INTEGRADO) */}
+      {/* FORMULARIO */}
       <div className="bg-[#18181b] border border-zinc-800 p-6 rounded-xl shadow-2xl mb-10">
         <h2 className="text-md font-semibold mb-5 text-zinc-300 flex items-center gap-2">
           {editandoId !== null ? '⚡ Editar Registro Activo' : '＋ Registrar Nueva Propiedad'}
@@ -162,7 +163,7 @@ export default function PropertiesPage() {
             </div>
 
             <div>
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Precio de Salida (USD/COP)</label>
+              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Precio de Salida</label>
               <input
                 type="number"
                 name="precio"
@@ -175,7 +176,7 @@ export default function PropertiesPage() {
             </div>
 
             <div>
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Ubicación / Sector</label>
+              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Ubicación / Sector (Visual)</label>
               <select
                 name="sector"
                 value={formData.sector}
@@ -185,48 +186,26 @@ export default function PropertiesPage() {
                 <option value="Premium">Premium</option>
                 <option value="Norte">Zona Norte</option>
                 <option value="Sur">Zona Sur</option>
-                <option value="Este">Zona Este</option>
               </select>
             </div>
           </div>
 
-          {/* DETALLES TÉCNICOS ADICIONALES (VISTA LOCAL PRESET) */}
+          {/* DETALLES VISUALES PRESET */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
-              <label className="block text-[11px] font-medium text-zinc-500 uppercase tracking-wider mb-1">Recámaras (Visual)</label>
-              <input
-                type="number"
-                name="recamaras"
-                value={formData.recamaras}
-                onChange={handleChange}
-                className="w-full p-2.5 bg-[#09090b]/50 border border-zinc-800 rounded-lg text-zinc-400 text-sm cursor-not-allowed focus:outline-none"
-                disabled
-              />
+              <label className="block text-[11px] font-medium text-zinc-500 uppercase tracking-wider mb-1">Recámaras</label>
+              <input type="number" value={formData.recamaras} disabled className="w-full p-2.5 bg-[#09090b]/50 border border-zinc-800 rounded-lg text-zinc-500 text-sm cursor-not-allowed" />
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-zinc-500 uppercase tracking-wider mb-1">Baños (Visual)</label>
-              <input
-                type="number"
-                name="banos"
-                value={formData.banos}
-                onChange={handleChange}
-                className="w-full p-2.5 bg-[#09090b]/50 border border-zinc-800 rounded-lg text-zinc-400 text-sm cursor-not-allowed focus:outline-none"
-                disabled
-              />
+              <label className="block text-[11px] font-medium text-zinc-500 uppercase tracking-wider mb-1">Baños</label>
+              <input type="number" value={formData.banos} disabled className="w-full p-2.5 bg-[#09090b]/50 border border-zinc-800 rounded-lg text-zinc-500 text-sm cursor-not-allowed" />
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-zinc-500 uppercase tracking-wider mb-1">Área M² (Visual)</label>
-              <input
-                type="number"
-                name="metros_cuadrados"
-                value={formData.metros_cuadrados}
-                onChange={handleChange}
-                className="w-full p-2.5 bg-[#09090b]/50 border border-zinc-800 rounded-lg text-zinc-400 text-sm cursor-not-allowed focus:outline-none"
-                disabled
-              />
+              <label className="block text-[11px] font-medium text-zinc-500 uppercase tracking-wider mb-1">Área M²</label>
+              <input type="number" value={formData.metros_cuadrados} disabled className="w-full p-2.5 bg-[#09090b]/50 border border-zinc-800 rounded-lg text-zinc-500 text-sm cursor-not-allowed" />
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Enlace de Imagen del Activo</label>
+              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">URL de Imagen</label>
               <input
                 type="text"
                 name="imagen"
@@ -238,15 +217,14 @@ export default function PropertiesPage() {
             </div>
           </div>
 
-          {/* NOTAS INTERNAS */}
           <div>
-            <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Notas Internas de Venta / Especificaciones de Lujo</label>
+            <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Notas de Venta / Especificaciones Especiales</label>
             <textarea
               name="notas"
-              value={formData.notas || 'Pisos de mármol italiano de gran formato, doble altura con ventanales térmicos de piso a techo y terraza privada perimetral con jacuzzi climatizado. Cuenta con automatización de luces y audio Lutron integrada, cocina de chef con electrodomésticos Sub-Zero, 4 cajones de estacionamiento independientes y bodega privada.'}
+              value={formData.notas || 'Pisos de mármol italiano, doble altura con ventanales térmicos y terraza privada perimetral con jacuzzi climatizado. Automatización Lutron integrada, cocina con electrodomésticos Sub-Zero y 4 cajones de estacionamiento.'}
               onChange={handleChange}
               rows={2}
-              className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition resize-none"
+              className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition resize-none"
             />
           </div>
 
@@ -263,17 +241,14 @@ export default function PropertiesPage() {
                 Cancelar
               </button>
             )}
-            <button
-              type="submit"
-              className="bg-[#d4ff3b] hover:bg-[#c2eb30] text-black px-6 py-2 rounded-lg text-sm font-semibold transition shadow-md shadow-[#d4ff3b]/10"
-            >
+            <button type="submit" className="bg-[#d4ff3b] hover:bg-[#c2eb30] text-black px-6 py-2 rounded-lg text-sm font-semibold transition shadow-md shadow-[#d4ff3b]/10">
               {editandoId !== null ? 'Actualizar Activo' : 'Publicar Propiedad'}
             </button>
           </div>
         </form>
       </div>
 
-      {/* SHOWROOM PREMIUM */}
+      {/* SHOWROOM */}
       {loading ? (
         <div className="text-center py-20 text-zinc-500 font-mono text-sm tracking-widest animate-pulse">
           Sincronizando base de datos de SECTOR...
@@ -281,17 +256,10 @@ export default function PropertiesPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {propiedades.map((propiedad) => (
-            <div 
-              key={propiedad.id} 
-              className="bg-[#18181b] border border-zinc-800/80 rounded-xl overflow-hidden shadow-xl hover:border-zinc-700 transition duration-300 flex flex-col justify-between"
-            >
+            <div key={propiedad.id} className="bg-[#18181b] border border-zinc-800/80 rounded-xl overflow-hidden shadow-xl hover:border-zinc-700 transition duration-300 flex flex-col justify-between">
               <div>
                 <div className="relative group overflow-hidden h-52 bg-zinc-950">
-                  <img 
-                    src={propiedad.imagen || 'https://images.unsplash.com/photo-1600595154340-be6161a56a0c?w=800'} 
-                    alt={propiedad.titulo} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition duration-500" 
-                  />
+                  <img src={propiedad.imagen || 'https://images.unsplash.com/photo-1600595154340-be6161a56a0c?w=800'} alt={propiedad.titulo} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                   <div className="absolute top-3 left-3 bg-[#09090b]/80 backdrop-blur-md text-[#d4ff3b] border border-zinc-800 text-[10px] font-mono px-2.5 py-1 rounded-md uppercase tracking-wider">
                     {propiedad.sector}
                   </div>
@@ -299,9 +267,7 @@ export default function PropertiesPage() {
 
                 <div className="p-5">
                   <h3 className="text-lg font-bold text-white tracking-tight line-clamp-1">{propiedad.titulo}</h3>
-                  <p className="text-2xl font-semibold text-white mt-1.5 font-mono">
-                    ${propiedad.precio ? propiedad.precio.toLocaleString() : '0'}
-                  </p>
+                  <p className="text-2xl font-semibold text-white mt-1.5 font-mono">${propiedad.precio?.toLocaleString()}</p>
 
                   <div className="grid grid-cols-3 gap-2 mt-4 py-2.5 border-y border-zinc-800/60 text-center text-xs font-medium text-zinc-400">
                     <div>
@@ -318,26 +284,20 @@ export default function PropertiesPage() {
                     </div>
                   </div>
 
-                  {propiedad.notas && (
-                    <div className="mt-4 bg-[#09090b]/40 p-3 rounded-lg border border-zinc-800/40">
-                      <span className="block text-[10px] text-zinc-500 uppercase font-mono tracking-wider mb-1">Notas de Venta:</span>
-                      <p className="text-xs text-zinc-400 line-clamp-3 leading-relaxed">{propiedad.notas}</p>
-                    </div>
-                  )}
+                  <div className="mt-4 bg-[#09090b]/40 p-3 rounded-lg border border-zinc-800/40">
+                    <span className="block text-[10px] text-zinc-500 uppercase font-mono tracking-wider mb-1">Notas de Venta:</span>
+                    <p className="text-xs text-zinc-400 line-clamp-3 leading-relaxed">
+                      {propiedad.notas || 'Pisos de mármol italiano, doble altura con ventanales térmicos y terraza privada perimetral con jacuzzi climatizado.'}
+                    </p>
+                  </div>
                 </div>
               </div>
 
               <div className="p-5 pt-0 flex gap-2">
-                <button
-                  onClick={() => iniciarEdicion(propiedad)}
-                  className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs py-2.5 rounded-lg font-medium transition border border-zinc-700/50"
-                >
+                <button onClick={() => iniciarEdicion(propiedad)} className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs py-2.5 rounded-lg font-medium transition border border-zinc-700/50">
                   Editar Parámetros
                 </button>
-                <button
-                  onClick={() => eliminarPropiedad(propiedad.id)}
-                  className="px-3 bg-zinc-900 hover:bg-red-950/40 text-zinc-500 hover:text-red-400 text-xs py-2.5 rounded-lg font-medium transition border border-zinc-800"
-                >
+                <button onClick={() => eliminarPropiedad(propiedad.id)} className="px-3 bg-zinc-900 hover:bg-red-950/40 text-zinc-500 hover:text-red-400 text-xs py-2.5 rounded-lg font-medium transition border border-zinc-800">
                   Borrar
                 </button>
               </div>
