@@ -17,7 +17,6 @@ interface Client {
 }
 
 export default function ClientsPage() {
-  // Datos simulados en perfecta armonía con tu Pipeline de Showroom
   const [clients] = useState<Client[]>([
     {
       id: "c1",
@@ -107,7 +106,6 @@ export default function ClientsPage() {
 
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Filtro de búsqueda básico en tiempo real
   const filteredClients = clients.filter(client => 
     client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     client.propertyInterest.toLowerCase().includes(searchTerm.toLowerCase())
@@ -119,14 +117,13 @@ export default function ClientsPage() {
     <div className="min-h-screen text-zinc-100 p-8 font-sans selection:bg-[#CCFF00] selection:text-black">
       <div className="max-w-7xl mx-auto space-y-10">
         
-        {/* Cabecera Principal */}
+        {/* Cabecera */}
         <header className="border-b border-zinc-900 pb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
           <div>
             <span className="text-sm font-mono text-[#CCFF00] uppercase tracking-widest">Base de Datos Central</span>
             <h1 className="text-5xl font-extrabold tracking-tighter text-white mt-2">Directorio de Clientes</h1>
           </div>
           
-          {/* Barra de Búsqueda Minimalista */}
           <div className="w-full md:w-80">
             <input
               type="text"
@@ -138,7 +135,7 @@ export default function ClientsPage() {
           </div>
         </header>
 
-        {/* Tarjetas de Indicadores Rápidos (KPIs) */}
+        {/* KPIs */}
         <section className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           <div className="bg-zinc-950 p-6 rounded-2xl border border-zinc-900">
             <p className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Total Registrados</p>
@@ -156,7 +153,7 @@ export default function ClientsPage() {
           </div>
         </section>
 
-        {/* Tabla / Lista Estilizada de Clientes */}
+        {/* Tabla Avanzada de Clientes */}
         <section className="bg-zinc-950/40 rounded-2xl border border-zinc-900/50 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
@@ -167,31 +164,28 @@ export default function ClientsPage() {
                   <th className="p-4">Presupuesto</th>
                   <th className="p-4">Estado Temperatura</th>
                   <th className="p-4">Origen Lead</th>
-                  <th className="p-4 pr-6 text-right">Acciones</th>
+                  <th className="p-4 pr-6 text-center">Canales de Contacto</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-900/40 text-xs">
                 {filteredClients.map((client) => {
                   return (
                     <tr key={client.id} className="hover:bg-zinc-900/20 transition-colors group">
-                      {/* Información del Cliente */}
+                      
                       <td className="p-4 pl-6">
                         <div className="font-bold text-white text-sm group-hover:text-[#CCFF00] transition-colors">{client.name}</div>
                         <div className="text-zinc-500 font-mono text-[11px] mt-0.5">{client.email}</div>
                       </td>
 
-                      {/* Propiedad de Interés */}
                       <td className="p-4">
                         <span className="text-zinc-300 font-medium">{client.propertyInterest}</span>
                         <div className="text-[10px] text-zinc-600 font-mono mt-0.5">Registrado: {client.registeredAt}</div>
                       </td>
 
-                      {/* Presupuesto */}
                       <td className="p-4">
                         <span className="text-[#CCFF00] font-black font-mono">{client.budget}</span>
                       </td>
 
-                      {/* Estado Temperatura */}
                       <td className="p-4">
                         <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold border ${
                           client.status === 'NUEVO' ? 'bg-[#CCFF00]/10 text-[#CCFF00] border-[#CCFF00]/20 animate-pulse' :
@@ -205,39 +199,54 @@ export default function ClientsPage() {
                         </span>
                       </td>
 
-                      {/* Origen del Lead */}
                       <td className="p-4">
                         <span className="text-zinc-500 font-mono text-[11px] bg-zinc-900/50 px-2 py-1 rounded border border-zinc-900">
                           {client.origin}
                         </span>
                       </td>
 
-                      {/* Acciones de Contacto */}
-                      <td className="p-4 pr-6 text-right">
-                        <a
-                          href={generateWhatsAppLink({
-                            phone: client.phone,
-                            clientName: client.name,
-                            propertyName: client.propertyInterest,
-                            propertyPrice: client.budget
-                          })}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900 hover:bg-[#CCFF00] border border-zinc-800 hover:border-[#CCFF00] text-zinc-400 hover:text-black font-bold uppercase tracking-wider text-[10px] rounded-lg transition-all"
-                        >
-                          💬 Contactar
-                        </a>
+                      {/* CANALES DE CONTACTO OMNICANAL (WhatsApp, Llamada, Video) */}
+                      <td className="p-4 pr-6">
+                        <div className="flex items-center justify-center gap-2">
+                          {/* Chat de WhatsApp */}
+                          <a
+                            href={generateWhatsAppLink({
+                              phone: client.phone,
+                              clientName: client.name,
+                              propertyName: client.propertyInterest,
+                              propertyPrice: client.budget
+                            })}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="Chat de WhatsApp"
+                            className="p-2 bg-zinc-900 hover:bg-[#CCFF00] border border-zinc-800 hover:border-[#CCFF00] text-zinc-400 hover:text-black rounded-lg transition-all"
+                          >
+                            💬
+                          </a>
+
+                          {/* Llamada Telefónica Nativa */}
+                          <a
+                            href={`tel:${client.phone}`}
+                            title="Llamar por teléfono"
+                            className="p-2 bg-zinc-900 hover:bg-blue-500 border border-zinc-800 hover:border-blue-500 text-zinc-400 hover:text-white rounded-lg transition-all"
+                          >
+                            📞
+                          </a>
+
+                          {/* Simulación de Videollamada (Google Meet / Zoom) */}
+                          <button
+                            onClick={() => alert(`🎥 Iniciando sala virtual de Sector para presentar "${client.propertyInterest}" a ${client.name}...`)}
+                            title="Iniciar sala virtual / Videollamada"
+                            className="p-2 bg-zinc-900 hover:bg-purple-500 border border-zinc-800 hover:border-purple-500 text-zinc-400 hover:text-white rounded-lg transition-all"
+                          >
+                            🎥
+                          </button>
+                        </div>
                       </td>
+
                     </tr>
                   );
                 })}
-                {filteredClients.length === 0 && (
-                  <tr>
-                    <td colSpan={6} className="p-10 text-center text-zinc-600 font-mono text-xs">
-                      No se encontraron inversionistas con ese criterio de búsqueda.
-                    </td>
-                  </tr>
-                )}
               </tbody>
             </table>
           </div>
