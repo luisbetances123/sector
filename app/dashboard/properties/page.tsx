@@ -15,12 +15,18 @@ interface Propiedad {
   banos: string;
   metros_cuadrados: string;
   notas: string;
+  // Galería extendida local para el visualizer premium
+  imagenes_galeria: string[];
 }
 
 export default function PropertiesPage() {
   const [propiedades, setPropiedades] = useState<Propiedad[]>([]);
   const [editandoId, setEditandoId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Estados para el Modal / Ventana Flotante
+  const [propiedadSeleccionada, setPropiedadSeleccionada] = useState<Propiedad | null>(null);
+  const [fotoActivaIndex, setFotoActivaIndex] = useState<number>(0);
 
   const [formData, setFormData] = useState({
     titulo: '',
@@ -48,18 +54,28 @@ export default function PropertiesPage() {
       if (error) {
         console.error('Error Supabase:', error.message);
       } else if (data) {
-        // Mapeamos las columnas exactas de tu Supabase a la UI
-        const mapeadas = data.map((item: any) => ({
-          id: item.id,
-          titulo: item.nombre || 'Propiedad sin título',
-          precio: item.precio ? item.precio.toString() : '0',
-          sector: item.ubicacion || 'Premium', 
-          imagen: item.imagen || 'https://images.unsplash.com/photo-1600595154340-be6161a56a0c?w=800',
-          recamaras: item.recamaras ? item.recamaras.toString() : '0',
-          banos: item.banos ? item.banos.toString() : '0',
-          metros_cuadrados: item.area ? item.area.toString() : '0',
-          notas: item.notas || item.descripcion || ''
-        }));
+        const mapeadas = data.map((item: any) => {
+          const imgPrincipal = item.imagen || 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200';
+          return {
+            id: item.id,
+            titulo: item.nombre || 'Propiedad sin título',
+            precio: item.precio ? item.precio.toString() : '0',
+            sector: item.ubicacion || 'Premium', 
+            imagen: imgPrincipal,
+            recamaras: item.recamaras ? item.recamaras.toString() : '4',
+            banos: item.banos ? item.banos.toString() : '5',
+            metros_cuadrados: item.area ? item.area.toString() : '480',
+            notas: item.notas || item.descripcion || '',
+            // Set de fotos complementarias para alimentar la ventana flotante de lujo
+            imagenes_galeria: [
+              imgPrincipal,
+              'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800',
+              'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=800',
+              'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=800',
+              'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800'
+            ]
+          };
+        });
         setPropiedades(mapeadas);
       }
     } catch (err) {
@@ -79,15 +95,14 @@ export default function PropertiesPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Estructura idéntica a tus columnas en Supabase
     const datosAEnviar: any = {
       nombre: formData.titulo,
-      precio: formData.precio, // Se envía como texto porque tu columna es text
+      precio: formData.precio, 
       ubicacion: formData.sector,
-      imagen: formData.imagen || 'https://images.unsplash.com/photo-1600595154340-be6161a56a0c?w=800',
+      imagen: formData.imagen || 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200',
       recamaras: formData.recamaras ? Number(formData.recamaras) : 4,
       banos: formData.banos ? Number(formData.banos) : 5,
-      area: formData.metros_cuadrados, // Tu columna 'area' es text
+      area: formData.metros_cuadrados, 
       notas: formData.notas || 'Ficha premium generada desde el nuevo panel SECTOR.'
     };
 
@@ -101,7 +116,6 @@ export default function PropertiesPage() {
         if (error) return alert("Error al guardar: " + error.message);
       }
 
-      // Limpiar formulario con los presets del Penthouse listos
       setFormData({ titulo: '', precio: '', sector: 'Premium', imagen: '', recamaras: '4', banos: '5', metros_cuadrados: '480', notas: '' });
       cargarPropiedades();
     } catch (err) {
@@ -130,17 +144,28 @@ export default function PropertiesPage() {
     }
   };
 
+  // Funciones auxiliares para navegar las fotos en la ventana flotante
+  const fotoSiguiente = () => {
+    if (!propiedadSeleccionada) return;
+    setFotoActivaIndex((prev) => (prev + 1) % propiedadSeleccionada.imagenes_galeria.length);
+  };
+
+  const fotoAnterior = () => {
+    if (!propiedadSeleccionada) return;
+    setFotoActivaIndex((prev) => (prev - 1 + propiedadSeleccionada.imagenes_galeria.length) % propiedadSeleccionada.imagenes_galeria.length);
+  };
+
   return (
-    <div className="p-8 max-w-7xl mx-auto min-h-screen bg-transparent text-zinc-100">
+    <div className="p-8 max-w-7xl mx-auto min-h-screen bg-transparent text-zinc-100 relative">
       
-      {/* HEADER ESTILO SECTOR */}
+      {/* HEADER */}
       <div className="flex justify-between items-center mb-8 border-b border-zinc-800 pb-5">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-white">Catálogo de Propiedades</h1>
-          <p className="text-sm text-zinc-400 mt-1">Gestión interna de activos y showroom premium coordinado con Supabase.</p>
+          <p className="text-sm text-zinc-400 mt-1">Gestión de activos con visualizador flotante integrado multimedios.</p>
         </div>
         <span className="bg-[#d4ff3b]/10 text-[#d4ff3b] border border-[#d4ff3b]/20 text-xs px-3 py-1.5 rounded-full font-mono uppercase tracking-widest">
-          Supabase Sincronizado
+          Módulo Flotante Listo
         </span>
       </div>
 
@@ -180,17 +205,14 @@ export default function PropertiesPage() {
 
             <div>
               <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Ubicación / Sector</label>
-              <select
+              <input
+                type="text"
                 name="sector"
                 value={formData.sector}
                 onChange={handleChange}
+                placeholder="Ej. Evaristo Morales, SD"
                 className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition"
-              >
-                <option value="Premium">Premium</option>
-                <option value="Norte">Norte</option>
-                <option value="Sur">Sur</option>
-                <option value="Este">Este</option>
-              </select>
+              />
             </div>
           </div>
 
@@ -209,7 +231,7 @@ export default function PropertiesPage() {
               <input type="number" name="metros_cuadrados" value={formData.metros_cuadrados} onChange={handleChange} className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">URL de Imagen</label>
+              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">URL de Imagen Principal</label>
               <input
                 type="text"
                 name="imagen"
@@ -227,7 +249,7 @@ export default function PropertiesPage() {
               name="notas"
               value={formData.notas}
               onChange={handleChange}
-              rows={3}
+              rows={2}
               placeholder="Escribe los acabados, detalles de lujo o comentarios de venta aquí..."
               className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition resize-none"
             />
@@ -264,7 +286,7 @@ export default function PropertiesPage() {
             <div key={propiedad.id} className="bg-[#18181b] border border-zinc-800/80 rounded-xl overflow-hidden shadow-xl hover:border-zinc-700 transition duration-300 flex flex-col justify-between">
               <div>
                 <div className="relative group overflow-hidden h-52 bg-zinc-950">
-                  <img src={propiedad.imagen || 'https://images.unsplash.com/photo-1600595154340-be6161a56a0c?w=800'} alt={propiedad.titulo} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                  <img src={propiedad.imagen || 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200'} alt={propiedad.titulo} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                   <div className="absolute top-3 left-3 bg-[#09090b]/80 backdrop-blur-md text-[#d4ff3b] border border-zinc-800 text-[10px] font-mono px-2.5 py-1 rounded-md uppercase tracking-wider">
                     {propiedad.sector}
                   </div>
@@ -293,25 +315,143 @@ export default function PropertiesPage() {
 
                   <div className="mt-4 bg-[#09090b]/40 p-3 rounded-lg border border-zinc-800/40">
                     <span className="block text-[10px] text-zinc-500 uppercase font-mono tracking-wider mb-1">Notas de Venta:</span>
-                    <p className="text-xs text-zinc-400 line-clamp-4 leading-relaxed">
+                    <p className="text-xs text-zinc-400 line-clamp-3 leading-relaxed">
                       {propiedad.notas || 'Sin notas internas registradas.'}
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="p-5 pt-0 flex gap-2">
-                <button onClick={() => iniciarEdicion(propiedad)} className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs py-2.5 rounded-lg font-medium transition border border-zinc-700/50">
-                  Editar Parámetros
+              {/* ACCIONES COMPLETA */}
+              <div className="p-5 pt-0 space-y-2">
+                <button
+                  onClick={() => {
+                    setPropiedadSeleccionada(propiedad);
+                    setFotoActivaIndex(0);
+                  }}
+                  className="w-full bg-[#d4ff3b]/10 hover:bg-[#d4ff3b] text-[#d4ff3b] hover:text-black text-xs py-2.5 rounded-lg font-semibold transition border border-[#d4ff3b]/20 text-center block"
+                >
+                  Ver Más Fotos / Detalles
                 </button>
-                <button onClick={() => eliminarPropiedad(propiedad.id)} className="px-3 bg-zinc-900 hover:bg-red-950/40 text-zinc-500 hover:text-red-400 text-xs py-2.5 rounded-lg font-medium transition border border-zinc-800">
-                  Borrar
-                </button>
+                
+                <div className="flex gap-2">
+                  <button onClick={() => iniciarEdicion(propiedad)} className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs py-2 rounded-lg font-medium transition border border-zinc-700/50">
+                    Editar
+                  </button>
+                  <button onClick={() => eliminarPropiedad(propiedad.id)} className="px-3 bg-zinc-900 hover:bg-red-950/40 text-zinc-500 hover:text-red-400 text-xs py-2 rounded-lg font-medium transition border border-zinc-800">
+                    Borrar
+                  </button>
+                </div>
               </div>
             </div>
           ))}
         </div>
       )}
+
+      {/* ─── VENTANA FLOTANTE (MODAL INTERACTIVO DE LUJO) ─── */}
+      {propiedadSeleccionada && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
+          <div className="bg-[#18181b] border border-zinc-800 w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]">
+            
+            {/* BOTÓN CERRAR */}
+            <button 
+              onClick={() => setPropiedadSeleccionada(null)}
+              className="absolute top-4 right-4 z-10 bg-black/60 hover:bg-zinc-800 text-zinc-400 hover:text-white p-2 rounded-full border border-zinc-800 transition"
+            >
+              ✕
+            </button>
+
+            {/* VISUALIZADOR DE FOTOS PRINCIPAL */}
+            <div className="relative bg-zinc-950 aspect-[16/9] flex items-center justify-center overflow-hidden group">
+              <img 
+                src={propiedadSeleccionada.imagenes_galeria[fotoActivaIndex]} 
+                alt="Visualización de Lujo" 
+                className="w-full h-full object-cover transition duration-500"
+              />
+
+              {/* FLECHA IZQUIERDA */}
+              <button 
+                onClick={fotoAnterior}
+                className="absolute left-4 bg-black/50 hover:bg-black/80 text-white p-3 rounded-full border border-zinc-700/50 backdrop-blur-sm transition focus:outline-none"
+              >
+                ◀
+              </button>
+
+              {/* FLECHA DERECHA */}
+              <button 
+                onClick={fotoSiguiente}
+                className="absolute right-4 bg-black/50 hover:bg-black/80 text-white p-3 rounded-full border border-zinc-700/50 backdrop-blur-sm transition focus:outline-none"
+              >
+                ▶
+              </button>
+
+              {/* INDICADOR DE POSICIÓN */}
+              <div className="absolute bottom-4 right-4 bg-black/70 px-3 py-1 text-[11px] font-mono text-zinc-300 rounded-md border border-zinc-800">
+                Foto {fotoActivaIndex + 1} de {propiedadSeleccionada.imagenes_galeria.length}
+              </div>
+            </div>
+
+            {/* CAROUSEL DE MINIATURAS INFERIORES */}
+            <div className="p-4 bg-[#111113] border-b border-zinc-800/80 flex gap-2 overflow-x-auto scrollbar-none">
+              {propiedadSeleccionada.imagenes_galeria.map((img, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setFotoActivaIndex(idx)}
+                  className={`relative flex-shrink-0 w-24 h-16 rounded-lg overflow-hidden border-2 transition ${
+                    idx === fotoActivaIndex ? 'border-[#d4ff3b]' : 'border-transparent opacity-50 hover:opacity-100'
+                  }`}
+                >
+                  <img src={img} alt="Miniatura" className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+
+            {/* PIE DE DETALLES DEL MODAL */}
+            <div className="p-6 overflow-y-auto space-y-4">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+                <div>
+                  <span className="text-[10px] font-mono uppercase bg-[#d4ff3b]/10 text-[#d4ff3b] px-2.5 py-1 rounded-md border border-[#d4ff3b]/20 tracking-wider">
+                    {propiedadSeleccionada.sector}
+                  </span>
+                  <h2 className="text-xl font-bold text-white tracking-tight mt-2">{propiedadSeleccionada.titulo}</h2>
+                </div>
+                <div className="text-right">
+                  <span className="text-[10px] text-zinc-500 uppercase block tracking-wider font-mono">Precio Solicitado</span>
+                  <span className="text-2xl font-mono font-bold text-white">
+                    ${Number(propiedadSeleccionada.precio) ? Number(propiedadSeleccionada.precio).toLocaleString() : propiedadSeleccionada.precio}
+                  </span>
+                </div>
+              </div>
+
+              {/* FICHA TÉCNICA MINI */}
+              <div className="grid grid-cols-3 gap-4 p-3 bg-[#09090b]/60 border border-zinc-800 rounded-xl text-center">
+                <div>
+                  <span className="block text-md font-mono text-white font-bold">{propiedadSeleccionada.recamaras}</span>
+                  <span className="text-[10px] text-zinc-500 uppercase tracking-wider">Habitaciones</span>
+                </div>
+                <div className="border-x border-zinc-800">
+                  <span className="block text-md font-mono text-white font-bold">{propiedadSeleccionada.banos}</span>
+                  <span className="text-[10px] text-zinc-500 uppercase tracking-wider">Baños Completos</span>
+                </div>
+                <div>
+                  <span className="block text-md font-mono text-white font-bold">{propiedadSeleccionada.metros_cuadrados} m²</span>
+                  <span className="text-[10px] text-zinc-500 uppercase tracking-wider">Superficie Total</span>
+                </div>
+              </div>
+
+              {/* NOTAS COMPLETAS */}
+              <div>
+                <span className="block text-[11px] text-zinc-500 font-mono uppercase tracking-wider mb-1">Descripción y Detalles Premium:</span>
+                <p className="text-sm text-zinc-300 leading-relaxed bg-[#09090b]/30 p-4 rounded-xl border border-zinc-800/40">
+                  {propiedadSeleccionada.notas || "Esta propiedad no cuenta con comentarios de venta adicionales agregados."}
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
