@@ -3,19 +3,17 @@
 import React, { useState } from 'react';
 import { generateWhatsAppLink } from "@/utils/whatsapp";
 
-// 1. Definimos la estructura de un cliente en el pipeline
 interface ClientDeal {
   id: string;
   name: string;
   property: string;
   price: number;
   priceStr: string;
-  stageId: string; // '1' = Prospectos, '2' = Visitas, etc.
-  updatedAt: string; // Fecha de último movimiento para calcular días
+  stageId: string;
+  updatedAt: string;
 }
 
 export default function PipelinePage() {
-  // 2. Estado inicial con tus clientes de prueba (puedes agregar los que quieras aquí)
   const [deals, setDeals] = useState<ClientDeal[]>([
     {
       id: "deal-1",
@@ -24,7 +22,7 @@ export default function PipelinePage() {
       price: 450000,
       priceStr: "US$ 450,000",
       stageId: "2",
-      updatedAt: "2026-06-02T10:00:00.000Z" // Hace 6 días (Alerta)
+      updatedAt: "2026-06-02T10:00:00.000Z" // 6 días estancado (Frío)
     },
     {
       id: "deal-2",
@@ -33,11 +31,10 @@ export default function PipelinePage() {
       price: 850000,
       priceStr: "US$ 850,000",
       stageId: "1",
-      updatedAt: "2026-06-07T14:00:00.000Z" // Reciente
+      updatedAt: "2026-06-07T14:00:00.000Z" // Al día
     }
   ]);
 
-  // Definición de las columnas del Pipeline
   const columnsDefinition = [
     { id: '1', title: 'Prospectos' },
     { id: '2', title: 'Visitas' },
@@ -45,7 +42,6 @@ export default function PipelinePage() {
     { id: '4', title: 'Cierre' }
   ];
 
-  // 3. Función para cambiar a un cliente de columna (Progreso)
   const moveDeal = (dealId: string, currentStageId: string, direction: 'forward' | 'backward') => {
     const currentIdx = columnsDefinition.findIndex(c => c.id === currentStageId);
     let nextIdx = direction === 'forward' ? currentIdx + 1 : currentIdx - 1;
@@ -62,7 +58,6 @@ export default function PipelinePage() {
     }
   };
 
-  // 4. Helper para calcular cuántos días lleva estancado un negocio
   const getDaysInStage = (dateString: string): number => {
     const created = new Date(dateString);
     const now = new Date();
@@ -70,7 +65,6 @@ export default function PipelinePage() {
     return Math.floor(diffTime / (1000 * 60 * 60 * 24));
   };
 
-  // 5. Helper para copiar textos predeterminados de seguimiento (Simulación de IA)
   const copyAISuggestion = (deal: ClientDeal) => {
     let text = "";
     if (deal.stageId === "1") {
@@ -80,22 +74,17 @@ export default function PipelinePage() {
     } else {
       text = `Hola ${deal.name}, espero estés excelente. Estoy revisando los últimos detalles del contrato para *${deal.property}*. ¿Conversamos hoy?`;
     }
-    
     navigator.clipboard.writeText(text);
     alert(`🤖 Propuesta de IA copiada al portapapeles para ${deal.name}`);
   };
 
-  // 6. Construimos las columnas dinámicamente calculando totales en tiempo real
   const processedColumns = columnsDefinition.map(col => {
     const colDeals = deals.filter(d => d.stageId === col.id);
     const totalAmount = colDeals.reduce((sum, d) => sum + d.price, 0);
-    
     return {
       ...col,
       count: `${colDeals.length} ${colDeals.length === 1 ? 'deal' : 'deals'}`,
-      total: totalAmount > 0 
-        ? `US$ ${totalAmount.toLocaleString('en-US')}` 
-        : 'US$ 0',
+      total: totalAmount > 0 ? `US$ ${totalAmount.toLocaleString('en-US')}` : 'US$ 0',
       deals: colDeals
     };
   });
@@ -111,7 +100,6 @@ export default function PipelinePage() {
         <main className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {processedColumns.map((col) => (
             <div key={col.id} className="bg-zinc-950/20 p-4 rounded-2xl min-h-[600px] border border-zinc-900/50 flex flex-col">
-              {/* Encabezado de Columna */}
               <div className="flex justify-between items-center mb-6">
                 <div>
                   <h3 className="text-xs font-mono font-black text-zinc-400 uppercase">{col.title}</h3>
@@ -120,40 +108,38 @@ export default function PipelinePage() {
                 <span className="text-[10px] font-mono bg-zinc-900 px-2 py-1 rounded text-white">{col.total}</span>
               </div>
 
-              {/* Contenedor de Tarjetas */}
               <div className="space-y-4 flex-1">
                 {col.deals.map((deal) => {
                   const days = getDaysInStage(deal.updatedAt);
-                  const isCold = days >= 4; // Alerta si lleva 4 días o más
+                  const isCold = days >= 4; // Alerta de congelado a los 4 días
 
                   return (
                     <div 
                       key={deal.id} 
                       className={`border p-5 rounded-xl shadow-lg flex flex-col justify-between min-h-[210px] transition-all duration-300 ${
                         isCold 
-                          ? 'border-amber-500/60 bg-gradient-to-b from-amber-950/30 to-zinc-950 shadow-amber-950/20 scale-[1.01]' 
+                          ? 'border-red-500/50 bg-gradient-to-b from-red-950/20 to-zinc-950 shadow-red-950/10' 
                           : 'border-zinc-800 bg-zinc-950'
                       }`}
                     >
-                      {/* Fila Superior: Info y Alerta de Tiempo */}
                       <div>
                         <div className="flex justify-between items-start gap-2">
                           <h4 className="font-bold text-white text-sm leading-tight">{deal.name}</h4>
+                          
+                          {/* Etiqueta con Semáforo de Mercado Real */}
                           <span className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-full flex items-center gap-1.5 ${
-                            isCold ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30 animate-pulse' : 'bg-zinc-900 text-zinc-500'
+                            isCold ? 'bg-red-500/10 text-red-400 border border-red-500/20 animate-pulse' : 'bg-zinc-900 text-zinc-500'
                           }`}>
-                            {isCold && <span className="w-1.5 h-1.5 rounded-full bg-amber-400 block shrink-0" />}
-                            {days === 0 ? '⚡ Hoy' : `⏱️ ${days}d aquí`}
+                            {isCold && <span className="w-1.5 h-1.5 rounded-full bg-red-500 block shrink-0" />}
+                            {days === 0 ? '⚡ Hoy' : `🥶 Estancado (${days}d)`}
                           </span>
                         </div>
                         <p className="text-xs text-zinc-400 mt-1">{deal.property}</p>
                         <p className="text-[#CCFF00] font-black mt-2 text-sm">{deal.priceStr}</p>
                       </div>
 
-                      {/* Botonera de Acciones Rápidas */}
                       <div className="mt-4 space-y-2">
                         <div className="flex gap-2">
-                          {/* Botón Principal WhatsApp */}
                           <a
                             href={generateWhatsAppLink({
                               phone: "18095551234", 
@@ -168,7 +154,6 @@ export default function PipelinePage() {
                             💬 WhatsApp
                           </a>
 
-                          {/* Botón de Copiado IA */}
                           <button
                             onClick={() => copyAISuggestion(deal)}
                             className="px-2.5 py-2 text-[10px] font-bold bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-zinc-300 rounded-lg transition-colors"
@@ -178,7 +163,6 @@ export default function PipelinePage() {
                           </button>
                         </div>
 
-                        {/* Controles de Movimiento entre Columnas */}
                         <div className="flex justify-between items-center pt-2 border-t border-zinc-900 gap-2">
                           <button 
                             disabled={col.id === '1'}
