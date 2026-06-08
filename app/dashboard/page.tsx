@@ -1,173 +1,172 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 
-export default function DashboardPage() {
-  // Datos simulados para el embudo y actividad (Luego los puedes conectar a Supabase)
-  const funnelStages = [
-    { name: 'Prospectos / Leads', count: 120, percentage: '100%', value: 'US$3.6M' },
-    { name: 'Captación / Propiedades', count: 42, percentage: '65%', value: 'US$2.1M' },
-    { name: 'En Negociación', count: 18, percentage: '35%', value: 'US$1.2M' },
-    { name: 'Cierres Este Mes', count: 6, percentage: '12%', value: 'US$450K' },
-  ];
+interface Property {
+  id: string;
+  title: string;
+  location: string;
+  price: string;
+  type: string;
+  status: 'DISPONIBLE' | 'RESERVADO' | 'VENDIDO';
+  image: string;
+  tag: string;
+}
 
-  const recentActivity = [
-    { id: 1, user: 'Luis Betances', action: 'movió propiedad a', target: 'En Proceso', time: '14:32' },
-    { id: 2, user: 'Sistema SECTOR', action: 'registró nuevo lead desde', target: 'Landing Page', time: '12:05' },
-    { id: 3, user: 'Jean Lizardo', action: 'actualizó estatus de cliente', target: 'Inversionista', time: '09:45' },
-    { id: 4, user: 'Sistema SECTOR', action: 'detectó interacción en pipeline con', target: 'Torre Piantini', time: '08:15' },
-  ];
+export default function PropertiesPage() {
+  // Datos simulados premium
+  const [properties] = useState<Property[]>([
+    {
+      id: '1',
+      title: 'Penthouse en Naco con Vista 360',
+      location: 'Naco, Santo Domingo',
+      price: 'US$ 540,000',
+      type: 'Penthouse',
+      status: 'DISPONIBLE',
+      image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80',
+      tag: 'Luxury'
+    },
+    {
+      id: '2',
+      title: 'Villa Moderna en Cap Cana',
+      location: 'Punta Cana, La Altagracia',
+      price: 'US$ 1,250,000',
+      type: 'Villa',
+      status: 'RESERVADO',
+      image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&q=80',
+      tag: 'Exclusive'
+    },
+    {
+      id: '3',
+      title: 'Apartamento de Lujo en Piantini',
+      location: 'Piantini, Santo Domingo',
+      price: 'US$ 325,000',
+      type: 'Apartamento',
+      status: 'DISPONIBLE',
+      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80',
+      tag: 'Investment'
+    },
+    {
+      id: '4',
+      title: 'Casa de Campo Style - Dye Fore',
+      location: 'La Romana',
+      price: 'US$ 3,500,000',
+      type: 'Casa',
+      status: 'VENDIDO',
+      image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80',
+      tag: 'Golf Front'
+    },
+    {
+      id: '5',
+      title: 'Apt. Moderno en Bella Vista',
+      location: 'Bella Vista, Santo Domingo',
+      price: 'US$ 195,000',
+      type: 'Apartamento',
+      status: 'DISPONIBLE',
+      image: 'https://images.unsplash.com/photo-1600607687940-477a4a6999a3?auto=format&fit=crop&w=800&q=80',
+      tag: 'Modern'
+    }
+  ]);
+
+  const sectors = ["Piantini", "Naco", "Cap Cana", "Bella Vista", "Evaristo Morales", "Serrallés", "Arroyo Hondo", "Gazcue"];
 
   return (
     <div className="min-h-screen text-zinc-100 p-8 font-sans selection:bg-[#CCFF00] selection:text-black">
-      <div className="max-w-7xl mx-auto space-y-12">
+      <div className="max-w-7xl mx-auto space-y-10">
         
-        {/* HEADER DEL DASHBOARD - Más grande y espaciado */}
-        <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-zinc-900 pb-10">
+        {/* CABECERA Y ACCIÓN PRINCIPAL */}
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
           <div>
-            <span className="text-sm font-mono text-[#CCFF00] uppercase tracking-widest">Escritorio Interno</span>
-            <h1 className="text-5xl font-extrabold tracking-tighter text-white mt-2">Dashboard</h1>
-            <p className="text-sm text-zinc-400 mt-2 max-w-2xl">Bienvenido a SECTOR, Luis. Esta es tu central de control inmobiliario premium.</p>
+            <span className="text-sm font-mono text-[#CCFF00] uppercase tracking-widest">Inventario Premium</span>
+            <h1 className="text-5xl font-extrabold tracking-tighter text-white mt-2">Propiedades</h1>
           </div>
-          <div className="flex items-center gap-4 font-mono text-sm text-zinc-400 bg-zinc-900/60 px-5 py-3 rounded-full border border-zinc-800 shadow-inner">
-            <span className="w-3 h-3 rounded-full bg-[#CCFF00] animate-pulse"></span>
-            <span className="tracking-wide">PIPELINE CONECTADO // 100% OPERATIVO</span>
-          </div>
+          <button className="bg-[#CCFF00] text-black font-black uppercase text-xs px-6 py-4 rounded-xl hover:bg-[#b5e600] transition-all shadow-lg shadow-[#CCFF00]/10">
+            + Nueva Propiedad
+          </button>
         </header>
 
-        {/* CUADRÍCULA PRINCIPAL (Asimétrica 70% / 30%) - Más gap */}
-        <main className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          
-          {/* COLUMNA IZQUIERDA Y CENTRAL: Analítica y Embudo (70%) */}
-          <section className="lg:col-span-2 space-y-12">
-            
-            {/* SECCIÓN 1: MÉTRICAS CLAVE AVANZADAS (BENTO GRID) - Tarjetas más grandes */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Tarjeta 1: Volumen de Cartera */}
-              <div className="bg-zinc-950 border border-zinc-900 p-8 rounded-2xl relative overflow-hidden group hover:border-zinc-700 transition-all duration-300 shadow-xl">
-                <div className="absolute -inset-px bg-gradient-to-r from-[#CCFF00]/10 to-transparent opacity-0 group-hover:opacity-100 transition-duration-500 rounded-2xl pointer-events-none"></div>
-                <div className="flex justify-between items-start">
-                  <p className="text-xs uppercase tracking-wider text-zinc-400 font-mono">Volumen Cartera Activa</p>
-                  <span className="text-xs font-mono bg-[#CCFF00]/10 text-[#CCFF00] px-3 py-1 rounded border border-[#CCFF00]/20">+18.2%</span>
-                </div>
-                <h3 className="text-4xl font-black font-mono text-white mt-6 tracking-tight drop-shadow-lg">US$14.2M</h3>
-                <p className="text-xs text-zinc-500 mt-3 font-mono">// 12 propiedades en catálogo</p>
-              </div>
-
-              {/* Tarjeta 2: Comisiones Estimadas */}
-              <div className="bg-zinc-950 border border-zinc-900 p-8 rounded-2xl relative overflow-hidden group hover:border-zinc-700 transition-all duration-300 shadow-xl">
-                <div className="absolute -inset-px bg-gradient-to-r from-[#CCFF00]/10 to-transparent opacity-0 group-hover:opacity-100 transition-duration-500 rounded-2xl pointer-events-none"></div>
-                <div className="flex justify-between items-start">
-                  <p className="text-xs uppercase tracking-wider text-zinc-400 font-mono">Comisiones Est. (Pipeline)</p>
-                  <span className="text-xs font-mono bg-zinc-900 text-zinc-400 px-3 py-1 rounded border border-zinc-800">Proyección</span>
-                </div>
-                <h3 className="text-4xl font-black font-mono text-white mt-6 tracking-tight drop-shadow-lg">US$427,500</h3>
-                <p className="text-xs text-zinc-500 mt-3 font-mono">// Promedio est. 3% de cierres</p>
-              </div>
-
-              {/* Tarjeta 3: Leads Calificados */}
-              <div className="bg-zinc-950 border border-zinc-900 p-8 rounded-2xl relative overflow-hidden group hover:border-zinc-700 transition-all duration-300 shadow-xl">
-                <div className="absolute -inset-px bg-gradient-to-r from-[#CCFF00]/10 to-transparent opacity-0 group-hover:opacity-100 transition-duration-500 rounded-2xl pointer-events-none"></div>
-                <div className="flex justify-between items-start">
-                  <p className="text-xs uppercase tracking-wider text-zinc-400 font-mono">Leads Calificados</p>
-                  <span className="text-xs font-mono bg-[#CCFF00]/10 text-[#CCFF00] px-3 py-1 rounded border border-[#CCFF00]/20">Este mes</span>
-                </div>
-                <h3 className="text-4xl font-black font-mono text-white mt-6 tracking-tight drop-shadow-lg">84 <span className="text-lg text-zinc-600">/ 120</span></h3>
-                <p className="text-xs text-zinc-500 mt-3 font-mono">// 70% conversión de contacto</p>
-              </div>
+        {/* INDICADORES (KPIs) - MÁS ESPACIADOS */}
+        <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { label: 'Disponibles', val: '84', color: 'text-white' },
+            { label: 'En Proceso', val: '12', color: 'text-[#CCFF00]' },
+            { label: 'Cerradas', val: '28', color: 'text-zinc-500' },
+            { label: 'Valor Total', val: '$14.2M', color: 'text-white' },
+          ].map((item, i) => (
+            <div key={i} className="bg-zinc-950 p-6 rounded-2xl border border-zinc-900">
+              <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">{item.label}</p>
+              <p className={`text-3xl font-black mt-1 ${item.color}`}>{item.val}</p>
             </div>
+          ))}
+        </section>
 
-            {/* SECCIÓN 2: GRÁFICO DINÁMICO DE EMBUDO - Barras monumentales */}
-            <div className="bg-zinc-950 border border-zinc-900 p-8 rounded-2xl space-y-8 shadow-xl">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h2 className="text-xl font-black text-white tracking-tighter">Embudo Operativo de Propiedades</h2>
-                  <p className="text-xs text-zinc-500 font-mono mt-1">// Distribución de volumen por estado de conversión</p>
-                </div>
-                <span className="text-[11px] font-mono bg-zinc-900 text-zinc-400 px-3 py-1 rounded-full border border-zinc-800">Actualizado hace un momento</span>
-              </div>
-
-              <div className="space-y-6 pt-2">
-                {funnelStages.map((stage, idx) => (
-                  <div key={idx} className="space-y-2">
-                    <div className="flex justify-between text-xs font-mono px-1 text-zinc-400">
-                      <span>{stage.name} <span className="text-zinc-600">({stage.count})</span></span>
-                      <span className="text-white font-bold">{stage.value}</span>
-                    </div>
-                    <div className="w-full bg-zinc-900 h-10 rounded-xl overflow-hidden border border-zinc-900/60 relative flex items-center group cursor-pointer shadow-inner">
-                      {/* Barra de progreso con hover dinámico - Más gruesa y con glow */}
-                      <div 
-                        className="bg-gradient-to-r from-zinc-800 to-[#CCFF00]/30 group-hover:to-[#CCFF00]/50 h-full border-r-2 border-[#CCFF00] transition-all duration-500 flex items-center pl-4 shadow-[0_0_20px_rgba(204,255,0,0.1)]" 
-                        style={{ width: stage.percentage }}
-                      >
-                        <span className="text-xs font-mono font-bold text-[#CCFF00] drop-shadow-lg">{stage.percentage}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-          </section>
-
-          {/* COLUMNA DERECHA: Control Inmediato y Feed (30%) */}
-          <section className="space-y-12">
-            
-            {/* SECCIÓN 3: ACCIONES RÁPIDAS PREMIUM - Más compacta pero impactante */}
-            <div className="bg-zinc-950 border border-zinc-900 p-8 rounded-2xl space-y-6 shadow-xl">
-              <h2 className="text-xs uppercase tracking-wider text-zinc-400 font-mono mb-2">// Acciones Rápidas</h2>
-              
-              <div className="grid grid-cols-1 gap-3">
-                {/* Botón Principal Destacado */}
-                <button className="w-full bg-[#CCFF00] hover:bg-[#b8e600] text-black font-mono font-bold text-xs uppercase tracking-wider py-4 px-5 rounded-xl flex items-center justify-between transition-all duration-200 group cursor-pointer shadow-[0_4px_30px_rgba(204,255,0,0.15)]">
-                  <span>Nueva Captación / Propiedad</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" className="w-5 h-5 group-hover:translate-x-1 transition-transform">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                  </svg>
+        {/* FILTRADO INTELIGENTE (Adiós a la nube de tags apretada) */}
+        <section className="space-y-4">
+          <div className="flex flex-col md:flex-row gap-4">
+            <input 
+              type="text" 
+              placeholder="Buscar por nombre, calle o ID..."
+              className="flex-1 bg-zinc-950 border border-zinc-900 focus:border-[#CCFF00] text-sm px-5 py-4 rounded-xl outline-none transition-all"
+            />
+            <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+              {sectors.slice(0, 5).map(s => (
+                <button key={s} className="whitespace-nowrap px-4 py-2 rounded-full border border-zinc-800 text-[11px] font-mono hover:border-[#CCFF00] hover:text-[#CCFF00] transition-all uppercase">
+                  {s}
                 </button>
+              ))}
+              <button className="px-4 py-2 rounded-full border border-dashed border-zinc-700 text-[11px] font-mono text-zinc-500 uppercase">
+                Ver todos
+              </button>
+            </div>
+          </div>
+        </section>
 
-                {/* Botones Secundarios */}
-                <div className="grid grid-cols-2 gap-3 mt-1">
-                  <button className="bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 hover:border-zinc-700 text-zinc-300 font-mono text-[11px] p-4 rounded-xl flex flex-col items-start gap-2 transition-all cursor-pointer shadow-inner">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5 text-zinc-400">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
-                    </svg>
-                    <span>+ Registrar Lead</span>
-                  </button>
+        {/* GRID DE PROPIEDADES - MÁS DESAHOGADO (3 Columnas) */}
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {properties.map((p) => (
+            <div key={p.id} className="group bg-zinc-950 rounded-3xl overflow-hidden border border-zinc-900 hover:border-[#CCFF00]/30 transition-all duration-500">
+              {/* Contenedor Imagen con Aspect Ratio Premium */}
+              <div className="relative aspect-[16/10] overflow-hidden">
+                <img 
+                  src={p.image} 
+                  alt={p.title} 
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-80 group-hover:opacity-100"
+                />
+                <div className="absolute top-4 left-4 flex gap-2">
+                  <span className="bg-black/60 backdrop-blur-md text-[#CCFF00] text-[9px] font-black px-2 py-1 rounded uppercase tracking-tighter">
+                    {p.tag}
+                  </span>
+                </div>
+                <div className="absolute top-4 right-4 text-[9px] font-mono font-bold px-2 py-1 rounded-full bg-zinc-900/80 backdrop-blur-md border border-zinc-800">
+                  {p.status}
+                </div>
+              </div>
 
-                  <button className="bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 hover:border-zinc-700 text-zinc-300 font-mono text-[11px] p-4 rounded-xl flex flex-col items-start gap-2 transition-all cursor-pointer shadow-inner">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5 text-zinc-400">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                    </svg>
-                    <span>Exportar Reporte</span>
+              {/* Información Desahogada */}
+              <div className="p-6 space-y-4">
+                <div>
+                  <h3 className="text-xl font-bold text-white group-hover:text-[#CCFF00] transition-colors line-clamp-1">
+                    {p.title}
+                  </h3>
+                  <div className="flex items-center gap-1.5 text-zinc-500 mt-1">
+                    <span className="text-[10px] font-mono">📍 {p.location}</span>
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-end pt-4 border-t border-zinc-900">
+                  <div>
+                    <p className="text-[10px] font-mono text-zinc-600 uppercase">Precio Inversión</p>
+                    <p className="text-xl font-black text-[#CCFF00] tracking-tighter mt-0.5">{p.price}</p>
+                  </div>
+                  <button className="p-3 bg-zinc-900 hover:bg-white hover:text-black rounded-xl transition-all">
+                    <span className="text-xs">→</span>
                   </button>
                 </div>
               </div>
             </div>
+          ))}
+        </section>
 
-            {/* SECCIÓN 4: FEED DE ACTIVIDAD RECIENTE - Con scroll para no estirar el layout */}
-            <div className="bg-zinc-950 border border-zinc-900 p-8 rounded-2xl space-y-6 shadow-xl">
-              <h2 className="text-xs uppercase tracking-wider text-zinc-400 font-mono">// Actividad en Tiempo Real</h2>
-              
-              <div className="relative border-l-2 border-zinc-800 ml-2 pl-5 space-y-8 pt-2 max-h-[420px] overflow-y-auto pr-3 scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
-                {recentActivity.map((activity) => (
-                  <div key={activity.id} className="relative group">
-                    {/* Indicador de actividad fosforito más grande */}
-                    <div className="absolute -left-[27px] top-1.5 w-3 h-3 rounded-full bg-zinc-800 border-2 border-zinc-950 group-hover:bg-[#CCFF00] group-hover:shadow-[0_0_10px_rgba(204,255,0,0.3)] transition-colors duration-200"></div>
-                    <div className="text-sm">
-                      <span className="font-bold text-zinc-200">{activity.user}</span>{' '}
-                      <span className="text-zinc-500">{activity.action}</span>{' '}
-                      <span className="text-[#CCFF00] font-mono text-[12px] bg-[#CCFF00]/5 px-2 py-1 rounded-md border border-[#CCFF00]/15 tracking-tight">{activity.target}</span>
-                    </div>
-                    <span className="text-xs font-mono text-zinc-600 block mt-1.5">{activity.time} AST</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-          </section>
-
-        </main>
       </div>
     </div>
   );
