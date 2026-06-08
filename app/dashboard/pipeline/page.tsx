@@ -14,6 +14,7 @@ interface ClientDeal {
 }
 
 export default function PipelinePage() {
+  // Datos de prueba calibrados para activar los diferentes estados
   const [deals, setDeals] = useState<ClientDeal[]>([
     {
       id: "deal-1",
@@ -22,7 +23,7 @@ export default function PipelinePage() {
       price: 450000,
       priceStr: "US$ 450,000",
       stageId: "2",
-      updatedAt: "2026-06-02T10:00:00.000Z" // 6 días estancado (Frío)
+      updatedAt: "2026-06-02T10:00:00.000Z" // 6 días (🥶 Estancado - Rojo)
     },
     {
       id: "deal-2",
@@ -31,7 +32,16 @@ export default function PipelinePage() {
       price: 850000,
       priceStr: "US$ 850,000",
       stageId: "1",
-      updatedAt: "2026-06-07T14:00:00.000Z" // Al día
+      updatedAt: new Date().toISOString() // 0 días (🟢 Nuevo - Verde)
+    },
+    {
+      id: "deal-3",
+      name: "Sofía Rodríguez",
+      property: "Apartamento Bella Vista",
+      price: 280000,
+      priceStr: "US$ 280,000",
+      stageId: "1",
+      updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() // 2 días (⚡ Activo - Gris)
     }
   ]);
 
@@ -111,27 +121,33 @@ export default function PipelinePage() {
               <div className="space-y-4 flex-1">
                 {col.deals.map((deal) => {
                   const days = getDaysInStage(deal.updatedAt);
-                  const isCold = days >= 4; // Alerta de congelado a los 4 días
+                  
+                  // Lógica matemática de estados
+                  const isNew = days === 0;
+                  const isCold = days >= 4;
+                  const isNormal = !isNew && !isCold;
+
+                  // Definición dinámica de estilos CSS según el estado de CRM
+                  let cardStyles = "border-zinc-800 bg-zinc-950"; // Normal
+                  if (isNew) cardStyles = "border-[#CCFF00]/40 bg-gradient-to-b from-[#CCFF00]/5 to-zinc-950 shadow-[#CCFF00]/5";
+                  if (isCold) cardStyles = "border-red-500/50 bg-gradient-to-b from-red-950/20 to-zinc-950 shadow-red-950/10";
 
                   return (
-                    <div 
-                      key={deal.id} 
-                      className={`border p-5 rounded-xl shadow-lg flex flex-col justify-between min-h-[210px] transition-all duration-300 ${
-                        isCold 
-                          ? 'border-red-500/50 bg-gradient-to-b from-red-950/20 to-zinc-950 shadow-red-950/10' 
-                          : 'border-zinc-800 bg-zinc-950'
-                      }`}
-                    >
+                    <div key={deal.id} className={`border p-5 rounded-xl shadow-lg flex flex-col justify-between min-h-[210px] transition-all duration-300 ${cardStyles}`}>
                       <div>
                         <div className="flex justify-between items-start gap-2">
                           <h4 className="font-bold text-white text-sm leading-tight">{deal.name}</h4>
                           
-                          {/* Etiqueta con Semáforo de Mercado Real */}
+                          {/* Badge del Semáforo Inteligente */}
                           <span className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-full flex items-center gap-1.5 ${
-                            isCold ? 'bg-red-500/10 text-red-400 border border-red-500/20 animate-pulse' : 'bg-zinc-900 text-zinc-500'
+                            isNew ? 'bg-[#CCFF00]/10 text-[#CCFF00] border border-[#CCFF00]/20 animate-pulse' :
+                            isCold ? 'bg-red-500/10 text-red-400 border border-red-500/20 animate-pulse' :
+                            'bg-zinc-900 text-zinc-400 border border-zinc-800'
                           }`}>
+                            {isNew && <span className="w-1.5 h-1.5 rounded-full bg-[#CCFF00] block shrink-0" />}
                             {isCold && <span className="w-1.5 h-1.5 rounded-full bg-red-500 block shrink-0" />}
-                            {days === 0 ? '⚡ Hoy' : `🥶 Estancado (${days}d)`}
+                            
+                            {isNew ? '🟢 Nuevo' : isCold ? `🥶 Estancado (${days}d)` : `⚡ Activo (${days}d)`}
                           </span>
                         </div>
                         <p className="text-xs text-zinc-400 mt-1">{deal.property}</p>
