@@ -24,7 +24,7 @@ export default async function PipelinePage() {
         <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
           {columns.map((col) => {
             // Lógica de Mock Data
-            const displayDeals = col.deals.length > 0 ? col.deals : [
+const displayDeals = [
               {
                 id: 'demo-1',
                 client: 'Inversiones Piantini',
