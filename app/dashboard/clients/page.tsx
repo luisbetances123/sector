@@ -1,98 +1,245 @@
-import React from 'react';
-import { getPremiumClients } from '@/app/actions /clientes';
+"use client";
 
-export default async function ClientesPage() {
-  const clients = await getPremiumClients();
+import React, { useState } from 'react';
+import { generateWhatsAppLink } from "@/utils/whatsapp";
+
+interface Client {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  propertyInterest: string;
+  budget: string;
+  budgetNum: number;
+  status: 'NUEVO' | 'ACTIVO' | 'ESTANCADO';
+  origin: string;
+  registeredAt: string;
+}
+
+export default function ClientsPage() {
+  // Datos simulados en perfecta armonía con tu Pipeline de Showroom
+  const [clients] = useState<Client[]>([
+    {
+      id: "c1",
+      name: "Juan Manuel Peralta",
+      email: "j.peralta@email.com",
+      phone: "18095551234",
+      propertyInterest: "Torre Serralles - 3BR",
+      budget: "US$ 325,000",
+      budgetNum: 325000,
+      status: "NUEVO",
+      origin: "Instagram Ads",
+      registeredAt: "Hoy"
+    },
+    {
+      id: "c2",
+      name: "David Chen",
+      email: "david.chen@global.com",
+      phone: "18095551234",
+      propertyInterest: "Villa en Cap Cana",
+      budget: "US$ 1,250,000",
+      budgetNum: 1250000,
+      status: "NUEVO",
+      origin: "Recomendado",
+      registeredAt: "Hoy"
+    },
+    {
+      id: "c3",
+      name: "Dr. Marcos Rossi",
+      email: "m.rossi@medicina.com",
+      phone: "18095551234",
+      propertyInterest: "Blue Mall Residences",
+      budget: "US$ 580,000",
+      budgetNum: 580000,
+      status: "ACTIVO",
+      origin: "Página Web",
+      registeredAt: "Hace 1 día"
+    },
+    {
+      id: "c4",
+      name: "Sofía Rodríguez",
+      email: "sofia.rod@diseno.com",
+      phone: "18095551234",
+      propertyInterest: "Apt Bella Vista Vista Mar",
+      budget: "US$ 280,000",
+      budgetNum: 280000,
+      status: "ACTIVO",
+      origin: "WhatsApp Business",
+      registeredAt: "Hace 2 días"
+    },
+    {
+      id: "c5",
+      name: "Ricardo Arjona",
+      email: "arjona@musica.com",
+      phone: "18095551234",
+      propertyInterest: "Casa de Campo - Dye Fore",
+      budget: "US$ 3,500,000",
+      budgetNum: 3500000,
+      status: "ACTIVO",
+      origin: "Directo",
+      registeredAt: "Hace 1 día"
+    },
+    {
+      id: "c6",
+      name: "Elena de los Santos",
+      email: "elena.santos@leyes.com",
+      phone: "18095551234",
+      propertyInterest: "Penthouse Evaristo Morales",
+      budget: "US$ 540,000",
+      budgetNum: 540000,
+      status: "ESTANCADO",
+      origin: "Google Search",
+      registeredAt: "Hace 7 días"
+    },
+    {
+      id: "c7",
+      name: "Familia Bisonó",
+      email: "bisono.contacto@familia.com",
+      phone: "18095551234",
+      propertyInterest: "Prados del Este - Casa",
+      budget: "US$ 195,000",
+      budgetNum: 195000,
+      status: "ESTANCADO",
+      origin: "Rótulo Propiedad",
+      registeredAt: "Hace 12 días"
+    }
+  ]);
+
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Filtro de búsqueda básico en tiempo real
+  const filteredClients = clients.filter(client => 
+    client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    client.propertyInterest.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const totalBudget = clients.reduce((sum, c) => sum + c.budgetNum, 0);
 
   return (
     <div className="min-h-screen text-zinc-100 p-8 font-sans selection:bg-[#CCFF00] selection:text-black">
-      <div className="max-w-7xl mx-auto space-y-12">
+      <div className="max-w-7xl mx-auto space-y-10">
         
-        {/* HEADER MONUMENTAL */}
-        <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-zinc-900 pb-10">
+        {/* Cabecera Principal */}
+        <header className="border-b border-zinc-900 pb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
           <div>
-            <span className="text-sm font-mono text-[#CCFF00] uppercase tracking-widest">Inteligencia Patrimonial</span>
-            <h1 className="text-5xl font-extrabold tracking-tighter text-white mt-2">👥 Directorio De Clientes</h1>
-            <p className="text-sm text-zinc-400 mt-2 max-w-2xl">Segmentación avanzada y gestión de perfiles de alta gama de SECTOR.</p>
+            <span className="text-sm font-mono text-[#CCFF00] uppercase tracking-widest">Base de Datos Central</span>
+            <h1 className="text-5xl font-extrabold tracking-tighter text-white mt-2">Directorio de Clientes</h1>
           </div>
-          <button className="bg-[#CCFF00] hover:bg-[#b8e600] text-black font-mono font-bold text-xs uppercase tracking-wider py-4 px-6 rounded-xl flex items-center gap-3 transition-all cursor-pointer shadow-[0_4px_30px_rgba(204,255,0,0.15)]">
-            <span>+ Nuevo Cliente</span>
-          </button>
+          
+          {/* Barra de Búsqueda Minimalista */}
+          <div className="w-full md:w-80">
+            <input
+              type="text"
+              placeholder="Buscar por nombre o propiedad..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-zinc-950 border border-zinc-800 focus:border-[#CCFF00] text-zinc-100 placeholder-zinc-600 text-xs rounded-xl px-4 py-3 outline-none transition-colors"
+            />
+          </div>
         </header>
 
-        {/* LISTADO DE CLIENTES */}
-        <main className="space-y-6">
-          {clients.length === 0 ? (
-            <div className="text-center py-20 border border-dashed border-zinc-800 rounded-2xl text-zinc-500 font-mono">
-              // NO SE DETECTARON CLIENTES EN LA TABLA REAL DE SUPABASE
-            </div>
-          ) : (
-            clients.map((client) => (
-              <div 
-                key={client.id} 
-                className="bg-zinc-950 border border-zinc-900 p-8 rounded-2xl flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 transition-all group relative overflow-hidden shadow-2xl hover:border-zinc-700 duration-300"
-              >
-                <div className="flex items-center gap-6 max-w-md">
-                  <div className="w-14 h-14 bg-zinc-900 group-hover:bg-zinc-850 border border-zinc-800 rounded-full flex items-center justify-center font-mono font-black text-zinc-400 group-hover:text-[#CCFF00] text-xl transition-all shrink-0">
-                    {client.name.charAt(0)}
-                  </div>
-                  <div className="space-y-1.5">
-                    <div className="flex items-center gap-3 flex-wrap">
-                      <h3 className="text-xl font-bold text-white tracking-tight">{client.name}</h3>
-                      <span className="text-[10px] font-mono font-black tracking-widest bg-zinc-900 text-zinc-400 px-2.5 py-0.5 rounded border border-zinc-800 uppercase">
-                        {client.perfil}
-                      </span>
-                      <span className={`text-[10px] font-mono font-black tracking-widest px-2.5 py-0.5 rounded border uppercase ${
-                        client.temperatura === 'CALIENTE' ? 'bg-red-950/40 text-red-400 border-red-900/30' : 'bg-amber-950/40 text-amber-400 border-amber-900/30'
-                      }`}>
-                        {client.temperatura}
-                      </span>
-                    </div>
-                    <div className="text-xs font-mono text-zinc-500 space-y-0.5">
-                      <p className="hover:text-white transition-colors">✉ {client.email}</p>
-                      <p>📞 {client.phone}</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-8 gap-y-4 border-t lg:border-t-0 border-zinc-900 pt-6 lg:pt-0 w-full lg:w-auto flex-1 max-w-3xl">
-                  <div>
-                    <span className="block text-[10px] font-mono text-zinc-600 uppercase tracking-wider">Objetivo</span>
-                    <span className="text-sm font-semibold text-zinc-200 truncate block">{client.objetivo}</span>
-                  </div>
-                  <div>
-                    <span className="block text-[10px] font-mono text-zinc-600 uppercase tracking-wider">Estructura</span>
-                    <span className="text-sm font-semibold text-zinc-200 truncate block">{client.estructura}</span>
-                  </div>
-                  <div>
-                    <span className="block text-[10px] font-mono text-zinc-600 uppercase tracking-wider">Zona de Interés</span>
-                    <span className="text-sm font-semibold text-[#CCFF00] truncate block">📍 {client.zonaInteres}</span>
-                  </div>
-                  <div>
-                    <span className="block text-[10px] font-mono text-zinc-600 uppercase tracking-wider">Incentivo Fiscal</span>
-                    <span className="text-sm font-semibold text-zinc-200 truncate block">{client.incentivoFiscal}</span>
-                  </div>
-                </div>
-              </div>
-            ))
-          )}
-        </main>
-
-        {/* SECCIÓN DEL MAPA */}
-        <section className="bg-zinc-950 border border-zinc-900 p-8 rounded-2xl space-y-6 shadow-xl">
-          <div className="flex justify-between items-center">
-            <div>
-              <h2 className="text-xl font-black text-white tracking-tighter">🌐 Geolocalización Inmobiliaria Activa</h2>
-              <p className="text-xs text-zinc-500 font-mono mt-1">// Ecosistema de cobertura patrimonial</p>
-            </div>
-            <span className="text-[10px] font-mono bg-zinc-900 text-[#CCFF00] px-3 py-1 rounded-full border border-zinc-800 font-bold">
-              GOOGLE MAPS API READY
-            </span>
+        {/* Tarjetas de Indicadores Rápidos (KPIs) */}
+        <section className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className="bg-zinc-950 p-6 rounded-2xl border border-zinc-900">
+            <p className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Total Registrados</p>
+            <p className="text-3xl font-black text-white mt-2">{clients.length} Inversionistas</p>
           </div>
-          <div className="w-full bg-zinc-900/50 h-[350px] rounded-xl border border-zinc-900 flex items-center justify-center relative overflow-hidden group shadow-inner">
-            <span className="text-sm font-mono text-zinc-500 tracking-widest uppercase animate-pulse">
-              [ Mapa interactivo activo ]
-            </span>
+          <div className="bg-zinc-950 p-6 rounded-2xl border border-zinc-900">
+            <p className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Capital de Interés Total</p>
+            <p className="text-3xl font-black text-[#CCFF00] mt-2">US$ {totalBudget.toLocaleString()}</p>
+          </div>
+          <div className="bg-zinc-950 p-6 rounded-2xl border border-zinc-900">
+            <p className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Tasa de Respuesta Activa</p>
+            <p className="text-3xl font-black text-white mt-2">
+              {Math.round((clients.filter(c => c.status !== 'ESTANCADO').length / clients.length) * 100)}%
+            </p>
+          </div>
+        </section>
+
+        {/* Tabla / Lista Estilizada de Clientes */}
+        <section className="bg-zinc-950/40 rounded-2xl border border-zinc-900/50 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-zinc-900 bg-zinc-950 text-zinc-500 font-mono text-[10px] uppercase tracking-wider">
+                  <th className="p-4 pl-6">Nombre e Información</th>
+                  <th className="p-4">Propiedad de Interés</th>
+                  <th className="p-4">Presupuesto</th>
+                  <th className="p-4">Estado Temperatura</th>
+                  <th className="p-4">Origen Lead</th>
+                  <th className="p-4 pr-6 text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-900/40 text-xs">
+                {filteredClients.map((client) => {
+                  return (
+                    <tr key={client.id} className="hover:bg-zinc-900/20 transition-colors group">
+                      {/* Información del Cliente */}
+                      <td className="p-4 pl-6">
+                        <div className="font-bold text-white text-sm group-hover:text-[#CCFF00] transition-colors">{client.name}</div>
+                        <div className="text-zinc-500 font-mono text-[11px] mt-0.5">{client.email}</div>
+                      </td>
+
+                      {/* Propiedad de Interés */}
+                      <td className="p-4">
+                        <span className="text-zinc-300 font-medium">{client.propertyInterest}</span>
+                        <div className="text-[10px] text-zinc-600 font-mono mt-0.5">Registrado: {client.registeredAt}</div>
+                      </td>
+
+                      {/* Presupuesto */}
+                      <td className="p-4">
+                        <span className="text-[#CCFF00] font-black font-mono">{client.budget}</span>
+                      </td>
+
+                      {/* Estado Temperatura */}
+                      <td className="p-4">
+                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold border ${
+                          client.status === 'NUEVO' ? 'bg-[#CCFF00]/10 text-[#CCFF00] border-[#CCFF00]/20 animate-pulse' :
+                          client.status === 'ESTANCADO' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
+                          'bg-zinc-900 text-zinc-400 border-zinc-800'
+                        }`}>
+                          {client.status === 'NUEVO' && '🟢'}
+                          {client.status === 'ESTANCADO' && '🥶'}
+                          {client.status === 'ACTIVO' && '⚡'}
+                          {client.status}
+                        </span>
+                      </td>
+
+                      {/* Origen del Lead */}
+                      <td className="p-4">
+                        <span className="text-zinc-500 font-mono text-[11px] bg-zinc-900/50 px-2 py-1 rounded border border-zinc-900">
+                          {client.origin}
+                        </span>
+                      </td>
+
+                      {/* Acciones de Contacto */}
+                      <td className="p-4 pr-6 text-right">
+                        <a
+                          href={generateWhatsAppLink({
+                            phone: client.phone,
+                            clientName: client.name,
+                            propertyName: client.propertyInterest,
+                            propertyPrice: client.budget
+                          })}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900 hover:bg-[#CCFF00] border border-zinc-800 hover:border-[#CCFF00] text-zinc-400 hover:text-black font-bold uppercase tracking-wider text-[10px] rounded-lg transition-all"
+                        >
+                          💬 Contactar
+                        </a>
+                      </td>
+                    </tr>
+                  );
+                })}
+                {filteredClients.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="p-10 text-center text-zinc-600 font-mono text-xs">
+                      No se encontraron inversionistas con ese criterio de búsqueda.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
         </section>
 
