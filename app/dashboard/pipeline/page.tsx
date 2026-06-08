@@ -1,4 +1,5 @@
 import React from 'react';
+import { generateWhatsAppLink } from "@/utils/whatsapp";
 
 export default function PipelinePage() {
   // Datos locales directos para asegurar que siempre se vea el UI
@@ -24,13 +25,30 @@ export default function PipelinePage() {
                 <h3 className="text-xs font-mono font-black text-zinc-400 uppercase">{col.title}</h3>
                 <span className="text-[10px] font-mono bg-zinc-900 px-2 py-1 rounded">{col.total}</span>
               </div>
-              
+
               {/* Tarjeta de demo en la columna 2 */}
               {col.id === '2' && (
-                <div className="bg-zinc-950 border border-zinc-800 p-5 rounded-xl shadow-lg">
-                  <h4 className="font-bold text-white">Inversiones Piantini</h4>
-                  <p className="text-xs text-zinc-400 mt-1">Torre Naco</p>
-                  <p className="text-[#CCFF00] font-black mt-3">US$ 450,000</p>
+                <div className="bg-zinc-950 border border-zinc-800 p-5 rounded-xl shadow-lg flex flex-col justify-between min-h-[180px]">
+                  <div>
+                    <h4 className="font-bold text-white">Inversiones Piantini</h4>
+                    <p className="text-xs text-zinc-400 mt-1">Torre Naco</p>
+                    <p className="text-[#CCFF00] font-black mt-3">US$ 450,000</p>
+                  </div>
+
+                  {/* Botón de WhatsApp dinámico */}
+                  <a
+                    href={generateWhatsAppLink({
+                      phone: "18095551234", // Cambia esto por tu número real para probarlo
+                      clientName: "Inversiones Piantini",
+                      propertyName: "Torre Naco",
+                      propertyPrice: "US$ 450,000"
+                    })}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-4 inline-flex items-center justify-center gap-2 w-full px-3 py-2 text-xs font-bold uppercase tracking-wider text-black bg-[#CCFF00] hover:bg-[#b5e600] rounded-lg transition-colors text-center"
+                  >
+                    💬 Enviar WhatsApp
+                  </a>
                 </div>
               )}
             </div>
