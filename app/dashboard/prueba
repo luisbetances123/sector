@@ -1,7 +1,0 @@
-export default function TestPage() {
-  return (
-    <div className="p-20 text-white text-5xl font-bold bg-black min-h-screen">
-      TEST: SI VES ESTO, EL CACHÉ SE ROMPIÓ.
-    </div>
-  );
-}

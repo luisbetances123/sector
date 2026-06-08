@@ -1,0 +1,33 @@
+"use client";
+
+import { useState, useEffect } from 'react';
+import { supabase } from '../../lib/supabase'; // Asegura que la ruta de importación sea correcta
+
+export default function DashboardPage() {
+  const [stats, setStats] = useState({ propiedades: 0, clientes: 0, loading: true });
+
+  useEffect(() => {
+    async function fetchData() {
+      const { count: props } = await supabase.from('propiedades').select('*', { count: 'exact', head: true });
+      const { count: clients } = await supabase.from('clientes').select('*', { count: 'exact', head: true });
+      setStats({ propiedades: props || 0, clientes: clients || 0, loading: false });
+    }
+    fetchData();
+  }, []);
+
+  return (
+    <div className="p-10 text-white">
+      <h1 className="text-3xl font-bold mb-6">Dashboard de SECTOR</h1>
+      <div className="grid grid-cols-2 gap-6">
+        <div className="bg-zinc-900 p-6 rounded-xl border border-zinc-800">
+          <p className="text-zinc-400">Propiedades</p>
+          <p className="text-4xl font-bold">{stats.loading ? '...' : stats.propiedades}</p>
+        </div>
+        <div className="bg-zinc-900 p-6 rounded-xl border border-zinc-800">
+          <p className="text-zinc-400">Clientes</p>
+          <p className="text-4xl font-bold">{stats.loading ? '...' : stats.clientes}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
