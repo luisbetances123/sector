@@ -129,17 +129,20 @@ export default function PipelinePage() {
                   return (
                     <div 
                       key={deal.id} 
-                      className={`bg-zinc-950 border p-5 rounded-xl shadow-lg flex flex-col justify-between min-h-[210px] transition-all duration-300 ${
-                        isCold ? 'border-amber-500/40 shadow-amber-950/10' : 'border-zinc-800'
+                      className={`border p-5 rounded-xl shadow-lg flex flex-col justify-between min-h-[210px] transition-all duration-300 ${
+                        isCold 
+                          ? 'border-amber-500/60 bg-gradient-to-b from-amber-950/30 to-zinc-950 shadow-amber-950/20 scale-[1.01]' 
+                          : 'border-zinc-800 bg-zinc-950'
                       }`}
                     >
                       {/* Fila Superior: Info y Alerta de Tiempo */}
                       <div>
                         <div className="flex justify-between items-start gap-2">
                           <h4 className="font-bold text-white text-sm leading-tight">{deal.name}</h4>
-                          <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded whitespace-nowrap ${
-                            isCold ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'bg-zinc-900 text-zinc-500'
+                          <span className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-full flex items-center gap-1.5 ${
+                            isCold ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30 animate-pulse' : 'bg-zinc-900 text-zinc-500'
                           }`}>
+                            {isCold && <span className="w-1.5 h-1.5 rounded-full bg-amber-400 block shrink-0" />}
                             {days === 0 ? '⚡ Hoy' : `⏱️ ${days}d aquí`}
                           </span>
                         </div>
