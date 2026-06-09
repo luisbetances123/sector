@@ -144,19 +144,7 @@ export default function ClientsPage() {
                         <div className="flex items-center justify-center gap-2">
                           {cliente.telefono && (
                             
-                              href={generateWhatsAppLink({
-                                phone: cliente.telefono,
-                                clientName: cliente.nombre,
-                                propertyName: '',
-                                propertyPrice: ''
-                              })}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="p-2 bg-zinc-900 hover:bg-[#CCFF00] border border-zinc-800 hover:border-[#CCFF00] text-zinc-400 hover:text-black rounded-lg transition-all"
-                            >
-                              💬
-                            </a>
-                          )}
+   href={generateWhatsAppLink({ phone: cliente.telefono, clientName: cliente.nombre, propertyName: '', propertyPrice: '' })}
                           {cliente.telefono && (
                             
                               href={`tel:${cliente.telefono}`}
