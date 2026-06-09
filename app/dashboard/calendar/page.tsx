@@ -158,7 +158,7 @@ export default function CalendarPage() {
       month: 'long' 
     })
 
-    let mensaje = `Hola ${clienteObj.name}, te saludo de SECTOR. `
+    let mensaje = `Hola ${clienteObj.nombre}, te saludo de SECTOR. `
     if (f.tipo === 'visita') {
       mensaje += `Te confirmo nuestra cita programada para ver la propiedad el próximo ${fechaAmigable} a las ${f.hora}. ¡Nos vemos allá!`
     } else if (f.tipo === 'llamada') {
