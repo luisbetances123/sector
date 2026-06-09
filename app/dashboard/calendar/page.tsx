@@ -182,7 +182,7 @@ export default function CalendarPage() {
   const eventosDiaSeleccionado = diaSeleccionado ? followups.filter(f => f.fecha === diaSeleccionado) : []
   const pendientes = followups.filter(f => !f.hecho && !f.isMovement).length
   const completados = followups.filter(f => f.hecho || f.isMovement).length
-  const nombreCliente = (id: string) => clientes.find(c => c.id === id)?.name || ''
+  const nombreCliente = (id: string) => clientes.find(c => c.id === id)?.nombre || ''
 
   return (
     <div className="p-4 md:p-8">
