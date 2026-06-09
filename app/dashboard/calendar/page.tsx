@@ -289,7 +289,7 @@ export default function CalendarPage() {
               <input placeholder="Titulo *" value={form.titulo} onChange={e => setForm({...form, titulo: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-[#CCFF00] outline-none" />
               <select value={form.cliente_id} onChange={e => setForm({...form, cliente_id: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-[#CCFF00] outline-none">
                 <option value="">Sin cliente</option>
-                {clientes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                {clientes.map(c => <option key={c.id} value={c.id}>{c.nombre}</option>)}
               </select>
               <div className="grid grid-cols-2 gap-2">
                 <select value={form.tipo} onChange={e => setForm({...form, tipo: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-[#CCFF00] outline-none">
