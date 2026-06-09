@@ -1,7 +1,8 @@
 'use client'
 import React, { useState } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+import { supabase } from '@/app/lib/supabase'
 import { 
   LayoutDashboard, 
   Users, 
@@ -19,7 +20,14 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
+  const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
+
+  async function handleLogout() {
+    await supabase.auth.signOut()
+    router.push('/login')
+    router.refresh()
+  }
 
   const menuItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -32,7 +40,6 @@ export default function DashboardLayout({
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-[#09090b] text-white antialiased selection:bg-[#CCFF00] selection:text-black">
       
-      {/* HEADER PARA MÓVILES (Solo se ve en celular/tablet) */}
       <header className="md:hidden w-full border-b border-zinc-900 bg-black/60 backdrop-blur-md px-6 py-4 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-3">
           <div className="w-2.5 h-2.5 rounded-full bg-[#CCFF00] animate-pulse" />
@@ -47,19 +54,17 @@ export default function DashboardLayout({
         </button>
       </header>
 
-      {/* MENÚ DESPLEGABLE MÓVIL (Full screen al abrir con transiciones suaves) */}
       {isOpen && (
         <div className="md:hidden fixed inset-0 top-[57px] bg-[#09090b] z-40 p-6 flex flex-col justify-between animate-fadeIn">
           <nav className="space-y-2">
             {menuItems.map((item) => {
               const Icon = item.icon
               const isActive = pathname === item.href
-
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  onClick={() => setIsOpen(false)} // Cierra el menú al navegar
+                  onClick={() => setIsOpen(false)}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
                     isActive
                       ? 'bg-[#CCFF00] text-black shadow-[0_0_20px_rgba(204,255,0,0.15)] font-black'
@@ -72,9 +77,11 @@ export default function DashboardLayout({
               )
             })}
           </nav>
-
           <div className="border-t border-zinc-900/60 pt-4">
-            <button className="flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-red-400 rounded-xl w-full transition-colors">
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-red-400 rounded-xl w-full transition-colors"
+            >
               <LogOut className="w-4 h-4" />
               Cerrar Sesión
             </button>
@@ -82,22 +89,16 @@ export default function DashboardLayout({
         </div>
       )}
 
-      {/* SIDEBAR FIJO LATERAL (Oculto en móvil, visible desde pantallas md) */}
       <aside className="hidden md:flex w-64 border-r border-zinc-900 bg-black/40 backdrop-blur-md flex-col justify-between p-6 shrink-0 h-screen sticky top-0">
         <div className="space-y-8">
-          
-          {/* Logo Premium */}
           <div className="flex items-center gap-3 px-2">
             <div className="w-3 h-3 rounded-full bg-[#CCFF00] animate-pulse" />
             <span className="text-lg font-black tracking-tighter uppercase">SECTOR</span>
           </div>
-
-          {/* Lista de Navegación */}
           <nav className="space-y-1.5">
             {menuItems.map((item) => {
               const Icon = item.icon
               const isActive = pathname === item.href
-
               return (
                 <Link
                   key={item.href}
@@ -115,17 +116,17 @@ export default function DashboardLayout({
             })}
           </nav>
         </div>
-
-        {/* Footer del Sidebar / Cerrar Sesión */}
         <div className="border-t border-zinc-900/60 pt-4">
-          <button className="flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-red-400 rounded-xl w-full transition-colors">
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-red-400 rounded-xl w-full transition-colors"
+          >
             <LogOut className="w-4 h-4" />
             Cerrar Sesión
           </button>
         </div>
       </aside>
 
-      {/* Contenedor Principal del Contenido */}
       <main className="flex-1 p-6 md:p-12 overflow-y-auto h-[calc(100vh-57px)] md:h-screen">
         <div className="max-w-5xl mx-auto">
           {children}
