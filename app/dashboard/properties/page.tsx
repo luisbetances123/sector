@@ -331,8 +331,16 @@ export default function PropertiesPage() {
                   }}
                   className="w-full bg-[#d4ff3b]/10 hover:bg-[#d4ff3b] text-[#d4ff3b] hover:text-black text-xs py-2.5 rounded-lg font-semibold transition border border-[#d4ff3b]/20 text-center block"
                 >
-                  Ver Más Fotos / Detalles
+                  Ver Mas Fotos / Detalles
                 </button>
+                
+                  href={"/api/pdf/propiedad?titulo=" + encodeURIComponent(propiedad.titulo) + "&precio=" + propiedad.precio + "&sector=" + encodeURIComponent(propiedad.sector) + "&recamaras=" + propiedad.recamaras + "&banos=" + propiedad.banos + "&area=" + propiedad.metros_cuadrados + "&notas=" + encodeURIComponent(propiedad.notas) + "&imagen=" + encodeURIComponent(propiedad.imagen || "")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs py-2.5 rounded-lg font-semibold transition border border-zinc-700 text-center block"
+                >
+                  Exportar Ficha PDF
+                </a>
                 
                 <div className="flex gap-2">
                   <button onClick={() => iniciarEdicion(propiedad)} className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs py-2 rounded-lg font-medium transition border border-zinc-700/50">
