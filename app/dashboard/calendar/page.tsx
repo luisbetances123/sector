@@ -147,12 +147,12 @@ export default function CalendarPage() {
 
   const enviarRecordatorioWhatsApp = (f: FollowUp) => {
     const clienteObj = clientes.find(c => c.id === f.cliente_id)
-    if (!clienteObj || !clienteObj.phone) {
+    if (!clienteObj || !clienteObj.telefono) {
       alert('Este cliente no tiene un número de teléfono registrado.')
       return
     }
 
-    const numeroLimpio = clienteObj.phone.replace(/[^0-9]/g, '')
+    const numeroLimpio = clienteObj.telefono.replace(/[^0-9]/g, '')
     const fechaAmigable = new Date(f.fecha + 'T12:00:00').toLocaleDateString('es-DO', { 
       day: 'numeric', 
       month: 'long' 
