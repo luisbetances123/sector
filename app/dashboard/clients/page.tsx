@@ -123,25 +123,25 @@ export default function ClientsPage() {
                       <td className="p-4">
                         <span className="text-[#CCFF00] font-black font-mono">
                           {cliente.presupuesto_min && cliente.presupuesto_max
-                            ? `US$ ${Number(cliente.presupuesto_min).toLocaleString()} – ${Number(cliente.presupuesto_max).toLocaleString()}`
+                            ? `US$ ${Number(cliente.presupuesto_min).toLocaleString()} - ${Number(cliente.presupuesto_max).toLocaleString()}`
                             : cliente.presupuesto_min
                             ? `US$ ${Number(cliente.presupuesto_min).toLocaleString()}`
-                            : '—'}
+                            : '-'}
                         </span>
                       </td>
                       <td className="p-4">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold border ${getEtapaStyle(cliente.etapa)}`}>
-                          {cliente.etapa || '—'}
+                          {cliente.etapa || '-'}
                         </span>
                       </td>
                       <td className="p-4">
-                        <span className="text-zinc-400 text-[11px]">{cliente.proxima_accion || '—'}</span>
+                        <span className="text-zinc-400 text-[11px]">{cliente.proxima_accion || '-'}</span>
                       </td>
                       <td className="p-4 pr-6">
                         <div className="flex items-center justify-center gap-2">
                           {cliente.telefono && (
                             
-                              href={`https://wa.me/${cliente.telefono}`}
+                              href={"https://wa.me/" + cliente.telefono}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="p-2 bg-zinc-900 hover:bg-[#CCFF00] border border-zinc-800 hover:border-[#CCFF00] text-zinc-400 hover:text-black rounded-lg transition-all"
@@ -151,7 +151,7 @@ export default function ClientsPage() {
                           )}
                           {cliente.telefono && (
                             
-                              href={`tel:${cliente.telefono}`}
+                              href={"tel:" + cliente.telefono}
                               className="p-2 bg-zinc-900 hover:bg-blue-500 border border-zinc-800 hover:border-blue-500 text-zinc-400 hover:text-white rounded-lg transition-all"
                             >
                               📞
