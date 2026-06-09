@@ -232,6 +232,34 @@ export default function PipelinePage() {
                   className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-zinc-300 text-xs rounded-xl px-4 py-3 mt-1 outline-none resize-none" />
               </div>
             </div>
+            <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3">
+              <h3 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Calculadora de Comision</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[9px] font-mono text-zinc-500 uppercase">Porcentaje %</label>
+                  <input
+                    type="number"
+                    defaultValue="3"
+                    id="comision-pct"
+                    min="0" max="100" step="0.5"
+                    className="w-full bg-zinc-800 border border-zinc-700 focus:border-[#CCFF00] text-white text-sm rounded-xl px-3 py-2 mt-1 outline-none"
+                    onChange={(e) => {
+                      const pct = parseFloat(e.target.value) || 0
+                      const result = document.getElementById("comision-result")
+                      if (result) result.textContent = "US$ " + ((selectedDeal.precio * pct / 100)).toLocaleString("en-US", {minimumFractionDigits: 0, maximumFractionDigits: 0})
+                    }}
+                  />
+                </div>
+                <div>
+                  <label className="text-[9px] font-mono text-zinc-500 uppercase">Tu Comision</label>
+                  <div id="comision-result" className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 mt-1 text-[#CCFF00] font-black text-sm font-mono">
+                    US$ {Math.round(selectedDeal.precio * 3 / 100).toLocaleString()}
+                  </div>
+                </div>
+              </div>
+              <p className="text-[10px] text-zinc-600 font-mono">Precio base: US$ {selectedDeal.precio.toLocaleString()}</p>
+            </div>
+
             <button onClick={() => updateDeal(selectedDeal)}
               className="w-full bg-[#CCFF00] text-black font-black text-xs rounded-xl py-4 hover:bg-[#b8e600] transition-colors">
               Guardar Cambios
