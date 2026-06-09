@@ -333,7 +333,7 @@ export default function PropertiesPage() {
                 >
                   Ver Mas Fotos / Detalles
                 </button>
-                
+                <a
                   href={"/api/pdf/propiedad?titulo=" + encodeURIComponent(propiedad.titulo) + "&precio=" + propiedad.precio + "&sector=" + encodeURIComponent(propiedad.sector) + "&recamaras=" + propiedad.recamaras + "&banos=" + propiedad.banos + "&area=" + propiedad.metros_cuadrados + "&notas=" + encodeURIComponent(propiedad.notas)}
                   target="_blank"
                   rel="noopener noreferrer"
