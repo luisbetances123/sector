@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '@/app/lib/supabase';
 
 export default function DashboardPage() {
   const [stats, setStats] = useState({ propiedades: 0, clientes: 0, loading: true });
