@@ -108,7 +108,7 @@ export default function ClientsPage() {
                 </thead>
                 <tbody className="divide-y divide-zinc-900/40 text-xs">
                   {filtered.map(cliente => (
-                    <tr key={cliente.id} className="hover:bg-zinc-900/20 transition-colors group">
+                    <tr key={cliente.id} onClick={() => window.location.href = '/dashboard/clients/' + cliente.id} className="hover:bg-zinc-900/20 transition-colors group cursor-pointer">
                       <td className="p-4 pl-6">
                         <div className="font-bold text-white text-sm group-hover:text-[#CCFF00] transition-colors">
                           {cliente.nombre}

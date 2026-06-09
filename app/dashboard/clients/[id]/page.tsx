@@ -1,0 +1,259 @@
+'use client'
+import { useState, useEffect } from 'react'
+import { useParams, useRouter } from 'next/navigation'
+import { supabase } from '@/app/lib/supabase'
+
+interface Cliente {
+  id: string
+  nombre: string
+  email: string
+  telefono: string
+  etapa: string
+  presupuesto_min: string
+  presupuesto_max: string
+  notas: string
+  proxima_accion: string
+  created_at: string
+}
+
+interface Nota {
+  id: string
+  cliente_id: string
+  nota: string
+  created_at: string
+}
+
+export default function ClienteFichaPage() {
+  const { id } = useParams()
+  const router = useRouter()
+  const [cliente, setCliente] = useState<Cliente | null>(null)
+  const [notas, setNotas] = useState<Nota[]>([])
+  const [nuevaNota, setNuevaNota] = useState('')
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [editando, setEditando] = useState(false)
+  const [form, setForm] = useState<Partial<Cliente>>({})
+
+  useEffect(() => {
+    if (id) {
+      fetchCliente()
+      fetchNotas()
+    }
+  }, [id])
+
+  async function fetchCliente() {
+    const { data } = await supabase.from('clientes').select('*').eq('id', id).single()
+    if (data) {
+      setCliente(data)
+      setForm(data)
+    }
+    setLoading(false)
+  }
+
+  async function fetchNotas() {
+    const { data } = await supabase
+      .from('bitacora_cliente')
+      .select('*')
+      .eq('cliente_id', id)
+      .order('created_at', { ascending: false })
+    if (data) setNotas(data)
+  }
+
+  async function agregarNota() {
+    if (!nuevaNota.trim()) return
+    setSaving(true)
+    await supabase.from('bitacora_cliente').insert([{
+      cliente_id: id,
+      nota: nuevaNota.trim()
+    }])
+    setNuevaNota('')
+    fetchNotas()
+    setSaving(false)
+  }
+
+  async function eliminarNota(notaId: string) {
+    await supabase.from('bitacora_cliente').delete().eq('id', notaId)
+    fetchNotas()
+  }
+
+  async function guardarCliente() {
+    setSaving(true)
+    await supabase.from('clientes').update({
+      nombre: form.nombre,
+      email: form.email,
+      telefono: form.telefono,
+      etapa: form.etapa,
+      presupuesto_min: form.presupuesto_min,
+      presupuesto_max: form.presupuesto_max,
+      notas: form.notas,
+      proxima_accion: form.proxima_accion
+    }).eq('id', id)
+    fetchCliente()
+    setEditando(false)
+    setSaving(false)
+  }
+
+  const getEtapaStyle = (etapa: string) => {
+    switch (etapa) {
+      case 'NUEVO': return 'bg-[#CCFF00]/10 text-[#CCFF00] border-[#CCFF00]/20'
+      case 'ACTIVO': return 'bg-zinc-900 text-zinc-400 border-zinc-800'
+      case 'ESTANCADO': return 'bg-red-500/10 text-red-400 border-red-500/20'
+      default: return 'bg-zinc-900 text-zinc-400 border-zinc-800'
+    }
+  }
+
+  const formatFecha = (str: string) => {
+    return new Date(str).toLocaleDateString('es-DO', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+  }
+
+  if (loading) return <div className="text-zinc-500 text-sm text-center py-20">Cargando...</div>
+  if (!cliente) return <div className="text-zinc-500 text-sm text-center py-20">Cliente no encontrado.</div>
+
+  return (
+    <div className="text-zinc-100 font-sans space-y-8">
+      <header className="border-b border-zinc-900 pb-6 flex flex-col md:flex-row justify-between items-start gap-4">
+        <div>
+          <button onClick={() => router.push('/dashboard/clients')} className="text-zinc-500 text-xs hover:text-white mb-3 flex items-center gap-1">
+            Back
+          </button>
+          <span className="text-sm font-mono text-[#CCFF00] uppercase tracking-widest">Ficha del Cliente</span>
+          <h1 className="text-3xl font-extrabold tracking-tighter text-white mt-1">{cliente.nombre}</h1>
+          <p className="text-zinc-500 text-sm mt-1">{cliente.email}</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className={'inline-flex items-center px-3 py-1 rounded-full text-xs font-mono font-bold border ' + getEtapaStyle(cliente.etapa)}>
+            {cliente.etapa || '-'}
+          </span>
+          <button onClick={() => setEditando(!editando)}
+            className="bg-zinc-900 border border-zinc-700 text-white text-xs font-bold rounded-xl px-4 py-2 hover:bg-zinc-800 transition-colors">
+            {editando ? 'Cancelar' : 'Editar'}
+          </button>
+          {cliente.telefono && (
+            <a href={"https://wa.me/" + cliente.telefono} target="_blank" rel="noopener noreferrer"
+              className="bg-[#CCFF00] text-black text-xs font-black rounded-xl px-4 py-2 hover:bg-[#b8e600] transition-colors">
+              WhatsApp
+            </a>
+          )}
+        </div>
+      </header>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-6 space-y-4">
+          <h2 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Informacion del Cliente</h2>
+          {editando ? (
+            <div className="space-y-3">
+              <div>
+                <label className="text-[9px] font-mono text-zinc-500 uppercase">Nombre</label>
+                <input value={form.nombre || ''} onChange={e => setForm({...form, nombre: e.target.value})}
+                  className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none" />
+              </div>
+              <div>
+                <label className="text-[9px] font-mono text-zinc-500 uppercase">Email</label>
+                <input value={form.email || ''} onChange={e => setForm({...form, email: e.target.value})}
+                  className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none" />
+              </div>
+              <div>
+                <label className="text-[9px] font-mono text-zinc-500 uppercase">Telefono</label>
+                <input value={form.telefono || ''} onChange={e => setForm({...form, telefono: e.target.value})}
+                  className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none" />
+              </div>
+              <div>
+                <label className="text-[9px] font-mono text-zinc-500 uppercase">Etapa</label>
+                <select value={form.etapa || ''} onChange={e => setForm({...form, etapa: e.target.value})}
+                  className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none">
+                  <option value="NUEVO">NUEVO</option>
+                  <option value="ACTIVO">ACTIVO</option>
+                  <option value="ESTANCADO">ESTANCADO</option>
+                </select>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[9px] font-mono text-zinc-500 uppercase">Presupuesto Min</label>
+                  <input value={form.presupuesto_min || ''} onChange={e => setForm({...form, presupuesto_min: e.target.value})}
+                    className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none" />
+                </div>
+                <div>
+                  <label className="text-[9px] font-mono text-zinc-500 uppercase">Presupuesto Max</label>
+                  <input value={form.presupuesto_max || ''} onChange={e => setForm({...form, presupuesto_max: e.target.value})}
+                    className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none" />
+                </div>
+              </div>
+              <div>
+                <label className="text-[9px] font-mono text-zinc-500 uppercase">Proxima Accion</label>
+                <input value={form.proxima_accion || ''} onChange={e => setForm({...form, proxima_accion: e.target.value})}
+                  className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none" />
+              </div>
+              <button onClick={guardarCliente} disabled={saving}
+                className="w-full bg-[#CCFF00] text-black font-black text-xs rounded-xl py-3 hover:bg-[#b8e600] transition-colors disabled:opacity-50">
+                {saving ? 'Guardando...' : 'Guardar Cambios'}
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between">
+                <span className="text-zinc-500">Telefono</span>
+                <span className="text-white font-mono">{cliente.telefono || '-'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-zinc-500">Presupuesto</span>
+                <span className="text-[#CCFF00] font-black font-mono">
+                  {cliente.presupuesto_min ? 'US$ ' + Number(cliente.presupuesto_min).toLocaleString() : '-'}
+                  {cliente.presupuesto_max ? ' - US$ ' + Number(cliente.presupuesto_max).toLocaleString() : ''}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-zinc-500">Proxima Accion</span>
+                <span className="text-white">{cliente.proxima_accion || '-'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-zinc-500">Registrado</span>
+                <span className="text-zinc-400 text-xs">{formatFecha(cliente.created_at)}</span>
+              </div>
+              {cliente.notas && (
+                <div className="pt-2 border-t border-zinc-900">
+                  <span className="text-zinc-500 text-xs block mb-1">Notas</span>
+                  <p className="text-zinc-300 text-xs leading-relaxed">{cliente.notas}</p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-6 space-y-4">
+          <h2 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Historial de Interacciones</h2>
+          <div className="flex gap-2">
+            <input
+              value={nuevaNota}
+              onChange={e => setNuevaNota(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && agregarNota()}
+              placeholder="Agregar nota o interaccion..."
+              className="flex-1 bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-2.5 outline-none"
+            />
+            <button onClick={agregarNota} disabled={saving || !nuevaNota.trim()}
+              className="bg-[#CCFF00] text-black font-black text-xs rounded-xl px-4 py-2.5 hover:bg-[#b8e600] transition-colors disabled:opacity-50">
+              +
+            </button>
+          </div>
+          <div className="space-y-3 max-h-80 overflow-y-auto">
+            {notas.length === 0 ? (
+              <p className="text-zinc-600 text-xs text-center py-6">Sin interacciones registradas.</p>
+            ) : (
+              notas.map(nota => (
+                <div key={nota.id} className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-3 group">
+                  <div className="flex justify-between items-start gap-2">
+                    <p className="text-zinc-300 text-xs leading-relaxed flex-1">{nota.nota}</p>
+                    <button onClick={() => eliminarNota(nota.id)}
+                      className="text-zinc-600 hover:text-red-400 text-[10px] opacity-0 group-hover:opacity-100 transition-all">
+                      x
+                    </button>
+                  </div>
+                  <p className="text-zinc-600 text-[10px] font-mono mt-1">{formatFecha(nota.created_at)}</p>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
