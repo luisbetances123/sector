@@ -48,8 +48,11 @@ export default function ClientsPage() {
     }
   }
 
+  const waUrl = (tel: string) => 'https://wa.me/' + tel
+  const telUrl = (tel: string) => 'tel:' + tel
+
   return (
-    <div className="text-zinc-100 font-sans selection:bg-[#CCFF00] selection:text-black">
+    <div className="text-zinc-100 font-sans">
       <div className="space-y-8">
         <header className="border-b border-zinc-900 pb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
           <div>
@@ -64,12 +67,6 @@ export default function ClientsPage() {
               onChange={e => setSearchTerm(e.target.value)}
               className="w-full md:w-72 bg-zinc-950 border border-zinc-800 focus:border-[#CCFF00] text-zinc-100 placeholder-zinc-600 text-xs rounded-xl px-4 py-3 outline-none transition-colors"
             />
-            <button
-              onClick={() => window.location.href = '/dashboard/clients/nuevo'}
-              className="bg-[#CCFF00] text-black font-black text-xs rounded-xl px-4 py-3 hover:bg-[#b8e600] transition-colors whitespace-nowrap"
-            >
-              + Nuevo
-            </button>
           </div>
         </header>
 
@@ -95,9 +92,7 @@ export default function ClientsPage() {
         {loading ? (
           <div className="text-zinc-500 text-sm text-center py-20">Cargando clientes...</div>
         ) : filtered.length === 0 ? (
-          <div className="text-zinc-500 text-sm text-center py-20">
-            {searchTerm ? 'No se encontraron resultados.' : 'No hay clientes registrados aún.'}
-          </div>
+          <div className="text-zinc-500 text-sm text-center py-20">No hay clientes.</div>
         ) : (
           <section className="bg-zinc-950/40 rounded-2xl border border-zinc-900/50 overflow-hidden">
             <div className="overflow-x-auto">
@@ -107,7 +102,7 @@ export default function ClientsPage() {
                     <th className="p-4 pl-6">Cliente</th>
                     <th className="p-4">Presupuesto</th>
                     <th className="p-4">Etapa</th>
-                    <th className="p-4">Próxima Acción</th>
+                    <th className="p-4">Proxima Accion</th>
                     <th className="p-4 pr-6 text-center">Contacto</th>
                   </tr>
                 </thead>
@@ -122,15 +117,11 @@ export default function ClientsPage() {
                       </td>
                       <td className="p-4">
                         <span className="text-[#CCFF00] font-black font-mono">
-                          {cliente.presupuesto_min && cliente.presupuesto_max
-                            ? `US$ ${Number(cliente.presupuesto_min).toLocaleString()} - ${Number(cliente.presupuesto_max).toLocaleString()}`
-                            : cliente.presupuesto_min
-                            ? `US$ ${Number(cliente.presupuesto_min).toLocaleString()}`
-                            : '-'}
+                          {cliente.presupuesto_min ? cliente.presupuesto_min : '-'}
                         </span>
                       </td>
                       <td className="p-4">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold border ${getEtapaStyle(cliente.etapa)}`}>
+                        <span className={'inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold border ' + getEtapaStyle(cliente.etapa)}>
                           {cliente.etapa || '-'}
                         </span>
                       </td>
@@ -140,21 +131,15 @@ export default function ClientsPage() {
                       <td className="p-4 pr-6">
                         <div className="flex items-center justify-center gap-2">
                           {cliente.telefono && (
-                            
-                              href={"https://wa.me/" + cliente.telefono}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="p-2 bg-zinc-900 hover:bg-[#CCFF00] border border-zinc-800 hover:border-[#CCFF00] text-zinc-400 hover:text-black rounded-lg transition-all"
-                            >
-                              💬
+                            <a href={waUrl(cliente.telefono)} target="_blank" rel="noopener noreferrer"
+                              className="p-2 bg-zinc-900 hover:bg-[#CCFF00] border border-zinc-800 text-zinc-400 hover:text-black rounded-lg transition-all">
+                              WA
                             </a>
                           )}
                           {cliente.telefono && (
-                            
-                              href={"tel:" + cliente.telefono}
-                              className="p-2 bg-zinc-900 hover:bg-blue-500 border border-zinc-800 hover:border-blue-500 text-zinc-400 hover:text-white rounded-lg transition-all"
-                            >
-                              📞
+                            <a href={telUrl(cliente.telefono)}
+                              className="p-2 bg-zinc-900 hover:bg-blue-500 border border-zinc-800 text-zinc-400 hover:text-white rounded-lg transition-all">
+                              Tel
                             </a>
                           )}
                         </div>
