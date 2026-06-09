@@ -27,7 +27,6 @@ export default function ClientsPage() {
         .from('clientes')
         .select('*')
         .order('created_at', { ascending: false })
-
       if (error) console.error(error)
       else setClientes(data || [])
       setLoading(false)
@@ -52,7 +51,6 @@ export default function ClientsPage() {
   return (
     <div className="text-zinc-100 font-sans selection:bg-[#CCFF00] selection:text-black">
       <div className="space-y-8">
-
         <header className="border-b border-zinc-900 pb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
           <div>
             <span className="text-sm font-mono text-[#CCFF00] uppercase tracking-widest">Base de Datos Central</span>
@@ -139,11 +137,12 @@ export default function ClientsPage() {
                       <td className="p-4">
                         <span className="text-zinc-400 text-[11px]">{cliente.proxima_accion || '—'}</span>
                       </td>
-  <td className="p-4 pr-6">
+                      <td className="p-4 pr-6">
                         <div className="flex items-center justify-center gap-2">
                           {cliente.telefono && (
                             
-href={`https://wa.me/${cliente.telefono}`}                              target="_blank"
+                              href={`https://wa.me/${cliente.telefono}`}
+                              target="_blank"
                               rel="noopener noreferrer"
                               className="p-2 bg-zinc-900 hover:bg-[#CCFF00] border border-zinc-800 hover:border-[#CCFF00] text-zinc-400 hover:text-black rounded-lg transition-all"
                             >
@@ -159,7 +158,7 @@ href={`https://wa.me/${cliente.telefono}`}                              target="
                             </a>
                           )}
                         </div>
-                      </td>                      </td>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
