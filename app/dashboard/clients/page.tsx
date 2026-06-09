@@ -143,8 +143,7 @@ export default function ClientsPage() {
                         <div className="flex items-center justify-center gap-2">
                           {cliente.telefono && (
                             
-                              href={`https://wa.me/${cliente.telefono}`}
-                              target="_blank"
+href={`https://wa.me/${cliente.telefono}`}                              target="_blank"
                               rel="noopener noreferrer"
                               className="p-2 bg-zinc-900 hover:bg-[#CCFF00] border border-zinc-800 hover:border-[#CCFF00] text-zinc-400 hover:text-black rounded-lg transition-all"
                             >
