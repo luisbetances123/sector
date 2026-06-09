@@ -10,6 +10,7 @@ import {
   GitFork, 
   Calendar,
   BarChart2,
+  UserCog,
   LogOut,
   Menu,
   X
@@ -37,6 +38,7 @@ export default function DashboardLayout({
     { name: 'Pipeline', href: '/dashboard/pipeline', icon: GitFork },
     { name: 'Calendario', href: '/dashboard/calendar', icon: Calendar },
     { name: 'Reportes', href: '/dashboard/reports', icon: BarChart2 },
+    { name: 'Usuarios', href: '/dashboard/usuarios', icon: UserCog },
   ]
 
   return (
