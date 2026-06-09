@@ -281,6 +281,9 @@ export default function Page() {
               <a href="#contacto" className="bg-[#CCFF00] text-black px-8 py-4 rounded-xl font-black hover:bg-white transition-all text-sm uppercase tracking-wider shadow-lg shadow-[#CCFF00]/10">
                 {t.hero.btnPrimary}
               </a>
+              <a href="/demo" className="border border-[#CCFF00]/40 bg-[#CCFF00]/5 px-8 py-4 rounded-xl font-bold hover:border-[#CCFF00] hover:text-[#CCFF00] transition-all text-sm uppercase tracking-wider text-[#CCFF00]/80">
+                Ver Demo en Vivo →
+              </a>
               <a href="#features" className="border border-zinc-800 px-8 py-4 rounded-xl font-bold hover:border-[#CCFF00] hover:text-[#CCFF00] transition-all text-sm uppercase tracking-wider">
                 {t.hero.btnSecondary}
               </a>
