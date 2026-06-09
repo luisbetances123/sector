@@ -1,8 +1,11 @@
 "use client";
 
+"use client";
+
 import { useState, useEffect } from 'react';
-// Cambiamos a esta ruta absoluta desde la raíz del proyecto
-import { supabase } from '../../lib/supabase';
+// Usamos el alias @ para que busque la carpeta lib dentro de src
+import { supabase } from '@/lib/supabase';
+
 export default function DashboardPage() {
   const [stats, setStats] = useState({ propiedades: 0, clientes: 0, loading: true });
 
