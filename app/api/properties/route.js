@@ -1,21 +1,24 @@
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function POST(request) {
-  const supabase = createRouteHandlerClient({ cookies });
+  const cookieStore = cookies();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    { cookies: { getAll() { return cookieStore.getAll(); } } }
+  );
 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
-  // Obtener plan del usuario
   const { data: profile } = await supabase
     .from("profiles")
     .select("plan")
     .eq("id", user.id)
     .single();
 
-  // Si es free, verificar límite de 3 propiedades
   if (profile?.plan === "free") {
     const { count } = await supabase
       .from("properties")
@@ -30,7 +33,6 @@ export async function POST(request) {
     }
   }
 
-  // Proceder con la creación
   const body = await request.json();
   const { data, error } = await supabase
     .from("properties")
