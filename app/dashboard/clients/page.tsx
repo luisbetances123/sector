@@ -1,7 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { supabase } from '@/app/lib/supabase'
-import { generateWhatsAppLink } from '@/utils/whatsapp'
 
 interface Cliente {
   id: string
@@ -140,11 +139,18 @@ export default function ClientsPage() {
                       <td className="p-4">
                         <span className="text-zinc-400 text-[11px]">{cliente.proxima_accion || '—'}</span>
                       </td>
-                      <td className="p-4 pr-6">
+  <td className="p-4 pr-6">
                         <div className="flex items-center justify-center gap-2">
                           {cliente.telefono && (
                             
-   href={generateWhatsAppLink({ phone: cliente.telefono, clientName: cliente.nombre, propertyName: '', propertyPrice: '' })}
+                              href={`https://wa.me/${cliente.telefono}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-2 bg-zinc-900 hover:bg-[#CCFF00] border border-zinc-800 hover:border-[#CCFF00] text-zinc-400 hover:text-black rounded-lg transition-all"
+                            >
+                              💬
+                            </a>
+                          )}
                           {cliente.telefono && (
                             
                               href={`tel:${cliente.telefono}`}
@@ -154,7 +160,7 @@ export default function ClientsPage() {
                             </a>
                           )}
                         </div>
-                      </td>
+                      </td>                      </td>
                     </tr>
                   ))}
                 </tbody>
