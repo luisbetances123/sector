@@ -1,3 +1,5 @@
+"use client";
+
 export default function PricingPage() {
   return (
     <div style={{ minHeight: "100vh", background: "#f8fafc", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 20px" }}>
