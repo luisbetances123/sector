@@ -67,7 +67,7 @@ export default function CalendarPage() {
   const [diaSeleccionado, setDiaSeleccionado] = useState<string | null>(hoy.toISOString().split('T')[0])
   const [showForm, setShowForm] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [clientes, setClientes] = useState<{id: string, name: string, phone?: string}[]>([])
+  const [clientes, setClientes] = useState<{id: string, nombre: string, telefono?: string}[]>([])
   const hoyStr = hoy.toISOString().split('T')[0]
   const [form, setForm] = useState({ cliente_id: '', tipo: 'llamada', titulo: '', detalle: '', fecha: hoyStr, hora: '09:00', urgencia: 'media' })
 
