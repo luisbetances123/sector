@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { supabase } from '../../lib/supabase'
+import { supabase } from '@/app/lib/supabase'
 
 interface FollowUp {
   id: string
@@ -78,7 +78,7 @@ export default function CalendarPage() {
   }, [])
 
   async function fetchClientes() {
-    const { data } = await supabase.from('clients').select('id, name, phone')
+    const { data } = await supabase.from('clientes').select('id, nombre, telefono')
     if (data) setClientes(data)
   }
 
