@@ -1,10 +1,8 @@
 'use client'
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { supabase } from '@/app/lib/supabase'
 
 export default function LoginPage() {
-  const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -23,8 +21,7 @@ export default function LoginPage() {
       return
     }
 
-    router.push('/dashboard')
-    router.refresh()
+    window.location.href = '/dashboard'
   }
 
   return (
@@ -34,7 +31,6 @@ export default function LoginPage() {
           <div className="w-3 h-3 rounded-full bg-[#CCFF00] animate-pulse" />
           <span className="text-lg font-black tracking-tighter uppercase text-white">SECTOR</span>
         </div>
-
         <form onSubmit={handleLogin} className="space-y-4">
           <input
             type="email"
