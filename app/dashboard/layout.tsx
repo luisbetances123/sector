@@ -8,7 +8,8 @@ import {
   Users, 
   Building2, 
   GitFork, 
-  Calendar, 
+  Calendar,
+  BarChart2,
   LogOut,
   Menu,
   X
@@ -35,6 +36,7 @@ export default function DashboardLayout({
     { name: 'Propiedades', href: '/dashboard/properties', icon: Building2 },
     { name: 'Pipeline', href: '/dashboard/pipeline', icon: GitFork },
     { name: 'Calendario', href: '/dashboard/calendar', icon: Calendar },
+    { name: 'Reportes', href: '/dashboard/reports', icon: BarChart2 },
   ]
 
   return (
