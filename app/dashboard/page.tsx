@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react';
 // Cambiamos a esta ruta absoluta desde la raíz del proyecto
-import { supabase } from '../../lib/supabase'; 
-
+import { supabase } from '../../lib/supabase';
 export default function DashboardPage() {
   const [stats, setStats] = useState({ propiedades: 0, clientes: 0, loading: true });
 
