@@ -1,398 +1,244 @@
-"use client";
+'use client'
+import { useState, useEffect } from 'react'
+import { supabase } from '@/app/lib/supabase'
 
-import React, { useState } from 'react';
-import { generateWhatsAppLink } from "@/utils/whatsapp";
-
-interface ClientDeal {
-  id: string;
-  name: string;
-  property: string;
-  price: number;
-  priceStr: string;
-  stageId: string;
-  updatedAt: string;
-  phone: string;
-  email: string;
-  notes: string;
+interface Deal {
+  id: string
+  cliente_id: string | null
+  nombre_cliente: string
+  propiedad: string
+  precio: number
+  etapa: string
+  notas: string
+  telefono: string
+  email: string
+  created_at: string
+  updated_at: string
 }
 
+const ETAPAS = ['Prospectos', 'Visitas', 'Negociacion', 'Cierre']
+
 export default function PipelinePage() {
-  // 8 CLIENTES PARA IMPRESIONAR (Showroom Edition)
-  const [deals, setDeals] = useState<ClientDeal[]>([
-    {
-      id: "d1",
-      name: "Juan Manuel Peralta",
-      property: "Torre Serralles - 3BR",
-      price: 325000,
-      priceStr: "US$ 325,000",
-      stageId: "1",
-      updatedAt: new Date().toISOString(),
-      phone: "18095551234",
-      email: "j.peralta@email.com",
-      notes: "Interesado en pisos altos con vista despejada. Listo para reservar si el desglose de mantenimiento le cuadra."
-    },
-    {
-      id: "d2",
-      name: "Elena de los Santos",
-      property: "Penthouse Evaristo Morales",
-      price: 540000,
-      priceStr: "US$ 540,000",
-      stageId: "1",
-      updatedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-      phone: "18095551234",
-      email: "elena.santos@leyes.com",
-      notes: "Lleva una semana congelada porque está esperando la aprobación de un poder legal internacional."
-    },
-    {
-      id: "d3",
-      name: "Inversiones Piantini",
-      property: "Torre Naco Luxury",
-      price: 450000,
-      priceStr: "US$ 450,000",
-      stageId: "2",
-      updatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-      phone: "18095551234",
-      email: "inversiones.p@email.com",
-      notes: "Solicitó un descuento del 5% en el precio de lista. Pendiente confirmar con el desarrollador."
-    },
-    {
-      id: "d4",
-      name: "Dr. Marcos Rossi",
-      property: "Blue Mall Residences",
-      price: 580000,
-      priceStr: "US$ 580,000",
-      stageId: "2",
-      updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-      phone: "18095551234",
-      email: "m.rossi@medicina.com",
-      notes: "Le encantaron los acabados de la cocina. Quiere coordinar una segunda visita con su esposa este sábado."
-    },
-    {
-      id: "d5",
-      name: "Sofía Rodríguez",
-      property: "Apt Bella Vista Vista Mar",
-      price: 280000,
-      priceStr: "US$ 280,000",
-      stageId: "3",
-      updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      phone: "18095551234",
-      email: "sofia.rod@diseno.com",
-      notes: "Revisando borrador del contrato. Presentó objeción menor con la cláusula de penalidad por retraso."
-    },
-    {
-      id: "d6",
-      name: "David Chen",
-      property: "Villa en Cap Cana",
-      price: 1250000,
-      priceStr: "US$ 1,250,000",
-      stageId: "3",
-      updatedAt: new Date().toISOString(),
-      phone: "18095551234",
-      email: "david.chen@global.com",
-      notes: "Inversionista extranjero de alto perfil. Evaluando rendimiento de renta corta (Airbnb) en la zona."
-    },
-    {
-      id: "d7",
-      name: "Ricardo Arjona",
-      property: "Casa de Campo - Dye Fore",
-      price: 3500000,
-      priceStr: "US$ 3,500,000",
-      stageId: "4",
-      updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-      phone: "18095551234",
-      email: "arjona@musica.com",
-      notes: "Cierre programado para finales de mes. Fondos listos en cuenta de fideicomiso."
-    },
-    {
-      id: "d8",
-      name: "Familia Bisonó",
-      property: "Prados del Este - Casa",
-      price: 195000,
-      priceStr: "US$ 195,000",
-      stageId: "4",
-      updatedAt: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
-      phone: "18095551234",
-      email: "bisono.contacto@familia.com",
-      notes: "Estancado en el papeleo final del banco por un error en la certificación de cargas del inmueble."
+  const [deals, setDeals] = useState<Deal[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null)
+  const [showForm, setShowForm] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [newDeal, setNewDeal] = useState({
+    nombre_cliente: '',
+    propiedad: '',
+    precio: '',
+    etapa: 'Prospectos',
+    telefono: '',
+    email: '',
+    notas: ''
+  })
+
+  useEffect(() => {
+    fetchDeals()
+  }, [])
+
+  async function fetchDeals() {
+    const { data, error } = await supabase
+      .from('pipeline_deals')
+      .select('*')
+      .order('created_at', { ascending: false })
+    if (error) console.error(error)
+    else setDeals(data || [])
+    setLoading(false)
+  }
+
+  async function createDeal() {
+    setSaving(true)
+    const { data: { user } } = await supabase.auth.getUser()
+    const { error } = await supabase.from('pipeline_deals').insert([{
+      nombre_cliente: newDeal.nombre_cliente,
+      propiedad: newDeal.propiedad,
+      precio: Number(newDeal.precio) || 0,
+      etapa: newDeal.etapa,
+      telefono: newDeal.telefono,
+      email: newDeal.email,
+      notas: newDeal.notas,
+      user_id: user?.id
+    }])
+    if (!error) {
+      setNewDeal({ nombre_cliente: '', propiedad: '', precio: '', etapa: 'Prospectos', telefono: '', email: '', notas: '' })
+      setShowForm(false)
+      fetchDeals()
     }
-  ]);
+    setSaving(false)
+  }
 
-  const [selectedDealId, setSelectedDealId] = useState<string | null>(null);
-  const currentDeal = deals.find(d => d.id === selectedDealId);
+  async function moveDeal(dealId: string, currentEtapa: string, direction: 'forward' | 'backward') {
+    const idx = ETAPAS.indexOf(currentEtapa)
+    const nextIdx = direction === 'forward' ? idx + 1 : idx - 1
+    if (nextIdx < 0 || nextIdx >= ETAPAS.length) return
+    const nextEtapa = ETAPAS[nextIdx]
+    await supabase.from('pipeline_deals').update({ etapa: nextEtapa, updated_at: new Date().toISOString() }).eq('id', dealId)
+    fetchDeals()
+  }
 
-  const columnsDefinition = [
-    { id: '1', title: 'Prospectos' },
-    { id: '2', title: 'Visitas' },
-    { id: '3', title: 'Negociación' },
-    { id: '4', title: 'Cierre' }
-  ];
+  async function updateDeal(deal: Deal) {
+    await supabase.from('pipeline_deals').update({
+      nombre_cliente: deal.nombre_cliente,
+      propiedad: deal.propiedad,
+      precio: deal.precio,
+      notas: deal.notas,
+      telefono: deal.telefono,
+      email: deal.email,
+      updated_at: new Date().toISOString()
+    }).eq('id', deal.id)
+    fetchDeals()
+    setSelectedDeal(null)
+  }
 
-  const moveDeal = (dealId: string, currentStageId: string, direction: 'forward' | 'backward') => {
-    const currentIdx = columnsDefinition.findIndex(c => c.id === currentStageId);
-    let nextIdx = direction === 'forward' ? currentIdx + 1 : currentIdx - 1;
+  async function deleteDeal(id: string) {
+    await supabase.from('pipeline_deals').delete().eq('id', id)
+    fetchDeals()
+  }
 
-    if (nextIdx >= 0 && nextIdx < columnsDefinition.length) {
-      const nextStageId = columnsDefinition[nextIdx].id;
-      setDeals(prevDeals => 
-        prevDeals.map(deal => 
-          deal.id === dealId 
-            ? { ...deal, stageId: nextStageId, updatedAt: new Date().toISOString() } 
-            : deal
-        )
-      );
-    }
-  };
-
-  const updateDealField = (dealId: string, field: keyof ClientDeal, value: any) => {
-    setDeals(prevDeals =>
-      prevDeals.map(deal => {
-        if (deal.id === dealId) {
-          const updated = { ...deal, [field]: value };
-          if (field === 'price') {
-            updated.priceStr = `US$ ${Number(value).toLocaleString('en-US')}`;
-          }
-          return updated;
-        }
-        return deal;
-      })
-    );
-  };
-
-  const getDaysInStage = (dateString: string): number => {
-    const created = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - created.getTime());
-    return Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  };
-
-  const copyAISuggestion = (deal: ClientDeal) => {
-    let text = "";
-    if (deal.stageId === "1") text = `Hola ${deal.name}, veo que te interesó *${deal.property}*. ¿Agendamos visita?`;
-    else if (deal.stageId === "2") text = `Hola ${deal.name}, ¿qué te pareció la visita a *${deal.property}*?`;
-    else if (deal.stageId === "3") text = `Hola ${deal.name}, estoy revisando la oferta por *${deal.property}*.`;
-    else text = `Hola ${deal.name}, felicidades por tu nueva propiedad en *${deal.property}*!`;
-    
-    navigator.clipboard.writeText(text);
-    alert(`🤖 Sugerencia IA copiada para ${deal.name}`);
-  };
-
-  const processedColumns = columnsDefinition.map(col => {
-    const colDeals = deals.filter(d => d.stageId === col.id);
-    const totalAmount = colDeals.reduce((sum, d) => sum + d.price, 0);
-    return {
-      ...col,
-      count: `${colDeals.length} ${colDeals.length === 1 ? 'deal' : 'deals'}`,
-      total: totalAmount > 0 ? `US$ ${totalAmount.toLocaleString('en-US')}` : 'US$ 0',
-      deals: colDeals
-    };
-  });
+  const totalVolumen = deals.reduce((s, d) => s + (d.precio || 0), 0)
 
   return (
-    <div className="min-h-screen text-zinc-100 p-8 font-sans selection:bg-[#CCFF00] selection:text-black relative">
-      <div className="max-w-7xl mx-auto space-y-12">
-        <header className="border-b border-zinc-900 pb-10 flex justify-between items-end">
+    <div className="text-zinc-100 font-sans">
+      <div className="space-y-8">
+        <header className="border-b border-zinc-900 pb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
           <div>
-            <span className="text-sm font-mono text-[#CCFF00] uppercase tracking-widest">Inteligencia de Negociación</span>
-            <h1 className="text-5xl font-extrabold tracking-tighter text-white mt-2">Pipeline Visual</h1>
+            <span className="text-sm font-mono text-[#CCFF00] uppercase tracking-widest">Inteligencia de Negociacion</span>
+            <h1 className="text-4xl font-extrabold tracking-tighter text-white mt-2">Pipeline Visual</h1>
           </div>
-          <div className="text-right">
-             <p className="text-xs font-mono text-zinc-500 uppercase">Volumen Total en Pipeline</p>
-             <p className="text-2xl font-black text-white">US$ {deals.reduce((s,d)=>s+d.price,0).toLocaleString()}</p>
+          <div className="flex items-end gap-6">
+            <div className="text-right">
+              <p className="text-xs font-mono text-zinc-500 uppercase">Volumen Total</p>
+              <p className="text-2xl font-black text-white">US$ {totalVolumen.toLocaleString()}</p>
+            </div>
+            <button
+              onClick={() => setShowForm(!showForm)}
+              className="bg-[#CCFF00] text-black font-black text-xs rounded-xl px-4 py-3 hover:bg-[#b8e600] transition-colors whitespace-nowrap"
+            >
+              + Nuevo Deal
+            </button>
           </div>
         </header>
 
-        <main className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {processedColumns.map((col) => (
-            <div key={col.id} className="bg-zinc-950/20 p-4 rounded-2xl min-h-[700px] border border-zinc-900/50 flex flex-col">
-              <div className="flex justify-between items-center mb-6">
-                <div>
-                  <h3 className="text-xs font-mono font-black text-zinc-400 uppercase">{col.title}</h3>
-                  <p className="text-[10px] text-zinc-500 font-mono mt-0.5">{col.count}</p>
-                </div>
-                <span className="text-[10px] font-mono bg-zinc-900 px-2 py-1 rounded text-white">{col.total}</span>
-              </div>
-
-              <div className="space-y-4 flex-1">
-                {col.deals.map((deal) => {
-                  const days = getDaysInStage(deal.updatedAt);
-                  const isNew = days === 0;
-                  const isCold = days >= 4;
-
-                  let cardStyles = "border-zinc-800 bg-zinc-950 hover:border-zinc-700";
-                  if (isNew) cardStyles = "border-[#CCFF00]/40 bg-gradient-to-b from-[#CCFF00]/5 to-zinc-950 shadow-[#CCFF00]/5 hover:border-[#CCFF00]/60";
-                  if (isCold) cardStyles = "border-red-500/50 bg-gradient-to-b from-red-950/20 to-zinc-950 shadow-red-950/10 hover:border-red-500/70";
-
-                  return (
-                    <div 
-                      key={deal.id} 
-                      className={`border p-4 rounded-xl shadow-lg flex flex-col justify-between min-h-[220px] transition-all duration-300 cursor-pointer ${cardStyles}`}
-                      onClick={() => setSelectedDealId(deal.id)}
-                    >
-                      <div>
-                        <div className="flex justify-between items-start gap-2">
-                          <h4 className="font-bold text-white text-[13px] leading-tight">{deal.name}</h4>
-                          <span className={`text-[8px] font-mono font-bold px-1.5 py-0.5 rounded-full flex items-center gap-1 ${
-                            isNew ? 'bg-[#CCFF00]/10 text-[#CCFF00] border border-[#CCFF00]/20 animate-pulse' :
-                            isCold ? 'bg-red-500/10 text-red-400 border border-red-500/20 animate-pulse' :
-                            'bg-zinc-900 text-zinc-500 border border-zinc-800'
-                          }`}>
-                            {isNew ? '🟢 NUEVO' : isCold ? `🥶 COLD (${days}d)` : `⚡ ACTIVO`}
-                          </span>
-                        </div>
-                        <p className="text-[11px] text-zinc-500 mt-1 truncate">{deal.property}</p>
-                        <p className="text-[#CCFF00] font-black mt-2 text-sm">{deal.priceStr}</p>
-                      </div>
-
-                      <div className="mt-4 space-y-2" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex gap-1.5">
-                          <a href={generateWhatsAppLink({phone: deal.phone, clientName: deal.name, propertyName: deal.property, propertyPrice: deal.priceStr})} target="_blank" rel="noopener noreferrer"
-                            className="flex-1 inline-flex items-center justify-center gap-1 px-2 py-1.5 text-[9px] font-bold uppercase text-black bg-[#CCFF00] rounded-lg">
-                            💬 WA
-                          </a>
-                          <button onClick={() => copyAISuggestion(deal)} className="px-2 py-1.5 text-[9px] font-bold bg-zinc-900 border border-zinc-800 text-zinc-300 rounded-lg">🪄 AI</button>
-                        </div>
-                        <div className="flex justify-between items-center pt-2 border-t border-zinc-900 gap-1.5">
-                          <button disabled={col.id === '1'} onClick={() => moveDeal(deal.id, deal.stageId, 'backward')} className="text-[9px] p-1 bg-zinc-900 rounded disabled:opacity-10 text-zinc-400">◀</button>
-                          <span className="text-[8px] font-mono text-zinc-600 uppercase">Mover</span>
-                          <button disabled={col.id === '4'} onClick={() => moveDeal(deal.id, deal.stageId, 'forward')} className="text-[9px] p-1 bg-zinc-900 rounded disabled:opacity-10 text-zinc-400">▶</button>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+        {showForm && (
+          <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 space-y-4">
+            <h2 className="text-sm font-bold text-white">Nuevo Deal</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <input placeholder="Nombre del cliente" value={newDeal.nombre_cliente} onChange={e => setNewDeal({...newDeal, nombre_cliente: e.target.value})}
+                className="bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 outline-none" />
+              <input placeholder="Propiedad" value={newDeal.propiedad} onChange={e => setNewDeal({...newDeal, propiedad: e.target.value})}
+                className="bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 outline-none" />
+              <input placeholder="Precio (USD)" type="number" value={newDeal.precio} onChange={e => setNewDeal({...newDeal, precio: e.target.value})}
+                className="bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 outline-none" />
+              <input placeholder="Telefono" value={newDeal.telefono} onChange={e => setNewDeal({...newDeal, telefono: e.target.value})}
+                className="bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 outline-none" />
+              <input placeholder="Email" value={newDeal.email} onChange={e => setNewDeal({...newDeal, email: e.target.value})}
+                className="bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 outline-none" />
+              <select value={newDeal.etapa} onChange={e => setNewDeal({...newDeal, etapa: e.target.value})}
+                className="bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 outline-none">
+                {ETAPAS.map(e => <option key={e} value={e}>{e}</option>)}
+              </select>
             </div>
-          ))}
-        </main>
+            <textarea placeholder="Notas" value={newDeal.notas} onChange={e => setNewDeal({...newDeal, notas: e.target.value})} rows={2}
+              className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 outline-none resize-none" />
+            <div className="flex gap-3">
+              <button onClick={createDeal} disabled={saving || !newDeal.nombre_cliente}
+                className="bg-[#CCFF00] text-black font-black text-xs rounded-xl px-6 py-3 hover:bg-[#b8e600] transition-colors disabled:opacity-50">
+                {saving ? 'Guardando...' : 'Crear Deal'}
+              </button>
+              <button onClick={() => setShowForm(false)} className="text-zinc-400 text-xs px-4 py-3">Cancelar</button>
+            </div>
+          </div>
+        )}
+
+        {loading ? (
+          <div className="text-zinc-500 text-sm text-center py-20">Cargando pipeline...</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {ETAPAS.map(etapa => {
+              const etapaDeals = deals.filter(d => d.etapa === etapa)
+              const etapaTotal = etapaDeals.reduce((s, d) => s + (d.precio || 0), 0)
+              return (
+                <div key={etapa} className="bg-zinc-950/20 p-4 rounded-2xl border border-zinc-900/50 flex flex-col min-h-[500px]">
+                  <div className="flex justify-between items-center mb-4">
+                    <div>
+                      <h3 className="text-xs font-mono font-black text-zinc-400 uppercase">{etapa}</h3>
+                      <p className="text-[10px] text-zinc-600 font-mono">{etapaDeals.length} deals</p>
+                    </div>
+                    <span className="text-[10px] font-mono bg-zinc-900 px-2 py-1 rounded text-white">
+                      US$ {etapaTotal.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="space-y-3 flex-1">
+                    {etapaDeals.map(deal => (
+                      <div key={deal.id} onClick={() => setSelectedDeal(deal)}
+                        className="border border-zinc-800 bg-zinc-950 hover:border-zinc-700 p-4 rounded-xl cursor-pointer transition-all">
+                        <div className="font-bold text-white text-xs">{deal.nombre_cliente}</div>
+                        <div className="text-zinc-500 text-[11px] mt-0.5 truncate">{deal.propiedad}</div>
+                        <div className="text-[#CCFF00] font-black text-sm mt-2">US$ {(deal.precio || 0).toLocaleString()}</div>
+                        <div className="flex justify-between items-center mt-3 pt-2 border-t border-zinc-900" onClick={e => e.stopPropagation()}>
+                          <button disabled={etapa === ETAPAS[0]} onClick={() => moveDeal(deal.id, deal.etapa, 'backward')}
+                            className="text-[9px] p-1.5 bg-zinc-900 rounded disabled:opacity-20 text-zinc-400 hover:text-white">
+                            Back
+                          </button>
+                          <button onClick={() => deleteDeal(deal.id)} className="text-[9px] text-red-500 hover:text-red-400">Borrar</button>
+                          <button disabled={etapa === ETAPAS[ETAPAS.length-1]} onClick={() => moveDeal(deal.id, deal.etapa, 'forward')}
+                            className="text-[9px] p-1.5 bg-zinc-900 rounded disabled:opacity-20 text-zinc-400 hover:text-white">
+                            Next
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
       </div>
 
-      {/* MODAL DETALLES Y EDICIÓN COMPLETO CON CAJAS DE INPUT VISIBLES */}
-      {currentDeal && (
-        <div className="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex justify-end transition-opacity duration-300" onClick={() => setSelectedDealId(null)}>
-          <div className="w-full max-w-lg bg-zinc-950 border-l border-zinc-900 h-full p-8 flex flex-col justify-between shadow-2xl relative" onClick={(e) => e.stopPropagation()}>
-            
-            <div className="space-y-6 overflow-y-auto pr-2 flex-1">
-              <div className="flex justify-between items-center">
-                <span className="text-[10px] font-mono bg-zinc-900 border border-zinc-800 px-3 py-1 rounded-full text-zinc-400">
-                  ID: {currentDeal.id.toUpperCase()} • Ficha del Inversionista
-                </span>
-                <button 
-                  onClick={() => setSelectedDealId(null)}
-                  className="text-zinc-500 hover:text-white text-sm font-mono bg-zinc-900 hover:bg-zinc-800 w-8 h-8 rounded-full flex items-center justify-center transition-colors"
-                >
-                  ✕
-                </button>
+      {selectedDeal && (
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex justify-end" onClick={() => setSelectedDeal(null)}>
+          <div className="w-full max-w-lg bg-zinc-950 border-l border-zinc-900 h-full p-8 flex flex-col gap-6 overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="flex justify-between items-center">
+              <h2 className="text-sm font-black text-white uppercase">Editar Deal</h2>
+              <button onClick={() => setSelectedDeal(null)} className="text-zinc-500 hover:text-white">X</button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="text-[9px] font-mono text-zinc-500 uppercase">Nombre</label>
+                <input value={selectedDeal.nombre_cliente} onChange={e => setSelectedDeal({...selectedDeal, nombre_cliente: e.target.value})}
+                  className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-3 mt-1 outline-none" />
               </div>
-
-              <div className="space-y-5">
-                {/* Nombre */}
-                <div className="group/field relative">
-                  <div className="flex justify-between items-center">
-                    <label className="text-[9px] font-mono text-zinc-500 uppercase tracking-wider block">Nombre del Cliente</label>
-                    <span className="text-[10px] text-zinc-600 font-mono opacity-0 group-hover/field:opacity-100 transition-opacity">✏️ Editar</span>
-                  </div>
-                  <input 
-                    type="text" 
-                    value={currentDeal.name}
-                    onChange={(e) => updateDealField(currentDeal.id, 'name', e.target.value)}
-                    className="w-full bg-zinc-900/50 border border-zinc-800 focus:border-[#CCFF00] rounded-xl text-base font-bold text-white px-3 py-2.5 mt-1 outline-none transition-colors"
-                  />
-                </div>
-
-                {/* Teléfono y Correo */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="group/field">
-                    <div className="flex justify-between items-center">
-                      <label className="text-[9px] font-mono text-zinc-500 uppercase tracking-wider block">Teléfono</label>
-                      <span className="text-[9px] text-zinc-600 font-mono opacity-0 group-hover/field:opacity-100 transition-opacity">✏️</span>
-                    </div>
-                    <input 
-                      type="text" 
-                      value={currentDeal.phone}
-                      onChange={(e) => updateDealField(currentDeal.id, 'phone', e.target.value)}
-                      className="w-full bg-zinc-900/50 border border-zinc-800 focus:border-[#CCFF00] rounded-xl text-xs text-zinc-300 px-3 py-2.5 mt-1 outline-none transition-colors"
-                    />
-                  </div>
-                  <div className="group/field">
-                    <div className="flex justify-between items-center">
-                      <label className="text-[9px] font-mono text-zinc-500 uppercase tracking-wider block">Correo</label>
-                      <span className="text-[9px] text-zinc-600 font-mono opacity-0 group-hover/field:opacity-100 transition-opacity">✏️</span>
-                    </div>
-                    <input 
-                      type="email" 
-                      value={currentDeal.email}
-                      onChange={(e) => updateDealField(currentDeal.id, 'email', e.target.value)}
-                      className="w-full bg-zinc-900/50 border border-zinc-800 focus:border-[#CCFF00] rounded-xl text-xs text-zinc-300 px-3 py-2.5 mt-1 outline-none transition-colors"
-                    />
-                  </div>
-                </div>
-
-                {/* Propiedad */}
-                <div className="group/field">
-                  <div className="flex justify-between items-center">
-                    <label className="text-[9px] font-mono text-zinc-500 uppercase tracking-wider block">Propiedad Asignada</label>
-                    <span className="text-[10px] text-zinc-600 font-mono opacity-0 group-hover/field:opacity-100 transition-opacity">✏️ Editar</span>
-                  </div>
-                  <input 
-                    type="text" 
-                    value={currentDeal.property}
-                    onChange={(e) => updateDealField(currentDeal.id, 'property', e.target.value)}
-                    className="w-full bg-zinc-900/50 border border-zinc-800 focus:border-[#CCFF00] rounded-xl text-xs text-zinc-200 px-3 py-2.5 mt-1 outline-none transition-colors"
-                  />
-                </div>
-
-                {/* Presupuesto */}
-                <div className="group/field">
-                  <div className="flex justify-between items-center">
-                    <label className="text-[9px] font-mono text-zinc-500 uppercase tracking-wider block">Presupuesto (US$)</label>
-                    <span className="text-[10px] text-zinc-600 font-mono opacity-0 group-hover/field:opacity-100 transition-opacity">✏️ Editar</span>
-                  </div>
-                  <input 
-                    type="number" 
-                    value={currentDeal.price}
-                    onChange={(e) => updateDealField(currentDeal.id, 'price', Number(e.target.value))}
-                    className="w-full bg-zinc-900/50 border border-zinc-800 focus:border-[#CCFF00] rounded-xl text-sm font-black text-[#CCFF00] px-3 py-2.5 mt-1 outline-none transition-colors font-mono"
-                  />
-                </div>
-
-                {/* Notas */}
-                <div>
-                  <label className="text-[9px] font-mono text-zinc-500 uppercase tracking-wider block">Bitácora de Notas</label>
-                  <textarea 
-                    rows={4}
-                    value={currentDeal.notes}
-                    onChange={(e) => updateDealField(currentDeal.id, 'notes', e.target.value)}
-                    className="w-full bg-zinc-900/50 border border-zinc-800 focus:border-zinc-700 rounded-xl text-xs text-zinc-400 p-3 mt-1 outline-none resize-none transition-colors leading-relaxed"
-                  />
-                </div>
+              <div>
+                <label className="text-[9px] font-mono text-zinc-500 uppercase">Propiedad</label>
+                <input value={selectedDeal.propiedad} onChange={e => setSelectedDeal({...selectedDeal, propiedad: e.target.value})}
+                  className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 mt-1 outline-none" />
+              </div>
+              <div>
+                <label className="text-[9px] font-mono text-zinc-500 uppercase">Precio (USD)</label>
+                <input type="number" value={selectedDeal.precio} onChange={e => setSelectedDeal({...selectedDeal, precio: Number(e.target.value)})}
+                  className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-[#CCFF00] font-black text-sm rounded-xl px-4 py-3 mt-1 outline-none" />
+              </div>
+              <div>
+                <label className="text-[9px] font-mono text-zinc-500 uppercase">Telefono</label>
+                <input value={selectedDeal.telefono} onChange={e => setSelectedDeal({...selectedDeal, telefono: e.target.value})}
+                  className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 mt-1 outline-none" />
+              </div>
+              <div>
+                <label className="text-[9px] font-mono text-zinc-500 uppercase">Notas</label>
+                <textarea rows={4} value={selectedDeal.notas} onChange={e => setSelectedDeal({...selectedDeal, notas: e.target.value})}
+                  className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-zinc-300 text-xs rounded-xl px-4 py-3 mt-1 outline-none resize-none" />
               </div>
             </div>
-
-            <div className="border-t border-zinc-900 pt-4 mt-6 space-y-4">
-              <div className="bg-zinc-900/30 border border-zinc-900 rounded-xl p-3 flex justify-between items-center">
-                <div>
-                  <p className="text-[9px] font-mono text-zinc-500 uppercase">Asistente IA</p>
-                  <p className="text-[11px] text-zinc-400 mt-0.5">Listo para redactar seguimiento personalizado.</p>
-                </div>
-                <button 
-                  onClick={() => { copyAISuggestion(currentDeal); setSelectedDealId(null); }}
-                  className="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-white font-bold uppercase text-[9px] px-3 py-2 rounded-lg transition-colors"
-                >
-                  🪄 Copiar Script
-                </button>
-              </div>
-
-              <button
-                onClick={() => { setSelectedDealId(null); alert("💾 Pipeline actualizado en tiempo real."); }}
-                className="w-full bg-[#CCFF00] hover:bg-[#b5e600] text-black font-mono font-black uppercase text-xs py-3.5 rounded-xl transition-all tracking-wider shadow-lg flex items-center justify-center"
-              >
-                💾 Guardar y Cerrar Ficha
-              </button>
-            </div>
-
+            <button onClick={() => updateDeal(selectedDeal)}
+              className="w-full bg-[#CCFF00] text-black font-black text-xs rounded-xl py-4 hover:bg-[#b8e600] transition-colors">
+              Guardar Cambios
+            </button>
           </div>
         </div>
       )}
     </div>
-  );
+  )
 }
