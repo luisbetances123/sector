@@ -9,8 +9,8 @@ export default function DashboardPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const { count: props } = await supabase.from('propiedades').select('*', { count: 'exact', head: true });
-        const { count: clients } = await supabase.from('clientes').select('*', { count: 'exact', head: true });
+        const { count: props } = await supabase.from('properties').select('*', { count: 'exact', head: true });
+        const { count: clients } = await supabase.from('clients').select('*', { count: 'exact', head: true });
         setStats({ propiedades: props || 0, clientes: clients || 0, loading: false });
       } catch (error) {
         console.error("Error al cargar datos:", error);
