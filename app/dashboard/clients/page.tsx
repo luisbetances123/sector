@@ -4,14 +4,13 @@ import { supabase } from '@/app/lib/supabase'
 
 interface Cliente {
   id: string
-  nombre: string
+  name: string
   email: string
-  telefono: string
-  etapa: string
-  presupuesto_min: string
-  presupuesto_max: string
-  notas: string
-  proxima_accion: string
+  phone: string
+  stage: string
+  price: string
+  notes: string
+  initial: string
   created_at: string
   user_id: string
 }
