@@ -111,7 +111,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement 
       image_url: formData.imagen || 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200',
       bedrooms: formData.recamaras ? Number(formData.recamaras) : 4,
       bathrooms: formData.banos ? Number(formData.banos) : 5,
-      area: formData.metros_cuadrados,
+      m2: formData.metros_cuadrados,
       descripcion: formData.notas || 'Ficha premium generada desde el nuevo panel SECTOR.',
       status: 'active',
       estado: 'En venta',
