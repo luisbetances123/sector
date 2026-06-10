@@ -42,7 +42,7 @@ export default function ClienteFichaPage() {
   }, [id])
 
   async function fetchCliente() {
-    const { data } = await supabase.from('clientes').select('*').eq('id', id).single()
+    const { data } = await supabase.from('clients').select('*').eq('id', id).single()
     if (data) {
       setCliente(data)
       setForm(data)
@@ -78,7 +78,7 @@ export default function ClienteFichaPage() {
 
   async function guardarCliente() {
     setSaving(true)
-    await supabase.from('clientes').update({
+    await supabase.from('clients').update({
       nombre: form.nombre,
       email: form.email,
       telefono: form.telefono,

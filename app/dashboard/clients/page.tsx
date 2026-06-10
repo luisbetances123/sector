@@ -24,7 +24,7 @@ export default function ClientsPage() {
   useEffect(() => {
     async function fetchClientes() {
       const { data, error } = await supabase
-        .from('clientes')
+        .from('clients')
         .select('*')
         .order('created_at', { ascending: false })
       if (error) console.error(error)
