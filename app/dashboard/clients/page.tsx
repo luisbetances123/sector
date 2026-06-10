@@ -50,7 +50,7 @@ export default function ClientsPage() {
       
       notes: form.notas,
       initial: form.proxima_accion,
-      user_id: user?.id || null
+      owner_id: user?.id || null
     }])
     if (error) alert('Error: ' + error.message)
     else {
