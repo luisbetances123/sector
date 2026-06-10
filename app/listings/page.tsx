@@ -16,12 +16,13 @@ interface Propiedad {
   public?: boolean
 }
 
-const SECTORES = ['Todos', 'Piantini', 'Naco', 'Bella Vista', 'Evaristo Morales', 'Serralles', 'Los Cacicazgos', 'Arroyo Hondo', 'Viejo Arroyo Hondo', 'La Esperilla', 'El Millón', 'Mirador Norte', 'Mirador Sur']
+
 const TIPOS = ['Todos', 'Apartamento', 'Casa', 'Villa', 'Local', 'Solar', 'Penthouse']
 const WHATSAPP = '19293056500'
 
 export default function ListingsPage() {
   const [properties, setProperties] = useState<Propiedad[]>([])
+  const [sectores, setSectores] = useState<string[]>(['Todos'])
   const [loading, setLoading] = useState(true)
   const [sector, setSector] = useState('Todos')
   const [tipo, setTipo] = useState('Todos')
@@ -29,7 +30,11 @@ export default function ListingsPage() {
 
   useEffect(() => {
     supabase.from('properties').select('*').eq('public', true).then(({ data }) => {
-      if (data) setProperties(data)
+      if (data) {
+        setProperties(data)
+        const secs = ['Todos', ...Array.from(new Set(data.map((p: Propiedad) => p.location).filter(Boolean))).sort()]
+        setSectores(secs as string[])
+      }
       setLoading(false)
     })
   }, [])
@@ -72,7 +77,7 @@ export default function ListingsPage() {
               className="flex-1 bg-zinc-950 border border-zinc-800 focus:border-[#CCFF00] text-white px-4 py-2.5 rounded-xl text-sm outline-none placeholder-zinc-600" />
             <select value={sector} onChange={e => setSector(e.target.value)}
               className="bg-zinc-950 border border-zinc-800 focus:border-[#CCFF00] text-zinc-300 px-4 py-2.5 rounded-xl text-sm outline-none">
-              {SECTORES.map(s => <option key={s}>{s}</option>)}
+              {sectores.map(s => <option key={s}>{s}</option>)}
             </select>
             <select value={tipo} onChange={e => setTipo(e.target.value)}
               className="bg-zinc-950 border border-zinc-800 focus:border-[#CCFF00] text-zinc-300 px-4 py-2.5 rounded-xl text-sm outline-none">
