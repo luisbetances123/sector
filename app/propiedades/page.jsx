@@ -137,7 +137,7 @@ export default function PropiedadesPublicas() {
                     <p style={{ margin: "16px 0 0 0", fontSize: "1.25rem", fontWeight: "700", color: "#1e293b" }}>
                       {p.price ? `$${Number(p.price).toLocaleString()}` : "Consultar precio"}
                     </p>
-                    <button onClick={() => setContacto(p)}
+                    <button onClick={() => window.location.href = `/propiedades/${p.id}`}
                       style={{ width: "100%", marginTop: "16px", padding: "10px", background: "#1e293b", color: "#fff", border: "none", borderRadius: "8px", fontWeight: "600", cursor: "pointer", fontSize: "0.875rem" }}>
                       Consultar propiedad
                     </button>
