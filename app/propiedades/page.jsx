@@ -12,6 +12,30 @@ export default function PropiedadesPublicas() {
   const [filtros, setFiltros] = useState({ tipo: "", zona: "", precioMax: "", estado: "" });
   const [loading, setLoading] = useState(true);
   const [contacto, setContacto] = useState(null);
+  const [formData, setFormData] = useState({ nombre: "", email: "", telefono: "", mensaje: "" });
+  const [enviando, setEnviando] = useState(false);
+  const [enviado, setEnviado] = useState(false);
+
+  async function enviarConsulta() {
+    if (!formData.nombre || !formData.email || !formData.telefono) return;
+    setEnviando(true);
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...formData,
+          propertyId: contacto.id,
+          propertyName: contacto.name || contacto.title || "Propiedad",
+        }),
+      });
+      if (res.ok) {
+        setEnviado(true);
+        setTimeout(() => { setContacto(null); setEnviado(false); setFormData({ nombre: "", email: "", telefono: "", mensaje: "" }); }, 2000);
+      }
+    } catch (e) { console.error(e); }
+    setEnviando(false);
+  }
 
   useEffect(() => { cargar(); }, [filtros]);
 
@@ -133,13 +157,21 @@ export default function PropiedadesPublicas() {
             onClick={e => e.stopPropagation()}>
             <h3 style={{ margin: "0 0 8px 0", color: "#1e293b" }}>Consultar propiedad</h3>
             <p style={{ color: "#64748b", margin: "0 0 24px 0", fontSize: "0.875rem" }}>{contacto.name || contacto.title}</p>
-            <input placeholder="Tu nombre" style={{ width: "100%", padding: "10px 12px", border: "1px solid #e2e8f0", borderRadius: "8px", marginBottom: "12px", fontSize: "0.875rem", boxSizing: "border-box" }} />
-            <input placeholder="Tu email" style={{ width: "100%", padding: "10px 12px", border: "1px solid #e2e8f0", borderRadius: "8px", marginBottom: "12px", fontSize: "0.875rem", boxSizing: "border-box" }} />
-            <input placeholder="Tu telefono" style={{ width: "100%", padding: "10px 12px", border: "1px solid #e2e8f0", borderRadius: "8px", marginBottom: "12px", fontSize: "0.875rem", boxSizing: "border-box" }} />
-            <textarea placeholder="Mensaje (opcional)" rows={3} style={{ width: "100%", padding: "10px 12px", border: "1px solid #e2e8f0", borderRadius: "8px", marginBottom: "16px", fontSize: "0.875rem", boxSizing: "border-box", resize: "none" }} />
-            <button style={{ width: "100%", padding: "12px", background: "#3b82f6", color: "#fff", border: "none", borderRadius: "8px", fontWeight: "600", cursor: "pointer" }}>
-              Enviar consulta
-            </button>
+            {enviado ? (
+              <div style={{ textAlign: "center", padding: "32px 0", color: "#22c55e", fontWeight: "600" }}>
+                Consulta enviada exitosamente
+              </div>
+            ) : (
+              <>
+                <input value={formData.nombre} onChange={e => setFormData({...formData, nombre: e.target.value})} placeholder="Tu nombre *" style={{ width: "100%", padding: "10px 12px", border: "1px solid #e2e8f0", borderRadius: "8px", marginBottom: "12px", fontSize: "0.875rem", boxSizing: "border-box" }} />
+                <input value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} placeholder="Tu email *" type="email" style={{ width: "100%", padding: "10px 12px", border: "1px solid #e2e8f0", borderRadius: "8px", marginBottom: "12px", fontSize: "0.875rem", boxSizing: "border-box" }} />
+                <input value={formData.telefono} onChange={e => setFormData({...formData, telefono: e.target.value})} placeholder="Tu telefono *" style={{ width: "100%", padding: "10px 12px", border: "1px solid #e2e8f0", borderRadius: "8px", marginBottom: "12px", fontSize: "0.875rem", boxSizing: "border-box" }} />
+                <textarea value={formData.mensaje} onChange={e => setFormData({...formData, mensaje: e.target.value})} placeholder="Mensaje (opcional)" rows={3} style={{ width: "100%", padding: "10px 12px", border: "1px solid #e2e8f0", borderRadius: "8px", marginBottom: "16px", fontSize: "0.875rem", boxSizing: "border-box", resize: "none" }} />
+                <button onClick={enviarConsulta} disabled={enviando} style={{ width: "100%", padding: "12px", background: enviando ? "#94a3b8" : "#3b82f6", color: "#fff", border: "none", borderRadius: "8px", fontWeight: "600", cursor: enviando ? "default" : "pointer" }}>
+                  {enviando ? "Enviando..." : "Enviar consulta"}
+                </button>
+              </>
+            )}
             <button onClick={() => setContacto(null)} style={{ width: "100%", padding: "10px", background: "transparent", color: "#64748b", border: "none", cursor: "pointer", marginTop: "8px" }}>
               Cancelar
             </button>
