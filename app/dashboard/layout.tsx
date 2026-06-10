@@ -9,7 +9,7 @@ import {
   Building2, 
   GitFork, 
   Calendar,
-  BarChart2, TrendingUp,
+  BarChart2, TrendingUp, Bell,
   UserCog,
   LogOut,
   Menu,
@@ -39,6 +39,7 @@ export default function DashboardLayout({
     { name: 'Precios', href: '/pricing', icon: TrendingUp },
     { name: 'Calendario', href: '/dashboard/calendar', icon: Calendar },
     { name: 'Reportes', href: '/dashboard/reports', icon: BarChart2 },
+    { name: 'Recordatorios', href: '/dashboard/reminders', icon: Bell },
     { name: 'Usuarios', href: '/dashboard/usuarios', icon: UserCog },
   ]
 
