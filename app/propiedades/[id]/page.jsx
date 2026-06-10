@@ -95,7 +95,7 @@ export default function PropiedadDetalle() {
               <span style={{ background: "#dbeafe", color: "#1d4ed8", padding: "4px 12px", borderRadius: "20px", fontSize: "0.75rem", fontWeight: "600" }}>{propiedad.type || propiedad.tipo || "Propiedad"}</span>
               {propiedad.estado && <span style={{ background: "#dcfce7", color: "#166534", padding: "4px 12px", borderRadius: "20px", fontSize: "0.75rem", fontWeight: "600" }}>{propiedad.estado}</span>}
             </div>
-            <h2 style={{ fontSize: "1.75rem", fontWeight: "700", color: "#0f172a", margin: "0 0 8px" }}>{propiedad.nombre || propiedad.ubicacion || "Propiedad"}</h2>
+            <h2 style={{ fontSize: "1.75rem", fontWeight: "700", color: "#0f172a", margin: "0 0 8px" }}>{propiedad.title || propiedad.nombre || propiedad.ubicacion || "Propiedad"}</h2>
             <p style={{ color: "#64748b", fontSize: "1rem", marginBottom: "24px" }}>📍 {propiedad.location || propiedad.ubicacion}</p>
             <p style={{ fontSize: "2rem", fontWeight: "800", color: "#1e293b", marginBottom: "32px" }}>{formatPrecio(propiedad.price || propiedad.precio)}</p>
 
