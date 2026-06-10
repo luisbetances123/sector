@@ -172,12 +172,6 @@ export default function ClienteFichaPage() {
                   <input value={form.price || ''} onChange={e => setForm({...form, presupuesto_min: e.target.value})}
                     className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none" />
                 </div>
-                <div>
-                  <label className="text-[9px] font-mono text-zinc-500 uppercase">Presupuesto Max</label>
-                  <input value={ || ''} onChange={e => setForm({...form, presupuesto_max: e.target.value})}
-                    className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none" />
-                </div>
-              </div>
               <div>
                 <label className="text-[9px] font-mono text-zinc-500 uppercase">Proxima Accion</label>
                 <input value={form.initial || ''} onChange={e => setForm({...form, proxima_accion: e.target.value})}
