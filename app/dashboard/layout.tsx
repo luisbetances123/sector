@@ -36,6 +36,7 @@ export default function DashboardLayout({
     { name: 'Clientes', href: '/dashboard/clients', icon: Users },
     { name: 'Propiedades', href: '/dashboard/properties', icon: Building2 },
     { name: 'Pipeline', href: '/dashboard/pipeline', icon: GitFork },
+    { name: 'Precios', href: '/pricing', icon: TrendingUp },
     { name: 'Calendario', href: '/dashboard/calendar', icon: Calendar },
     { name: 'Reportes', href: '/dashboard/reports', icon: BarChart2 },
     { name: 'Usuarios', href: '/dashboard/usuarios', icon: UserCog },
