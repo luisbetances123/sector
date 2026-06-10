@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { supabase } from '../lib/supabase'
 
 interface Propiedad {
@@ -99,7 +100,7 @@ export default function ListingsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filtradas.map(p => (
-              <div key={p.id} className="bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-700 transition-all">
+              <Link key={p.id} href={'/propiedades/' + p.id} className="bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden hover:border-[#CCFF00] transition-all block cursor-pointer">
                 {p.image_url ? (
                   <img src={p.image_url} alt={p.title} className="w-full h-48 object-cover" />
                 ) : (
@@ -126,7 +127,7 @@ export default function ListingsPage() {
                     Consultar por WhatsApp
                   </button>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}
