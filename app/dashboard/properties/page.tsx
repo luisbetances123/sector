@@ -6,7 +6,7 @@ import { supabase } from '@/app/lib/supabase';
 export const dynamic = 'force-dynamic';
 
 interface Propiedad {
-  id: number;
+  id: string;
   titulo: string;
   precio: string;
   sector: string;
@@ -15,23 +15,21 @@ interface Propiedad {
   banos: string;
   metros_cuadrados: string;
   notas: string;
-  // Galería extendida local para el visualizer premium
+  public: boolean;
   imagenes_galeria: string[];
 }
 
 export default function PropertiesPage() {
   const [propiedades, setPropiedades] = useState<Propiedad[]>([]);
-  const [editandoId, setEditandoId] = useState<number | null>(null);
+  const [editandoId, setEditandoId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-
-  // Estados para el Modal / Ventana Flotante
   const [propiedadSeleccionada, setPropiedadSeleccionada] = useState<Propiedad | null>(null);
   const [fotoActivaIndex, setFotoActivaIndex] = useState<number>(0);
 
   const [formData, setFormData] = useState({
     titulo: '',
     precio: '',
-    sector: 'Premium',
+    sector: '',
     imagen: '',
     recamaras: '4',
     banos: '5',
@@ -47,26 +45,26 @@ export default function PropertiesPage() {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from('properties') 
+        .from('properties')
         .select('*')
-        .order('id', { ascending: false });
+        .order('created_at', { ascending: false });
 
       if (error) {
         console.error('Error Supabase:', error.message);
       } else if (data) {
         const mapeadas = data.map((item: any) => {
-          const imgPrincipal = item.imagen || 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200';
+          const imgPrincipal = item.image_url || 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200';
           return {
             id: item.id,
-            titulo: item.nombre || 'Propiedad sin título',
-            precio: item.precio ? item.precio.toString() : '0',
-            sector: item.ubicacion || 'Premium', 
+            titulo: item.title || 'Propiedad sin título',
+            precio: item.price ? item.price.toString() : '0',
+            sector: item.location || '',
             imagen: imgPrincipal,
-            recamaras: item.recamaras ? item.recamaras.toString() : '4',
-            banos: item.banos ? item.banos.toString() : '5',
-            metros_cuadrados: item.area ? item.area.toString() : '480',
-            notas: item.notas || item.descripcion || '',
-            // Set de fotos complementarias para alimentar la ventana flotante de lujo
+            recamaras: item.bedrooms ? item.bedrooms.toString() : '4',
+            banos: item.bathrooms ? item.bathrooms.toString() : '5',
+            metros_cuadrados: item.m2 ? item.m2.toString() : '480',
+            notas: item.descripcion || '',
+            public: item.public || false,
             imagenes_galeria: [
               imgPrincipal,
               'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800',
@@ -86,18 +84,12 @@ export default function PropertiesPage() {
   };
 
   const togglePublic = async (id: string, currentValue: boolean) => {
-  await supabase
-    .from('properties')
-    .update({ public: !currentValue })
-    .eq('id', id);
-  cargarPropiedades();
-};
+    await supabase.from('properties').update({ public: !currentValue }).eq('id', id);
+    cargarPropiedades();
+  };
 
-const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -112,9 +104,8 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement 
       bedrooms: formData.recamaras ? Number(formData.recamaras) : 4,
       bathrooms: formData.banos ? Number(formData.banos) : 5,
       m2: formData.metros_cuadrados,
-      descripcion: formData.notas || 'Ficha premium generada desde el nuevo panel SECTOR.',
+      descripcion: formData.notas || '',
       status: 'active',
-      estado: 'En venta',
       public: true,
       user_id: user?.id || null
     };
@@ -129,7 +120,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement 
         if (error) return alert("Error al guardar: " + error.message);
       }
 
-      setFormData({ titulo: '', precio: '', sector: 'Premium', imagen: '', recamaras: '4', banos: '5', metros_cuadrados: '480', notas: '' });
+      setFormData({ titulo: '', precio: '', sector: '', imagen: '', recamaras: '4', banos: '5', metros_cuadrados: '480', notas: '' });
       cargarPropiedades();
     } catch (err) {
       console.error(err);
@@ -150,14 +141,13 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement 
     });
   };
 
-  const eliminarPropiedad = async (id: number) => {
+  const eliminarPropiedad = async (id: string) => {
     if (confirm("¿Remover esta propiedad de la lista de SECTOR?")) {
       const { error } = await supabase.from('properties').delete().eq('id', id);
       if (!error) cargarPropiedades();
     }
   };
 
-  // Funciones auxiliares para navegar las fotos en la ventana flotante
   const fotoSiguiente = () => {
     if (!propiedadSeleccionada) return;
     setFotoActivaIndex((prev) => (prev + 1) % propiedadSeleccionada.imagenes_galeria.length);
@@ -171,7 +161,6 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement 
   return (
     <div className="p-8 max-w-7xl mx-auto min-h-screen bg-transparent text-zinc-100 relative">
       
-      {/* HEADER */}
       <div className="flex justify-between items-center mb-8 border-b border-zinc-800 pb-5">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-white">Catálogo de Propiedades</h1>
@@ -182,7 +171,6 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement 
         </span>
       </div>
 
-      {/* FORMULARIO */}
       <div className="bg-[#18181b] border border-zinc-800 p-6 rounded-xl shadow-2xl mb-10">
         <h2 className="text-md font-semibold mb-5 text-zinc-300 flex items-center gap-2">
           {editandoId !== null ? '⚡ Editar Parámetros del Activo' : '＋ Registrar Nueva Propiedad'}
@@ -192,44 +180,18 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="md:col-span-2">
               <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Título de la Propiedad</label>
-              <input
-                type="text"
-                name="titulo"
-                value={formData.titulo}
-                onChange={handleChange}
-                placeholder="Ej. Penthouse Duplex Minimalista con Vista al Golf"
-                className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition"
-                required
-              />
+              <input type="text" name="titulo" value={formData.titulo} onChange={handleChange} placeholder="Ej. Penthouse Duplex Minimalista con Vista al Golf" className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" required />
             </div>
-
             <div>
               <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Precio de Salida</label>
-              <input
-                type="text"
-                name="precio"
-                value={formData.precio}
-                onChange={handleChange}
-                placeholder="Ej. 4250000"
-                className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition"
-                required
-              />
+              <input type="text" name="precio" value={formData.precio} onChange={handleChange} placeholder="Ej. 4250000" className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" required />
             </div>
-
             <div>
               <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Ubicación / Sector</label>
-              <input
-                type="text"
-                name="sector"
-                value={formData.sector}
-                onChange={handleChange}
-                placeholder="Ej. Evaristo Morales, SD"
-                className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition"
-              />
+              <input type="text" name="sector" value={formData.sector} onChange={handleChange} placeholder="Ej. Evaristo Morales, SD" className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
             </div>
           </div>
 
-          {/* DETALLES ARQUITECTURA */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
               <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Recámaras</label>
@@ -245,39 +207,18 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement 
             </div>
             <div>
               <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">URL de Imagen Principal</label>
-              <input
-                type="text"
-                name="imagen"
-                value={formData.imagen}
-                onChange={handleChange}
-                placeholder="https://images.unsplash.com/..."
-                className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition"
-              />
+              <input type="text" name="imagen" value={formData.imagen} onChange={handleChange} placeholder="https://images.unsplash.com/..." className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
             </div>
           </div>
 
           <div>
-            <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Notas de Venta / Especificaciones Especiales</label>
-            <textarea
-              name="notas"
-              value={formData.notas}
-              onChange={handleChange}
-              rows={2}
-              placeholder="Escribe los acabados, detalles de lujo o comentarios de venta aquí..."
-              className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition resize-none"
-            />
+            <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Notas de Venta / Especificaciones</label>
+            <textarea name="notas" value={formData.notas} onChange={handleChange} rows={2} placeholder="Acabados, detalles o comentarios de venta..." className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition resize-none" />
           </div>
 
           <div className="flex justify-end gap-2 pt-2">
             {editandoId !== null && (
-              <button
-                type="button"
-                onClick={() => {
-                  setEditandoId(null);
-                  setFormData({ titulo: '', precio: '', sector: 'Premium', imagen: '', recamaras: '4', banos: '5', metros_cuadrados: '480', notas: '' });
-                }}
-                className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-4 py-2 rounded-lg text-sm font-medium transition"
-              >
+              <button type="button" onClick={() => { setEditandoId(null); setFormData({ titulo: '', precio: '', sector: '', imagen: '', recamaras: '4', banos: '5', metros_cuadrados: '480', notas: '' }); }} className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-4 py-2 rounded-lg text-sm font-medium transition">
                 Cancelar
               </button>
             )}
@@ -288,7 +229,6 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement 
         </form>
       </div>
 
-      {/* SHOWROOM SECTOR */}
       {loading ? (
         <div className="text-center py-20 text-zinc-500 font-mono text-sm tracking-widest animate-pulse">
           Sincronizando base de datos de SECTOR...
@@ -307,12 +247,9 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement 
 
                 <div className="p-5">
                   <h3 className="text-lg font-bold text-white tracking-tight line-clamp-1">{propiedad.titulo}</h3>
-                    <button
-                      onClick={() => togglePublic(propiedad.id.toString(), (propiedad as any).public || false)}
-                      className={`mt-1 text-xs px-2 py-1 rounded-full font-semibold ${(propiedad as any).public ? 'bg-green-500 text-white' : 'bg-zinc-600 text-zinc-300'}`}
-                    >
-                      {(propiedad as any).public ? 'Portal: ON' : 'Portal: OFF'}
-                    </button>
+                  <button onClick={() => togglePublic(propiedad.id, propiedad.public)} className={`mt-1 text-xs px-2 py-1 rounded-full font-semibold ${propiedad.public ? 'bg-green-500 text-white' : 'bg-zinc-600 text-zinc-300'}`}>
+                    {propiedad.public ? 'Portal: ON' : 'Portal: OFF'}
+                  </button>
                   <p className="text-2xl font-semibold text-white mt-1.5 font-mono">
                     ${Number(propiedad.precio) ? Number(propiedad.precio).toLocaleString() : propiedad.precio}
                   </p>
@@ -334,39 +271,21 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement 
 
                   <div className="mt-4 bg-[#09090b]/40 p-3 rounded-lg border border-zinc-800/40">
                     <span className="block text-[10px] text-zinc-500 uppercase font-mono tracking-wider mb-1">Notas de Venta:</span>
-                    <p className="text-xs text-zinc-400 line-clamp-3 leading-relaxed">
-                      {propiedad.notas || 'Sin notas internas registradas.'}
-                    </p>
+                    <p className="text-xs text-zinc-400 line-clamp-3 leading-relaxed">{propiedad.notas || 'Sin notas internas registradas.'}</p>
                   </div>
                 </div>
               </div>
 
-              {/* ACCIONES COMPLETA */}
               <div className="p-5 pt-0 space-y-2">
-                <button
-                  onClick={() => {
-                    setPropiedadSeleccionada(propiedad);
-                    setFotoActivaIndex(0);
-                  }}
-                  className="w-full bg-[#d4ff3b]/10 hover:bg-[#d4ff3b] text-[#d4ff3b] hover:text-black text-xs py-2.5 rounded-lg font-semibold transition border border-[#d4ff3b]/20 text-center block"
-                >
-                  Ver Mas Fotos / Detalles
+                <button onClick={() => { setPropiedadSeleccionada(propiedad); setFotoActivaIndex(0); }} className="w-full bg-[#d4ff3b]/10 hover:bg-[#d4ff3b] text-[#d4ff3b] hover:text-black text-xs py-2.5 rounded-lg font-semibold transition border border-[#d4ff3b]/20 text-center block">
+                  Ver Más Fotos / Detalles
                 </button>
-                <a
-                  href={"/api/pdf/propiedad?titulo=" + encodeURIComponent(propiedad.titulo) + "&precio=" + propiedad.precio + "&sector=" + encodeURIComponent(propiedad.sector) + "&recamaras=" + propiedad.recamaras + "&banos=" + propiedad.banos + "&area=" + propiedad.metros_cuadrados + "&notas=" + encodeURIComponent(propiedad.notas)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs py-2.5 rounded-lg font-semibold transition border border-zinc-700 text-center block"
-                >Exportar Ficha PDF
+                <a href={"/api/pdf/propiedad?titulo=" + encodeURIComponent(propiedad.titulo) + "&precio=" + propiedad.precio + "&sector=" + encodeURIComponent(propiedad.sector) + "&recamaras=" + propiedad.recamaras + "&banos=" + propiedad.banos + "&area=" + propiedad.metros_cuadrados + "&notas=" + encodeURIComponent(propiedad.notas)} target="_blank" rel="noopener noreferrer" className="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs py-2.5 rounded-lg font-semibold transition border border-zinc-700 text-center block">
+                  Exportar Ficha PDF
                 </a>
-                
                 <div className="flex gap-2">
-                  <button onClick={() => iniciarEdicion(propiedad)} className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs py-2 rounded-lg font-medium transition border border-zinc-700/50">
-                    Editar
-                  </button>
-                  <button onClick={() => eliminarPropiedad(propiedad.id)} className="px-3 bg-zinc-900 hover:bg-red-950/40 text-zinc-500 hover:text-red-400 text-xs py-2 rounded-lg font-medium transition border border-zinc-800">
-                    Borrar
-                  </button>
+                  <button onClick={() => iniciarEdicion(propiedad)} className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs py-2 rounded-lg font-medium transition border border-zinc-700/50">Editar</button>
+                  <button onClick={() => eliminarPropiedad(propiedad.id)} className="px-3 bg-zinc-900 hover:bg-red-950/40 text-zinc-500 hover:text-red-400 text-xs py-2 rounded-lg font-medium transition border border-zinc-800">Borrar</button>
                 </div>
               </div>
             </div>
@@ -374,82 +293,38 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement 
         </div>
       )}
 
-      {/* ─── VENTANA FLOTANTE (MODAL INTERACTIVO DE LUJO) ─── */}
       {propiedadSeleccionada && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
           <div className="bg-[#18181b] border border-zinc-800 w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]">
-            
-            {/* BOTÓN CERRAR */}
-            <button 
-              onClick={() => setPropiedadSeleccionada(null)}
-              className="absolute top-4 right-4 z-10 bg-black/60 hover:bg-zinc-800 text-zinc-400 hover:text-white p-2 rounded-full border border-zinc-800 transition"
-            >
-              ✕
-            </button>
+            <button onClick={() => setPropiedadSeleccionada(null)} className="absolute top-4 right-4 z-10 bg-black/60 hover:bg-zinc-800 text-zinc-400 hover:text-white p-2 rounded-full border border-zinc-800 transition">✕</button>
 
-            {/* VISUALIZADOR DE FOTOS PRINCIPAL */}
-            <div className="relative bg-zinc-950 aspect-[16/9] flex items-center justify-center overflow-hidden group">
-              <img 
-                src={propiedadSeleccionada.imagenes_galeria[fotoActivaIndex]} 
-                alt="Visualización de Lujo" 
-                className="w-full h-full object-cover transition duration-500"
-              />
-
-              {/* FLECHA IZQUIERDA */}
-              <button 
-                onClick={fotoAnterior}
-                className="absolute left-4 bg-black/50 hover:bg-black/80 text-white p-3 rounded-full border border-zinc-700/50 backdrop-blur-sm transition focus:outline-none"
-              >
-                ◀
-              </button>
-
-              {/* FLECHA DERECHA */}
-              <button 
-                onClick={fotoSiguiente}
-                className="absolute right-4 bg-black/50 hover:bg-black/80 text-white p-3 rounded-full border border-zinc-700/50 backdrop-blur-sm transition focus:outline-none"
-              >
-                ▶
-              </button>
-
-              {/* INDICADOR DE POSICIÓN */}
-              <div className="absolute bottom-4 right-4 bg-black/70 px-3 py-1 text-[11px] font-mono text-zinc-300 rounded-md border border-zinc-800">
-                Foto {fotoActivaIndex + 1} de {propiedadSeleccionada.imagenes_galeria.length}
-              </div>
+            <div className="relative bg-zinc-950 aspect-[16/9] flex items-center justify-center overflow-hidden">
+              <img src={propiedadSeleccionada.imagenes_galeria[fotoActivaIndex]} alt="Visualización" className="w-full h-full object-cover transition duration-500" />
+              <button onClick={fotoAnterior} className="absolute left-4 bg-black/50 hover:bg-black/80 text-white p-3 rounded-full border border-zinc-700/50 backdrop-blur-sm transition">◀</button>
+              <button onClick={fotoSiguiente} className="absolute right-4 bg-black/50 hover:bg-black/80 text-white p-3 rounded-full border border-zinc-700/50 backdrop-blur-sm transition">▶</button>
+              <div className="absolute bottom-4 right-4 bg-black/70 px-3 py-1 text-[11px] font-mono text-zinc-300 rounded-md border border-zinc-800">Foto {fotoActivaIndex + 1} de {propiedadSeleccionada.imagenes_galeria.length}</div>
             </div>
 
-            {/* CAROUSEL DE MINIATURAS INFERIORES */}
-            <div className="p-4 bg-[#111113] border-b border-zinc-800/80 flex gap-2 overflow-x-auto scrollbar-none">
+            <div className="p-4 bg-[#111113] border-b border-zinc-800/80 flex gap-2 overflow-x-auto">
               {propiedadSeleccionada.imagenes_galeria.map((img, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setFotoActivaIndex(idx)}
-                  className={`relative flex-shrink-0 w-24 h-16 rounded-lg overflow-hidden border-2 transition ${
-                    idx === fotoActivaIndex ? 'border-[#d4ff3b]' : 'border-transparent opacity-50 hover:opacity-100'
-                  }`}
-                >
+                <button key={idx} onClick={() => setFotoActivaIndex(idx)} className={`relative flex-shrink-0 w-24 h-16 rounded-lg overflow-hidden border-2 transition ${idx === fotoActivaIndex ? 'border-[#d4ff3b]' : 'border-transparent opacity-50 hover:opacity-100'}`}>
                   <img src={img} alt="Miniatura" className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>
 
-            {/* PIE DE DETALLES DEL MODAL */}
             <div className="p-6 overflow-y-auto space-y-4">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
                 <div>
-                  <span className="text-[10px] font-mono uppercase bg-[#d4ff3b]/10 text-[#d4ff3b] px-2.5 py-1 rounded-md border border-[#d4ff3b]/20 tracking-wider">
-                    {propiedadSeleccionada.sector}
-                  </span>
+                  <span className="text-[10px] font-mono uppercase bg-[#d4ff3b]/10 text-[#d4ff3b] px-2.5 py-1 rounded-md border border-[#d4ff3b]/20 tracking-wider">{propiedadSeleccionada.sector}</span>
                   <h2 className="text-xl font-bold text-white tracking-tight mt-2">{propiedadSeleccionada.titulo}</h2>
                 </div>
                 <div className="text-right">
                   <span className="text-[10px] text-zinc-500 uppercase block tracking-wider font-mono">Precio Solicitado</span>
-                  <span className="text-2xl font-mono font-bold text-white">
-                    ${Number(propiedadSeleccionada.precio) ? Number(propiedadSeleccionada.precio).toLocaleString() : propiedadSeleccionada.precio}
-                  </span>
+                  <span className="text-2xl font-mono font-bold text-white">${Number(propiedadSeleccionada.precio) ? Number(propiedadSeleccionada.precio).toLocaleString() : propiedadSeleccionada.precio}</span>
                 </div>
               </div>
 
-              {/* FICHA TÉCNICA MINI */}
               <div className="grid grid-cols-3 gap-4 p-3 bg-[#09090b]/60 border border-zinc-800 rounded-xl text-center">
                 <div>
                   <span className="block text-md font-mono text-white font-bold">{propiedadSeleccionada.recamaras}</span>
@@ -465,19 +340,14 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement 
                 </div>
               </div>
 
-              {/* NOTAS COMPLETAS */}
               <div>
-                <span className="block text-[11px] text-zinc-500 font-mono uppercase tracking-wider mb-1">Descripción y Detalles Premium:</span>
-                <p className="text-sm text-zinc-300 leading-relaxed bg-[#09090b]/30 p-4 rounded-xl border border-zinc-800/40">
-                  {propiedadSeleccionada.notas || "Esta propiedad no cuenta con comentarios de venta adicionales agregados."}
-                </p>
+                <span className="block text-[11px] text-zinc-500 font-mono uppercase tracking-wider mb-1">Descripción y Detalles:</span>
+                <p className="text-sm text-zinc-300 leading-relaxed bg-[#09090b]/30 p-4 rounded-xl border border-zinc-800/40">{propiedadSeleccionada.notas || "Sin comentarios de venta adicionales."}</p>
               </div>
             </div>
-
           </div>
         </div>
       )}
-
     </div>
   );
 }
