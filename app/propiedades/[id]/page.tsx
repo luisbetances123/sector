@@ -42,8 +42,9 @@ export default function PropiedadDetalle() {
 
   const formatPrecio = (p: any) => p ? new Intl.NumberFormat("es-DO", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(p) : "Precio a consultar"
 
+  const googleKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''
   const mapUrl = propiedad?.location
-    ? `https://www.google.com/maps/embed/v1/search?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=${encodeURIComponent(propiedad.location + ', Santo Domingo, República Dominicana')}&zoom=15`
+    ? `https://www.google.com/maps/embed/v1/search?key=${googleKey}&q=${encodeURIComponent(propiedad.location + ', Santo Domingo, República Dominicana')}&zoom=15`
     : null
 
   if (loading) return (
