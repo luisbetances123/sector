@@ -47,7 +47,7 @@ export default function PropertiesPage() {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from('propiedades') 
+        .from('properties') 
         .select('*')
         .order('id', { ascending: false });
 
@@ -87,7 +87,7 @@ export default function PropertiesPage() {
 
   const togglePublic = async (id: string, currentValue: boolean) => {
   await supabase
-    .from('propiedades')
+    .from('properties')
     .update({ public: !currentValue })
     .eq('id', id);
   cargarPropiedades();
@@ -104,23 +104,27 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement 
     e.preventDefault();
 
     const datosAEnviar: any = {
-      nombre: formData.titulo,
-      precio: formData.precio, 
-      ubicacion: formData.sector,
-      imagen: formData.imagen || 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200',
-      recamaras: formData.recamaras ? Number(formData.recamaras) : 4,
-      banos: formData.banos ? Number(formData.banos) : 5,
-      area: formData.metros_cuadrados, 
-      notas: formData.notas || 'Ficha premium generada desde el nuevo panel SECTOR.'
+      title: formData.titulo,
+      price: formData.precio,
+      location: formData.sector,
+      image_url: formData.imagen || 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200',
+      bedrooms: formData.recamaras ? Number(formData.recamaras) : 4,
+      bathrooms: formData.banos ? Number(formData.banos) : 5,
+      area: formData.metros_cuadrados,
+      descripcion: formData.notas || 'Ficha premium generada desde el nuevo panel SECTOR.',
+      status: 'active',
+      estado: 'En venta',
+      public: true,
+      user_id: (await supabase.auth.getUser()).data.user?.id
     };
 
     try {
       if (editandoId !== null) {
-        const { error } = await supabase.from('propiedades').update(datosAEnviar).eq('id', editandoId);
+        const { error } = await supabase.from('properties').update(datosAEnviar).eq('id', editandoId);
         if (error) return alert("Error al actualizar: " + error.message);
         setEditandoId(null);
       } else {
-        const { error } = await supabase.from('propiedades').insert([datosAEnviar]);
+        const { error } = await supabase.from('properties').insert([datosAEnviar]);
         if (error) return alert("Error al guardar: " + error.message);
       }
 
@@ -147,7 +151,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement 
 
   const eliminarPropiedad = async (id: number) => {
     if (confirm("¿Remover esta propiedad de la lista de SECTOR?")) {
-      const { error } = await supabase.from('propiedades').delete().eq('id', id);
+      const { error } = await supabase.from('properties').delete().eq('id', id);
       if (!error) cargarPropiedades();
     }
   };
