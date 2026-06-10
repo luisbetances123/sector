@@ -1,279 +1,188 @@
 'use client'
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { supabase } from '../../../lib/supabase'
+import { useEffect, useState } from "react"
+import { useParams, useRouter } from "next/navigation"
+import { createClient } from "@/app/lib/supabase"
 
-type Property = {
-  id: string
-  title: string
-  price: string
-  location: string
-  type: string
-  sector: string
-  estado: string
-  m2?: number
-  recamaras?: number
-  banos?: number
-  estacionamientos?: number
-  descripcion?: string
-  imagen_url?: string
-  imagenes?: string[]
-  moneda: string
-  created_at?: string
-}
-
-const ESTADOS: Record<string, { label: string; color: string; dot: string }> = {
-  disponible: { label: 'Disponible', color: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20', dot: 'bg-emerald-400' },
-  reservada:  { label: 'Reservada',  color: 'text-amber-400 bg-amber-400/10 border-amber-400/20',    dot: 'bg-amber-400' },
-  en_proceso: { label: 'En proceso', color: 'text-blue-400 bg-blue-400/10 border-blue-400/20',       dot: 'bg-blue-400' },
-  rentada:    { label: 'Rentada',    color: 'text-purple-400 bg-purple-400/10 border-purple-400/20', dot: 'bg-purple-400' },
-  vendida:    { label: 'Vendida',    color: 'text-zinc-400 bg-zinc-400/10 border-zinc-400/20',       dot: 'bg-zinc-400' },
-}
-
-// Añadimos un parámetro opcional 'isPerM2' para evitar que multiplique por 1,000 erróneamente
-function formatPrice(price: string, moneda = 'USD', isPerM2 = false) {
-  if (!price) return '—'
-  
-  if (price.includes('US$') || price.includes('RD$')) return price
-
-  let limpio = price.replace(/,/g, '').trim()
-  
-  if (/\.\d{3}$/.test(limpio)) {
-    limpio = limpio.replace(/\./g, '')
-  }
-
-  let num = parseFloat(limpio)
-  if (isNaN(num)) return price
-
-  // Evitamos esta corrección si estamos calculando el valor por metro cuadrado
-  if (!isPerM2 && num > 0 && num < 1000) {
-    num = num * 1000
-  }
-  
-  return new Intl.NumberFormat('es-DO', {
-    style: 'currency', 
-    currency: moneda === 'DOP' ? 'DOP' : 'USD', 
-    maximumFractionDigits: 0,
-  }).format(num)
-}
-
-export default function PropertyDetailPage({ params }: { params: { id: string } }) {
+export default function PropiedadDetalle() {
+  const { id } = useParams()
   const router = useRouter()
-  const [property, setProperty] = useState<Property | null>(null)
+  const [propiedad, setPropiedad] = useState<any>(null)
   const [loading, setLoading] = useState(true)
-  const [activeImg, setActiveImg] = useState(0)
-  const [propertyId, setPropertyId] = useState<string | null>(null)
+  const [formData, setFormData] = useState({ nombre: "", email: "", telefono: "", mensaje: "" })
+  const [enviando, setEnviando] = useState(false)
+  const [enviado, setEnviado] = useState(false)
+  const supabase = createClient()
 
   useEffect(() => {
-    const resolveParams = async () => {
-      const resolved = await Promise.resolve(params)
-      setPropertyId(resolved.id)
-    }
-    resolveParams()
-  }, [params])
+    if (id) cargar()
+  }, [id])
 
-  useEffect(() => {
-    if (!propertyId) return
-
-    async function fetchProperty() {
-      setLoading(true)
-      const { data, error } = await supabase
-        .from('properties')
-        .select('*')
-        .eq('id', propertyId)
-        .single()
-
-      if (!error && data) {
-        setProperty(data)
-      } else {
-        console.error('Error fetching property:', error)
-      }
-      setLoading(false)
-    }
-
-    fetchProperty()
-  }, [propertyId])
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
-      </div>
-    )
+  async function cargar() {
+    setLoading(true)
+    const { data } = await supabase.from("properties").select("*").eq("id", id).eq("public", true).single()
+    setPropiedad(data)
+    setLoading(false)
   }
 
-  if (!property) {
-    return (
-      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-zinc-400 mb-4">Propiedad no encontrada</p>
-          <button onClick={() => router.push('/properties')}
-            className="px-4 py-2 bg-amber-500 text-black rounded-xl font-bold text-sm">
-            Volver
-          </button>
-        </div>
-      </div>
-    )
+  async function enviarConsulta() {
+    setEnviando(true)
+    try {
+      await supabase.from("contactos_whatsapp").insert({
+        nombre: formData.nombre,
+        email: formData.email,
+        telefono: formData.telefono,
+        mensaje: formData.mensaje,
+        propiedad_id: id,
+      })
+      setEnviado(true)
+      setTimeout(() => { setEnviado(false); setFormData({ nombre: "", email: "", telefono: "", mensaje: "" }) }, 3000)
+    } catch (e) { console.error(e) }
+    setEnviando(false)
   }
 
-  const imagenes: string[] = (
-    property.imagenes && property.imagenes.length > 0
-      ? property.imagenes
-      : property.imagen_url
-      ? [property.imagen_url]
-      : []
-  ).filter(Boolean)
+  const formatPrecio = (p: any) => p ? new Intl.NumberFormat("es-DO", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(p) : "Precio a consultar"
 
-  const estado = ESTADOS[property.estado] ?? ESTADOS.disponible
+  const mapUrl = propiedad?.location
+    ? `https://www.google.com/maps/embed/v1/search?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=${encodeURIComponent(propiedad.location + ', Santo Domingo, República Dominicana')}&zoom=15`
+    : null
 
-  const direccionCompleta = [property.location, property.sector, 'Santo Domingo, Republica Dominicana']
-    .filter(Boolean)
-    .join(', ')
+  if (loading) return (
+    <div className="min-h-screen bg-[#09090b] flex items-center justify-center">
+      <p className="text-zinc-500 font-mono animate-pulse">Cargando propiedad...</p>
+    </div>
+  )
+
+  if (!propiedad) return (
+    <div className="min-h-screen bg-[#09090b] flex items-center justify-center flex-col gap-4">
+      <p className="text-zinc-500">Propiedad no encontrada.</p>
+      <button onClick={() => router.push("/listings")} className="bg-[#CCFF00] text-black px-4 py-2 rounded-xl text-sm font-black">
+        Ver todas las propiedades
+      </button>
+    </div>
+  )
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white">
+    <div className="min-h-screen bg-[#09090b] text-zinc-100">
+      {/* HEADER */}
+      <div className="border-b border-zinc-900 px-6 py-4 flex justify-between items-center">
+        <div>
+          <h1 className="text-xl font-black tracking-tighter">SEC<span className="text-[#CCFF00]">TOR</span></h1>
+          <p className="text-xs text-zinc-500 font-mono">Portal de Propiedades</p>
+        </div>
+        <div className="flex gap-3">
+          <button onClick={() => router.push("/listings")} className="text-zinc-400 border border-zinc-800 px-4 py-2 rounded-xl text-xs font-medium hover:text-white transition-colors">
+            ← Volver
+          </button>
+          <a href="/login" className="bg-[#CCFF00] text-black px-4 py-2 rounded-xl text-xs font-black hover:bg-[#b8e600] transition-colors">
+            Acceder al CRM
+          </a>
+        </div>
+      </div>
+
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
+        {/* IMAGEN */}
+        <div className="rounded-2xl overflow-hidden h-96 bg-zinc-950 border border-zinc-800">
+          {propiedad.image_url ? (
+            <img src={propiedad.image_url} alt={propiedad.title} className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-zinc-700 text-xs font-mono">Sin imagen</div>
+          )}
+        </div>
 
-        <button onClick={() => router.push('/properties')}
-          className="flex items-center gap-2 text-zinc-500 hover:text-white transition-colors text-sm">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Volver a propiedades
-        </button>
-
-        {imagenes.length > 0 ? (
-          <div className="space-y-3">
-            <div className="relative h-72 md:h-[420px] rounded-2xl overflow-hidden bg-zinc-900">
-              <img src={imagenes[activeImg]} alt={property.title}
-                className="w-full h-full object-cover"
-                onError={e => { e.currentTarget.style.display = 'none' }} />
-              {imagenes.length > 1 && (
-                <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-2.5 py-1 rounded-full backdrop-blur-sm">
-                  {activeImg + 1} / {imagenes.length}
-                </div>
-              )}
-              {imagenes.length > 1 && (
-                <>
-                  <button onClick={() => setActiveImg(i => (i - 1 + imagenes.length) % imagenes.length)}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-black/80 transition-colors">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                    </svg>
-                  </button>
-                  <button onClick={() => setActiveImg(i => (i + 1) % imagenes.length)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-black/80 transition-colors">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
-                </>
-              )}
-            </div>
-            {imagenes.length > 1 && (
-              <div className="flex gap-2 overflow-x-auto pb-1">
-                {imagenes.map((url, i) => (
-                  <button key={i} onClick={() => setActiveImg(i)}
-                    className={`shrink-0 w-20 h-14 rounded-xl overflow-hidden border-2 transition-all ${
-                      activeImg === i ? 'border-amber-500' : 'border-zinc-800 hover:border-zinc-600'
-                    }`}>
-                    <img src={url} alt="" className="w-full h-full object-cover" />
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="h-72 bg-zinc-900 rounded-2xl flex items-center justify-center">
-            <svg className="w-16 h-16 text-zinc-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 9.75L12 3l9 6.75V21H3V9.75z" />
-            </svg>
-          </div>
-        )}
-
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* INFO */}
           <div className="md:col-span-2 space-y-6">
             <div>
-              <div className="flex flex-wrap items-center gap-3 mb-2">
-                <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${estado.color}`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${estado.dot}`} />
-                  {estado.label}
-                </span>
-                <span className="text-zinc-500 text-xs uppercase tracking-wider bg-zinc-800 px-2.5 py-1 rounded-full font-bold">
-                  {property.type}
-                </span>
-              </div>
-              <h1 className="text-2xl md:text-3xl font-black text-white leading-tight">{property.title}</h1>
-              {(property.location || property.sector) && (
-                <p className="text-zinc-500 text-sm mt-2 flex items-center gap-1.5">
-                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  {[property.location, property.sector].filter(Boolean).join(' · ')}
-                </p>
+              <p className="text-xs font-mono text-zinc-500 uppercase tracking-wider">{propiedad.location}</p>
+              <h2 className="text-3xl font-extrabold tracking-tighter text-white mt-1">{propiedad.title}</h2>
+              <p className="text-[#CCFF00] font-black text-2xl font-mono mt-2">{formatPrecio(propiedad.price)}</p>
+            </div>
+
+            {/* SPECS */}
+            <div className="grid grid-cols-3 gap-4">
+              {propiedad.bedrooms && (
+                <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-4 text-center">
+                  <p className="text-2xl font-black text-white font-mono">{propiedad.bedrooms}</p>
+                  <p className="text-[10px] text-zinc-500 uppercase tracking-wider mt-1">Recámaras</p>
+                </div>
+              )}
+              {propiedad.bathrooms && (
+                <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-4 text-center">
+                  <p className="text-2xl font-black text-white font-mono">{propiedad.bathrooms}</p>
+                  <p className="text-[10px] text-zinc-500 uppercase tracking-wider mt-1">Baños</p>
+                </div>
+              )}
+              {propiedad.m2 && (
+                <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-4 text-center">
+                  <p className="text-2xl font-black text-white font-mono">{propiedad.m2}</p>
+                  <p className="text-[10px] text-zinc-500 uppercase tracking-wider mt-1">m²</p>
+                </div>
               )}
             </div>
 
-            {(property.recamaras || property.banos || property.estacionamientos || property.m2) && (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {[
-                  { icon: '🛏', label: 'Recámaras', value: property.recamaras },
-                  { icon: '🚿', label: 'Baños', value: property.banos },
-                  { icon: '🚗', label: 'Estac.', value: property.estacionamientos },
-                  { icon: '📐', label: 'Metraje', value: property.m2 ? `${property.m2} m²` : null },
-                ].filter(s => s.value != null).map(s => (
-                  <div key={s.label} className="bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-center">
-                    <div className="text-xl mb-1">{s.icon}</div>
-                    <div className="text-white font-black text-lg">{s.value}</div>
-                    <div className="text-zinc-500 text-xs uppercase tracking-wider">{s.label}</div>
-                  </div>
-                ))}
+            {/* DESCRIPCION */}
+            {propiedad.descripcion && (
+              <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-5">
+                <h3 className="text-xs font-mono text-zinc-500 uppercase tracking-wider mb-3">Descripción</h3>
+                <p className="text-zinc-300 text-sm leading-relaxed">{propiedad.descripcion}</p>
               </div>
             )}
 
-            {property.descripcion && (
-              <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
-                <h2 className="text-xs font-black uppercase tracking-widest text-zinc-500 mb-3">Descripción</h2>
-                <p className="text-zinc-300 text-sm leading-relaxed">{property.descripcion}</p>
-              </div>
-            )}
-
-            <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
-              <h2 className="text-xs font-black uppercase tracking-widest text-zinc-500 mb-3">Ubicación en Mapa</h2>
-              <div className="w-full h-64 rounded-xl overflow-hidden border border-zinc-800 bg-zinc-950">
+            {/* MAPA */}
+            {mapUrl && (
+              <div className="bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden">
+                <div className="px-5 py-3 border-b border-zinc-800">
+                  <h3 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Ubicación</h3>
+                  <p className="text-zinc-300 text-sm mt-0.5">{propiedad.location}, Santo Domingo, RD</p>
+                </div>
                 <iframe
+                  src={mapUrl}
                   width="100%"
-                  height="100%"
-                  style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg)' }} 
-                  loading="lazy"
+                  height="300"
+                  style={{ border: 0 }}
                   allowFullScreen
-                  src={`https://maps.google.com/maps?q=${encodeURIComponent(direccionCompleta)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
                 />
               </div>
-            </div>
-
+            )}
           </div>
 
-          <div className="space-y-4">
-            <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 sticky top-6">
-              <p className="text-zinc-500 text-xs uppercase tracking-widest mb-1">Precio</p>
-              <p className="text-amber-400 font-black text-3xl mb-1">
-                {formatPrice(property.price, property.moneda)}
-              </p>
-              {property.m2 && property.price && (
-                <p className="text-zinc-600 text-xs mb-5">
-                  ≈ {formatPrice(
-                    String(parseFloat(property.price.replace(/[^0-9.]/g, '')) / property.m2),
-                    property.moneda,
-                    true // Pasamos true para bloquear la multiplicación por 1,000 en el desglose por m²
-                  )} / m²
-                </p>
+          {/* CONTACTO */}
+          <div>
+            <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 sticky top-6 space-y-4">
+              <div>
+                <h3 className="font-black text-white">¿Te interesa?</h3>
+                <p className="text-zinc-500 text-xs mt-1">Un agente te contactará pronto.</p>
+              </div>
+              {enviado ? (
+                <div className="text-center py-6 text-[#CCFF00] font-black text-sm">✅ Consulta enviada</div>
+              ) : (
+                <div className="space-y-3">
+                  <input value={formData.nombre} onChange={e => setFormData({...formData, nombre: e.target.value})}
+                    placeholder="Tu nombre *"
+                    className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 outline-none placeholder-zinc-600" />
+                  <input value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})}
+                    placeholder="Tu email *" type="email"
+                    className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 outline-none placeholder-zinc-600" />
+                  <input value={formData.telefono} onChange={e => setFormData({...formData, telefono: e.target.value})}
+                    placeholder="Tu teléfono"
+                    className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 outline-none placeholder-zinc-600" />
+                  <textarea value={formData.mensaje} onChange={e => setFormData({...formData, mensaje: e.target.value})}
+                    placeholder="Mensaje (opcional)" rows={3}
+                    className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 outline-none placeholder-zinc-600 resize-none" />
+                  <button onClick={enviarConsulta} disabled={enviando || !formData.nombre || !formData.email}
+                    className="w-full bg-[#CCFF00] text-black font-black text-xs rounded-xl py-3 hover:bg-[#b8e600] transition-colors disabled:opacity-50">
+                    {enviando ? "Enviando..." : "Enviar consulta"}
+                  </button>
+                  <a href={`https://wa.me/19293056500?text=${encodeURIComponent('Hola, me interesa: ' + propiedad.title)}`}
+                    target="_blank"
+                    className="w-full flex items-center justify-center gap-2 bg-zinc-900 border border-zinc-800 text-zinc-300 text-xs rounded-xl py-3 hover:border-[#CCFF00] hover:text-white transition-colors font-bold">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                    Consultar por WhatsApp
+                  </a>
+                </div>
               )}
-              <button onClick={() => router.push('/properties')}
-                className="w-full bg-zinc-800 text-zinc-300 py-3 rounded-xl font-bold text-sm hover:bg-zinc-700 transition-all">
-                ← Volver al listado
-              </button>
             </div>
           </div>
         </div>
