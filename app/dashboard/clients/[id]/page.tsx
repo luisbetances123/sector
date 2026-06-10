@@ -5,14 +5,13 @@ import { supabase } from '@/app/lib/supabase'
 
 interface Cliente {
   id: string
-  nombre: string
+  name: string
   email: string
-  telefono: string
-  etapa: string
-  presupuesto_min: string
-  presupuesto_max: string
-  notas: string
-  proxima_accion: string
+  phone: string
+  stage: string
+  price: string
+  notes: string
+  initial: string
   created_at: string
 }
 
@@ -62,10 +61,7 @@ export default function ClienteFichaPage() {
   async function agregarNota() {
     if (!nuevaNota.trim()) return
     setSaving(true)
-    await supabase.from('bitacora_cliente').insert([{
-      cliente_id: id,
-      nota: nuevaNota.trim()
-    }])
+    await supabase.from('bitacora_cliente').insert([{ cliente_id: id, nota: nuevaNota.trim() }])
     setNuevaNota('')
     fetchNotas()
     setSaving(false)
@@ -84,7 +80,6 @@ export default function ClienteFichaPage() {
       phone: form.phone,
       stage: form.stage,
       price: form.price,
-      
       notes: form.notes,
       initial: form.initial
     }).eq('id', id)
@@ -93,8 +88,8 @@ export default function ClienteFichaPage() {
     setSaving(false)
   }
 
-  const getEtapaStyle = (etapa: string) => {
-    switch (etapa) {
+  const getEtapaStyle = (stage: string) => {
+    switch (stage) {
       case 'NUEVO': return 'bg-[#CCFF00]/10 text-[#CCFF00] border-[#CCFF00]/20'
       case 'ACTIVO': return 'bg-zinc-900 text-zinc-400 border-zinc-800'
       case 'ESTANCADO': return 'bg-red-500/10 text-red-400 border-red-500/20'
@@ -114,7 +109,7 @@ export default function ClienteFichaPage() {
       <header className="border-b border-zinc-900 pb-6 flex flex-col md:flex-row justify-between items-start gap-4">
         <div>
           <button onClick={() => router.push('/dashboard/clients')} className="text-zinc-500 text-xs hover:text-white mb-3 flex items-center gap-1">
-            Back
+            ← Volver
           </button>
           <span className="text-sm font-mono text-[#CCFF00] uppercase tracking-widest">Ficha del Cliente</span>
           <h1 className="text-3xl font-extrabold tracking-tighter text-white mt-1">{cliente.name}</h1>
@@ -139,12 +134,12 @@ export default function ClienteFichaPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-6 space-y-4">
-          <h2 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Informacion del Cliente</h2>
+          <h2 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Información del Cliente</h2>
           {editando ? (
             <div className="space-y-3">
               <div>
                 <label className="text-[9px] font-mono text-zinc-500 uppercase">Nombre</label>
-                <input value={form.name || ''} onChange={e => setForm({...form, nombre: e.target.value})}
+                <input value={form.name || ''} onChange={e => setForm({...form, name: e.target.value})}
                   className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none" />
               </div>
               <div>
@@ -153,28 +148,32 @@ export default function ClienteFichaPage() {
                   className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none" />
               </div>
               <div>
-                <label className="text-[9px] font-mono text-zinc-500 uppercase">Telefono</label>
-                <input value={form.phone || ''} onChange={e => setForm({...form, telefono: e.target.value})}
+                <label className="text-[9px] font-mono text-zinc-500 uppercase">Teléfono</label>
+                <input value={form.phone || ''} onChange={e => setForm({...form, phone: e.target.value})}
                   className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none" />
               </div>
               <div>
                 <label className="text-[9px] font-mono text-zinc-500 uppercase">Etapa</label>
-                <select value={form.stage || ''} onChange={e => setForm({...form, etapa: e.target.value})}
+                <select value={form.stage || ''} onChange={e => setForm({...form, stage: e.target.value})}
                   className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none">
                   <option value="NUEVO">NUEVO</option>
                   <option value="ACTIVO">ACTIVO</option>
                   <option value="ESTANCADO">ESTANCADO</option>
                 </select>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-[9px] font-mono text-zinc-500 uppercase">Presupuesto Min</label>
-                  <input value={form.price || ''} onChange={e => setForm({...form, presupuesto_min: e.target.value})}
-                    className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none" />
-                </div>
               <div>
-                <label className="text-[9px] font-mono text-zinc-500 uppercase">Proxima Accion</label>
-                <input value={form.initial || ''} onChange={e => setForm({...form, proxima_accion: e.target.value})}
+                <label className="text-[9px] font-mono text-zinc-500 uppercase">Presupuesto</label>
+                <input value={form.price || ''} onChange={e => setForm({...form, price: e.target.value})}
+                  className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none" />
+              </div>
+              <div>
+                <label className="text-[9px] font-mono text-zinc-500 uppercase">Próxima Acción</label>
+                <input value={form.initial || ''} onChange={e => setForm({...form, initial: e.target.value})}
+                  className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none" />
+              </div>
+              <div>
+                <label className="text-[9px] font-mono text-zinc-500 uppercase">Notas</label>
+                <input value={form.notes || ''} onChange={e => setForm({...form, notes: e.target.value})}
                   className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none" />
               </div>
               <button onClick={guardarCliente} disabled={saving}
@@ -185,18 +184,17 @@ export default function ClienteFichaPage() {
           ) : (
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-zinc-500">Telefono</span>
+                <span className="text-zinc-500">Teléfono</span>
                 <span className="text-white font-mono">{cliente.phone || '-'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-zinc-500">Presupuesto</span>
                 <span className="text-[#CCFF00] font-black font-mono">
                   {cliente.price ? 'US$ ' + Number(cliente.price).toLocaleString() : '-'}
-                  { ? ' - US$ ' + Number().toLocaleString() : ''}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-zinc-500">Proxima Accion</span>
+                <span className="text-zinc-500">Próxima Acción</span>
                 <span className="text-white">{cliente.initial || '-'}</span>
               </div>
               <div className="flex justify-between">
@@ -220,7 +218,7 @@ export default function ClienteFichaPage() {
               value={nuevaNota}
               onChange={e => setNuevaNota(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && agregarNota()}
-              placeholder="Agregar nota o interaccion..."
+              placeholder="Agregar nota o interacción..."
               className="flex-1 bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-2.5 outline-none"
             />
             <button onClick={agregarNota} disabled={saving || !nuevaNota.trim()}
