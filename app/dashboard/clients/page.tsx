@@ -16,23 +16,51 @@ interface Cliente {
   user_id: string
 }
 
+const emptyForm = {
+  nombre: '', email: '', telefono: '', etapa: 'NUEVO',
+  presupuesto_min: '', presupuesto_max: '', notas: '', proxima_accion: ''
+}
+
 export default function ClientsPage() {
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [showForm, setShowForm] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [form, setForm] = useState(emptyForm)
 
-  useEffect(() => {
-    async function fetchClientes() {
-      const { data, error } = await supabase
-        .from('clients')
-        .select('*')
-        .order('created_at', { ascending: false })
-      if (error) console.error(error)
-      else setClientes(data || [])
-      setLoading(false)
+  useEffect(() => { fetchClientes() }, [])
+
+  async function fetchClientes() {
+    const { data, error } = await supabase.from('clients').select('*').order('created_at', { ascending: false })
+    if (error) console.error(error)
+    else setClientes(data || [])
+    setLoading(false)
+  }
+
+  async function agregarCliente() {
+    if (!form.nombre.trim()) return alert('El nombre es requerido')
+    setSaving(true)
+    const { data: { user } } = await supabase.auth.getUser()
+    const { error } = await supabase.from('clients').insert([{
+      nombre: form.nombre,
+      email: form.email,
+      telefono: form.telefono,
+      etapa: form.etapa,
+      presupuesto_min: form.presupuesto_min,
+      presupuesto_max: form.presupuesto_max,
+      notas: form.notas,
+      proxima_accion: form.proxima_accion,
+      user_id: user?.id || null
+    }])
+    if (error) alert('Error: ' + error.message)
+    else {
+      setForm(emptyForm)
+      setShowForm(false)
+      fetchClientes()
     }
-    fetchClientes()
-  }, [])
+    setSaving(false)
+  }
 
   const filtered = clientes.filter(c =>
     c.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -47,9 +75,6 @@ export default function ClientsPage() {
       default: return 'bg-zinc-900 text-zinc-400 border-zinc-800'
     }
   }
-
-  const waUrl = (tel: string) => 'https://wa.me/' + tel
-  const telUrl = (tel: string) => 'tel:' + tel
 
   return (
     <div className="text-zinc-100 font-sans">
@@ -67,8 +92,79 @@ export default function ClientsPage() {
               onChange={e => setSearchTerm(e.target.value)}
               className="w-full md:w-72 bg-zinc-950 border border-zinc-800 focus:border-[#CCFF00] text-zinc-100 placeholder-zinc-600 text-xs rounded-xl px-4 py-3 outline-none transition-colors"
             />
+            <button
+              onClick={() => setShowForm(!showForm)}
+              className="bg-[#CCFF00] text-black font-black text-xs rounded-xl px-5 py-3 hover:bg-[#b8e600] transition-colors whitespace-nowrap"
+            >
+              {showForm ? 'Cancelar' : '+ Nuevo Cliente'}
+            </button>
           </div>
         </header>
+
+        {showForm && (
+          <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 space-y-4">
+            <h2 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Registrar Nuevo Cliente</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="text-[9px] font-mono text-zinc-500 uppercase">Nombre *</label>
+                <input value={form.nombre} onChange={e => setForm({...form, nombre: e.target.value})}
+                  placeholder="Juan Pérez"
+                  className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none" />
+              </div>
+              <div>
+                <label className="text-[9px] font-mono text-zinc-500 uppercase">Email</label>
+                <input value={form.email} onChange={e => setForm({...form, email: e.target.value})}
+                  placeholder="juan@email.com"
+                  className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none" />
+              </div>
+              <div>
+                <label className="text-[9px] font-mono text-zinc-500 uppercase">Teléfono</label>
+                <input value={form.telefono} onChange={e => setForm({...form, telefono: e.target.value})}
+                  placeholder="8091234567"
+                  className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none" />
+              </div>
+              <div>
+                <label className="text-[9px] font-mono text-zinc-500 uppercase">Etapa</label>
+                <select value={form.etapa} onChange={e => setForm({...form, etapa: e.target.value})}
+                  className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none">
+                  <option value="NUEVO">NUEVO</option>
+                  <option value="ACTIVO">ACTIVO</option>
+                  <option value="ESTANCADO">ESTANCADO</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-[9px] font-mono text-zinc-500 uppercase">Presupuesto Min</label>
+                <input value={form.presupuesto_min} onChange={e => setForm({...form, presupuesto_min: e.target.value})}
+                  placeholder="150000"
+                  className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none" />
+              </div>
+              <div>
+                <label className="text-[9px] font-mono text-zinc-500 uppercase">Presupuesto Max</label>
+                <input value={form.presupuesto_max} onChange={e => setForm({...form, presupuesto_max: e.target.value})}
+                  placeholder="250000"
+                  className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none" />
+              </div>
+              <div className="md:col-span-2">
+                <label className="text-[9px] font-mono text-zinc-500 uppercase">Próxima Acción</label>
+                <input value={form.proxima_accion} onChange={e => setForm({...form, proxima_accion: e.target.value})}
+                  placeholder="Llamar el lunes, enviar propiedades..."
+                  className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none" />
+              </div>
+              <div>
+                <label className="text-[9px] font-mono text-zinc-500 uppercase">Notas</label>
+                <input value={form.notas} onChange={e => setForm({...form, notas: e.target.value})}
+                  placeholder="Busca apartamento en Piantini..."
+                  className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none" />
+              </div>
+            </div>
+            <div className="flex justify-end">
+              <button onClick={agregarCliente} disabled={saving}
+                className="bg-[#CCFF00] text-black font-black text-xs rounded-xl px-6 py-3 hover:bg-[#b8e600] transition-colors disabled:opacity-50">
+                {saving ? 'Guardando...' : 'Registrar Cliente'}
+              </button>
+            </div>
+          </div>
+        )}
 
         <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="bg-zinc-950 p-5 rounded-2xl border border-zinc-900">
@@ -92,7 +188,7 @@ export default function ClientsPage() {
         {loading ? (
           <div className="text-zinc-500 text-sm text-center py-20">Cargando clientes...</div>
         ) : filtered.length === 0 ? (
-          <div className="text-zinc-500 text-sm text-center py-20">No hay clientes.</div>
+          <div className="text-zinc-500 text-sm text-center py-20">No hay clientes. Agrega el primero.</div>
         ) : (
           <section className="bg-zinc-950/40 rounded-2xl border border-zinc-900/50 overflow-hidden">
             <div className="overflow-x-auto">
@@ -108,16 +204,15 @@ export default function ClientsPage() {
                 </thead>
                 <tbody className="divide-y divide-zinc-900/40 text-xs">
                   {filtered.map(cliente => (
-                    <tr key={cliente.id} onClick={() => window.location.href = '/dashboard/clients/' + cliente.id} className="hover:bg-zinc-900/20 transition-colors group cursor-pointer">
+                    <tr key={cliente.id} onClick={() => window.location.href = '/dashboard/clients/' + cliente.id}
+                      className="hover:bg-zinc-900/20 transition-colors group cursor-pointer">
                       <td className="p-4 pl-6">
-                        <div className="font-bold text-white text-sm group-hover:text-[#CCFF00] transition-colors">
-                          {cliente.nombre}
-                        </div>
+                        <div className="font-bold text-white text-sm group-hover:text-[#CCFF00] transition-colors">{cliente.nombre}</div>
                         <div className="text-zinc-500 font-mono text-[11px] mt-0.5">{cliente.email}</div>
                       </td>
                       <td className="p-4">
                         <span className="text-[#CCFF00] font-black font-mono">
-                          {cliente.presupuesto_min ? cliente.presupuesto_min : '-'}
+                          {cliente.presupuesto_min ? 'US$ ' + Number(cliente.presupuesto_min).toLocaleString() : '-'}
                         </span>
                       </td>
                       <td className="p-4">
@@ -131,13 +226,15 @@ export default function ClientsPage() {
                       <td className="p-4 pr-6">
                         <div className="flex items-center justify-center gap-2">
                           {cliente.telefono && (
-                            <a href={waUrl(cliente.telefono)} target="_blank" rel="noopener noreferrer"
+                            <a href={'https://wa.me/' + cliente.telefono} target="_blank" rel="noopener noreferrer"
+                              onClick={e => e.stopPropagation()}
                               className="p-2 bg-zinc-900 hover:bg-[#CCFF00] border border-zinc-800 text-zinc-400 hover:text-black rounded-lg transition-all">
                               WA
                             </a>
                           )}
                           {cliente.telefono && (
-                            <a href={telUrl(cliente.telefono)}
+                            <a href={'tel:' + cliente.telefono}
+                              onClick={e => e.stopPropagation()}
                               className="p-2 bg-zinc-900 hover:bg-blue-500 border border-zinc-800 text-zinc-400 hover:text-white rounded-lg transition-all">
                               Tel
                             </a>
