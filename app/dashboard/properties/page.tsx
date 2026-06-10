@@ -85,7 +85,15 @@ export default function PropertiesPage() {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const togglePublic = async (id: string, currentValue: boolean) => {
+  await supabase
+    .from('propiedades')
+    .update({ public: !currentValue })
+    .eq('id', id);
+  cargarPropiedades();
+};
+
+const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -294,6 +302,12 @@ export default function PropertiesPage() {
 
                 <div className="p-5">
                   <h3 className="text-lg font-bold text-white tracking-tight line-clamp-1">{propiedad.titulo}</h3>
+                    <button
+                      onClick={() => togglePublic(propiedad.id.toString(), (propiedad as any).public || false)}
+                      className={`mt-1 text-xs px-2 py-1 rounded-full font-semibold ${(propiedad as any).public ? 'bg-green-500 text-white' : 'bg-zinc-600 text-zinc-300'}`}
+                    >
+                      {(propiedad as any).public ? 'Portal: ON' : 'Portal: OFF'}
+                    </button>
                   <p className="text-2xl font-semibold text-white mt-1.5 font-mono">
                     ${Number(propiedad.precio) ? Number(propiedad.precio).toLocaleString() : propiedad.precio}
                   </p>
