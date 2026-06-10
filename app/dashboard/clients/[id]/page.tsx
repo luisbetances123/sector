@@ -97,6 +97,13 @@ export default function ClienteFichaPage() {
     }
   }
 
+  const formatTelefono = (tel: string) => {
+    const digits = tel.replace(/\D/g, '')
+    if (digits.length === 10) return '(' + digits.slice(0,3) + ') ' + digits.slice(3,6) + '-' + digits.slice(6)
+    if (digits.length === 11) return '(' + digits.slice(1,4) + ') ' + digits.slice(4,7) + '-' + digits.slice(7)
+    return tel
+  }
+
   const formatFecha = (str: string) => {
     return new Date(str).toLocaleDateString('es-DO', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
   }
@@ -185,7 +192,7 @@ export default function ClienteFichaPage() {
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-zinc-500">Teléfono</span>
-                <span className="text-white font-mono">{cliente.phone || '-'}</span>
+                <span className="text-white font-mono">{cliente.phone ? formatTelefono(cliente.phone) : '-'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-zinc-500">Presupuesto</span>
