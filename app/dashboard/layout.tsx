@@ -9,7 +9,7 @@ import {
   Building2, 
   GitFork, 
   Calendar,
-  BarChart2,
+  BarChart2, TrendingUp,
   UserCog,
   LogOut,
   Menu,
