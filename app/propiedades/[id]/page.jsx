@@ -6,9 +6,8 @@ import { createClient } from "@/app/lib/supabase"
 export default function PropiedadDetalle() {
   const { id } = useParams()
   const router = useRouter()
-  const [propiedad, setPropiedad] = useState(null)
+  const [propiedad, setPropiedad] = useState<any>(null)
   const [loading, setLoading] = useState(true)
-  const [contacto, setContacto] = useState(null)
   const [formData, setFormData] = useState({ nombre: "", email: "", telefono: "", mensaje: "" })
   const [enviando, setEnviando] = useState(false)
   const [enviado, setEnviado] = useState(false)
@@ -20,12 +19,7 @@ export default function PropiedadDetalle() {
 
   async function cargar() {
     setLoading(true)
-    const { data } = await supabase
-      .from("properties")
-      .select("*")
-      .eq("id", id)
-      .eq("public", true)
-      .single()
+    const { data } = await supabase.from("properties").select("*").eq("id", id).eq("public", true).single()
     setPropiedad(data)
     setLoading(false)
   }
@@ -41,115 +35,153 @@ export default function PropiedadDetalle() {
         propiedad_id: id,
       })
       setEnviado(true)
-      setTimeout(() => { setContacto(null); setEnviado(false); setFormData({ nombre: "", email: "", telefono: "", mensaje: "" }) }, 2000)
+      setTimeout(() => { setEnviado(false); setFormData({ nombre: "", email: "", telefono: "", mensaje: "" }) }, 3000)
     } catch (e) { console.error(e) }
     setEnviando(false)
   }
 
-  const formatPrecio = (p) => p ? new Intl.NumberFormat("es-DO", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(p) : "Precio a consultar"
+  const formatPrecio = (p: any) => p ? new Intl.NumberFormat("es-DO", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(p) : "Precio a consultar"
+
+  const mapUrl = propiedad?.location
+    ? `https://www.google.com/maps/embed/v1/search?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=${encodeURIComponent(propiedad.location + ', Santo Domingo, República Dominicana')}&zoom=15`
+    : null
 
   if (loading) return (
-    <div style={{ fontFamily: "sans-serif", background: "#f8fafc", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <p style={{ color: "#64748b" }}>Cargando propiedad...</p>
+    <div className="min-h-screen bg-[#09090b] flex items-center justify-center">
+      <p className="text-zinc-500 font-mono animate-pulse">Cargando propiedad...</p>
     </div>
   )
 
   if (!propiedad) return (
-    <div style={{ fontFamily: "sans-serif", background: "#f8fafc", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "16px" }}>
-      <p style={{ color: "#64748b" }}>Propiedad no encontrada.</p>
-      <button onClick={() => router.push("/propiedades")} style={{ background: "#3b82f6", color: "#fff", padding: "10px 20px", borderRadius: "8px", border: "none", cursor: "pointer" }}>Ver todas las propiedades</button>
+    <div className="min-h-screen bg-[#09090b] flex items-center justify-center flex-col gap-4">
+      <p className="text-zinc-500">Propiedad no encontrada.</p>
+      <button onClick={() => router.push("/listings")} className="bg-[#CCFF00] text-black px-4 py-2 rounded-xl text-sm font-black">
+        Ver todas las propiedades
+      </button>
     </div>
   )
 
   return (
-    <div style={{ fontFamily: "sans-serif", background: "#f8fafc", minHeight: "100vh" }}>
-      {/* Header */}
-      <div style={{ background: "#1e293b", padding: "24px 40px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <div className="min-h-screen bg-[#09090b] text-zinc-100">
+      {/* HEADER */}
+      <div className="border-b border-zinc-900 px-6 py-4 flex justify-between items-center">
         <div>
-          <h1 style={{ color: "#fff", margin: 0, fontSize: "1.5rem", fontWeight: "700" }}>SECTOR</h1>
-          <p style={{ color: "#94a3b8", margin: 0, fontSize: "0.875rem" }}>Portal de Propiedades</p>
+          <h1 className="text-xl font-black tracking-tighter">SEC<span className="text-[#CCFF00]">TOR</span></h1>
+          <p className="text-xs text-zinc-500 font-mono">Portal de Propiedades</p>
         </div>
-        <div style={{ display: "flex", gap: "12px" }}>
-          <button onClick={() => router.push("/propiedades")} style={{ background: "transparent", color: "#94a3b8", border: "1px solid #334155", padding: "8px 16px", borderRadius: "8px", cursor: "pointer", fontSize: "0.875rem" }}>← Volver</button>
-          <a href="/login" style={{ background: "#3b82f6", color: "#fff", padding: "8px 16px", borderRadius: "8px", textDecoration: "none", fontSize: "0.875rem", fontWeight: "600" }}>Acceder al CRM</a>
+        <div className="flex gap-3">
+          <button onClick={() => router.push("/listings")} className="text-zinc-400 border border-zinc-800 px-4 py-2 rounded-xl text-xs font-medium hover:text-white transition-colors">
+            ← Volver
+          </button>
+          <a href="/login" className="bg-[#CCFF00] text-black px-4 py-2 rounded-xl text-xs font-black hover:bg-[#b8e600] transition-colors">
+            Acceder al CRM
+          </a>
         </div>
       </div>
 
-      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "40px 24px" }}>
-        {/* Imagen principal */}
-        <div style={{ background: "#e2e8f0", borderRadius: "16px", overflow: "hidden", marginBottom: "32px", height: "420px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          {propiedad.imagen ? (
-            <img src={propiedad.imagen} alt={propiedad.nombre || propiedad.ubicacion} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+      <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
+        {/* IMAGEN */}
+        <div className="rounded-2xl overflow-hidden h-96 bg-zinc-950 border border-zinc-800">
+          {propiedad.image_url ? (
+            <img src={propiedad.image_url} alt={propiedad.title} className="w-full h-full object-cover" />
           ) : (
-            <div style={{ textAlign: "center", color: "#94a3b8" }}>
-              <div style={{ fontSize: "4rem" }}>🏠</div>
-              <p>Sin imagen disponible</p>
-            </div>
+            <div className="w-full h-full flex items-center justify-center text-zinc-700 text-xs font-mono">Sin imagen</div>
           )}
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: "32px" }}>
-          {/* Info principal */}
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "8px" }}>
-              <span style={{ background: "#dbeafe", color: "#1d4ed8", padding: "4px 12px", borderRadius: "20px", fontSize: "0.75rem", fontWeight: "600" }}>{propiedad.type || propiedad.tipo || "Propiedad"}</span>
-              {propiedad.estado && <span style={{ background: "#dcfce7", color: "#166534", padding: "4px 12px", borderRadius: "20px", fontSize: "0.75rem", fontWeight: "600" }}>{propiedad.estado}</span>}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* INFO */}
+          <div className="md:col-span-2 space-y-6">
+            <div>
+              <p className="text-xs font-mono text-zinc-500 uppercase tracking-wider">{propiedad.location}</p>
+              <h2 className="text-3xl font-extrabold tracking-tighter text-white mt-1">{propiedad.title}</h2>
+              <p className="text-[#CCFF00] font-black text-2xl font-mono mt-2">{formatPrecio(propiedad.price)}</p>
             </div>
-            <h2 style={{ fontSize: "1.75rem", fontWeight: "700", color: "#0f172a", margin: "0 0 8px" }}>{propiedad.title || propiedad.nombre || propiedad.ubicacion || "Propiedad"}</h2>
-            <p style={{ color: "#64748b", fontSize: "1rem", marginBottom: "24px" }}>📍 {propiedad.location || propiedad.ubicacion}</p>
-            <p style={{ fontSize: "2rem", fontWeight: "800", color: "#1e293b", marginBottom: "32px" }}>{formatPrecio(propiedad.price || propiedad.precio)}</p>
 
-            {/* Características */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", marginBottom: "32px" }}>
-              {(propiedad.bedrooms || propiedad.recamaras) && (
-                <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: "12px", padding: "16px", textAlign: "center" }}>
-                  <div style={{ fontSize: "1.5rem" }}>🛏️</div>
-                  <div style={{ fontWeight: "700", fontSize: "1.25rem" }}>{propiedad.bedrooms || propiedad.recamaras}</div>
-                  <div style={{ color: "#64748b", fontSize: "0.75rem" }}>Recámaras</div>
+            {/* SPECS */}
+            <div className="grid grid-cols-3 gap-4">
+              {propiedad.bedrooms && (
+                <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-4 text-center">
+                  <p className="text-2xl font-black text-white font-mono">{propiedad.bedrooms}</p>
+                  <p className="text-[10px] text-zinc-500 uppercase tracking-wider mt-1">Recámaras</p>
                 </div>
               )}
-              {(propiedad.bathrooms || propiedad.banos) && (
-                <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: "12px", padding: "16px", textAlign: "center" }}>
-                  <div style={{ fontSize: "1.5rem" }}>🚿</div>
-                  <div style={{ fontWeight: "700", fontSize: "1.25rem" }}>{propiedad.bathrooms || propiedad.banos}</div>
-                  <div style={{ color: "#64748b", fontSize: "0.75rem" }}>Baños</div>
+              {propiedad.bathrooms && (
+                <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-4 text-center">
+                  <p className="text-2xl font-black text-white font-mono">{propiedad.bathrooms}</p>
+                  <p className="text-[10px] text-zinc-500 uppercase tracking-wider mt-1">Baños</p>
                 </div>
               )}
-              {(propiedad.area) && (
-                <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: "12px", padding: "16px", textAlign: "center" }}>
-                  <div style={{ fontSize: "1.5rem" }}>📐</div>
-                  <div style={{ fontWeight: "700", fontSize: "1.25rem" }}>{propiedad.area}</div>
-                  <div style={{ color: "#64748b", fontSize: "0.75rem" }}>m²</div>
+              {propiedad.m2 && (
+                <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-4 text-center">
+                  <p className="text-2xl font-black text-white font-mono">{propiedad.m2}</p>
+                  <p className="text-[10px] text-zinc-500 uppercase tracking-wider mt-1">m²</p>
                 </div>
               )}
             </div>
 
-            {/* Descripción */}
-            {(propiedad.description || propiedad.descripcion || propiedad.notas) && (
-              <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: "12px", padding: "24px", marginBottom: "24px" }}>
-                <h3 style={{ fontWeight: "700", marginBottom: "12px", color: "#0f172a" }}>Descripción</h3>
-                <p style={{ color: "#475569", lineHeight: "1.7" }}>{propiedad.description || propiedad.descripcion || propiedad.notas}</p>
+            {/* DESCRIPCION */}
+            {propiedad.descripcion && (
+              <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-5">
+                <h3 className="text-xs font-mono text-zinc-500 uppercase tracking-wider mb-3">Descripción</h3>
+                <p className="text-zinc-300 text-sm leading-relaxed">{propiedad.descripcion}</p>
+              </div>
+            )}
+
+            {/* MAPA */}
+            {mapUrl && (
+              <div className="bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden">
+                <div className="px-5 py-3 border-b border-zinc-800">
+                  <h3 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Ubicación</h3>
+                  <p className="text-zinc-300 text-sm mt-0.5">{propiedad.location}, Santo Domingo, RD</p>
+                </div>
+                <iframe
+                  src={mapUrl}
+                  width="100%"
+                  height="300"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
               </div>
             )}
           </div>
 
-          {/* Panel de contacto */}
+          {/* CONTACTO */}
           <div>
-            <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: "16px", padding: "24px", position: "sticky", top: "24px" }}>
-              <h3 style={{ fontWeight: "700", marginBottom: "4px", color: "#0f172a" }}>¿Te interesa esta propiedad?</h3>
-              <p style={{ color: "#64748b", fontSize: "0.875rem", marginBottom: "20px" }}>Déjanos tus datos y un agente te contactará</p>
+            <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 sticky top-6 space-y-4">
+              <div>
+                <h3 className="font-black text-white">¿Te interesa?</h3>
+                <p className="text-zinc-500 text-xs mt-1">Un agente te contactará pronto.</p>
+              </div>
               {enviado ? (
-                <div style={{ textAlign: "center", padding: "24px 0", color: "#22c55e", fontWeight: "600" }}>✅ Consulta enviada exitosamente</div>
+                <div className="text-center py-6 text-[#CCFF00] font-black text-sm">✅ Consulta enviada</div>
               ) : (
-                <>
-                  <input value={formData.nombre} onChange={e => setFormData({...formData, nombre: e.target.value})} placeholder="Tu nombre *" style={{ width: "100%", padding: "10px 12px", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "0.875rem", marginBottom: "12px", boxSizing: "border-box" }} />
-                  <input value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} placeholder="Tu email *" type="email" style={{ width: "100%", padding: "10px 12px", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "0.875rem", marginBottom: "12px", boxSizing: "border-box" }} />
-                  <input value={formData.telefono} onChange={e => setFormData({...formData, telefono: e.target.value})} placeholder="Tu teléfono" style={{ width: "100%", padding: "10px 12px", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "0.875rem", marginBottom: "12px", boxSizing: "border-box" }} />
-                  <textarea value={formData.mensaje} onChange={e => setFormData({...formData, mensaje: e.target.value})} placeholder="Mensaje (opcional)" rows={3} style={{ width: "100%", padding: "10px 12px", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "0.875rem", marginBottom: "16px", resize: "none", boxSizing: "border-box" }} />
-                  <button onClick={enviarConsulta} disabled={enviando} style={{ width: "100%", padding: "12px", background: enviando ? "#94a3b8" : "#3b82f6", color: "#fff", borderRadius: "8px", border: "none", fontWeight: "600", cursor: enviando ? "default" : "pointer" }}>
+                <div className="space-y-3">
+                  <input value={formData.nombre} onChange={e => setFormData({...formData, nombre: e.target.value})}
+                    placeholder="Tu nombre *"
+                    className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 outline-none placeholder-zinc-600" />
+                  <input value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})}
+                    placeholder="Tu email *" type="email"
+                    className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 outline-none placeholder-zinc-600" />
+                  <input value={formData.telefono} onChange={e => setFormData({...formData, telefono: e.target.value})}
+                    placeholder="Tu teléfono"
+                    className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 outline-none placeholder-zinc-600" />
+                  <textarea value={formData.mensaje} onChange={e => setFormData({...formData, mensaje: e.target.value})}
+                    placeholder="Mensaje (opcional)" rows={3}
+                    className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 outline-none placeholder-zinc-600 resize-none" />
+                  <button onClick={enviarConsulta} disabled={enviando || !formData.nombre || !formData.email}
+                    className="w-full bg-[#CCFF00] text-black font-black text-xs rounded-xl py-3 hover:bg-[#b8e600] transition-colors disabled:opacity-50">
                     {enviando ? "Enviando..." : "Enviar consulta"}
                   </button>
-                </>
+                  <a href={`https://wa.me/19293056500?text=${encodeURIComponent('Hola, me interesa: ' + propiedad.title)}`}
+                    target="_blank"
+                    className="w-full flex items-center justify-center gap-2 bg-zinc-900 border border-zinc-800 text-zinc-300 text-xs rounded-xl py-3 hover:border-[#CCFF00] hover:text-white transition-colors font-bold">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                    Consultar por WhatsApp
+                  </a>
+                </div>
               )}
             </div>
           </div>
