@@ -24,7 +24,7 @@ export default function ReportsPage() {
   async function fetchData() {
     const [dealsRes, clientesRes] = await Promise.all([
       supabase.from('pipeline_deals').select('etapa, precio'),
-      supabase.from('clientes').select('etapa')
+      supabase.from('clients').select('etapa')
     ])
 
     if (dealsRes.data) {
