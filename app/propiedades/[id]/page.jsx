@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { createClient } from "@/lib/supabase"
+import { createClient } from "@/app/lib/supabase"
 
 export default function PropiedadDetalle() {
   const { id } = useParams()
