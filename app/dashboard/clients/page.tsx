@@ -43,14 +43,14 @@ export default function ClientsPage() {
     setSaving(true)
     const { data: { user } } = await supabase.auth.getUser()
     const { error } = await supabase.from('clients').insert([{
-      nombre: form.nombre,
+      name: form.nombre,
       email: form.email,
-      telefono: form.telefono,
-      etapa: form.etapa,
-      presupuesto_min: form.presupuesto_min,
-      presupuesto_max: form.presupuesto_max,
-      notas: form.notas,
-      proxima_accion: form.proxima_accion,
+      phone: form.telefono,
+      stage: form.etapa,
+      price: form.presupuesto_min,
+      
+      notes: form.notas,
+      initial: form.proxima_accion,
       user_id: user?.id || null
     }])
     if (error) alert('Error: ' + error.message)
@@ -63,7 +63,7 @@ export default function ClientsPage() {
   }
 
   const filtered = clientes.filter(c =>
-    c.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    c.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     c.email?.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
@@ -174,13 +174,13 @@ export default function ClientsPage() {
           <div className="bg-zinc-950 p-5 rounded-2xl border border-zinc-900">
             <p className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Activos</p>
             <p className="text-3xl font-black text-[#CCFF00] mt-1">
-              {loading ? '...' : clientes.filter(c => c.etapa === 'ACTIVO').length}
+              {loading ? '...' : clientes.filter(c => c.stage === 'ACTIVO').length}
             </p>
           </div>
           <div className="bg-zinc-950 p-5 rounded-2xl border border-zinc-900">
             <p className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Estancados</p>
             <p className="text-3xl font-black text-red-400 mt-1">
-              {loading ? '...' : clientes.filter(c => c.etapa === 'ESTANCADO').length}
+              {loading ? '...' : clientes.filter(c => c.stage === 'ESTANCADO').length}
             </p>
           </div>
         </section>
@@ -207,33 +207,33 @@ export default function ClientsPage() {
                     <tr key={cliente.id} onClick={() => window.location.href = '/dashboard/clients/' + cliente.id}
                       className="hover:bg-zinc-900/20 transition-colors group cursor-pointer">
                       <td className="p-4 pl-6">
-                        <div className="font-bold text-white text-sm group-hover:text-[#CCFF00] transition-colors">{cliente.nombre}</div>
+                        <div className="font-bold text-white text-sm group-hover:text-[#CCFF00] transition-colors">{cliente.name}</div>
                         <div className="text-zinc-500 font-mono text-[11px] mt-0.5">{cliente.email}</div>
                       </td>
                       <td className="p-4">
                         <span className="text-[#CCFF00] font-black font-mono">
-                          {cliente.presupuesto_min ? 'US$ ' + Number(cliente.presupuesto_min).toLocaleString() : '-'}
+                          {cliente.price ? 'US$ ' + Number(cliente.price).toLocaleString() : '-'}
                         </span>
                       </td>
                       <td className="p-4">
-                        <span className={'inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold border ' + getEtapaStyle(cliente.etapa)}>
-                          {cliente.etapa || '-'}
+                        <span className={'inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold border ' + getEtapaStyle(cliente.stage)}>
+                          {cliente.stage || '-'}
                         </span>
                       </td>
                       <td className="p-4">
-                        <span className="text-zinc-400 text-[11px]">{cliente.proxima_accion || '-'}</span>
+                        <span className="text-zinc-400 text-[11px]">{cliente.initial || '-'}</span>
                       </td>
                       <td className="p-4 pr-6">
                         <div className="flex items-center justify-center gap-2">
-                          {cliente.telefono && (
-                            <a href={'https://wa.me/' + cliente.telefono} target="_blank" rel="noopener noreferrer"
+                          {cliente.phone && (
+                            <a href={'https://wa.me/' + cliente.phone} target="_blank" rel="noopener noreferrer"
                               onClick={e => e.stopPropagation()}
                               className="p-2 bg-zinc-900 hover:bg-[#CCFF00] border border-zinc-800 text-zinc-400 hover:text-black rounded-lg transition-all">
                               WA
                             </a>
                           )}
-                          {cliente.telefono && (
-                            <a href={'tel:' + cliente.telefono}
+                          {cliente.phone && (
+                            <a href={'tel:' + cliente.phone}
                               onClick={e => e.stopPropagation()}
                               className="p-2 bg-zinc-900 hover:bg-blue-500 border border-zinc-800 text-zinc-400 hover:text-white rounded-lg transition-all">
                               Tel

@@ -79,14 +79,14 @@ export default function ClienteFichaPage() {
   async function guardarCliente() {
     setSaving(true)
     await supabase.from('clients').update({
-      nombre: form.nombre,
+      name: form.name,
       email: form.email,
-      telefono: form.telefono,
-      etapa: form.etapa,
-      presupuesto_min: form.presupuesto_min,
-      presupuesto_max: form.presupuesto_max,
-      notas: form.notas,
-      proxima_accion: form.proxima_accion
+      phone: form.phone,
+      stage: form.stage,
+      price: form.price,
+      
+      notes: form.notes,
+      initial: form.initial
     }).eq('id', id)
     fetchCliente()
     setEditando(false)
@@ -117,19 +117,19 @@ export default function ClienteFichaPage() {
             Back
           </button>
           <span className="text-sm font-mono text-[#CCFF00] uppercase tracking-widest">Ficha del Cliente</span>
-          <h1 className="text-3xl font-extrabold tracking-tighter text-white mt-1">{cliente.nombre}</h1>
+          <h1 className="text-3xl font-extrabold tracking-tighter text-white mt-1">{cliente.name}</h1>
           <p className="text-zinc-500 text-sm mt-1">{cliente.email}</p>
         </div>
         <div className="flex items-center gap-3">
-          <span className={'inline-flex items-center px-3 py-1 rounded-full text-xs font-mono font-bold border ' + getEtapaStyle(cliente.etapa)}>
-            {cliente.etapa || '-'}
+          <span className={'inline-flex items-center px-3 py-1 rounded-full text-xs font-mono font-bold border ' + getEtapaStyle(cliente.stage)}>
+            {cliente.stage || '-'}
           </span>
           <button onClick={() => setEditando(!editando)}
             className="bg-zinc-900 border border-zinc-700 text-white text-xs font-bold rounded-xl px-4 py-2 hover:bg-zinc-800 transition-colors">
             {editando ? 'Cancelar' : 'Editar'}
           </button>
-          {cliente.telefono && (
-            <a href={"https://wa.me/" + cliente.telefono} target="_blank" rel="noopener noreferrer"
+          {cliente.phone && (
+            <a href={"https://wa.me/" + cliente.phone} target="_blank" rel="noopener noreferrer"
               className="bg-[#CCFF00] text-black text-xs font-black rounded-xl px-4 py-2 hover:bg-[#b8e600] transition-colors">
               WhatsApp
             </a>
@@ -144,7 +144,7 @@ export default function ClienteFichaPage() {
             <div className="space-y-3">
               <div>
                 <label className="text-[9px] font-mono text-zinc-500 uppercase">Nombre</label>
-                <input value={form.nombre || ''} onChange={e => setForm({...form, nombre: e.target.value})}
+                <input value={form.name || ''} onChange={e => setForm({...form, nombre: e.target.value})}
                   className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none" />
               </div>
               <div>
@@ -154,12 +154,12 @@ export default function ClienteFichaPage() {
               </div>
               <div>
                 <label className="text-[9px] font-mono text-zinc-500 uppercase">Telefono</label>
-                <input value={form.telefono || ''} onChange={e => setForm({...form, telefono: e.target.value})}
+                <input value={form.phone || ''} onChange={e => setForm({...form, telefono: e.target.value})}
                   className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none" />
               </div>
               <div>
                 <label className="text-[9px] font-mono text-zinc-500 uppercase">Etapa</label>
-                <select value={form.etapa || ''} onChange={e => setForm({...form, etapa: e.target.value})}
+                <select value={form.stage || ''} onChange={e => setForm({...form, etapa: e.target.value})}
                   className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none">
                   <option value="NUEVO">NUEVO</option>
                   <option value="ACTIVO">ACTIVO</option>
@@ -169,18 +169,18 @@ export default function ClienteFichaPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-[9px] font-mono text-zinc-500 uppercase">Presupuesto Min</label>
-                  <input value={form.presupuesto_min || ''} onChange={e => setForm({...form, presupuesto_min: e.target.value})}
+                  <input value={form.price || ''} onChange={e => setForm({...form, presupuesto_min: e.target.value})}
                     className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none" />
                 </div>
                 <div>
                   <label className="text-[9px] font-mono text-zinc-500 uppercase">Presupuesto Max</label>
-                  <input value={form.presupuesto_max || ''} onChange={e => setForm({...form, presupuesto_max: e.target.value})}
+                  <input value={ || ''} onChange={e => setForm({...form, presupuesto_max: e.target.value})}
                     className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none" />
                 </div>
               </div>
               <div>
                 <label className="text-[9px] font-mono text-zinc-500 uppercase">Proxima Accion</label>
-                <input value={form.proxima_accion || ''} onChange={e => setForm({...form, proxima_accion: e.target.value})}
+                <input value={form.initial || ''} onChange={e => setForm({...form, proxima_accion: e.target.value})}
                   className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-2.5 mt-1 outline-none" />
               </div>
               <button onClick={guardarCliente} disabled={saving}
@@ -192,27 +192,27 @@ export default function ClienteFichaPage() {
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-zinc-500">Telefono</span>
-                <span className="text-white font-mono">{cliente.telefono || '-'}</span>
+                <span className="text-white font-mono">{cliente.phone || '-'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-zinc-500">Presupuesto</span>
                 <span className="text-[#CCFF00] font-black font-mono">
-                  {cliente.presupuesto_min ? 'US$ ' + Number(cliente.presupuesto_min).toLocaleString() : '-'}
-                  {cliente.presupuesto_max ? ' - US$ ' + Number(cliente.presupuesto_max).toLocaleString() : ''}
+                  {cliente.price ? 'US$ ' + Number(cliente.price).toLocaleString() : '-'}
+                  { ? ' - US$ ' + Number().toLocaleString() : ''}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-zinc-500">Proxima Accion</span>
-                <span className="text-white">{cliente.proxima_accion || '-'}</span>
+                <span className="text-white">{cliente.initial || '-'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-zinc-500">Registrado</span>
                 <span className="text-zinc-400 text-xs">{formatFecha(cliente.created_at)}</span>
               </div>
-              {cliente.notas && (
+              {cliente.notes && (
                 <div className="pt-2 border-t border-zinc-900">
                   <span className="text-zinc-500 text-xs block mb-1">Notas</span>
-                  <p className="text-zinc-300 text-xs leading-relaxed">{cliente.notas}</p>
+                  <p className="text-zinc-300 text-xs leading-relaxed">{cliente.notes}</p>
                 </div>
               )}
             </div>
