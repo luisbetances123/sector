@@ -16,14 +16,21 @@ export async function POST(request) {
     return NextResponse.json({ error: "Faltan campos requeridos" }, { status: 400 });
   }
 
-  // Buscar el agente dueno de la propiedad
+  // Buscar el user_id de la propiedad
   const { data: property } = await supabase
     .from("properties")
-    .select("user_id, profiles(email)")
+    .select("user_id")
     .eq("id", propertyId)
     .single();
 
-  const agentEmail = property?.profiles?.email || process.env.NEXT_PUBLIC_DEFAULT_AGENT_EMAIL;
+  // Buscar el email del agente en profiles
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("email")
+    .eq("id", property?.user_id)
+    .single();
+
+  const agentEmail = profile?.email;
 
   if (!agentEmail) {
     return NextResponse.json({ error: "No se encontro el agente" }, { status: 404 });
