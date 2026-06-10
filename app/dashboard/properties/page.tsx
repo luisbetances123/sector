@@ -103,6 +103,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const { data: { user } } = await supabase.auth.getUser();
     const datosAEnviar: any = {
       title: formData.titulo,
       price: formData.precio,
@@ -115,7 +116,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement 
       status: 'active',
       estado: 'En venta',
       public: true,
-      user_id: (await supabase.auth.getUser()).data.user?.id
+      user_id: user?.id || null
     };
 
     try {
