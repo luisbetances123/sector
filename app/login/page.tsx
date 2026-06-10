@@ -56,6 +56,7 @@ export default function LoginPage() {
           >
             {loading ? 'Entrando...' : 'Entrar'}
           </button>
+          <button type="button" onClick={async () => { if (!email) return; await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + "/reset-password" }); setError("Revisa tu email"); }} className="text-xs text-zinc-400 hover:text-[#CCFF00] mt-2 w-full text-center">Olvidaste tu contrasena?</button>
         </form>
       </div>
     </div>
