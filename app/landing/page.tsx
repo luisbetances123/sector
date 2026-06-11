@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 const LIME = "#CCFF00";
 const BG = "#09090b";
 const CARD_BG = "#111113";
-const BORDER = "#222226";
+const BORDER = "#1a1a1d";
 
 const sectors = [
   "Piantini", "Naco", "Bella Vista", "Serrallés",
@@ -19,48 +19,46 @@ const turisticos = [
   "Santiago", "Bayahíbe", "La Romana", "Sosúa",
 ];
 
-const stats = [
-  { value: "5 min", label: "CONFIGURACIÓN INICIAL\nCERO DRAMA. ENTRAS Y PRODUCES" },
-  { value: "1 clic", label: "ENVÍA FICHAS TÉCNICAS\nESTÉTICAS POR WHATSAPP" },
-  { value: "7 en 1", label: "FACTURACIÓN, LEADS\nY PIPELINE EN UN SOLO LUGAR" },
-  { value: "0%", label: "DISTRACCIONES. INTERFAZ\nDISEÑADA PARA FACTURAR" },
-];
-
 const features = [
   {
     num: "01",
     title: "Dashboard",
     sub: "Visión total de tu negocio en un vistazo",
-    desc: "El centro de mando de SECTOR. Te muestra en tiempo real lo que deja dinero: leads sin responder en rojo, seguimientos urgentes del día y el estatus real de tus negociaciones.",
+    desc: "El centro de mando de SECTOR. Te muestra en tiempo real lo que deja dinero: leads sin responder en rojo, seguimientos urgentes del día y el estatus real de tus negociaciones. Cero métricas de vanidad.",
     bullets: ["Leads fríos y calientes destacados", "Alertas de seguimiento inmediato", "Pipeline activo consolidado", "Métricas de inventario disponible"],
+    flip: false,
   },
   {
     num: "02",
     title: "Mis Tareas",
     sub: "Tu agenda diaria inteligente",
-    desc: "Cada tarea tiene cliente, propiedad y fecha. Sin notas sueltas, sin excusas. El sistema te recuerda antes de que olvides.",
+    desc: "Cada tarea tiene cliente, propiedad y fecha. Sin notas sueltas, sin excusas. El sistema te recuerda antes de que olvides. Diseñado para el ritmo del broker moderno.",
     bullets: ["Tareas vinculadas a clientes y propiedades", "Recordatorios automáticos", "Vista diaria y semanal", "Filtro por urgencia"],
+    flip: true,
   },
   {
     num: "03",
     title: "Leads y Contactos",
-    sub: "Tu cartera de clientes con temperatura real",
-    desc: "Cada cliente tiene su perfil completo: presupuesto, origen del lead, temperatura, historial de conversaciones. Sabes exactamente dónde está cada uno.",
+    sub: "Tu cartera con temperatura real",
+    desc: "Cada cliente tiene su perfil completo: presupuesto, origen del lead, temperatura, historial de conversaciones. Sabes exactamente dónde está cada uno sin abrir WhatsApp.",
     bullets: ["Temperatura: Nuevo / Activo / Estancado", "Origen del lead rastreado", "Contacto directo WA, llamada, email", "Historial de interacciones"],
+    flip: false,
   },
   {
     num: "04",
     title: "Pipeline Visual",
     sub: "De prospecto a cierre, sin perder un deal",
     desc: "Kanban visual con volumen total en USD. Cada negocio muestra el cliente, la propiedad y el botón AI que sugiere el próximo paso. El único pipeline inmobiliario con IA en RD.",
-    bullets: ["Etapas: Prospectos → Visitas → Negociación → Cierre", "Volumen total en USD visible siempre", "Botón AI por deal — único en el mercado", "Drag & drop entre etapas"],
+    bullets: ["Prospectos → Visitas → Negociación → Cierre", "Volumen total en USD visible siempre", "Botón AI por deal — único en el mercado", "Drag & drop entre etapas"],
+    flip: true,
   },
   {
     num: "05",
     title: "Propiedades",
     sub: "Tu inventario organizado, listo para cerrar",
-    desc: "Catálogo visual con fotos, precios, recámaras, m² y notas de venta. Filtra por sector, precio o estado. Genera fichas técnicas con un clic.",
+    desc: "Catálogo visual con fotos, precios, recámaras, m² y notas de venta. Filtra por sector, precio o estado. Genera fichas técnicas estéticas con un clic y envíalas por WhatsApp.",
     bullets: ["Fotos, precio, m², recámaras y baños", "Filtros por sector y precio", "Notas de venta privadas", "Ficha técnica exportable en PDF"],
+    flip: false,
   },
 ];
 
@@ -96,21 +94,21 @@ const pricing = [
 
 function DashboardMockup() {
   return (
-    <div style={{ background: "#0d0d0f", borderRadius: 10, padding: "12px 14px", fontSize: 11, color: "#aaa", border: `1px solid ${BORDER}` }}>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 6, marginBottom: 10 }}>
+    <div style={{ background: "#0d0d0f", borderRadius: 16, padding: "20px", border: `1px solid ${BORDER}` }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8, marginBottom: 14 }}>
         {[["3","LEADS"],["12","CLIENTES"],["8","PROPIED."],["5","SEGUIM."]].map(([v,l]) => (
-          <div key={l} style={{ background: "#1a1a1d", borderRadius: 6, padding: "8px 4px", textAlign: "center" }}>
-            <div style={{ color: LIME, fontWeight: 800, fontSize: 16 }}>{v}</div>
-            <div style={{ fontSize: 9, color: "#666", marginTop: 2 }}>{l}</div>
+          <div key={l} style={{ background: "#1a1a1d", borderRadius: 10, padding: "12px 6px", textAlign: "center" }}>
+            <div style={{ color: LIME, fontWeight: 900, fontSize: 22 }}>{v}</div>
+            <div style={{ fontSize: 9, color: "#555", marginTop: 3, letterSpacing: 1 }}>{l}</div>
           </div>
         ))}
       </div>
-      <div style={{ background: "#1a1a1d", borderRadius: 6, padding: "8px 10px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#ff4444" }} />
-          <span style={{ fontSize: 10, color: "#ccc" }}>3 leads sin responder</span>
+      <div style={{ background: "#1a1a1d", borderRadius: 10, padding: "12px 14px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#ff4444" }} />
+          <span style={{ fontSize: 12, color: "#ccc" }}>3 leads sin responder</span>
         </div>
-        <div style={{ background: LIME, color: BG, borderRadius: 4, padding: "3px 8px", fontSize: 9, fontWeight: 700 }}>¡Atender!</div>
+        <div style={{ background: LIME, color: BG, borderRadius: 6, padding: "4px 12px", fontSize: 10, fontWeight: 800 }}>¡Atender!</div>
       </div>
     </div>
   );
@@ -120,15 +118,15 @@ function TasksMockup() {
   const tasks = [
     { hora: "9:00", tarea: "Llamar a Carlos Méndez", tipo: "HOY", color: "#ff4444" },
     { hora: "11:30", tarea: "Visita Piantini Apt 4B", tipo: "VISITA", color: LIME },
-    { hora: "15:00", tarea: "Enviar ficha a Rodríguez", tipo: "PENDIENTE", color: "#888" },
+    { hora: "15:00", tarea: "Enviar ficha a Rodríguez", tipo: "PENDIENTE", color: "#555" },
   ];
   return (
-    <div style={{ background: "#0d0d0f", borderRadius: 10, padding: "12px 14px", fontSize: 11, color: "#aaa", border: `1px solid ${BORDER}` }}>
+    <div style={{ background: "#0d0d0f", borderRadius: 16, padding: "20px", border: `1px solid ${BORDER}` }}>
       {tasks.map((t) => (
-        <div key={t.tarea} style={{ display: "flex", alignItems: "center", gap: 10, padding: "7px 0", borderBottom: `1px solid ${BORDER}` }}>
-          <div style={{ color: "#555", fontSize: 10, minWidth: 34 }}>{t.hora}</div>
-          <div style={{ flex: 1, color: "#ddd", fontSize: 11 }}>{t.tarea}</div>
-          <div style={{ background: t.color + "22", color: t.color, borderRadius: 4, padding: "2px 7px", fontSize: 9, fontWeight: 700 }}>{t.tipo}</div>
+        <div key={t.tarea} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: `1px solid ${BORDER}` }}>
+          <div style={{ color: "#444", fontSize: 11, minWidth: 38 }}>{t.hora}</div>
+          <div style={{ flex: 1, color: "#ddd", fontSize: 13 }}>{t.tarea}</div>
+          <div style={{ background: t.color + "22", color: t.color, borderRadius: 6, padding: "3px 9px", fontSize: 10, fontWeight: 700 }}>{t.tipo}</div>
         </div>
       ))}
     </div>
@@ -142,17 +140,17 @@ function LeadsMockup() {
     { nombre: "Ana Gómez", presupuesto: "$250,000", temp: "ESTANCADO", tempColor: "#ff4444" },
   ];
   return (
-    <div style={{ background: "#0d0d0f", borderRadius: 10, padding: "12px 14px", fontSize: 11, color: "#aaa", border: `1px solid ${BORDER}` }}>
+    <div style={{ background: "#0d0d0f", borderRadius: 16, padding: "20px", border: `1px solid ${BORDER}` }}>
       {clientes.map((c) => (
-        <div key={c.nombre} style={{ display: "flex", alignItems: "center", gap: 10, padding: "7px 0", borderBottom: `1px solid ${BORDER}` }}>
-          <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#2a2a2d", display: "flex", alignItems: "center", justifyContent: "center", color: LIME, fontWeight: 800, fontSize: 12, flexShrink: 0 }}>
+        <div key={c.nombre} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: `1px solid ${BORDER}` }}>
+          <div style={{ width: 34, height: 34, borderRadius: "50%", background: "#1a1a1d", display: "flex", alignItems: "center", justifyContent: "center", color: LIME, fontWeight: 900, fontSize: 14, flexShrink: 0 }}>
             {c.nombre[0]}
           </div>
           <div style={{ flex: 1 }}>
-            <div style={{ color: "#eee", fontWeight: 600, fontSize: 11 }}>{c.nombre}</div>
-            <div style={{ color: "#555", fontSize: 10 }}>{c.presupuesto}</div>
+            <div style={{ color: "#eee", fontWeight: 600, fontSize: 13 }}>{c.nombre}</div>
+            <div style={{ color: "#444", fontSize: 11, marginTop: 2 }}>{c.presupuesto}</div>
           </div>
-          <div style={{ background: c.tempColor + "22", color: c.tempColor, borderRadius: 4, padding: "2px 7px", fontSize: 9, fontWeight: 700 }}>{c.temp}</div>
+          <div style={{ background: c.tempColor + "22", color: c.tempColor, borderRadius: 6, padding: "3px 9px", fontSize: 10, fontWeight: 700 }}>{c.temp}</div>
         </div>
       ))}
     </div>
@@ -166,15 +164,15 @@ function PipelineMockup() {
     { stage: "Negociación", deals: ["Pedro M."], color: "#ff9900" },
   ];
   return (
-    <div style={{ background: "#0d0d0f", borderRadius: 10, padding: "12px 14px", border: `1px solid ${BORDER}`, overflowX: "auto" }}>
-      <div style={{ display: "flex", gap: 8, minWidth: 320 }}>
+    <div style={{ background: "#0d0d0f", borderRadius: 16, padding: "20px", border: `1px solid ${BORDER}` }}>
+      <div style={{ display: "flex", gap: 10 }}>
         {cols.map((col) => (
-          <div key={col.stage} style={{ flex: 1, minWidth: 90 }}>
-            <div style={{ color: col.color, fontSize: 9, fontWeight: 700, marginBottom: 6, textTransform: "uppercase" }}>{col.stage}</div>
+          <div key={col.stage} style={{ flex: 1 }}>
+            <div style={{ color: col.color, fontSize: 10, fontWeight: 700, marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>{col.stage}</div>
             {col.deals.map((d) => (
-              <div key={d} style={{ background: "#1a1a1d", borderRadius: 6, padding: "7px 8px", marginBottom: 5 }}>
-                <div style={{ color: "#ccc", fontSize: 10, fontWeight: 600 }}>{d}</div>
-                <div style={{ background: LIME + "22", color: LIME, borderRadius: 3, padding: "2px 6px", fontSize: 8, fontWeight: 700, marginTop: 5, display: "inline-block" }}>✦ AI</div>
+              <div key={d} style={{ background: "#1a1a1d", borderRadius: 8, padding: "10px", marginBottom: 6 }}>
+                <div style={{ color: "#ccc", fontSize: 12, fontWeight: 600 }}>{d}</div>
+                <div style={{ background: LIME + "22", color: LIME, borderRadius: 4, padding: "2px 8px", fontSize: 9, fontWeight: 800, marginTop: 6, display: "inline-block" }}>✦ AI</div>
               </div>
             ))}
           </div>
@@ -188,17 +186,19 @@ function PropiedadesMockup() {
   const props = [
     { nombre: "Apto Piantini", precio: "$195,000", m2: "120 m²", beds: "3/2" },
     { nombre: "Casa Naco", precio: "$380,000", m2: "280 m²", beds: "4/3" },
+    { nombre: "PH Serralles", precio: "$520,000", m2: "340 m²", beds: "4/4" },
+    { nombre: "Villa Cacicazgos", precio: "$890,000", m2: "600 m²", beds: "5/5" },
   ];
   return (
-    <div style={{ background: "#0d0d0f", borderRadius: 10, padding: "12px 14px", border: `1px solid ${BORDER}` }}>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+    <div style={{ background: "#0d0d0f", borderRadius: 16, padding: "20px", border: `1px solid ${BORDER}` }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
         {props.map((p) => (
-          <div key={p.nombre} style={{ background: "#1a1a1d", borderRadius: 8 }}>
-            <div style={{ height: 55, background: "#222226", borderRadius: "8px 8px 0 0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>🏠</div>
-            <div style={{ padding: "8px" }}>
-              <div style={{ color: "#eee", fontSize: 10, fontWeight: 700 }}>{p.nombre}</div>
-              <div style={{ color: LIME, fontSize: 11, fontWeight: 800, marginTop: 2 }}>{p.precio}</div>
-              <div style={{ color: "#555", fontSize: 9, marginTop: 3 }}>{p.m2} · {p.beds}</div>
+          <div key={p.nombre} style={{ background: "#1a1a1d", borderRadius: 10 }}>
+            <div style={{ height: 60, background: "#222226", borderRadius: "10px 10px 0 0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22 }}>🏠</div>
+            <div style={{ padding: "10px" }}>
+              <div style={{ color: "#eee", fontSize: 11, fontWeight: 700 }}>{p.nombre}</div>
+              <div style={{ color: LIME, fontSize: 13, fontWeight: 900, marginTop: 2 }}>{p.precio}</div>
+              <div style={{ color: "#444", fontSize: 10, marginTop: 3 }}>{p.m2} · {p.beds}</div>
             </div>
           </div>
         ))}
@@ -220,180 +220,232 @@ export default function LandingPage() {
 
   return (
     <div style={{ background: BG, color: "#fff", fontFamily: "'Inter', system-ui, sans-serif", minHeight: "100vh", overflowX: "hidden" }}>
+
       {/* NAV */}
       <nav style={{
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-        padding: "0 24px", height: 60,
+        padding: "0 48px", height: 64,
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        background: scrolled ? "rgba(9,9,11,0.95)" : "transparent",
+        background: scrolled ? "rgba(9,9,11,0.96)" : "transparent",
         borderBottom: scrolled ? `1px solid ${BORDER}` : "none",
-        backdropFilter: scrolled ? "blur(12px)" : "none",
+        backdropFilter: scrolled ? "blur(16px)" : "none",
         transition: "all 0.3s",
       }}>
-        <div style={{ fontWeight: 900, fontSize: 20, letterSpacing: -1 }}>
+        <div style={{ fontWeight: 900, fontSize: 22, letterSpacing: -1 }}>
           SECTOR<span style={{ color: LIME }}>.</span>
         </div>
-        <div style={{ display: "flex", gap: 28, alignItems: "center" }}>
-          <a href="#funciones" style={{ color: "#888", fontSize: 13, textDecoration: "none", letterSpacing: 1, fontWeight: 600, textTransform: "uppercase" }}>Funciones</a>
-          <a href="#precios" style={{ color: "#888", fontSize: 13, textDecoration: "none", letterSpacing: 1, fontWeight: 600, textTransform: "uppercase" }}>Precios</a>
-          <a href="#acceso" style={{ background: LIME, color: BG, borderRadius: 6, padding: "8px 18px", fontSize: 13, fontWeight: 800, textDecoration: "none" }}>Comenzar</a>
+        <div style={{ display: "flex", gap: 36, alignItems: "center" }}>
+          <a href="#funciones" style={{ color: "#666", fontSize: 13, textDecoration: "none", fontWeight: 500 }}>Funciones</a>
+          <a href="#precios" style={{ color: "#666", fontSize: 13, textDecoration: "none", fontWeight: 500 }}>Precios</a>
+          <a href="#acceso" style={{ background: LIME, color: BG, borderRadius: 100, padding: "9px 22px", fontSize: 13, fontWeight: 800, textDecoration: "none" }}>Comenzar</a>
         </div>
       </nav>
 
       {/* HERO */}
-      <section style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "100px 24px 60px" }}>
-        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 3, color: "#555", marginBottom: 28, textTransform: "uppercase" }}>
-          🇩🇴 CRM INMOBILIARIO · SANTO DOMINGO
+      <section style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "120px 48px 80px" }}>
+        <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 4, color: "#444", marginBottom: 32, textTransform: "uppercase" }}>
+          🇩🇴 &nbsp; CRM Inmobiliario · República Dominicana
         </div>
-        <h1 style={{ fontSize: "clamp(42px, 9vw, 96px)", fontWeight: 900, lineHeight: 1.0, letterSpacing: -3, margin: "0 0 24px", maxWidth: 800 }}>
+        <h1 style={{
+          fontSize: "clamp(52px, 10vw, 120px)",
+          fontWeight: 900,
+          lineHeight: 0.95,
+          letterSpacing: -4,
+          margin: "0 0 32px",
+          maxWidth: 900,
+        }}>
           Tu cartera de clientes,{" "}
-          <span style={{ color: LIME, fontStyle: "italic" }}>bajo control total.</span>
+          <em style={{ color: LIME, fontStyle: "italic" }}>bajo control total.</em>
         </h1>
-        <p style={{ color: "#888", fontSize: "clamp(15px, 2vw, 19px)", maxWidth: 500, lineHeight: 1.6, margin: "0 0 44px" }}>
+        <p style={{ color: "#555", fontSize: "clamp(16px, 2vw, 20px)", maxWidth: 520, lineHeight: 1.6, margin: "0 0 52px", fontWeight: 400 }}>
           SECTOR es el CRM diseñado para realtors en República Dominicana. Pipeline visual, seguimiento preciso, cierre inteligente.
         </p>
         <div style={{ display: "flex", gap: 14, flexWrap: "wrap", justifyContent: "center" }}>
-          <a href="#acceso" style={{ background: LIME, color: BG, borderRadius: 8, padding: "16px 32px", fontWeight: 800, fontSize: 14, letterSpacing: 1, textDecoration: "none", textTransform: "uppercase" }}>
+          <a href="#acceso" style={{ background: LIME, color: BG, borderRadius: 100, padding: "18px 36px", fontWeight: 800, fontSize: 15, textDecoration: "none" }}>
             Solicitar Acceso Anticipado
           </a>
-          <a href="#funciones" style={{ background: "transparent", color: "#fff", borderRadius: 8, padding: "16px 32px", fontWeight: 700, fontSize: 14, letterSpacing: 1, textDecoration: "none", border: `1px solid ${BORDER}`, textTransform: "uppercase" }}>
+          <a href="#funciones" style={{ background: "transparent", color: "#fff", borderRadius: 100, padding: "18px 36px", fontWeight: 600, fontSize: 15, textDecoration: "none", border: `1px solid #333` }}>
             Ver Funciones
           </a>
         </div>
       </section>
 
-      {/* SECCIÓN RD */}
-      <section style={{ padding: "80px 24px", borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}`, textAlign: "center" }}>
-        <div style={{ fontSize: 28 }}>🇩🇴</div>
-        <h2 style={{ fontSize: "clamp(24px, 4vw, 40px)", fontWeight: 900, margin: "16px 0 10px", letterSpacing: -1 }}>
-          Construido para el ecosistema inmobiliario<br />de la República Dominicana
-        </h2>
-        <p style={{ color: "#666", fontStyle: "italic", fontSize: 14, marginBottom: 32 }}>
-          Desde Piantini hasta Punta Cana, SECTOR conoce tu territorio.
-        </p>
-        <div style={{ background: CARD_BG, border: `1px solid ${BORDER}`, borderRadius: 14, padding: "28px 32px", maxWidth: 680, margin: "0 auto", lineHeight: 1.8, fontSize: 15, color: "#aaa" }}>
-          Configurado con los sectores donde se mueve el dinero real:{" "}
-          {sectors.map((s, i) => (
-            <span key={s}><span style={{ color: LIME, fontWeight: 700 }}>{s}</span>{i < sectors.length - 1 ? ", " : ""}</span>
-          ))}
-          {" "}— y los destinos de inversión turística como{" "}
-          {turisticos.map((s, i) => (
-            <span key={s}><span style={{ color: LIME, fontWeight: 700 }}>{s}</span>{i < turisticos.length - 1 ? ", " : ""}</span>
-          ))}.
-        </div>
-      </section>
-
-      {/* STATS */}
-      <section style={{ padding: "80px 24px", maxWidth: 900, margin: "0 auto" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 32, textAlign: "center" }}>
-          {stats.map((s) => (
-            <div key={s.value}>
-              <div style={{ fontSize: "clamp(36px, 6vw, 64px)", fontWeight: 900, color: LIME, lineHeight: 1, letterSpacing: -2 }}>{s.value}</div>
-              <div style={{ fontSize: 10, color: "#555", marginTop: 12, lineHeight: 1.6, whiteSpace: "pre-line", letterSpacing: 1 }}>{s.label}</div>
+      {/* STATS — fondo lima */}
+      <section style={{ background: LIME, padding: "80px 48px" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 0 }}>
+          {[
+            { value: "5 min", label: "Configuración inicial.\nCero drama." },
+            { value: "1 clic", label: "Fichas técnicas listas\npara WhatsApp." },
+            { value: "7 en 1", label: "Leads, pipeline y\nfacturación juntos." },
+            { value: "0%", label: "Distracciones.\nSolo lo que cierra." },
+          ].map((s, i) => (
+            <div key={s.value} style={{ padding: "20px 32px", borderLeft: i > 0 ? `1px solid rgba(0,0,0,0.15)` : "none" }}>
+              <div style={{ fontSize: "clamp(48px, 6vw, 80px)", fontWeight: 900, color: BG, lineHeight: 1, letterSpacing: -3 }}>{s.value}</div>
+              <div style={{ fontSize: 13, color: "rgba(0,0,0,0.5)", marginTop: 10, lineHeight: 1.5, whiteSpace: "pre-line", fontWeight: 500 }}>{s.label}</div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* FEATURES */}
-      <section id="funciones" style={{ padding: "80px 24px", borderTop: `1px solid ${BORDER}` }}>
-        <div style={{ textAlign: "center", marginBottom: 60 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: LIME, marginBottom: 14, textTransform: "uppercase" }}>Todo lo que necesitas</div>
-          <h2 style={{ fontSize: "clamp(28px, 5vw, 52px)", fontWeight: 900, letterSpacing: -2, margin: 0 }}>
-            7 herramientas de<br />alto rendimiento. Un solo lugar.
+      {/* SECCIÓN RD */}
+      <section style={{ padding: "120px 48px", borderBottom: `1px solid ${BORDER}` }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 4, color: "#444", marginBottom: 24, textTransform: "uppercase" }}>🇩🇴 &nbsp; Hecho para RD</div>
+          <h2 style={{ fontSize: "clamp(36px, 5vw, 64px)", fontWeight: 900, letterSpacing: -3, margin: "0 0 24px", maxWidth: 700, lineHeight: 1 }}>
+            Construido para el ecosistema inmobiliario de la República Dominicana.
+          </h2>
+          <p style={{ color: "#555", fontSize: 18, maxWidth: 560, lineHeight: 1.6, marginBottom: 60 }}>
+            Desde Piantini hasta Punta Cana, SECTOR conoce tu territorio.
+          </p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+            <div style={{ width: "100%", fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "#444", textTransform: "uppercase", marginBottom: 6 }}>Distrito Nacional y Gran Santo Domingo</div>
+            {sectors.map((s) => (
+              <div key={s} style={{ background: "#111", border: `1px solid ${BORDER}`, borderRadius: 100, padding: "8px 18px", fontSize: 13, color: LIME, fontWeight: 600 }}>{s}</div>
+            ))}
+            <div style={{ width: "100%", fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "#444", textTransform: "uppercase", margin: "20px 0 6px" }}>Destinos turísticos e inversión</div>
+            {turisticos.map((s) => (
+              <div key={s} style={{ background: LIME + "15", border: `1px solid ${LIME}33`, borderRadius: 100, padding: "8px 18px", fontSize: 13, color: LIME, fontWeight: 600 }}>{s}</div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FEATURES — alternadas */}
+      <section id="funciones">
+        <div style={{ padding: "80px 48px 40px", textAlign: "center" }}>
+          <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 4, color: "#444", marginBottom: 20, textTransform: "uppercase" }}>Todo lo que necesitas</div>
+          <h2 style={{ fontSize: "clamp(36px, 5vw, 64px)", fontWeight: 900, letterSpacing: -3, margin: 0 }}>
+            7 herramientas de alto rendimiento.<br />Un solo lugar.
           </h2>
         </div>
-        <div style={{ maxWidth: 760, margin: "0 auto", display: "flex", flexDirection: "column", gap: 20 }}>
-          {features.map((f, i) => {
-            const MockupComponent = Mockups[i];
-            return (
-              <div key={f.num} style={{ background: CARD_BG, border: `1px solid ${BORDER}`, borderRadius: 16, padding: "32px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 12 }}>
-                  <div style={{ background: LIME + "22", color: LIME, borderRadius: 8, padding: "4px 10px", fontSize: 12, fontWeight: 800 }}>{f.num}</div>
-                  <div>
-                    <div style={{ fontWeight: 900, fontSize: 22, letterSpacing: -0.5 }}>{f.title}</div>
-                    <div style={{ color: "#666", fontSize: 13, marginTop: 1 }}>— {f.sub}</div>
-                  </div>
+
+        {features.map((f, i) => {
+          const MockupComponent = Mockups[i];
+          const isLime = i % 3 === 2;
+          return (
+            <div key={f.num} style={{
+              background: isLime ? LIME : (i % 2 === 0 ? BG : "#0d0d0f"),
+              borderTop: `1px solid ${isLime ? "transparent" : BORDER}`,
+              padding: "100px 48px",
+            }}>
+              <div style={{
+                maxWidth: 1100, margin: "0 auto",
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: 80,
+                alignItems: "center",
+                direction: f.flip ? "rtl" : "ltr",
+              }}>
+                <div style={{ direction: "ltr" }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: isLime ? "rgba(0,0,0,0.4)" : "#444", textTransform: "uppercase", marginBottom: 16 }}>{f.num}</div>
+                  <h3 style={{ fontSize: "clamp(32px, 4vw, 52px)", fontWeight: 900, letterSpacing: -2, margin: "0 0 8px", color: isLime ? BG : "#fff", lineHeight: 1 }}>{f.title}</h3>
+                  <div style={{ fontSize: 16, color: isLime ? "rgba(0,0,0,0.5)" : "#555", marginBottom: 24, fontStyle: "italic" }}>— {f.sub}</div>
+                  <p style={{ color: isLime ? "rgba(0,0,0,0.65)" : "#777", fontSize: 16, lineHeight: 1.7, margin: "0 0 32px" }}>{f.desc}</p>
+                  <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 12 }}>
+                    {f.bullets.map((b) => (
+                      <li key={b} style={{ display: "flex", alignItems: "center", gap: 12, color: isLime ? BG : "#ccc", fontSize: 15, fontWeight: 500 }}>
+                        <div style={{ width: 7, height: 7, borderRadius: "50%", background: isLime ? BG : LIME, flexShrink: 0 }} />
+                        {b}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <p style={{ color: "#999", fontSize: 14, lineHeight: 1.7, margin: "0 0 20px" }}>{f.desc}</p>
-                <ul style={{ listStyle: "none", padding: 0, margin: "0 0 24px", display: "flex", flexDirection: "column", gap: 7 }}>
-                  {f.bullets.map((b) => (
-                    <li key={b} style={{ display: "flex", alignItems: "center", gap: 10, color: "#ccc", fontSize: 13 }}>
-                      <div style={{ width: 6, height: 6, borderRadius: "50%", background: LIME, flexShrink: 0 }} />
-                      {b}
-                    </li>
-                  ))}
-                </ul>
-                {MockupComponent && <MockupComponent />}
+                <div style={{ direction: "ltr" }}>
+                  {MockupComponent && <MockupComponent />}
+                </div>
               </div>
-            );
-          })}
-        </div>
+            </div>
+          );
+        })}
       </section>
 
       {/* PRECIOS */}
-      <section id="precios" style={{ padding: "80px 24px", borderTop: `1px solid ${BORDER}`, textAlign: "center" }}>
-        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: LIME, marginBottom: 14, textTransform: "uppercase" }}>Sin sorpresas</div>
-        <h2 style={{ fontSize: "clamp(28px, 5vw, 48px)", fontWeight: 900, letterSpacing: -2, marginBottom: 10 }}>Precios para el mercado de RD</h2>
-        <p style={{ color: "#666", fontSize: 14, marginBottom: 50 }}>Sin tarjeta de crédito para el plan gratuito. Ve el producto antes de comprometerte.</p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 20, maxWidth: 860, margin: "0 auto" }}>
-          {pricing.map((p) => (
-            <div key={p.name} style={{ background: p.highlight ? LIME : CARD_BG, border: p.highlight ? "none" : `1px solid ${BORDER}`, borderRadius: 16, padding: "36px 28px", textAlign: "left", position: "relative" }}>
-              {p.highlight && (
-                <div style={{ position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)", background: "#fff", color: BG, borderRadius: 20, padding: "3px 14px", fontSize: 10, fontWeight: 800, letterSpacing: 1, textTransform: "uppercase", whiteSpace: "nowrap" }}>
-                  Más popular
+      <section id="precios" style={{ padding: "120px 48px", borderTop: `1px solid ${BORDER}` }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 4, color: "#444", marginBottom: 20, textTransform: "uppercase" }}>Sin sorpresas</div>
+          <h2 style={{ fontSize: "clamp(36px, 5vw, 64px)", fontWeight: 900, letterSpacing: -3, marginBottom: 16 }}>
+            Precios para el mercado de RD.
+          </h2>
+          <p style={{ color: "#555", fontSize: 18, marginBottom: 64 }}>Sin tarjeta de crédito para el plan gratuito. Ve el producto antes de comprometerte.</p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}>
+            {pricing.map((p) => (
+              <div key={p.name} style={{
+                background: p.highlight ? LIME : CARD_BG,
+                border: p.highlight ? "none" : `1px solid ${BORDER}`,
+                borderRadius: 20,
+                padding: "44px 36px",
+                position: "relative",
+              }}>
+                {p.highlight && (
+                  <div style={{ position: "absolute", top: -13, left: "50%", transform: "translateX(-50%)", background: "#fff", color: BG, borderRadius: 100, padding: "4px 16px", fontSize: 10, fontWeight: 800, letterSpacing: 1, textTransform: "uppercase", whiteSpace: "nowrap" }}>
+                    Más popular
+                  </div>
+                )}
+                <div style={{ fontWeight: 900, fontSize: 22, color: p.highlight ? BG : "#fff", marginBottom: 8 }}>{p.name}</div>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 12 }}>
+                  <span style={{ fontSize: 52, fontWeight: 900, letterSpacing: -3, color: p.highlight ? BG : LIME, lineHeight: 1 }}>{p.price}</span>
+                  {p.period && <span style={{ fontSize: 16, color: p.highlight ? "#333" : "#555" }}>{p.period}</span>}
                 </div>
-              )}
-              <div style={{ fontWeight: 900, fontSize: 20, color: p.highlight ? BG : "#fff", marginBottom: 6 }}>{p.name}</div>
-              <div style={{ display: "flex", alignItems: "baseline", gap: 3, marginBottom: 10 }}>
-                <span style={{ fontSize: 42, fontWeight: 900, letterSpacing: -2, color: p.highlight ? BG : LIME }}>{p.price}</span>
-                {p.period && <span style={{ fontSize: 14, color: p.highlight ? "#333" : "#666" }}>{p.period}</span>}
+                <p style={{ fontSize: 14, color: p.highlight ? "#333" : "#555", marginBottom: 32, lineHeight: 1.5 }}>{p.desc}</p>
+                <ul style={{ listStyle: "none", padding: 0, margin: "0 0 36px", display: "flex", flexDirection: "column", gap: 12 }}>
+                  {p.limits.map((l) => (
+                    <li key={l} style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 15, color: p.highlight ? BG : "#ccc" }}>
+                      <span style={{ color: p.highlight ? BG : LIME, fontWeight: 900 }}>✓</span>
+                      {l}
+                    </li>
+                  ))}
+                </ul>
+                <a href="#acceso" style={{ display: "block", textAlign: "center", background: p.highlight ? BG : LIME, color: p.highlight ? LIME : BG, borderRadius: 100, padding: "15px", fontWeight: 800, fontSize: 14, textDecoration: "none" }}>
+                  {p.cta}
+                </a>
               </div>
-              <p style={{ fontSize: 13, color: p.highlight ? "#333" : "#666", marginBottom: 24, lineHeight: 1.5 }}>{p.desc}</p>
-              <ul style={{ listStyle: "none", padding: 0, margin: "0 0 28px", display: "flex", flexDirection: "column", gap: 9 }}>
-                {p.limits.map((l) => (
-                  <li key={l} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: p.highlight ? BG : "#ccc" }}>
-                    <span style={{ color: p.highlight ? BG : LIME, fontSize: 14, fontWeight: 900 }}>✓</span>
-                    {l}
-                  </li>
-                ))}
-              </ul>
-              <a href="#acceso" style={{ display: "block", textAlign: "center", background: p.highlight ? BG : LIME, color: p.highlight ? LIME : BG, borderRadius: 8, padding: "13px", fontWeight: 800, fontSize: 13, letterSpacing: 1, textDecoration: "none", textTransform: "uppercase" }}>
-                {p.cta}
-              </a>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* CTA FINAL */}
-      <section id="acceso" style={{ padding: "100px 24px", borderTop: `1px solid ${BORDER}`, textAlign: "center" }}>
-        <div style={{ fontSize: 28, marginBottom: 20 }}>🇩🇴</div>
-        <h2 style={{ fontSize: "clamp(32px, 6vw, 64px)", fontWeight: 900, letterSpacing: -2, margin: "0 0 16px" }}>
+      {/* CTA FINAL — fondo lima */}
+      <section id="acceso" style={{ background: LIME, padding: "120px 48px", textAlign: "center" }}>
+        <div style={{ fontSize: 28, marginBottom: 24 }}>🇩🇴</div>
+        <h2 style={{ fontSize: "clamp(40px, 7vw, 88px)", fontWeight: 900, letterSpacing: -4, margin: "0 0 20px", color: BG, lineHeight: 0.95 }}>
           El CRM que el realtor<br />dominicano estaba esperando.
         </h2>
-        <p style={{ color: "#666", fontSize: 15, maxWidth: 420, margin: "0 auto 44px", lineHeight: 1.6 }}>
+        <p style={{ color: "rgba(0,0,0,0.5)", fontSize: 18, maxWidth: 440, margin: "0 auto 52px", lineHeight: 1.6 }}>
           Solicita tu acceso anticipado. Sin tarjeta de crédito. Sin compromisos.
         </p>
-        <div style={{ display: "flex", gap: 12, maxWidth: 420, margin: "0 auto", flexWrap: "wrap", justifyContent: "center" }}>
+        <div style={{ display: "flex", gap: 12, maxWidth: 480, margin: "0 auto", flexWrap: "wrap", justifyContent: "center" }}>
           <input
             type="email"
             placeholder="tu@email.com"
-            style={{ flex: 1, minWidth: 220, background: CARD_BG, border: `1px solid ${BORDER}`, color: "#fff", borderRadius: 8, padding: "14px 18px", fontSize: 14, outline: "none" }}
+            style={{ flex: 1, minWidth: 240, background: "rgba(0,0,0,0.1)", border: "1px solid rgba(0,0,0,0.2)", color: BG, borderRadius: 100, padding: "16px 24px", fontSize: 15, outline: "none" }}
           />
-          <button style={{ background: LIME, color: BG, borderRadius: 8, padding: "14px 28px", fontWeight: 800, fontSize: 14, border: "none", cursor: "pointer", letterSpacing: 1, textTransform: "uppercase" }}>
+          <button style={{ background: BG, color: LIME, borderRadius: 100, padding: "16px 32px", fontWeight: 800, fontSize: 14, border: "none", cursor: "pointer" }}>
             Solicitar Acceso
           </button>
         </div>
       </section>
 
       {/* FOOTER */}
-      <footer style={{ borderTop: `1px solid ${BORDER}`, padding: "28px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
-        <div style={{ fontWeight: 900, fontSize: 18, letterSpacing: -1 }}>SECTOR<span style={{ color: LIME }}>.</span></div>
-        <div style={{ color: "#444", fontSize: 12 }}>sector.do · CRM para Realtors en República Dominicana · Junio 2026</div>
+      <footer style={{ background: BG, borderTop: `1px solid ${BORDER}`, overflow: "hidden" }}>
+        <div style={{ padding: "40px 48px 0", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
+          <div style={{ fontWeight: 900, fontSize: 20, letterSpacing: -1 }}>SECTOR<span style={{ color: LIME }}>.</span></div>
+          <div style={{ color: "#333", fontSize: 12 }}>sector.do · CRM para Realtors en República Dominicana · 2026</div>
+        </div>
+        <div style={{ fontSize: "clamp(80px, 18vw, 220px)", fontWeight: 900, letterSpacing: -8, color: "#111", lineHeight: 0.85, padding: "0 32px", userSelect: "none", marginTop: 8 }}>
+          SECTOR
+        </div>
       </footer>
 
-      <style>{`* { box-sizing: border-box; } body { margin: 0; } input::placeholder { color: #444; }`}</style>
+      <style>{`
+        * { box-sizing: border-box; }
+        body { margin: 0; }
+        input::placeholder { color: rgba(0,0,0,0.35); }
+        @media (max-width: 768px) {
+          nav a:not(:last-child) { display: none; }
+          [style*="gridTemplateColumns: 1fr 1fr"] { grid-template-columns: 1fr !important; direction: ltr !important; }
+          [style*="gridTemplateColumns: 1fr 1fr"] > div { direction: ltr !important; }
+        }
+      `}</style>
     </div>
   );
 }
