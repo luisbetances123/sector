@@ -56,39 +56,9 @@ const features = [
     num: "05",
     title: "Propiedades",
     sub: "Tu inventario organizado, listo para cerrar",
-    desc: "Catálogo visual con fotos, precios, habitaciones, m² y notas de venta. Filtra por sector, precio o estado. Genera fichas técnicas estéticas con un clic y envíalas por WhatsApp.",
-    bullets: ["Fotos, precio, m², habitaciones y baños", "Filtros por sector y precio", "Notas de venta privadas", "Ficha técnica exportable en PDF"],
+    desc: "Catálogo visual con fotos, precios, recámaras, m² y notas de venta. Filtra por sector, precio o estado. Genera fichas técnicas estéticas con un clic y envíalas por WhatsApp.",
+    bullets: ["Fotos, precio, m², recámaras y baños", "Filtros por sector y precio", "Notas de venta privadas", "Ficha técnica exportable en PDF"],
     flip: false,
-  },
-];
-
-const pricing = [
-  {
-    name: "Explorador",
-    price: "Gratis",
-    period: "",
-    desc: "Para conocer SECTOR sin compromiso.",
-    limits: ["5 propiedades", "10 clientes", "Sin PDF", "Sin AI"],
-    cta: "Empezar gratis",
-    highlight: false,
-  },
-  {
-    name: "Profesional",
-    price: "$19–25",
-    period: "/mes",
-    desc: "El realtor independiente que cierra negocios.",
-    limits: ["25 propiedades", "Clientes ilimitados", "PDF incluido", "AI básico"],
-    cta: "Solicitar acceso",
-    highlight: true,
-  },
-  {
-    name: "Agencia",
-    price: "$39–49",
-    period: "/mes",
-    desc: "Para agencias con equipo y volumen.",
-    limits: ["Todo ilimitado", "Multi-usuario", "Todos los módulos", "AI completo"],
-    cta: "Contactar",
-    highlight: false,
   },
 ];
 
@@ -99,7 +69,7 @@ function DashboardMockup() {
         {[["3","LEADS"],["12","CLIENTES"],["8","PROPIED."],["5","SEGUIM."]].map(([v,l]) => (
           <div key={l} style={{ background: "#1a1a1d", borderRadius: 10, padding: "12px 6px", textAlign: "center" }}>
             <div style={{ color: LIME, fontWeight: 900, fontSize: 22 }}>{v}</div>
-            <div style={{ fontSize: 9, color: "#555", marginTop: 3, letterSpacing: 1 }}>{l}</div>
+            <div style={{ fontSize: 9, color: "#999", marginTop: 3, letterSpacing: 1 }}>{l}</div>
           </div>
         ))}
       </div>
@@ -118,13 +88,13 @@ function TasksMockup() {
   const tasks = [
     { hora: "9:00", tarea: "Llamar a Carlos Méndez", tipo: "HOY", color: "#ff4444" },
     { hora: "11:30", tarea: "Visita Piantini Apt 4B", tipo: "VISITA", color: LIME },
-    { hora: "15:00", tarea: "Enviar ficha a Rodríguez", tipo: "PENDIENTE", color: "#555" },
+    { hora: "15:00", tarea: "Enviar ficha a Rodríguez", tipo: "PENDIENTE", color: "#999" },
   ];
   return (
     <div style={{ background: "#0d0d0f", borderRadius: 16, padding: "20px", border: `1px solid ${BORDER}` }}>
       {tasks.map((t) => (
         <div key={t.tarea} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: `1px solid ${BORDER}` }}>
-          <div style={{ color: "#444", fontSize: 11, minWidth: 38 }}>{t.hora}</div>
+          <div style={{ color: "#aaa", fontSize: 11, minWidth: 38 }}>{t.hora}</div>
           <div style={{ flex: 1, color: "#ddd", fontSize: 13 }}>{t.tarea}</div>
           <div style={{ background: t.color + "22", color: t.color, borderRadius: 6, padding: "3px 9px", fontSize: 10, fontWeight: 700 }}>{t.tipo}</div>
         </div>
@@ -148,7 +118,7 @@ function LeadsMockup() {
           </div>
           <div style={{ flex: 1 }}>
             <div style={{ color: "#eee", fontWeight: 600, fontSize: 13 }}>{c.nombre}</div>
-            <div style={{ color: "#444", fontSize: 11, marginTop: 2 }}>{c.presupuesto}</div>
+            <div style={{ color: "#aaa", fontSize: 11, marginTop: 2 }}>{c.presupuesto}</div>
           </div>
           <div style={{ background: c.tempColor + "22", color: c.tempColor, borderRadius: 6, padding: "3px 9px", fontSize: 10, fontWeight: 700 }}>{c.temp}</div>
         </div>
@@ -186,7 +156,7 @@ function PropiedadesMockup() {
   const props = [
     { nombre: "Apto Piantini", precio: "$195,000", m2: "120 m²", beds: "3/2" },
     { nombre: "Casa Naco", precio: "$380,000", m2: "280 m²", beds: "4/3" },
-    { nombre: "PH Serralles", precio: "$520,000", m2: "340 m²", beds: "4/4" },
+    { nombre: "PH Serrallés", precio: "$520,000", m2: "340 m²", beds: "4/4" },
     { nombre: "Villa Cacicazgos", precio: "$890,000", m2: "600 m²", beds: "5/5" },
   ];
   return (
@@ -198,7 +168,7 @@ function PropiedadesMockup() {
             <div style={{ padding: "10px" }}>
               <div style={{ color: "#eee", fontSize: 11, fontWeight: 700 }}>{p.nombre}</div>
               <div style={{ color: LIME, fontSize: 13, fontWeight: 900, marginTop: 2 }}>{p.precio}</div>
-              <div style={{ color: "#444", fontSize: 10, marginTop: 3 }}>{p.m2} · {p.beds}</div>
+              <div style={{ color: "#aaa", fontSize: 10, marginTop: 3 }}>{p.m2} · {p.beds}</div>
             </div>
           </div>
         ))}
@@ -236,28 +206,20 @@ export default function LandingPage() {
         </div>
         <div style={{ display: "flex", gap: 36, alignItems: "center" }}>
           <a href="#funciones" style={{ color: "#666", fontSize: 13, textDecoration: "none", fontWeight: 500 }}>Funciones</a>
-          <a href="#precios" style={{ color: "#666", fontSize: 13, textDecoration: "none", fontWeight: 500 }}>Precios</a>
           <a href="#acceso" style={{ background: LIME, color: BG, borderRadius: 100, padding: "9px 22px", fontSize: 13, fontWeight: 800, textDecoration: "none" }}>Comenzar</a>
         </div>
       </nav>
 
       {/* HERO */}
       <section style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "120px 48px 80px" }}>
-        <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 4, color: "#444", marginBottom: 32, textTransform: "uppercase" }}>
+        <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 3, color: "#aaa", marginBottom: 32, textTransform: "uppercase" }}>
           🇩🇴 &nbsp; CRM Inmobiliario · República Dominicana
         </div>
-        <h1 style={{
-          fontSize: "clamp(52px, 10vw, 120px)",
-          fontWeight: 900,
-          lineHeight: 0.95,
-          letterSpacing: -4,
-          margin: "0 0 32px",
-          maxWidth: 900,
-        }}>
+        <h1 style={{ fontSize: "clamp(52px, 10vw, 120px)", fontWeight: 900, lineHeight: 0.95, letterSpacing: -4, margin: "0 0 32px", maxWidth: 900 }}>
           Tu cartera de clientes,{" "}
           <em style={{ color: LIME, fontStyle: "italic" }}>bajo control total.</em>
         </h1>
-        <p style={{ color: "#555", fontSize: "clamp(16px, 2vw, 20px)", maxWidth: 520, lineHeight: 1.6, margin: "0 0 52px", fontWeight: 400 }}>
+        <p style={{ color: "#999", fontSize: "clamp(16px, 2vw, 20px)", maxWidth: 520, lineHeight: 1.6, margin: "0 0 52px", fontWeight: 400 }}>
           SECTOR es el CRM diseñado para realtors en República Dominicana. Pipeline visual, seguimiento preciso, cierre inteligente.
         </p>
         <div style={{ display: "flex", gap: 14, flexWrap: "wrap", justifyContent: "center" }}>
@@ -281,7 +243,7 @@ export default function LandingPage() {
           ].map((s, i) => (
             <div key={s.value} style={{ padding: "20px 32px", borderLeft: i > 0 ? `1px solid rgba(0,0,0,0.15)` : "none" }}>
               <div style={{ fontSize: "clamp(48px, 6vw, 80px)", fontWeight: 900, color: BG, lineHeight: 1, letterSpacing: -3 }}>{s.value}</div>
-              <div style={{ fontSize: 13, color: "rgba(0,0,0,0.5)", marginTop: 10, lineHeight: 1.5, whiteSpace: "pre-line", fontWeight: 500 }}>{s.label}</div>
+              <div style={{ fontSize: 13, color: "rgba(0,0,0,0.6)", marginTop: 10, lineHeight: 1.5, whiteSpace: "pre-line", fontWeight: 500 }}>{s.label}</div>
             </div>
           ))}
         </div>
@@ -290,19 +252,19 @@ export default function LandingPage() {
       {/* SECCIÓN RD */}
       <section style={{ padding: "120px 48px", borderBottom: `1px solid ${BORDER}` }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-          <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 4, color: "#444", marginBottom: 24, textTransform: "uppercase" }}>🇩🇴 &nbsp; Hecho para RD</div>
+          <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 3, color: "#aaa", marginBottom: 24, textTransform: "uppercase" }}>🇩🇴 &nbsp; Hecho para RD</div>
           <h2 style={{ fontSize: "clamp(36px, 5vw, 64px)", fontWeight: 900, letterSpacing: -3, margin: "0 0 24px", maxWidth: 700, lineHeight: 1 }}>
             Construido para el ecosistema inmobiliario de la República Dominicana.
           </h2>
-          <p style={{ color: "#555", fontSize: 18, maxWidth: 560, lineHeight: 1.6, marginBottom: 60 }}>
+          <p style={{ color: "#999", fontSize: 18, maxWidth: 560, lineHeight: 1.6, marginBottom: 60 }}>
             Desde Piantini hasta Punta Cana, SECTOR conoce tu territorio.
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-            <div style={{ width: "100%", fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "#444", textTransform: "uppercase", marginBottom: 6 }}>Distrito Nacional y Gran Santo Domingo</div>
+            <div style={{ width: "100%", fontSize: 13, fontWeight: 700, letterSpacing: 3, color: "#aaa", textTransform: "uppercase", marginBottom: 6 }}>Distrito Nacional y Gran Santo Domingo</div>
             {sectors.map((s) => (
               <div key={s} style={{ background: "#111", border: `1px solid ${BORDER}`, borderRadius: 100, padding: "8px 18px", fontSize: 13, color: LIME, fontWeight: 600 }}>{s}</div>
             ))}
-            <div style={{ width: "100%", fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "#444", textTransform: "uppercase", margin: "20px 0 6px" }}>Destinos turísticos e inversión</div>
+            <div style={{ width: "100%", fontSize: 13, fontWeight: 700, letterSpacing: 3, color: "#aaa", textTransform: "uppercase", margin: "20px 0 6px" }}>Destinos turísticos e inversión</div>
             {turisticos.map((s) => (
               <div key={s} style={{ background: LIME + "15", border: `1px solid ${LIME}33`, borderRadius: 100, padding: "8px 18px", fontSize: 13, color: LIME, fontWeight: 600 }}>{s}</div>
             ))}
@@ -313,7 +275,7 @@ export default function LandingPage() {
       {/* FEATURES — alternadas */}
       <section id="funciones">
         <div style={{ padding: "80px 48px 40px", textAlign: "center" }}>
-          <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 4, color: "#444", marginBottom: 20, textTransform: "uppercase" }}>Todo lo que necesitas</div>
+          <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 3, color: "#aaa", marginBottom: 20, textTransform: "uppercase" }}>Todo lo que necesitas</div>
           <h2 style={{ fontSize: "clamp(36px, 5vw, 64px)", fontWeight: 900, letterSpacing: -3, margin: 0 }}>
             7 herramientas de alto rendimiento.<br />Un solo lugar.
           </h2>
@@ -339,8 +301,8 @@ export default function LandingPage() {
                 <div style={{ direction: "ltr" }}>
                   <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: isLime ? "rgba(0,0,0,0.4)" : "#444", textTransform: "uppercase", marginBottom: 16 }}>{f.num}</div>
                   <h3 style={{ fontSize: "clamp(32px, 4vw, 52px)", fontWeight: 900, letterSpacing: -2, margin: "0 0 8px", color: isLime ? BG : "#fff", lineHeight: 1 }}>{f.title}</h3>
-                  <div style={{ fontSize: 16, color: isLime ? "rgba(0,0,0,0.5)" : "#555", marginBottom: 24, fontStyle: "italic" }}>— {f.sub}</div>
-                  <p style={{ color: isLime ? "rgba(0,0,0,0.65)" : "#777", fontSize: 16, lineHeight: 1.7, margin: "0 0 32px" }}>{f.desc}</p>
+                  <div style={{ fontSize: 17, color: isLime ? "rgba(0,0,0,0.6)" : "#aaa", marginBottom: 24, fontStyle: "italic" }}>— {f.sub}</div>
+                  <p style={{ color: isLime ? "rgba(0,0,0,0.7)" : "#aaa", fontSize: 16, lineHeight: 1.7, margin: "0 0 32px" }}>{f.desc}</p>
                   <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 12 }}>
                     {f.bullets.map((b) => (
                       <li key={b} style={{ display: "flex", alignItems: "center", gap: 12, color: isLime ? BG : "#ccc", fontSize: 15, fontWeight: 500 }}>
@@ -359,58 +321,13 @@ export default function LandingPage() {
         })}
       </section>
 
-      {/* PRECIOS */}
-      <section id="precios" style={{ padding: "120px 48px", borderTop: `1px solid ${BORDER}` }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-          <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 4, color: "#444", marginBottom: 20, textTransform: "uppercase" }}>Sin sorpresas</div>
-          <h2 style={{ fontSize: "clamp(36px, 5vw, 64px)", fontWeight: 900, letterSpacing: -3, marginBottom: 16 }}>
-            Precios para el mercado de RD.
-          </h2>
-          <p style={{ color: "#555", fontSize: 18, marginBottom: 64 }}>Sin tarjeta de crédito para el plan gratuito. Ve el producto antes de comprometerte.</p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}>
-            {pricing.map((p) => (
-              <div key={p.name} style={{
-                background: p.highlight ? LIME : CARD_BG,
-                border: p.highlight ? "none" : `1px solid ${BORDER}`,
-                borderRadius: 20,
-                padding: "44px 36px",
-                position: "relative",
-              }}>
-                {p.highlight && (
-                  <div style={{ position: "absolute", top: -13, left: "50%", transform: "translateX(-50%)", background: "#fff", color: BG, borderRadius: 100, padding: "4px 16px", fontSize: 10, fontWeight: 800, letterSpacing: 1, textTransform: "uppercase", whiteSpace: "nowrap" }}>
-                    Más popular
-                  </div>
-                )}
-                <div style={{ fontWeight: 900, fontSize: 22, color: p.highlight ? BG : "#fff", marginBottom: 8 }}>{p.name}</div>
-                <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 12 }}>
-                  <span style={{ fontSize: 52, fontWeight: 900, letterSpacing: -3, color: p.highlight ? BG : LIME, lineHeight: 1 }}>{p.price}</span>
-                  {p.period && <span style={{ fontSize: 16, color: p.highlight ? "#333" : "#555" }}>{p.period}</span>}
-                </div>
-                <p style={{ fontSize: 14, color: p.highlight ? "#333" : "#555", marginBottom: 32, lineHeight: 1.5 }}>{p.desc}</p>
-                <ul style={{ listStyle: "none", padding: 0, margin: "0 0 36px", display: "flex", flexDirection: "column", gap: 12 }}>
-                  {p.limits.map((l) => (
-                    <li key={l} style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 15, color: p.highlight ? BG : "#ccc" }}>
-                      <span style={{ color: p.highlight ? BG : LIME, fontWeight: 900 }}>✓</span>
-                      {l}
-                    </li>
-                  ))}
-                </ul>
-                <a href="#acceso" style={{ display: "block", textAlign: "center", background: p.highlight ? BG : LIME, color: p.highlight ? LIME : BG, borderRadius: 100, padding: "15px", fontWeight: 800, fontSize: 14, textDecoration: "none" }}>
-                  {p.cta}
-                </a>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* CTA FINAL — fondo lima */}
       <section id="acceso" style={{ background: LIME, padding: "120px 48px", textAlign: "center" }}>
         <div style={{ fontSize: 28, marginBottom: 24 }}>🇩🇴</div>
         <h2 style={{ fontSize: "clamp(40px, 7vw, 88px)", fontWeight: 900, letterSpacing: -4, margin: "0 0 20px", color: BG, lineHeight: 0.95 }}>
           El CRM que el realtor<br />dominicano estaba esperando.
         </h2>
-        <p style={{ color: "rgba(0,0,0,0.5)", fontSize: 18, maxWidth: 440, margin: "0 auto 52px", lineHeight: 1.6 }}>
+        <p style={{ color: "rgba(0,0,0,0.6)", fontSize: 18, maxWidth: 440, margin: "0 auto 52px", lineHeight: 1.6 }}>
           Solicita tu acceso anticipado. Sin tarjeta de crédito. Sin compromisos.
         </p>
         <div style={{ display: "flex", gap: 12, maxWidth: 480, margin: "0 auto", flexWrap: "wrap", justifyContent: "center" }}>
@@ -429,7 +346,7 @@ export default function LandingPage() {
       <footer style={{ background: BG, borderTop: `1px solid ${BORDER}`, overflow: "hidden" }}>
         <div style={{ padding: "40px 48px 0", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
           <div style={{ fontWeight: 900, fontSize: 20, letterSpacing: -1 }}>SECTOR<span style={{ color: LIME }}>.</span></div>
-          <div style={{ color: "#333", fontSize: 12 }}>sector.do · CRM para Realtors en República Dominicana · 2026</div>
+          <div style={{ color: "#444", fontSize: 12 }}>sector.do · CRM para Realtors en República Dominicana · 2026</div>
         </div>
         <div style={{ fontSize: "clamp(80px, 18vw, 220px)", fontWeight: 900, letterSpacing: -8, color: "#111", lineHeight: 0.85, padding: "0 32px", userSelect: "none", marginTop: 8 }}>
           SECTOR
