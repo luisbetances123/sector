@@ -16,7 +16,15 @@ interface Deal {
   updated_at: string
 }
 
-const ETAPAS = ['Prospectos', 'Visitas', 'Negociacion', 'Cierre']
+const ETAPAS = ['Interesado', 'Separacion', 'En Cuotas', 'Pre-entrega', 'Entregado']
+
+const ETAPA_COLORS: Record<string, string> = {
+  'Interesado': '#4da6ff',
+  'Separacion': '#CCFF00',
+  'En Cuotas': '#ff9900',
+  'Pre-entrega': '#cc66ff',
+  'Entregado': '#00ff99',
+}
 
 export default function PipelinePage() {
   const [deals, setDeals] = useState<Deal[]>([])
@@ -27,7 +35,8 @@ export default function PipelinePage() {
   const [aiLoading, setAiLoading] = useState(false)
   const [aiResult, setAiResult] = useState<{proximo_paso: string, mensaje_whatsapp: string, analisis: string} | null>(null)
   const [newDeal, setNewDeal] = useState({
-    nombre_cliente: '', propiedad: '', precio: '', etapa: 'Prospectos', telefono: '', email: '', notas: ''
+    nombre_cliente: '', propiedad: '', precio: '', etapa: 'Interesado', telefono: '', email: '', notas: '',
+    proyecto: '', unidad: '', proximo_pago_fecha: '', proximo_pago_monto: ''
   })
 
   useEffect(() => { fetchDeals() }, [])
@@ -53,7 +62,7 @@ export default function PipelinePage() {
       user_id: user?.id
     }])
     if (!error) {
-      setNewDeal({ nombre_cliente: '', propiedad: '', precio: '', etapa: 'Prospectos', telefono: '', email: '', notas: '' })
+      setNewDeal({ nombre_cliente: '', propiedad: '', precio: '', etapa: 'Interesado', telefono: '', email: '', notas: '', proyecto: '', unidad: '', proximo_pago_fecha: '', proximo_pago_monto: '' })
       setShowForm(false)
       fetchDeals()
     }
@@ -95,27 +104,28 @@ export default function PipelinePage() {
           max_tokens: 1000,
           messages: [{
             role: 'user',
-            content: `Eres un asistente experto en ventas inmobiliarias en República Dominicana. Analiza este deal y responde SOLO en JSON sin markdown:
+            content: `Eres un asistente experto en ventas inmobiliarias de preventa en República Dominicana. Analiza este deal y responde SOLO en JSON sin markdown:
 
 Deal:
 - Cliente: ${deal.nombre_cliente}
-- Propiedad: ${deal.propiedad}
+- Proyecto/Propiedad: ${deal.propiedad}
 - Precio: US$ ${deal.precio.toLocaleString()}
 - Etapa actual: ${deal.etapa}
 - Notas: ${deal.notas || 'Sin notas'}
 - Teléfono: ${deal.telefono || 'No disponible'}
 
+Etapas del pipeline de preventa: Interesado → Separacion → En Cuotas → Pre-entrega → Entregado
+
 Responde SOLO con este JSON exacto:
 {
-  "proximo_paso": "Una acción concreta y específica para avanzar este deal (máximo 2 oraciones)",
-  "mensaje_whatsapp": "Mensaje listo para enviar al cliente por WhatsApp, natural y profesional en español dominicano (máximo 3 oraciones)",
-  "analisis": "Análisis breve del deal: probabilidad de cierre y riesgo principal (máximo 2 oraciones)"
+  "proximo_paso": "Una acción concreta y específica para avanzar este deal en el contexto de preventa (máximo 2 oraciones)",
+  "mensaje_whatsapp": "Mensaje listo para enviar al cliente por WhatsApp, natural y profesional en español dominicano considerando la etapa de preventa (máximo 3 oraciones)",
+  "analisis": "Análisis breve del deal: probabilidad de cierre y riesgo principal considerando que es una venta en preventa (máximo 2 oraciones)"
 }`
           }]
         })
       })
       const data = await response.json()
-      console.log('AI response:', JSON.stringify(data))
       if (!data.content || !data.content[0]) throw new Error('No content in response')
       const text = data.content[0].text.replace(/```json|```/g, '').trim()
       const parsed = JSON.parse(text)
@@ -136,6 +146,7 @@ Responde SOLO con este JSON exacto:
           <div>
             <span className="text-sm font-mono text-[#CCFF00] uppercase tracking-widest">Inteligencia de Negociacion</span>
             <h1 className="text-4xl font-extrabold tracking-tighter text-white mt-2">Pipeline Visual</h1>
+            <p className="text-xs text-zinc-500 mt-1 font-mono">Mercado de Preventa · República Dominicana</p>
           </div>
           <div className="flex items-end gap-6">
             <div className="text-right">
@@ -151,17 +162,23 @@ Responde SOLO con este JSON exacto:
 
         {showForm && (
           <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 space-y-4">
-            <h2 className="text-sm font-bold text-white">Nuevo Deal</h2>
+            <h2 className="text-sm font-bold text-white">Nuevo Deal de Preventa</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <input placeholder="Nombre del cliente" value={newDeal.nombre_cliente} onChange={e => setNewDeal({...newDeal, nombre_cliente: e.target.value})}
                 className="bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 outline-none" />
-              <input placeholder="Propiedad" value={newDeal.propiedad} onChange={e => setNewDeal({...newDeal, propiedad: e.target.value})}
+              <input placeholder="Proyecto (ej: Torres Piantini)" value={newDeal.propiedad} onChange={e => setNewDeal({...newDeal, propiedad: e.target.value})}
                 className="bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 outline-none" />
-              <input placeholder="Precio (USD)" type="number" value={newDeal.precio} onChange={e => setNewDeal({...newDeal, precio: e.target.value})}
+              <input placeholder="Unidad (ej: Torre A, Piso 5, Apto 501)" value={newDeal.unidad} onChange={e => setNewDeal({...newDeal, unidad: e.target.value})}
                 className="bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 outline-none" />
-              <input placeholder="Telefono" value={newDeal.telefono} onChange={e => setNewDeal({...newDeal, telefono: e.target.value})}
+              <input placeholder="Precio total (USD)" type="number" value={newDeal.precio} onChange={e => setNewDeal({...newDeal, precio: e.target.value})}
+                className="bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 outline-none" />
+              <input placeholder="Teléfono" value={newDeal.telefono} onChange={e => setNewDeal({...newDeal, telefono: e.target.value})}
                 className="bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 outline-none" />
               <input placeholder="Email" value={newDeal.email} onChange={e => setNewDeal({...newDeal, email: e.target.value})}
+                className="bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 outline-none" />
+              <input placeholder="Próximo pago (fecha)" type="date" value={newDeal.proximo_pago_fecha} onChange={e => setNewDeal({...newDeal, proximo_pago_fecha: e.target.value})}
+                className="bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 outline-none" />
+              <input placeholder="Monto próximo pago (USD)" type="number" value={newDeal.proximo_pago_monto} onChange={e => setNewDeal({...newDeal, proximo_pago_monto: e.target.value})}
                 className="bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 outline-none" />
               <select value={newDeal.etapa} onChange={e => setNewDeal({...newDeal, etapa: e.target.value})}
                 className="bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 outline-none">
@@ -183,15 +200,17 @@ Responde SOLO con este JSON exacto:
         {loading ? (
           <div className="text-zinc-500 text-sm text-center py-20">Cargando pipeline...</div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             {ETAPAS.map(etapa => {
               const etapaDeals = deals.filter(d => d.etapa === etapa)
               const etapaTotal = etapaDeals.reduce((s, d) => s + (d.precio || 0), 0)
+              const color = ETAPA_COLORS[etapa] || '#CCFF00'
               return (
                 <div key={etapa} className="bg-zinc-950/20 p-4 rounded-2xl border border-zinc-900/50 flex flex-col min-h-[500px]">
                   <div className="flex justify-between items-center mb-4">
                     <div>
-                      <h3 className="text-xs font-mono font-black text-zinc-400 uppercase">{etapa}</h3>
+                      <div className="w-2 h-2 rounded-full mb-1" style={{ background: color }} />
+                      <h3 className="text-xs font-mono font-black uppercase" style={{ color }}>{etapa}</h3>
                       <p className="text-[10px] text-zinc-600 font-mono">{etapaDeals.length} deals</p>
                     </div>
                     <span className="text-[10px] font-mono bg-zinc-900 px-2 py-1 rounded text-white">
@@ -204,16 +223,21 @@ Responde SOLO con este JSON exacto:
                         className="border border-zinc-800 bg-zinc-950 hover:border-zinc-700 p-4 rounded-xl cursor-pointer transition-all">
                         <div className="font-bold text-white text-xs">{deal.nombre_cliente}</div>
                         <div className="text-zinc-500 text-[11px] mt-0.5 truncate">{deal.propiedad}</div>
-                        <div className="text-[#CCFF00] font-black text-sm mt-2">US$ {(deal.precio || 0).toLocaleString()}</div>
+                        <div className="font-black text-sm mt-2" style={{ color }}>${(deal.precio || 0).toLocaleString()}</div>
+                        {deal.notas && deal.notas.includes('Próximo pago:') && (
+                          <div className="text-[10px] text-orange-400 font-mono mt-1">
+                            {deal.notas.split('\n').find(l => l.includes('Próximo pago:'))}
+                          </div>
+                        )}
                         <div className="flex justify-between items-center mt-3 pt-2 border-t border-zinc-900" onClick={e => e.stopPropagation()}>
                           <button disabled={etapa === ETAPAS[0]} onClick={() => moveDeal(deal.id, deal.etapa, 'backward')}
                             className="text-[9px] p-1.5 bg-zinc-900 rounded disabled:opacity-20 text-zinc-400 hover:text-white">
-                            Back
+                            ← Atrás
                           </button>
                           <button onClick={() => deleteDeal(deal.id)} className="text-[9px] text-red-500 hover:text-red-400">Borrar</button>
                           <button disabled={etapa === ETAPAS[ETAPAS.length-1]} onClick={() => moveDeal(deal.id, deal.etapa, 'forward')}
                             className="text-[9px] p-1.5 bg-zinc-900 rounded disabled:opacity-20 text-zinc-400 hover:text-white">
-                            Next
+                            Siguiente →
                           </button>
                         </div>
                       </div>
@@ -236,22 +260,22 @@ Responde SOLO con este JSON exacto:
 
             <div className="space-y-4">
               <div>
-                <label className="text-[9px] font-mono text-zinc-500 uppercase">Nombre</label>
+                <label className="text-[9px] font-mono text-zinc-500 uppercase">Nombre del Cliente</label>
                 <input value={selectedDeal.nombre_cliente} onChange={e => setSelectedDeal({...selectedDeal, nombre_cliente: e.target.value})}
                   className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-3 mt-1 outline-none" />
               </div>
               <div>
-                <label className="text-[9px] font-mono text-zinc-500 uppercase">Propiedad</label>
+                <label className="text-[9px] font-mono text-zinc-500 uppercase">Proyecto / Unidad</label>
                 <input value={selectedDeal.propiedad} onChange={e => setSelectedDeal({...selectedDeal, propiedad: e.target.value})}
                   className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 mt-1 outline-none" />
               </div>
               <div>
-                <label className="text-[9px] font-mono text-zinc-500 uppercase">Precio (USD)</label>
+                <label className="text-[9px] font-mono text-zinc-500 uppercase">Precio Total (USD)</label>
                 <input type="number" value={selectedDeal.precio} onChange={e => setSelectedDeal({...selectedDeal, precio: Number(e.target.value)})}
                   className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-[#CCFF00] font-black text-sm rounded-xl px-4 py-3 mt-1 outline-none" />
               </div>
               <div>
-                <label className="text-[9px] font-mono text-zinc-500 uppercase">Telefono</label>
+                <label className="text-[9px] font-mono text-zinc-500 uppercase">Teléfono</label>
                 <input value={selectedDeal.telefono} onChange={e => setSelectedDeal({...selectedDeal, telefono: e.target.value})}
                   className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 mt-1 outline-none" />
               </div>
@@ -262,9 +286,26 @@ Responde SOLO con este JSON exacto:
               </div>
             </div>
 
-            {/* CALCULADORA */}
+            {/* PRÓXIMO PAGO */}
+            <div className="bg-zinc-900 border border-orange-500/20 rounded-2xl p-4 space-y-3">
+              <h3 className="text-xs font-mono text-orange-400 uppercase tracking-wider">⏰ Próximo Pago</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[9px] font-mono text-zinc-500 uppercase">Fecha</label>
+                  <input type="date"
+                    className="w-full bg-zinc-800 border border-zinc-700 focus:border-orange-400 text-white text-xs rounded-xl px-3 py-2 mt-1 outline-none" />
+                </div>
+                <div>
+                  <label className="text-[9px] font-mono text-zinc-500 uppercase">Monto (USD)</label>
+                  <input type="number" placeholder="0"
+                    className="w-full bg-zinc-800 border border-zinc-700 focus:border-orange-400 text-orange-400 font-black text-sm rounded-xl px-3 py-2 mt-1 outline-none" />
+                </div>
+              </div>
+            </div>
+
+            {/* CALCULADORA DE COMISIÓN */}
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3">
-              <h3 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Calculadora de Comision</h3>
+              <h3 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Calculadora de Comisión</h3>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-[9px] font-mono text-zinc-500 uppercase">Porcentaje %</label>
@@ -277,7 +318,7 @@ Responde SOLO con este JSON exacto:
                     }} />
                 </div>
                 <div>
-                  <label className="text-[9px] font-mono text-zinc-500 uppercase">Tu Comision</label>
+                  <label className="text-[9px] font-mono text-zinc-500 uppercase">Tu Comisión</label>
                   <div id="comision-result" className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 mt-1 text-[#CCFF00] font-black text-sm font-mono">
                     US$ {Math.round(selectedDeal.precio * 3 / 100).toLocaleString()}
                   </div>
@@ -294,13 +335,11 @@ Responde SOLO con este JSON exacto:
                   {aiLoading ? 'Analizando...' : 'Analizar Deal'}
                 </button>
               </div>
-
               {aiLoading && (
                 <div className="text-zinc-500 text-xs font-mono animate-pulse text-center py-4">
                   Analizando el deal con AI...
                 </div>
               )}
-
               {aiResult && (
                 <div className="space-y-4">
                   <div className="bg-zinc-800 rounded-xl p-3">
