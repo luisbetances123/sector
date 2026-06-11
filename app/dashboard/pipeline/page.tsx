@@ -115,6 +115,8 @@ Responde SOLO con este JSON exacto:
         })
       })
       const data = await response.json()
+      console.log('AI response:', JSON.stringify(data))
+      if (!data.content || !data.content[0]) throw new Error('No content in response')
       const text = data.content[0].text.replace(/```json|```/g, '').trim()
       const parsed = JSON.parse(text)
       setAiResult(parsed)
