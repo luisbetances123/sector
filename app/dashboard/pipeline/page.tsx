@@ -24,25 +24,16 @@ export default function PipelinePage() {
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null)
   const [showForm, setShowForm] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [aiLoading, setAiLoading] = useState(false)
+  const [aiResult, setAiResult] = useState<{proximo_paso: string, mensaje_whatsapp: string, analisis: string} | null>(null)
   const [newDeal, setNewDeal] = useState({
-    nombre_cliente: '',
-    propiedad: '',
-    precio: '',
-    etapa: 'Prospectos',
-    telefono: '',
-    email: '',
-    notas: ''
+    nombre_cliente: '', propiedad: '', precio: '', etapa: 'Prospectos', telefono: '', email: '', notas: ''
   })
 
-  useEffect(() => {
-    fetchDeals()
-  }, [])
+  useEffect(() => { fetchDeals() }, [])
 
   async function fetchDeals() {
-    const { data, error } = await supabase
-      .from('pipeline_deals')
-      .select('*')
-      .order('created_at', { ascending: false })
+    const { data, error } = await supabase.from('pipeline_deals').select('*').order('created_at', { ascending: false })
     if (error) console.error(error)
     else setDeals(data || [])
     setLoading(false)
@@ -73,28 +64,65 @@ export default function PipelinePage() {
     const idx = ETAPAS.indexOf(currentEtapa)
     const nextIdx = direction === 'forward' ? idx + 1 : idx - 1
     if (nextIdx < 0 || nextIdx >= ETAPAS.length) return
-    const nextEtapa = ETAPAS[nextIdx]
-    await supabase.from('pipeline_deals').update({ etapa: nextEtapa, updated_at: new Date().toISOString() }).eq('id', dealId)
+    await supabase.from('pipeline_deals').update({ etapa: ETAPAS[nextIdx], updated_at: new Date().toISOString() }).eq('id', dealId)
     fetchDeals()
   }
 
   async function updateDeal(deal: Deal) {
     await supabase.from('pipeline_deals').update({
-      nombre_cliente: deal.nombre_cliente,
-      propiedad: deal.propiedad,
-      precio: deal.precio,
-      notas: deal.notas,
-      telefono: deal.telefono,
-      email: deal.email,
-      updated_at: new Date().toISOString()
+      nombre_cliente: deal.nombre_cliente, propiedad: deal.propiedad, precio: deal.precio,
+      notas: deal.notas, telefono: deal.telefono, email: deal.email, updated_at: new Date().toISOString()
     }).eq('id', deal.id)
     fetchDeals()
     setSelectedDeal(null)
+    setAiResult(null)
   }
 
   async function deleteDeal(id: string) {
     await supabase.from('pipeline_deals').delete().eq('id', id)
     fetchDeals()
+  }
+
+  async function analizarConAI(deal: Deal) {
+    setAiLoading(true)
+    setAiResult(null)
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          messages: [{
+            role: 'user',
+            content: `Eres un asistente experto en ventas inmobiliarias en República Dominicana. Analiza este deal y responde SOLO en JSON sin markdown:
+
+Deal:
+- Cliente: ${deal.nombre_cliente}
+- Propiedad: ${deal.propiedad}
+- Precio: US$ ${deal.precio.toLocaleString()}
+- Etapa actual: ${deal.etapa}
+- Notas: ${deal.notas || 'Sin notas'}
+- Teléfono: ${deal.telefono || 'No disponible'}
+
+Responde SOLO con este JSON exacto:
+{
+  "proximo_paso": "Una acción concreta y específica para avanzar este deal (máximo 2 oraciones)",
+  "mensaje_whatsapp": "Mensaje listo para enviar al cliente por WhatsApp, natural y profesional en español dominicano (máximo 3 oraciones)",
+  "analisis": "Análisis breve del deal: probabilidad de cierre y riesgo principal (máximo 2 oraciones)"
+}`
+          }]
+        })
+      })
+      const data = await response.json()
+      const text = data.content[0].text.replace(/```json|```/g, '').trim()
+      const parsed = JSON.parse(text)
+      setAiResult(parsed)
+    } catch (e) {
+      console.error(e)
+      setAiResult({ proximo_paso: 'Error al analizar.', mensaje_whatsapp: '', analisis: '' })
+    }
+    setAiLoading(false)
   }
 
   const totalVolumen = deals.reduce((s, d) => s + (d.precio || 0), 0)
@@ -112,10 +140,8 @@ export default function PipelinePage() {
               <p className="text-xs font-mono text-zinc-500 uppercase">Volumen Total</p>
               <p className="text-2xl font-black text-white">US$ {totalVolumen.toLocaleString()}</p>
             </div>
-            <button
-              onClick={() => setShowForm(!showForm)}
-              className="bg-[#CCFF00] text-black font-black text-xs rounded-xl px-4 py-3 hover:bg-[#b8e600] transition-colors whitespace-nowrap"
-            >
+            <button onClick={() => setShowForm(!showForm)}
+              className="bg-[#CCFF00] text-black font-black text-xs rounded-xl px-4 py-3 hover:bg-[#b8e600] transition-colors whitespace-nowrap">
               + Nuevo Deal
             </button>
           </div>
@@ -172,7 +198,7 @@ export default function PipelinePage() {
                   </div>
                   <div className="space-y-3 flex-1">
                     {etapaDeals.map(deal => (
-                      <div key={deal.id} onClick={() => setSelectedDeal(deal)}
+                      <div key={deal.id} onClick={() => { setSelectedDeal(deal); setAiResult(null) }}
                         className="border border-zinc-800 bg-zinc-950 hover:border-zinc-700 p-4 rounded-xl cursor-pointer transition-all">
                         <div className="font-bold text-white text-xs">{deal.nombre_cliente}</div>
                         <div className="text-zinc-500 text-[11px] mt-0.5 truncate">{deal.propiedad}</div>
@@ -199,12 +225,13 @@ export default function PipelinePage() {
       </div>
 
       {selectedDeal && (
-        <div className="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex justify-end" onClick={() => setSelectedDeal(null)}>
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex justify-end" onClick={() => { setSelectedDeal(null); setAiResult(null) }}>
           <div className="w-full max-w-lg bg-zinc-950 border-l border-zinc-900 h-full p-8 flex flex-col gap-6 overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-center">
               <h2 className="text-sm font-black text-white uppercase">Editar Deal</h2>
-              <button onClick={() => setSelectedDeal(null)} className="text-zinc-500 hover:text-white">X</button>
+              <button onClick={() => { setSelectedDeal(null); setAiResult(null) }} className="text-zinc-500 hover:text-white">X</button>
             </div>
+
             <div className="space-y-4">
               <div>
                 <label className="text-[9px] font-mono text-zinc-500 uppercase">Nombre</label>
@@ -228,27 +255,24 @@ export default function PipelinePage() {
               </div>
               <div>
                 <label className="text-[9px] font-mono text-zinc-500 uppercase">Notas</label>
-                <textarea rows={4} value={selectedDeal.notas} onChange={e => setSelectedDeal({...selectedDeal, notas: e.target.value})}
+                <textarea rows={3} value={selectedDeal.notas} onChange={e => setSelectedDeal({...selectedDeal, notas: e.target.value})}
                   className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-zinc-300 text-xs rounded-xl px-4 py-3 mt-1 outline-none resize-none" />
               </div>
             </div>
+
+            {/* CALCULADORA */}
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3">
               <h3 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Calculadora de Comision</h3>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-[9px] font-mono text-zinc-500 uppercase">Porcentaje %</label>
-                  <input
-                    type="number"
-                    defaultValue="3"
-                    id="comision-pct"
-                    min="0" max="100" step="0.5"
+                  <input type="number" defaultValue="3" min="0" max="100" step="0.5"
                     className="w-full bg-zinc-800 border border-zinc-700 focus:border-[#CCFF00] text-white text-sm rounded-xl px-3 py-2 mt-1 outline-none"
                     onChange={(e) => {
                       const pct = parseFloat(e.target.value) || 0
                       const result = document.getElementById("comision-result")
                       if (result) result.textContent = "US$ " + ((selectedDeal.precio * pct / 100)).toLocaleString("en-US", {minimumFractionDigits: 0, maximumFractionDigits: 0})
-                    }}
-                  />
+                    }} />
                 </div>
                 <div>
                   <label className="text-[9px] font-mono text-zinc-500 uppercase">Tu Comision</label>
@@ -257,7 +281,51 @@ export default function PipelinePage() {
                   </div>
                 </div>
               </div>
-              <p className="text-[10px] text-zinc-600 font-mono">Precio base: US$ {selectedDeal.precio.toLocaleString()}</p>
+            </div>
+
+            {/* BOTÓN AI */}
+            <div className="bg-zinc-900 border border-[#CCFF00]/20 rounded-2xl p-4 space-y-4">
+              <div className="flex justify-between items-center">
+                <h3 className="text-xs font-mono text-[#CCFF00] uppercase tracking-wider">✦ Asistente AI</h3>
+                <button onClick={() => analizarConAI(selectedDeal)} disabled={aiLoading}
+                  className="bg-[#CCFF00] text-black font-black text-xs rounded-xl px-4 py-2 hover:bg-[#b8e600] transition-colors disabled:opacity-50">
+                  {aiLoading ? 'Analizando...' : 'Analizar Deal'}
+                </button>
+              </div>
+
+              {aiLoading && (
+                <div className="text-zinc-500 text-xs font-mono animate-pulse text-center py-4">
+                  Analizando el deal con AI...
+                </div>
+              )}
+
+              {aiResult && (
+                <div className="space-y-4">
+                  <div className="bg-zinc-800 rounded-xl p-3">
+                    <p className="text-[10px] font-mono text-zinc-500 uppercase mb-1">Próximo Paso</p>
+                    <p className="text-sm text-white leading-relaxed">{aiResult.proximo_paso}</p>
+                  </div>
+                  <div className="bg-zinc-800 rounded-xl p-3">
+                    <div className="flex justify-between items-center mb-1">
+                      <p className="text-[10px] font-mono text-zinc-500 uppercase">Mensaje WhatsApp</p>
+                      <button onClick={() => navigator.clipboard.writeText(aiResult.mensaje_whatsapp)}
+                        className="text-[10px] text-[#CCFF00] font-mono hover:underline">Copiar</button>
+                    </div>
+                    <p className="text-sm text-zinc-200 leading-relaxed">{aiResult.mensaje_whatsapp}</p>
+                    {selectedDeal.telefono && (
+                      <a href={`https://wa.me/${selectedDeal.telefono}?text=${encodeURIComponent(aiResult.mensaje_whatsapp)}`}
+                        target="_blank" rel="noopener noreferrer"
+                        className="mt-2 flex items-center gap-2 text-[10px] text-green-400 font-mono hover:underline">
+                        → Enviar por WhatsApp
+                      </a>
+                    )}
+                  </div>
+                  <div className="bg-zinc-800 rounded-xl p-3">
+                    <p className="text-[10px] font-mono text-zinc-500 uppercase mb-1">Análisis</p>
+                    <p className="text-sm text-zinc-300 leading-relaxed">{aiResult.analisis}</p>
+                  </div>
+                </div>
+              )}
             </div>
 
             <button onClick={() => updateDeal(selectedDeal)}
