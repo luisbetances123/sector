@@ -39,7 +39,7 @@ export default function DashboardLayout({
     { name: 'Precios', href: '/pricing', icon: TrendingUp },
     { name: 'Calendario', href: '/dashboard/calendar', icon: Calendar },
     { name: 'Reportes', href: '/dashboard/reports', icon: BarChart2 },
-    { name: 'Inbox', href: '/dashboard/inbox', icon: Inbox },
+    { name: 'Conversaciones', href: '/dashboard/inbox', icon: Inbox },
     { name: 'Recordatorios', href: '/dashboard/reminders', icon: Bell },
     { name: 'Usuarios', href: '/dashboard/usuarios', icon: UserCog },
   ]

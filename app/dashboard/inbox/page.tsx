@@ -109,11 +109,11 @@ export default function InboxPage() {
       <header className="border-b border-zinc-900 pb-6 flex justify-between items-end">
         <div>
           <span className="text-sm font-mono text-[#CCFF00] uppercase tracking-widest">Comunicaciones</span>
-          <h1 className="text-4xl font-extrabold tracking-tighter text-white mt-1">Inbox</h1>
+          <h1 className="text-4xl font-extrabold tracking-tighter text-white mt-1">Conversaciones</h1>
         </div>
         <button onClick={() => setShowForm(!showForm)}
           className="bg-[#CCFF00] text-black font-black text-xs rounded-xl px-5 py-3 hover:bg-[#b8e600] transition-colors">
-          + Registrar Mensaje
+          + Nueva Conversación
         </button>
       </header>
 
@@ -140,7 +140,7 @@ export default function InboxPage() {
       {/* FORM */}
       {showForm && (
         <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 space-y-4">
-          <h2 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Registrar Conversación</h2>
+          <h2 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Nueva Conversación</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="text-[9px] font-mono text-zinc-500 uppercase">Cliente</label>
@@ -200,7 +200,7 @@ export default function InboxPage() {
 
       {/* LISTA */}
       {loading ? (
-        <div className="text-zinc-500 text-sm text-center py-10">Cargando inbox...</div>
+        <div className="text-zinc-500 text-sm text-center py-10">Cargando conversaciones...</div>
       ) : filtrados.length === 0 ? (
         <div className="text-zinc-600 text-sm text-center py-10">No hay mensajes. Registra el primero.</div>
       ) : (
