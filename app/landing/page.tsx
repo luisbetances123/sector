@@ -56,8 +56,8 @@ const features = [
     num: "05",
     title: "Propiedades",
     sub: "Tu inventario organizado, listo para cerrar",
-    desc: "Catálogo visual con fotos, precios, recámaras, m² y notas de venta. Filtra por sector, precio o estado. Genera fichas técnicas estéticas con un clic y envíalas por WhatsApp.",
-    bullets: ["Fotos, precio, m², recámaras y baños", "Filtros por sector y precio", "Notas de venta privadas", "Ficha técnica exportable en PDF"],
+    desc: "Catálogo visual con fotos, precios, habitaciones, m² y notas de venta. Filtra por sector, precio o estado. Genera fichas técnicas estéticas con un clic y envíalas por WhatsApp.",
+    bullets: ["Fotos, precio, m², habitaciones y baños", "Filtros por sector y precio", "Notas de venta privadas", "Ficha técnica exportable en PDF"],
     flip: false,
   },
 ];
