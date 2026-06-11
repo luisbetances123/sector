@@ -26,6 +26,7 @@ export default function PropertiesPage() {
   const [propiedadSeleccionada, setPropiedadSeleccionada] = useState<Propiedad | null>(null);
   const [fotoActivaIndex, setFotoActivaIndex] = useState<number>(0);
 
+  const [plan, setPlan] = useState<string>('free')
   const [formData, setFormData] = useState({
     titulo: '',
     precio: '',
@@ -42,6 +43,11 @@ export default function PropertiesPage() {
   }, []);
 
   const cargarPropiedades = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      const { data: profile } = await supabase.from('profiles').select('plan').eq('id', user.id).single()
+      if (profile) setPlan(profile.plan || 'free')
+    }
     setLoading(true);
     try {
       const { data, error } = await supabase
@@ -222,7 +228,12 @@ export default function PropertiesPage() {
                 Cancelar
               </button>
             )}
-            <button type="submit" className="bg-[#d4ff3b] hover:bg-[#c2eb30] text-black px-6 py-2 rounded-lg text-sm font-semibold transition shadow-md shadow-[#d4ff3b]/10">
+            {plan === 'free' && propiedades.length >= 5 && (
+              <div className="text-xs text-amber-400 font-mono bg-amber-500/10 border border-amber-500/20 px-4 py-2 rounded-lg">
+                Límite del plan Free (5 propiedades). <a href="/pricing" className="text-[#CCFF00] underline font-bold">Actualizar plan →</a>
+              </div>
+            )}
+            <button type="submit" disabled={plan === 'free' && propiedades.length >= 5} className="bg-[#d4ff3b] hover:bg-[#c2eb30] disabled:opacity-30 disabled:cursor-not-allowed text-black px-6 py-2 rounded-lg text-sm font-semibold transition shadow-md shadow-[#d4ff3b]/10">
               {editandoId !== null ? 'Actualizar Parámetros' : 'Publicar Propiedad'}
             </button>
           </div>
