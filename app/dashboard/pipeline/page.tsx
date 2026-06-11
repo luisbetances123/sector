@@ -87,7 +87,7 @@ export default function PipelinePage() {
     setAiLoading(true)
     setAiResult(null)
     try {
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
+      const response = await fetch('/api/ai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
