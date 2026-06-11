@@ -211,7 +211,7 @@ export default function LandingPage() {
       </nav>
 
       {/* HERO */}
-      <section style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "120px 48px 80px" }}>
+      <section className="hero-section" style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
         <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 3, color: "#aaa", marginBottom: 32, textTransform: "uppercase" }}>
           🇩🇴 &nbsp; CRM Inmobiliario · República Dominicana
         </div>
@@ -233,7 +233,7 @@ export default function LandingPage() {
       </section>
 
       {/* STATS — fondo lima */}
-      <section style={{ background: LIME, padding: "80px 48px" }}>
+      <section className="stats-section" style={{ background: LIME }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 0 }}>
           {[
             { value: "5 min", label: "Configuración inicial.\nCero drama." },
@@ -250,7 +250,7 @@ export default function LandingPage() {
       </section>
 
       {/* SECCIÓN RD */}
-      <section style={{ padding: "120px 48px", borderBottom: `1px solid ${BORDER}` }}>
+      <section className="rd-section" style={{ borderBottom: `1px solid ${BORDER}` }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 3, color: "#aaa", marginBottom: 24, textTransform: "uppercase" }}>🇩🇴 &nbsp; Hecho para RD</div>
           <h2 style={{ fontSize: "clamp(36px, 5vw, 64px)", fontWeight: 900, letterSpacing: -3, margin: "0 0 24px", maxWidth: 700, lineHeight: 1 }}>
@@ -285,17 +285,11 @@ export default function LandingPage() {
           const MockupComponent = Mockups[i];
           const isLime = i % 3 === 2;
           return (
-            <div key={f.num} style={{
+            <div key={f.num} className="feature-section" style={{
               background: isLime ? LIME : (i % 2 === 0 ? BG : "#0d0d0f"),
               borderTop: `1px solid ${isLime ? "transparent" : BORDER}`,
-              padding: "100px 48px",
             }}>
-              <div style={{
-                maxWidth: 1100, margin: "0 auto",
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: 80,
-                alignItems: "center",
+              <div className="feature-grid" style={{
                 direction: f.flip ? "rtl" : "ltr",
               }}>
                 <div style={{ direction: "ltr" }}>
@@ -322,7 +316,7 @@ export default function LandingPage() {
       </section>
 
       {/* CTA FINAL — fondo lima */}
-      <section id="acceso" style={{ background: LIME, padding: "120px 48px", textAlign: "center" }}>
+      <section id="acceso" className="cta-section" style={{ background: LIME, textAlign: "center" }}>
         <div style={{ fontSize: 28, marginBottom: 24 }}>🇩🇴</div>
         <h2 style={{ fontSize: "clamp(40px, 7vw, 88px)", fontWeight: 900, letterSpacing: -4, margin: "0 0 20px", color: BG, lineHeight: 0.95 }}>
           El CRM que el realtor<br />dominicano estaba esperando.
@@ -357,10 +351,54 @@ export default function LandingPage() {
         * { box-sizing: border-box; }
         body { margin: 0; }
         input::placeholder { color: rgba(0,0,0,0.35); }
+        .feature-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 80px;
+          align-items: center;
+          max-width: 1100px;
+          margin: 0 auto;
+        }
+        .feature-section {
+          padding: 100px 48px;
+        }
+        .hero-section {
+          padding: 120px 48px 80px;
+        }
+        .rd-section {
+          padding: 120px 48px;
+        }
+        .stats-section {
+          padding: 80px 48px;
+        }
+        .cta-section {
+          padding: 120px 48px;
+        }
         @media (max-width: 768px) {
           nav a:not(:last-child) { display: none; }
-          [style*="gridTemplateColumns: 1fr 1fr"] { grid-template-columns: 1fr !important; direction: ltr !important; }
-          [style*="gridTemplateColumns: 1fr 1fr"] > div { direction: ltr !important; }
+          .feature-grid {
+            grid-template-columns: 1fr !important;
+            direction: ltr !important;
+            gap: 32px !important;
+          }
+          .feature-grid > div {
+            direction: ltr !important;
+          }
+          .feature-section {
+            padding: 60px 24px !important;
+          }
+          .hero-section {
+            padding: 100px 24px 60px !important;
+          }
+          .rd-section {
+            padding: 60px 24px !important;
+          }
+          .stats-section {
+            padding: 50px 24px !important;
+          }
+          .cta-section {
+            padding: 60px 24px !important;
+          }
         }
       `}</style>
     </div>
