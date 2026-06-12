@@ -299,7 +299,7 @@ export default function PropertiesPage() {
           Sincronizando base de datos de SECTOR...
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {propiedades.map((propiedad) => (
             <div key={propiedad.id} className="bg-[#18181b] border border-zinc-800/80 rounded-xl overflow-hidden shadow-xl hover:border-zinc-700 transition duration-300 flex flex-col justify-between">
               <div>
