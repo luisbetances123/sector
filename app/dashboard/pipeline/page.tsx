@@ -138,6 +138,10 @@ Responde SOLO con este JSON exacto:
   }
 
   const totalVolumen = deals.reduce((s, d) => s + (d.precio || 0), 0)
+  const totalDeals = deals.length
+  const dealsEntregados = deals.filter(d => d.etapa === 'Entregado').length
+  const tasaConversion = totalDeals > 0 ? Math.round((dealsEntregados / totalDeals) * 100) : 0
+  const maxEtapaDeals = Math.max(...ETAPAS.map(e => deals.filter(d => d.etapa === e).length), 1)
 
   return (
     <div className="text-zinc-100 font-sans">
@@ -159,6 +163,70 @@ Responde SOLO con este JSON exacto:
             </button>
           </div>
         </header>
+
+        {/* ── REPORTE EMBUDO ── */}
+        {!loading && deals.length > 0 && (
+          <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+              <div>
+                <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Reporte de Embudo</p>
+                <p className="text-lg font-black text-white">{totalDeals} deals activos</p>
+              </div>
+              <div className="flex gap-6">
+                <div className="text-right">
+                  <p className="text-[10px] font-mono text-zinc-500 uppercase">Tasa de Cierre</p>
+                  <p className="text-2xl font-black" style={{ color: tasaConversion > 0 ? '#00ff99' : '#4da6ff' }}>
+                    {tasaConversion}%
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-[10px] font-mono text-zinc-500 uppercase">Entregados</p>
+                  <p className="text-2xl font-black text-white">{dealsEntregados}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Barras por etapa */}
+            <div className="space-y-3">
+              {ETAPAS.map(etapa => {
+                const count = deals.filter(d => d.etapa === etapa).length
+                const volumen = deals.filter(d => d.etapa === etapa).reduce((s, d) => s + (d.precio || 0), 0)
+                const pct = Math.round((count / maxEtapaDeals) * 100)
+                const color = ETAPA_COLORS[etapa]
+                return (
+                  <div key={etapa} className="flex items-center gap-3">
+                    <div className="w-24 text-[10px] font-mono text-zinc-400 text-right shrink-0">{etapa}</div>
+                    <div className="flex-1 bg-zinc-900 rounded-full h-5 overflow-hidden">
+                      <div
+                        className="h-full rounded-full flex items-center px-2 transition-all duration-500"
+                        style={{ width: count > 0 ? `${Math.max(pct, 8)}%` : '0%', background: color }}
+                      >
+                        {count > 0 && (
+                          <span className="text-[9px] font-black text-black whitespace-nowrap">{count}</span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="w-28 text-[10px] font-mono text-zinc-500 shrink-0">
+                      {volumen > 0 ? `US$ ${volumen.toLocaleString()}` : '—'}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+
+            {/* Flecha conversión */}
+            <div className="mt-4 pt-4 border-t border-zinc-900 flex items-center gap-2 text-[10px] font-mono text-zinc-600">
+              <span className="text-[#4da6ff]">Interesado</span>
+              <span>→→→→</span>
+              <span className="text-[#00ff99]">Entregado</span>
+              <span className="ml-auto">
+                {totalDeals > 0
+                  ? `${totalDeals} entraron · ${dealsEntregados} cerraron · ${tasaConversion}% conversión`
+                  : 'Sin datos aún'}
+              </span>
+            </div>
+          </div>
+        )}
 
         {showForm && (
           <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 space-y-4">
