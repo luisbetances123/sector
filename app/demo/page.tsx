@@ -62,6 +62,15 @@ export default function DemoPage() {
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-[#09090b] text-white">
+      {/* NAV MÓVIL - BOTTOM BAR */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-black border-t border-zinc-800 flex justify-around items-center py-2 px-2">
+        {NAV.map(({ key, label }) => (
+          <button key={key} onClick={() => setTab(key)}
+            className={"flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all " + (tab === key ? 'text-[#CCFF00]' : 'text-zinc-500')}>
+            <span className={"text-[9px] font-bold uppercase tracking-wider"}>{label}</span>
+          </button>
+        ))}
+      </div>
       <aside className="hidden md:flex w-56 border-r border-zinc-900 bg-black/40 flex-col justify-between p-5 shrink-0 h-screen sticky top-0">
         <div className="space-y-8">
           <div className="flex items-center gap-2 px-2">
