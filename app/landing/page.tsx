@@ -266,7 +266,7 @@ export default function LandingPage() {
       <section className="rd-section" style={{ borderBottom: `1px solid ${BORDER}` }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 3, color: "#aaa", marginBottom: 24, textTransform: "uppercase" }}>🇩🇴 &nbsp; Hecho para RD</div>
-          <h2 style={{ fontSize: "clamp(36px, 5vw, 64px)", fontWeight: 900, letterSpacing: -3, margin: "0 0 24px", maxWidth: 700, lineHeight: 1 }}>
+          <h2 style={{ fontSize: "clamp(36px, 5vw, 64px)", fontWeight: 900, letterSpacing: -3, margin: "0 0 24px", maxWidth: 700, lineHeight: 1.15 }}>
             Construido para el ecosistema inmobiliario de la República Dominicana.
           </h2>
           <p style={{ color: "#999", fontSize: 18, maxWidth: 560, lineHeight: 1.6, marginBottom: 60 }}>
@@ -289,7 +289,7 @@ export default function LandingPage() {
       <section id="funciones">
         <div style={{ padding: "80px 48px 40px", textAlign: "center" }}>
           <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 3, color: "#aaa", marginBottom: 20, textTransform: "uppercase" }}>Todo lo que necesitas</div>
-          <h2 style={{ fontSize: "clamp(36px, 5vw, 64px)", fontWeight: 900, letterSpacing: -3, margin: 0 }}>
+          <h2 style={{ fontSize: "clamp(36px, 5vw, 64px)", fontWeight: 900, letterSpacing: -3, margin: 0, lineHeight: 1.15 }}>
             7 herramientas de alto rendimiento.<br />Un solo lugar.
           </h2>
         </div>
@@ -307,7 +307,7 @@ export default function LandingPage() {
               }}>
                 <div style={{ direction: "ltr" }}>
                   <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: isLime ? "rgba(0,0,0,0.4)" : "#444", textTransform: "uppercase", marginBottom: 16 }}>{f.num}</div>
-                  <h3 style={{ fontSize: "clamp(32px, 4vw, 52px)", fontWeight: 900, letterSpacing: -2, margin: "0 0 8px", color: isLime ? BG : "#fff", lineHeight: 1 }}>{f.title}</h3>
+                  <h3 style={{ fontSize: "clamp(32px, 4vw, 52px)", fontWeight: 900, letterSpacing: -2, margin: "0 0 8px", color: isLime ? BG : "#fff", lineHeight: 1.15 }}>{f.title}</h3>
                   <div style={{ fontSize: 17, color: isLime ? "rgba(0,0,0,0.6)" : "#aaa", marginBottom: 24, fontStyle: "italic" }}>— {f.sub}</div>
                   <p style={{ color: isLime ? "rgba(0,0,0,0.7)" : "#aaa", fontSize: 16, lineHeight: 1.7, margin: "0 0 32px" }}>{f.desc}</p>
                   <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 12 }}>
