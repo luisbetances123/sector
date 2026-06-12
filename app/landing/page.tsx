@@ -441,6 +441,7 @@ export default function LandingPage() {
           }
           h1, h2, h3 {
             letter-spacing: -1px !important;
+            line-height: 1.1 !important;
           }
         }
       `}</style>
