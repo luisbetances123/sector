@@ -212,7 +212,7 @@ export default function LandingPage() {
 
       {/* HERO */}
       <section className="hero-section" style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
-        <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 3, color: "#aaa", marginBottom: 32, textTransform: "uppercase" }}>
+        <div className="hero-label" style={{ fontSize: 13, fontWeight: 700, letterSpacing: 3, color: "#aaa", marginBottom: 32, textTransform: "uppercase" }}>
           🇩🇴 &nbsp; CRM Inmobiliario · República Dominicana
         </div>
         <h1 style={{ fontSize: "clamp(52px, 10vw, 120px)", fontWeight: 900, lineHeight: 0.95, letterSpacing: -4, margin: "0 0 32px", maxWidth: 900 }}>
@@ -338,9 +338,9 @@ export default function LandingPage() {
 
       {/* FOOTER */}
       <footer style={{ background: BG, borderTop: `1px solid ${BORDER}`, overflow: "hidden" }}>
-        <div style={{ padding: "40px 48px 0", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
+        <div className="footer-inner" style={{ padding: "40px 48px 0", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
           <div style={{ fontWeight: 900, fontSize: 20, letterSpacing: -1 }}>SECTOR<span style={{ color: LIME }}>.</span></div>
-          <div style={{ color: "#444", fontSize: 12 }}>sector.do · CRM para Realtors en República Dominicana · 2026</div>
+          <div className="footer-text" style={{ color: "#444", fontSize: 12 }}>sector.do · CRM para Realtors en República Dominicana · 2026</div>
         </div>
         <div style={{ fontSize: "clamp(80px, 18vw, 220px)", fontWeight: 900, letterSpacing: -8, color: "#111", lineHeight: 0.85, padding: "0 32px", userSelect: "none", marginTop: 8 }}>
           SECTOR
@@ -385,19 +385,32 @@ export default function LandingPage() {
             direction: ltr !important;
           }
           .feature-section {
-            padding: 60px 24px !important;
+            padding: 48px 20px !important;
           }
           .hero-section {
-            padding: 100px 24px 60px !important;
+            padding: 90px 20px 48px !important;
           }
           .rd-section {
-            padding: 60px 24px !important;
+            padding: 48px 20px !important;
           }
           .stats-section {
-            padding: 50px 24px !important;
+            padding: 40px 20px !important;
           }
           .cta-section {
-            padding: 60px 24px !important;
+            padding: 48px 20px !important;
+          }
+          .hero-label {
+            letter-spacing: 1px !important;
+            font-size: 11px !important;
+          }
+          .footer-inner {
+            flex-direction: column !important;
+            align-items: center !important;
+            text-align: center !important;
+            gap: 8px !important;
+          }
+          .footer-text {
+            text-align: center !important;
           }
         }
       `}</style>
