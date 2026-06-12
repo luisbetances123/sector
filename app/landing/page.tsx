@@ -70,14 +70,14 @@ function DashboardMockup() {
         {[["3","LEADS"],["12","CLIENTES"],["8","PROPIED."],["5","SEGUIM."]].map(([v,l]) => (
           <div key={l} style={{ background: "#1a1a1d", borderRadius: 10, padding: "12px 6px", textAlign: "center" }}>
             <div style={{ color: LIME, fontWeight: 900, fontSize: 22 }}>{v}</div>
-            <div style={{ fontSize: 9, color: "#999", marginTop: 3, letterSpacing: 1 }}>{l}</div>
+            <div style={{ fontSize: 9, color: "#bbb", marginTop: 3, letterSpacing: 1 }}>{l}</div>
           </div>
         ))}
       </div>
       <div style={{ background: "#1a1a1d", borderRadius: 10, padding: "12px 14px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#ff4444", flexShrink: 0 }} />
-          <span style={{ fontSize: 12, color: "#888" }}>3 leads sin responder</span>
+          <span style={{ fontSize: 12, color: "#bbb" }}>3 leads sin responder</span>
         </div>
         <div style={{ background: LIME, color: BG, borderRadius: 6, padding: "4px 12px", fontSize: 10, fontWeight: 800 }}>Atender</div>
       </div>
@@ -89,17 +89,17 @@ function TasksMockup() {
   const tasks = [
     { hora: "9:00",  tarea: "Llamar a Carlos Méndez",  tipo: "HOY",       dot: "#ff4444" },
     { hora: "11:30", tarea: "Visita Piantini Apt 4B",   tipo: "Visita",    dot: LIME },
-    { hora: "15:00", tarea: "Enviar ficha a Rodríguez", tipo: "Pendiente", dot: "#555" },
+    { hora: "15:00", tarea: "Enviar ficha a Rodríguez", tipo: "Pendiente", dot: "#888" },
   ];
   return (
     <div style={{ background: "#0d0d0f", borderRadius: 16, padding: "20px", border: `1px solid ${BORDER}` }}>
       {tasks.map((t) => (
         <div key={t.tarea} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: `1px solid ${BORDER}` }}>
-          <div style={{ color: "#666", fontSize: 11, minWidth: 38 }}>{t.hora}</div>
+          <div style={{ color: "#aaa", fontSize: 11, minWidth: 38 }}>{t.hora}</div>
           <div style={{ flex: 1, color: "#ddd", fontSize: 13 }}>{t.tarea}</div>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <div style={{ width: 5, height: 5, borderRadius: "50%", background: t.dot, flexShrink: 0 }} />
-            <span style={{ fontSize: 11, color: "#666" }}>{t.tipo}</span>
+            <span style={{ fontSize: 11, color: "#aaa" }}>{t.tipo}</span>
           </div>
         </div>
       ))}
@@ -122,11 +122,11 @@ function LeadsMockup() {
           </div>
           <div style={{ flex: 1 }}>
             <div style={{ color: "#eee", fontWeight: 600, fontSize: 13 }}>{c.nombre}</div>
-            <div style={{ color: "#555", fontSize: 11, marginTop: 2 }}>{c.presupuesto}</div>
+            <div style={{ color: "#aaa", fontSize: 11, marginTop: 2 }}>{c.presupuesto}</div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <div style={{ width: 5, height: 5, borderRadius: "50%", background: c.dot, flexShrink: 0 }} />
-            <span style={{ fontSize: 11, color: "#666" }}>{c.temp}</span>
+            <span style={{ fontSize: 11, color: "#aaa" }}>{c.temp}</span>
           </div>
         </div>
       ))}
@@ -147,7 +147,7 @@ function PipelineMockup() {
           <div key={col.stage} style={{ flex: 1 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
               <div style={{ width: 5, height: 5, borderRadius: "50%", background: col.color, flexShrink: 0 }} />
-              <span style={{ color: "#666", fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: 1 }}>{col.stage}</span>
+              <span style={{ color: "#aaa", fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: 1 }}>{col.stage}</span>
             </div>
             {col.deals.map((d) => (
               <div key={d} style={{ background: "#1a1a1d", borderRadius: 8, padding: "10px", marginBottom: 6 }}>
@@ -183,18 +183,18 @@ function PropiedadesMockup() {
                 </defs>
                 <rect width="100%" height="100%" fill={`url(#dots-${i})`} />
               </svg>
-              <div style={{ position: "relative", zIndex: 1, width: 20, height: 20, borderRadius: 4, border: "1px solid #333", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ position: "relative", zIndex: 1, width: 20, height: 20, borderRadius: 4, border: "1px solid #444", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                  <rect x="1" y="2" width="8" height="6" rx="1" stroke="#444" strokeWidth="1"/>
-                  <circle cx="3.5" cy="4.5" r="1" fill="#444"/>
-                  <path d="M1 7l2.5-2 2 1.5L8 4l1 3" stroke="#444" strokeWidth="1" strokeLinejoin="round"/>
+                  <rect x="1" y="2" width="8" height="6" rx="1" stroke="#666" strokeWidth="1"/>
+                  <circle cx="3.5" cy="4.5" r="1" fill="#666"/>
+                  <path d="M1 7l2.5-2 2 1.5L8 4l1 3" stroke="#666" strokeWidth="1" strokeLinejoin="round"/>
                 </svg>
               </div>
             </div>
             <div style={{ padding: "10px" }}>
               <div style={{ color: "#eee", fontSize: 11, fontWeight: 700 }}>{p.nombre}</div>
               <div style={{ color: LIME, fontSize: 13, fontWeight: 900, marginTop: 2 }}>{p.precio}</div>
-              <div style={{ color: "#555", fontSize: 10, marginTop: 3 }}>{p.m2} · {p.beds}</div>
+              <div style={{ color: "#aaa", fontSize: 10, marginTop: 3 }}>{p.m2} · {p.beds}</div>
             </div>
           </div>
         ))}
@@ -264,7 +264,7 @@ export default function LandingPage() {
           SECTOR<span style={{ color: LIME }}>.</span>
         </div>
         <div style={{ display: "flex", gap: 36, alignItems: "center" }}>
-          <a href="#funciones" style={{ color: "#666", fontSize: 13, textDecoration: "none", fontWeight: 500 }}>Funciones</a>
+          <a href="#funciones" style={{ color: "#aaa", fontSize: 13, textDecoration: "none", fontWeight: 500 }}>Funciones</a>
           <a href="#acceso" style={{ background: LIME, color: BG, borderRadius: 100, padding: "9px 22px", fontSize: 13, fontWeight: 800, textDecoration: "none" }}>Comenzar</a>
         </div>
       </nav>
@@ -277,14 +277,14 @@ export default function LandingPage() {
           Tu cartera de clientes,{" "}
           <em style={{ color: LIME, fontStyle: "italic" }}>bajo control total.</em>
         </h1>
-        <p style={{ color: "#999", fontSize: "clamp(16px, 2vw, 20px)", maxWidth: 520, lineHeight: 1.6, margin: "0 0 52px", fontWeight: 400 }}>
+        <p style={{ color: "#aaa", fontSize: "clamp(16px, 2vw, 20px)", maxWidth: 520, lineHeight: 1.6, margin: "0 0 52px", fontWeight: 400 }}>
           SECTOR es el CRM diseñado para realtors en República Dominicana. Pipeline visual, seguimiento preciso, cierre inteligente.
         </p>
         <div style={{ display: "flex", gap: 14, flexWrap: "wrap", justifyContent: "center" }}>
           <a href="#acceso" style={{ background: LIME, color: BG, borderRadius: 100, padding: "18px 36px", fontWeight: 800, fontSize: 15, textDecoration: "none" }}>
             Solicitar Acceso Anticipado
           </a>
-          <a href="#funciones" style={{ background: "transparent", color: "#fff", borderRadius: 100, padding: "18px 36px", fontWeight: 600, fontSize: 15, textDecoration: "none", border: `1px solid #333` }}>
+          <a href="#funciones" style={{ background: "transparent", color: "#fff", borderRadius: 100, padding: "18px 36px", fontWeight: 600, fontSize: 15, textDecoration: "none", border: `1px solid #444` }}>
             Ver Funciones
           </a>
         </div>
@@ -312,29 +312,29 @@ export default function LandingPage() {
           <h2 className="rd-h2" style={{ fontSize: "clamp(36px, 5vw, 64px)", fontWeight: 900, letterSpacing: -3, margin: "0 0 24px", maxWidth: 700 }}>
             Construido para el ecosistema inmobiliario de la República Dominicana.
           </h2>
-          <p style={{ color: "#999", fontSize: 18, maxWidth: 560, lineHeight: 1.6, marginBottom: 60 }}>
+          <p style={{ color: "#aaa", fontSize: 18, maxWidth: 560, lineHeight: 1.6, marginBottom: 60 }}>
             Desde Piantini hasta Punta Cana, SECTOR conoce tu territorio.
           </p>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, maxWidth: 720 }}>
             <div style={{ background: "#111", border: `1px solid ${BORDER}`, borderRadius: 16, padding: "28px" }}>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "#444", textTransform: "uppercase", marginBottom: 16 }}>Distrito Nacional</div>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "#888", textTransform: "uppercase", marginBottom: 16 }}>Distrito Nacional</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {sectors.slice(0, 6).map((s) => (
                   <div key={s} style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <div style={{ width: 4, height: 4, borderRadius: "50%", background: LIME, flexShrink: 0 }} />
-                    <span style={{ color: "#ccc", fontSize: 14, fontWeight: 500 }}>{s}</span>
+                    <span style={{ color: "#ddd", fontSize: 14, fontWeight: 500 }}>{s}</span>
                   </div>
                 ))}
-                <div style={{ color: "#444", fontSize: 12, marginTop: 4 }}>+{sectors.length - 6} sectores más</div>
+                <div style={{ color: "#888", fontSize: 12, marginTop: 4 }}>+{sectors.length - 6} sectores más</div>
               </div>
             </div>
             <div style={{ background: "#111", border: `1px solid ${BORDER}`, borderRadius: 16, padding: "28px" }}>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "#444", textTransform: "uppercase", marginBottom: 16 }}>Turismo e Inversión</div>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "#888", textTransform: "uppercase", marginBottom: 16 }}>Turismo e Inversión</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {turisticos.map((s) => (
                   <div key={s} style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <div style={{ width: 4, height: 4, borderRadius: "50%", background: LIME + "99", flexShrink: 0 }} />
-                    <span style={{ color: "#ccc", fontSize: 14, fontWeight: 500 }}>{s}</span>
+                    <span style={{ color: "#ddd", fontSize: 14, fontWeight: 500 }}>{s}</span>
                   </div>
                 ))}
               </div>
@@ -361,13 +361,13 @@ export default function LandingPage() {
             }}>
               <div className="feature-grid" style={{ direction: f.flip ? "rtl" : "ltr" }}>
                 <div style={{ direction: "ltr" }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: isLime ? "rgba(0,0,0,0.4)" : "#444", textTransform: "uppercase", marginBottom: 16 }}>{f.num}</div>
+                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: isLime ? "rgba(0,0,0,0.5)" : "#888", textTransform: "uppercase", marginBottom: 16 }}>{f.num}</div>
                   <h3 className="feature-h3" style={{ fontSize: "clamp(32px, 4vw, 52px)", fontWeight: 900, letterSpacing: -2, margin: "0 0 8px", color: isLime ? BG : "#fff" }}>{f.title}</h3>
-                  <div style={{ fontSize: 17, color: isLime ? "rgba(0,0,0,0.6)" : "#aaa", marginBottom: 24, fontStyle: "italic" }}>— {f.sub}</div>
-                  <p style={{ color: isLime ? "rgba(0,0,0,0.7)" : "#aaa", fontSize: 16, lineHeight: 1.7, margin: "0 0 32px" }}>{f.desc}</p>
+                  <div style={{ fontSize: 17, color: isLime ? "rgba(0,0,0,0.6)" : "#bbb", marginBottom: 24, fontStyle: "italic" }}>— {f.sub}</div>
+                  <p style={{ color: isLime ? "rgba(0,0,0,0.7)" : "#bbb", fontSize: 16, lineHeight: 1.7, margin: "0 0 32px" }}>{f.desc}</p>
                   <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 12 }}>
                     {f.bullets.map((b) => (
-                      <li key={b} style={{ display: "flex", alignItems: "center", gap: 12, color: isLime ? BG : "#ccc", fontSize: 15, fontWeight: 500 }}>
+                      <li key={b} style={{ display: "flex", alignItems: "center", gap: 12, color: isLime ? BG : "#ddd", fontSize: 15, fontWeight: 500 }}>
                         <div style={{ width: 5, height: 5, borderRadius: "50%", background: isLime ? BG : LIME, flexShrink: 0 }} />
                         {b}
                       </li>
@@ -427,7 +427,7 @@ export default function LandingPage() {
           <div style={{ fontWeight: 900, fontSize: 20, letterSpacing: -1 }}>SECTOR<span style={{ color: LIME }}>.</span></div>
           <div className="footer-text" style={{ color: "#aaa", fontSize: 12 }}>sector.do · CRM para Realtors en República Dominicana · 2026</div>
         </div>
-        <div style={{ fontSize: "clamp(80px, 18vw, 220px)", fontWeight: 900, letterSpacing: -8, color: "#111", lineHeight: 0.85, padding: "0 32px", userSelect: "none", marginTop: 8 }}>
+        <div style={{ fontSize: "clamp(80px, 18vw, 220px)", fontWeight: 900, letterSpacing: -8, color: "#222", lineHeight: 0.85, padding: "0 32px", userSelect: "none", marginTop: 8 }}>
           SECTOR
         </div>
       </footer>
