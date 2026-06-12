@@ -194,7 +194,61 @@ export default function PropertiesPage() {
             </div>
             <div>
               <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Ubicación / Sector</label>
-              <input type="text" name="sector" value={formData.sector} onChange={handleChange} placeholder="Ej. Evaristo Morales, SD" className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
+              <select name="sector" value={formData.sector} onChange={handleChange} className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition">
+                <option value="">Seleccionar sector...</option>
+                <optgroup label="Santo Domingo">
+                  <option>Piantini</option>
+                  <option>Naco</option>
+                  <option>Evaristo Morales</option>
+                  <option>Serrallés</option>
+                  <option>Bella Vista</option>
+                  <option>Arroyo Hondo</option>
+                  <option>Los Cacicazgos</option>
+                  <option>La Esperilla</option>
+                  <option>Mirador Norte</option>
+                  <option>Mirador Sur</option>
+                  <option>Los Prados</option>
+                  <option>Jardines del Norte</option>
+                  <option>Gascue</option>
+                  <option>Ciudad Nueva</option>
+                  <option>Renacimiento</option>
+                  <option>Cristo Rey</option>
+                  <option>Villa Mella</option>
+                  <option>Los Alcarrizos</option>
+                  <option>Pedro Brand</option>
+                </optgroup>
+                <optgroup label="Santo Domingo Este">
+                  <option>Los Mina</option>
+                  <option>Ozama</option>
+                  <option>San Isidro</option>
+                  <option>Ensanche Ozama</option>
+                  <option>Villa Duarte</option>
+                </optgroup>
+                <optgroup label="Santo Domingo Norte">
+                  <option>Guaricano</option>
+                  <option>La Victoria</option>
+                  <option>Sabana Perdida</option>
+                </optgroup>
+                <optgroup label="Santo Domingo Oeste">
+                  <option>Herrera</option>
+                  <option>Manoguayabo</option>
+                </optgroup>
+                <optgroup label="Destinos Turísticos">
+                  <option>Punta Cana</option>
+                  <option>Bávaro</option>
+                  <option>Cap Cana</option>
+                  <option>Casa de Campo, La Romana</option>
+                  <option>Juan Dolio</option>
+                  <option>Las Terrenas</option>
+                  <option>Samaná</option>
+                  <option>Puerto Plata</option>
+                  <option>Sosúa</option>
+                  <option>Cabarete</option>
+                  <option>Santiago</option>
+                  <option>Jarabacoa</option>
+                  <option>Constanza</option>
+                </optgroup>
+              </select>
             </div>
           </div>
 
