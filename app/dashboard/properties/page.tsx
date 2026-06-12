@@ -310,7 +310,7 @@ export default function PropertiesPage() {
                   </div>
                 </div>
 
-                <div className="p-5">
+                <div className="p-6">
                   <h3 className="text-lg font-bold text-white tracking-tight line-clamp-1">{propiedad.titulo}</h3>
                   <button onClick={() => togglePublic(propiedad.id, propiedad.public)} className={`mt-1 text-xs px-2 py-1 rounded-full font-semibold ${propiedad.public ? 'bg-green-500 text-white' : 'bg-zinc-600 text-zinc-300'}`}>
                     {propiedad.public ? 'Portal: ON' : 'Portal: OFF'}
@@ -319,7 +319,7 @@ export default function PropertiesPage() {
                     ${Number(propiedad.precio) ? Number(propiedad.precio).toLocaleString() : propiedad.precio}
                   </p>
 
-                  <div className="grid grid-cols-3 gap-2 mt-4 py-2.5 border-y border-zinc-800/60 text-center text-xs font-medium text-zinc-400">
+                  <div className="grid grid-cols-3 gap-2 mt-5 py-4 border-y border-zinc-800/60 text-center text-xs font-medium text-zinc-400">
                     <div>
                       <span className="block text-white font-mono text-sm">{propiedad.recamaras}</span>
                       <span className="text-[10px] text-zinc-500 uppercase tracking-wider">Recs</span>
@@ -334,14 +334,14 @@ export default function PropertiesPage() {
                     </div>
                   </div>
 
-                  <div className="mt-4 bg-[#09090b]/40 p-3 rounded-lg border border-zinc-800/40">
+                  <div className="mt-5 bg-[#09090b]/40 p-4 rounded-xl border border-zinc-800/40">
                     <span className="block text-[10px] text-zinc-500 uppercase font-mono tracking-wider mb-1">Notas de Venta:</span>
                     <p className="text-xs text-zinc-400 line-clamp-3 leading-relaxed">{propiedad.notas || 'Sin notas internas registradas.'}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="p-5 pt-0 space-y-2">
+              <div className="p-6 pt-0 space-y-3">
                 <button onClick={() => { setPropiedadSeleccionada(propiedad); setFotoActivaIndex(0); }} className="w-full bg-[#d4ff3b]/10 hover:bg-[#d4ff3b] text-[#d4ff3b] hover:text-black text-xs py-2.5 rounded-lg font-semibold transition border border-[#d4ff3b]/20 text-center block">
                   Ver Más Fotos / Detalles
                 </button>
