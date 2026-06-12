@@ -289,7 +289,10 @@ Responde SOLO con este JSON exacto:
                     {etapaDeals.map(deal => (
                       <div key={deal.id} onClick={() => { setSelectedDeal(deal); setAiResult(null) }}
                         className="border border-zinc-800 bg-zinc-950 hover:border-zinc-700 p-4 rounded-xl cursor-pointer transition-all">
-                        <div className="font-bold text-white text-xs">{deal.nombre_cliente}</div>
+                        <div className="flex items-start justify-between gap-1">
+                          <div className="font-bold text-white text-xs">{deal.nombre_cliente}</div>
+                          {(() => { const dias = Math.floor((Date.now() - new Date(deal.updated_at).getTime()) / 86400000); return dias >= 3 ? <span className="text-[8px] font-mono bg-red-500/20 text-red-400 border border-red-500/30 px-1.5 py-0.5 rounded-full whitespace-nowrap shrink-0">{dias}d sin actividad</span> : dias >= 1 ? <span className="text-[8px] font-mono bg-orange-500/20 text-orange-400 border border-orange-500/30 px-1.5 py-0.5 rounded-full whitespace-nowrap shrink-0">{dias}d</span> : null })()}
+                        </div>
                         <div className="text-zinc-500 text-[11px] mt-0.5 truncate">{deal.propiedad}</div>
                         <div className="font-black text-sm mt-2" style={{ color }}>${(deal.precio || 0).toLocaleString()}</div>
                         {deal.notas && deal.notas.includes('Próximo pago:') && (
