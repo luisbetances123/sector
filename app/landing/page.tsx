@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { supabase } from "@/app/lib/supabase";
 
 const LIME = "#CCFF00";
 const BG = "#09090b";
@@ -181,6 +182,18 @@ const Mockups = [DashboardMockup, TasksMockup, LeadsMockup, PipelineMockup, Prop
 
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
+  const [email, setEmail] = useState("");
+  const [enviado, setEnviado] = useState(false);
+  const [enviando, setEnviando] = useState(false);
+
+  async function handleSubmit() {
+    if (!email || !email.includes("@")) return;
+    setEnviando(true);
+    await supabase.from("lista_espera").insert([{ email }]);
+    setEnviado(true);
+    setEnviando(false);
+    setEmail("");
+  }
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 40);
@@ -324,23 +337,37 @@ export default function LandingPage() {
         <p style={{ color: "rgba(0,0,0,0.6)", fontSize: 18, maxWidth: 440, margin: "0 auto 52px", lineHeight: 1.6 }}>
           Solicita tu acceso anticipado. Sin tarjeta de crédito. Sin compromisos.
         </p>
-        <div style={{ display: "flex", gap: 12, maxWidth: 480, margin: "0 auto", flexWrap: "wrap", justifyContent: "center" }}>
-          <input
-            type="email"
-            placeholder="tu@email.com"
-            style={{ flex: 1, minWidth: 240, background: "rgba(0,0,0,0.1)", border: "1px solid rgba(0,0,0,0.2)", color: BG, borderRadius: 100, padding: "16px 24px", fontSize: 15, outline: "none" }}
-          />
-          <button style={{ background: BG, color: LIME, borderRadius: 100, padding: "16px 32px", fontWeight: 800, fontSize: 14, border: "none", cursor: "pointer" }}>
-            Solicitar Acceso
-          </button>
-        </div>
+        {enviado ? (
+          <div style={{ background: "rgba(0,0,0,0.15)", borderRadius: 16, padding: "24px 32px", maxWidth: 480, margin: "0 auto", textAlign: "center" }}>
+            <div style={{ fontSize: 32, marginBottom: 12 }}>✓</div>
+            <p style={{ color: BG, fontWeight: 800, fontSize: 18, margin: "0 0 8px" }}>¡Listo! Te avisamos pronto.</p>
+            <p style={{ color: "rgba(0,0,0,0.5)", fontSize: 14, margin: 0 }}>Recibirás un email cuando tu acceso esté listo.</p>
+          </div>
+        ) : (
+          <div style={{ display: "flex", gap: 12, maxWidth: 480, margin: "0 auto", flexWrap: "wrap", justifyContent: "center" }}>
+            <input
+              type="email"
+              placeholder="tu@email.com"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && handleSubmit()}
+              style={{ flex: 1, minWidth: 240, background: "rgba(0,0,0,0.1)", border: "1px solid rgba(0,0,0,0.2)", color: BG, borderRadius: 100, padding: "16px 24px", fontSize: 15, outline: "none" }}
+            />
+            <button
+              onClick={handleSubmit}
+              disabled={enviando}
+              style={{ background: BG, color: LIME, borderRadius: 100, padding: "16px 32px", fontWeight: 800, fontSize: 14, border: "none", cursor: "pointer", opacity: enviando ? 0.7 : 1 }}>
+              {enviando ? "Enviando..." : "Solicitar Acceso"}
+            </button>
+          </div>
+        )}
       </section>
 
       {/* FOOTER */}
       <footer style={{ background: BG, borderTop: `1px solid ${BORDER}`, overflow: "hidden" }}>
         <div className="footer-inner" style={{ padding: "40px 48px 0", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
           <div style={{ fontWeight: 900, fontSize: 20, letterSpacing: -1 }}>SECTOR<span style={{ color: LIME }}>.</span></div>
-          <div className="footer-text" style={{ color: "#444", fontSize: 12 }}>sector.do · CRM para Realtors en República Dominicana · 2026</div>
+          <div className="footer-text" style={{ color: "#aaa", fontSize: 12 }}>sector.do · CRM para Realtors en República Dominicana · 2026</div>
         </div>
         <div style={{ fontSize: "clamp(80px, 18vw, 220px)", fontWeight: 900, letterSpacing: -8, color: "#111", lineHeight: 0.85, padding: "0 32px", userSelect: "none", marginTop: 8 }}>
           SECTOR
@@ -411,6 +438,9 @@ export default function LandingPage() {
           }
           .footer-text {
             text-align: center !important;
+          }
+          h1, h2, h3 {
+            letter-spacing: -1px !important;
           }
         }
       `}</style>
