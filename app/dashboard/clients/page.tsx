@@ -225,7 +225,7 @@ export default function ClientsPage() {
                       <td className="p-4 pr-6">
                         <div className="flex items-center justify-center gap-2">
                           {cliente.phone && (
-                            <a href={'https://wa.me/' + cliente.phone} target="_blank" rel="noopener noreferrer"
+                            <a href={'https://wa.me/' + cliente.phone + '?text=' + encodeURIComponent('Hola ' + cliente.name + ', le contacto de parte de SECTOR. ¿Tiene un momento para conversar sobre propiedades de su interés?')} target="_blank" rel="noopener noreferrer"
                               onClick={e => e.stopPropagation()}
                               className="p-2 bg-zinc-900 hover:bg-[#CCFF00] border border-zinc-800 text-zinc-400 hover:text-black rounded-lg transition-all">
                               WA
