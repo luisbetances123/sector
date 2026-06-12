@@ -57,13 +57,11 @@ const features = [
     num: "05",
     title: "Propiedades",
     sub: "Tu inventario organizado, listo para cerrar",
-    desc: "Catálogo visual con fotos, precios, recámaras, m² y notas de venta. Filtra por sector, precio o estado. Genera fichas técnicas estéticas con un clic y envíalas por WhatsApp.",
-    bullets: ["Fotos, precio, m², recámaras y baños", "Filtros por sector y precio", "Notas de venta privadas", "Ficha técnica exportable en PDF"],
+    desc: "Catálogo visual con fotos, precios, habitaciones, m² y notas de venta. Filtra por sector, precio o estado. Genera fichas técnicas estéticas con un clic y envíalas por WhatsApp.",
+    bullets: ["Fotos, precio, m², habitaciones y baños", "Filtros por sector y precio", "Notas de venta privadas", "Ficha técnica exportable en PDF"],
     flip: false,
   },
 ];
-
-/* ─── MOCKUPS ─────────────────────────────────────────────────────────────── */
 
 function DashboardMockup() {
   return (
@@ -78,7 +76,6 @@ function DashboardMockup() {
       </div>
       <div style={{ background: "#1a1a1d", borderRadius: 10, padding: "12px 14px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          {/* STATUS DOT — patrón Resend */}
           <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#ff4444", flexShrink: 0 }} />
           <span style={{ fontSize: 12, color: "#888" }}>3 leads sin responder</span>
         </div>
@@ -90,9 +87,9 @@ function DashboardMockup() {
 
 function TasksMockup() {
   const tasks = [
-    { hora: "9:00",  tarea: "Llamar a Carlos Méndez",   tipo: "HOY",      dot: "#ff4444" },
-    { hora: "11:30", tarea: "Visita Piantini Apt 4B",    tipo: "Visita",   dot: LIME },
-    { hora: "15:00", tarea: "Enviar ficha a Rodríguez",  tipo: "Pendiente",dot: "#555" },
+    { hora: "9:00",  tarea: "Llamar a Carlos Méndez",  tipo: "HOY",       dot: "#ff4444" },
+    { hora: "11:30", tarea: "Visita Piantini Apt 4B",   tipo: "Visita",    dot: LIME },
+    { hora: "15:00", tarea: "Enviar ficha a Rodríguez", tipo: "Pendiente", dot: "#555" },
   ];
   return (
     <div style={{ background: "#0d0d0f", borderRadius: 16, padding: "20px", border: `1px solid ${BORDER}` }}>
@@ -100,7 +97,6 @@ function TasksMockup() {
         <div key={t.tarea} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: `1px solid ${BORDER}` }}>
           <div style={{ color: "#666", fontSize: 11, minWidth: 38 }}>{t.hora}</div>
           <div style={{ flex: 1, color: "#ddd", fontSize: 13 }}>{t.tarea}</div>
-          {/* STATUS DOT + texto gris */}
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <div style={{ width: 5, height: 5, borderRadius: "50%", background: t.dot, flexShrink: 0 }} />
             <span style={{ fontSize: 11, color: "#666" }}>{t.tipo}</span>
@@ -128,7 +124,6 @@ function LeadsMockup() {
             <div style={{ color: "#eee", fontWeight: 600, fontSize: 13 }}>{c.nombre}</div>
             <div style={{ color: "#555", fontSize: 11, marginTop: 2 }}>{c.presupuesto}</div>
           </div>
-          {/* STATUS DOT — patrón Resend: sin fondo de color */}
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <div style={{ width: 5, height: 5, borderRadius: "50%", background: c.dot, flexShrink: 0 }} />
             <span style={{ fontSize: 11, color: "#666" }}>{c.temp}</span>
@@ -179,18 +174,7 @@ function PropiedadesMockup() {
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
         {props.map((p, i) => (
           <div key={p.nombre} style={{ background: "#1a1a1d", borderRadius: 10 }}>
-            {/* Placeholder geométrico en vez de emoji */}
-            <div style={{
-              height: 60,
-              borderRadius: "10px 10px 0 0",
-              background: "#1a1a1d",
-              position: "relative",
-              overflow: "hidden",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}>
-              {/* Patrón de grid de puntos */}
+            <div style={{ height: 60, borderRadius: "10px 10px 0 0", background: "#1a1a1d", position: "relative", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
               <svg width="100%" height="100%" style={{ position: "absolute", top: 0, left: 0, opacity: 0.18 }}>
                 <defs>
                   <pattern id={`dots-${i}`} x="0" y="0" width="12" height="12" patternUnits="userSpaceOnUse">
@@ -199,7 +183,6 @@ function PropiedadesMockup() {
                 </defs>
                 <rect width="100%" height="100%" fill={`url(#dots-${i})`} />
               </svg>
-              {/* Indicador de "sin foto" minimalista */}
               <div style={{ position: "relative", zIndex: 1, width: 20, height: 20, borderRadius: 4, border: "1px solid #333", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
                   <rect x="1" y="2" width="8" height="6" rx="1" stroke="#444" strokeWidth="1"/>
@@ -222,8 +205,6 @@ function PropiedadesMockup() {
 
 const Mockups = [DashboardMockup, TasksMockup, LeadsMockup, PipelineMockup, PropiedadesMockup];
 
-/* ─── MAIN COMPONENT ──────────────────────────────────────────────────────── */
-
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
   const [email, setEmail]       = useState("");
@@ -231,7 +212,6 @@ export default function LandingPage() {
   const [enviando, setEnviando] = useState(false);
   const [error, setError]       = useState("");
 
-  // FIX: Supabase insert con manejo de errores explícito
   async function handleSubmit() {
     if (!email || !email.includes("@")) {
       setError("Ingresa un email válido.");
@@ -243,10 +223,8 @@ export default function LandingPage() {
       const { error: sbError } = await supabase
         .from("lista_espera")
         .insert([{ email }]);
-
       if (sbError) {
         console.error("Supabase error:", sbError);
-        // Duplicate email — tratar como éxito silencioso
         if (sbError.code === "23505") {
           setEnviado(true);
         } else {
@@ -273,7 +251,6 @@ export default function LandingPage() {
   return (
     <div style={{ background: BG, color: "#fff", fontFamily: "'Inter', system-ui, sans-serif", minHeight: "100vh", overflowX: "hidden" }}>
 
-      {/* NAV */}
       <nav style={{
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
         padding: "0 48px", height: 64,
@@ -292,7 +269,6 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* HERO */}
       <section className="hero-section" style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
         <div className="hero-label" style={{ fontSize: 13, fontWeight: 700, letterSpacing: 3, color: "#aaa", marginBottom: 32, textTransform: "uppercase" }}>
           🇩🇴 &nbsp; CRM Inmobiliario · República Dominicana
@@ -314,7 +290,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* STATS — fondo lima */}
       <section className="stats-section" style={{ background: LIME }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 0 }}>
           {[
@@ -331,7 +306,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* SECCIÓN RD — rediseñada: sin píldoras masivas */}
       <section className="rd-section" style={{ borderBottom: `1px solid ${BORDER}` }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 3, color: "#aaa", marginBottom: 24, textTransform: "uppercase" }}>🇩🇴 &nbsp; Hecho para RD</div>
@@ -341,10 +315,8 @@ export default function LandingPage() {
           <p style={{ color: "#999", fontSize: 18, maxWidth: 560, lineHeight: 1.6, marginBottom: 60 }}>
             Desde Piantini hasta Punta Cana, SECTOR conoce tu territorio.
           </p>
-
-          {/* MAPA SIMPLIFICADO — dos columnas limpias en vez de 24 pills */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, maxWidth: 720 }}>
-            <div style={{ background: "#111", border: `1px solid ${BORDER}`, borderRadius: 16, padding: "28px 28px" }}>
+            <div style={{ background: "#111", border: `1px solid ${BORDER}`, borderRadius: 16, padding: "28px" }}>
               <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "#444", textTransform: "uppercase", marginBottom: 16 }}>Distrito Nacional</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {sectors.slice(0, 6).map((s) => (
@@ -356,7 +328,7 @@ export default function LandingPage() {
                 <div style={{ color: "#444", fontSize: 12, marginTop: 4 }}>+{sectors.length - 6} sectores más</div>
               </div>
             </div>
-            <div style={{ background: "#111", border: `1px solid ${BORDER}`, borderRadius: 16, padding: "28px 28px" }}>
+            <div style={{ background: "#111", border: `1px solid ${BORDER}`, borderRadius: 16, padding: "28px" }}>
               <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "#444", textTransform: "uppercase", marginBottom: 16 }}>Turismo e Inversión</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {turisticos.map((s) => (
@@ -371,7 +343,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* FEATURES — alternadas */}
       <section id="funciones">
         <div style={{ padding: "80px 48px 40px", textAlign: "center" }}>
           <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 3, color: "#aaa", marginBottom: 20, textTransform: "uppercase" }}>Todo lo que necesitas</div>
@@ -412,7 +383,6 @@ export default function LandingPage() {
         })}
       </section>
 
-      {/* CTA FINAL */}
       <section id="acceso" className="cta-section" style={{ background: LIME, textAlign: "center" }}>
         <div style={{ fontSize: 28, marginBottom: 24 }}>🇩🇴</div>
         <h2 className="cta-h2" style={{ fontSize: "clamp(40px, 7vw, 88px)", fontWeight: 900, letterSpacing: -4, margin: "0 0 20px", color: BG }}>
@@ -452,7 +422,6 @@ export default function LandingPage() {
         )}
       </section>
 
-      {/* FOOTER */}
       <footer style={{ background: BG, borderTop: `1px solid ${BORDER}`, overflow: "hidden" }}>
         <div className="footer-inner" style={{ padding: "40px 48px 0", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
           <div style={{ fontWeight: 900, fontSize: 20, letterSpacing: -1 }}>SECTOR<span style={{ color: LIME }}>.</span></div>
@@ -467,12 +436,7 @@ export default function LandingPage() {
         * { box-sizing: border-box; }
         body { margin: 0; }
         input::placeholder { color: rgba(0,0,0,0.35); }
-
-        /* FIX: Ocultar Vercel Toolbar (botón flotante oscuro en móvil) */
-        [data-vercel-toolbar],
-        vercel-toolbar,
-        #vercel-live-feedback { display: none !important; }
-
+        [data-vercel-toolbar], vercel-toolbar, #vercel-live-feedback { display: none !important; }
         .feature-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
@@ -486,39 +450,23 @@ export default function LandingPage() {
         .rd-section       { padding: 120px 48px; }
         .stats-section    { padding: 80px 48px; }
         .cta-section      { padding: 120px 48px; }
-
-        /* FIX: lineHeight en headings en móvil — usando clases en vez de inline styles
-           Los inline styles tienen mayor especificidad que los media queries,
-           por eso el override no aplicaba. Con clases + !important en el media query sí aplica. */
         @media (max-width: 768px) {
           nav a:not(:last-child) { display: none; }
-
-          .feature-grid {
-            grid-template-columns: 1fr !important;
-            direction: ltr !important;
-            gap: 32px !important;
-          }
+          .feature-grid { grid-template-columns: 1fr !important; direction: ltr !important; gap: 32px !important; }
           .feature-grid > div { direction: ltr !important; }
           .feature-section  { padding: 48px 20px !important; }
           .hero-section     { padding: 90px 20px 48px !important; }
           .rd-section       { padding: 48px 20px !important; }
           .stats-section    { padding: 40px 20px !important; }
           .cta-section      { padding: 48px 20px !important; }
-
-          .hero-label { letter-spacing: 1px !important; font-size: 11px !important; }
-
-          /* FIX: Clases específicas para cada heading — override de lineHeight funciona */
+          .hero-label  { letter-spacing: 1px !important; font-size: 11px !important; }
           .hero-h1     { line-height: 1.05 !important; letter-spacing: -2px !important; }
           .rd-h2       { line-height: 1.1 !important;  letter-spacing: -2px !important; }
           .features-h2 { line-height: 1.1 !important;  letter-spacing: -2px !important; }
           .feature-h3  { line-height: 1.1 !important;  letter-spacing: -1px !important; }
           .cta-h2      { line-height: 1.0 !important;  letter-spacing: -2px !important; }
-
           .footer-inner { flex-direction: column !important; align-items: center !important; text-align: center !important; gap: 8px !important; }
           .footer-text  { text-align: center !important; }
-
-          /* Sección RD: una columna en móvil */
-          .rd-section .rd-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </div>
