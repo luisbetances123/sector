@@ -79,11 +79,7 @@ export default function DemoPage() {
           </nav>
         </div>
         <div className="space-y-3">
-          <p className="text-[10px] text-zinc-500 font-mono text-center">Modo demo — datos de ejemplo</p>
-          <Link href="/register" className="w-full bg-[#CCFF00] text-black font-black text-xs rounded-xl py-3 hover:bg-[#b8e600] transition-colors block text-center">
-            Crear Cuenta Gratis
-          </Link>
-        </div>
+</div>
       </aside>
 
       <main className="flex-1 p-6 md:p-10 overflow-y-auto">
@@ -109,12 +105,8 @@ export default function DemoPage() {
                 ))}
               </div>
               <div className="bg-[#CCFF00]/5 border border-[#CCFF00]/20 rounded-2xl p-6 text-center space-y-3">
-                <p className="text-[#CCFF00] font-black text-lg">Esta es una demo con datos de ejemplo.</p>
-                <p className="text-zinc-400 text-sm">Crea tu cuenta gratis y empieza a usar SECTOR con tus propios clientes y propiedades.</p>
-                <Link href="/register" className="inline-block bg-[#CCFF00] text-black font-black text-sm rounded-xl px-8 py-3 hover:bg-[#b8e600] transition-colors">
-                  Crear Cuenta Gratis — Sin tarjeta
-                </Link>
-              </div>
+<p className="text-zinc-400 text-sm">Crea tu cuenta gratis y empieza a usar SECTOR con tus propios clientes y propiedades.</p>
+</div>
             </div>
           )}
 
@@ -300,10 +292,7 @@ export default function DemoPage() {
               <div className="bg-[#CCFF00]/5 border border-[#CCFF00]/20 rounded-2xl p-6 text-center space-y-3">
                 <p className="text-[#CCFF00] font-black">Esta función está disponible en todos los planes de SECTOR.</p>
                 <p className="text-zinc-400 text-sm">Crea tu cuenta y úsala con tus deals reales.</p>
-                <Link href="/register" className="inline-block bg-[#CCFF00] text-black font-black text-sm rounded-xl px-8 py-3 hover:bg-[#b8e600] transition-colors">
-                  Crear Cuenta Gratis
-                </Link>
-              </div>
+</div>
             </div>
           )}
 
