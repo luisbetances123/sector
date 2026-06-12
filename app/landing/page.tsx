@@ -63,6 +63,8 @@ const features = [
   },
 ];
 
+/* ─── MOCKUPS ─────────────────────────────────────────────────────────────── */
+
 function DashboardMockup() {
   return (
     <div style={{ background: "#0d0d0f", borderRadius: 16, padding: "20px", border: `1px solid ${BORDER}` }}>
@@ -76,10 +78,11 @@ function DashboardMockup() {
       </div>
       <div style={{ background: "#1a1a1d", borderRadius: 10, padding: "12px 14px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#ff4444" }} />
-          <span style={{ fontSize: 12, color: "#ccc" }}>3 leads sin responder</span>
+          {/* STATUS DOT — patrón Resend */}
+          <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#ff4444", flexShrink: 0 }} />
+          <span style={{ fontSize: 12, color: "#888" }}>3 leads sin responder</span>
         </div>
-        <div style={{ background: LIME, color: BG, borderRadius: 6, padding: "4px 12px", fontSize: 10, fontWeight: 800 }}>¡Atender!</div>
+        <div style={{ background: LIME, color: BG, borderRadius: 6, padding: "4px 12px", fontSize: 10, fontWeight: 800 }}>Atender</div>
       </div>
     </div>
   );
@@ -87,17 +90,21 @@ function DashboardMockup() {
 
 function TasksMockup() {
   const tasks = [
-    { hora: "9:00", tarea: "Llamar a Carlos Méndez", tipo: "HOY", color: "#ff4444" },
-    { hora: "11:30", tarea: "Visita Piantini Apt 4B", tipo: "VISITA", color: LIME },
-    { hora: "15:00", tarea: "Enviar ficha a Rodríguez", tipo: "PENDIENTE", color: "#999" },
+    { hora: "9:00",  tarea: "Llamar a Carlos Méndez",   tipo: "HOY",      dot: "#ff4444" },
+    { hora: "11:30", tarea: "Visita Piantini Apt 4B",    tipo: "Visita",   dot: LIME },
+    { hora: "15:00", tarea: "Enviar ficha a Rodríguez",  tipo: "Pendiente",dot: "#555" },
   ];
   return (
     <div style={{ background: "#0d0d0f", borderRadius: 16, padding: "20px", border: `1px solid ${BORDER}` }}>
       {tasks.map((t) => (
         <div key={t.tarea} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: `1px solid ${BORDER}` }}>
-          <div style={{ color: "#aaa", fontSize: 11, minWidth: 38 }}>{t.hora}</div>
+          <div style={{ color: "#666", fontSize: 11, minWidth: 38 }}>{t.hora}</div>
           <div style={{ flex: 1, color: "#ddd", fontSize: 13 }}>{t.tarea}</div>
-          <div style={{ background: t.color + "22", color: t.color, borderRadius: 6, padding: "3px 9px", fontSize: 10, fontWeight: 700 }}>{t.tipo}</div>
+          {/* STATUS DOT + texto gris */}
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <div style={{ width: 5, height: 5, borderRadius: "50%", background: t.dot, flexShrink: 0 }} />
+            <span style={{ fontSize: 11, color: "#666" }}>{t.tipo}</span>
+          </div>
         </div>
       ))}
     </div>
@@ -106,9 +113,9 @@ function TasksMockup() {
 
 function LeadsMockup() {
   const clientes = [
-    { nombre: "María Torres", presupuesto: "$180,000", temp: "ACTIVO", tempColor: LIME },
-    { nombre: "Juan Pérez", presupuesto: "$95,000", temp: "NUEVO", tempColor: "#4da6ff" },
-    { nombre: "Ana Gómez", presupuesto: "$250,000", temp: "ESTANCADO", tempColor: "#ff4444" },
+    { nombre: "María Torres",  presupuesto: "$180,000", temp: "Activo",    dot: LIME },
+    { nombre: "Juan Pérez",    presupuesto: "$95,000",  temp: "Nuevo",     dot: "#4da6ff" },
+    { nombre: "Ana Gómez",     presupuesto: "$250,000", temp: "Estancado", dot: "#ff4444" },
   ];
   return (
     <div style={{ background: "#0d0d0f", borderRadius: 16, padding: "20px", border: `1px solid ${BORDER}` }}>
@@ -119,9 +126,13 @@ function LeadsMockup() {
           </div>
           <div style={{ flex: 1 }}>
             <div style={{ color: "#eee", fontWeight: 600, fontSize: 13 }}>{c.nombre}</div>
-            <div style={{ color: "#aaa", fontSize: 11, marginTop: 2 }}>{c.presupuesto}</div>
+            <div style={{ color: "#555", fontSize: 11, marginTop: 2 }}>{c.presupuesto}</div>
           </div>
-          <div style={{ background: c.tempColor + "22", color: c.tempColor, borderRadius: 6, padding: "3px 9px", fontSize: 10, fontWeight: 700 }}>{c.temp}</div>
+          {/* STATUS DOT — patrón Resend: sin fondo de color */}
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <div style={{ width: 5, height: 5, borderRadius: "50%", background: c.dot, flexShrink: 0 }} />
+            <span style={{ fontSize: 11, color: "#666" }}>{c.temp}</span>
+          </div>
         </div>
       ))}
     </div>
@@ -131,19 +142,22 @@ function LeadsMockup() {
 function PipelineMockup() {
   const cols = [
     { stage: "Prospectos", deals: ["María T.", "Luis R."], color: "#4da6ff" },
-    { stage: "Visitas", deals: ["Ana G."], color: LIME },
-    { stage: "Negociación", deals: ["Pedro M."], color: "#ff9900" },
+    { stage: "Visitas",    deals: ["Ana G."],              color: LIME },
+    { stage: "Negociación",deals: ["Pedro M."],            color: "#ff9900" },
   ];
   return (
     <div style={{ background: "#0d0d0f", borderRadius: 16, padding: "20px", border: `1px solid ${BORDER}` }}>
       <div style={{ display: "flex", gap: 10 }}>
         {cols.map((col) => (
           <div key={col.stage} style={{ flex: 1 }}>
-            <div style={{ color: col.color, fontSize: 10, fontWeight: 700, marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>{col.stage}</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+              <div style={{ width: 5, height: 5, borderRadius: "50%", background: col.color, flexShrink: 0 }} />
+              <span style={{ color: "#666", fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: 1 }}>{col.stage}</span>
+            </div>
             {col.deals.map((d) => (
               <div key={d} style={{ background: "#1a1a1d", borderRadius: 8, padding: "10px", marginBottom: 6 }}>
                 <div style={{ color: "#ccc", fontSize: 12, fontWeight: 600 }}>{d}</div>
-                <div style={{ background: LIME + "22", color: LIME, borderRadius: 4, padding: "2px 8px", fontSize: 9, fontWeight: 800, marginTop: 6, display: "inline-block" }}>✦ AI</div>
+                <div style={{ color: LIME, borderRadius: 4, fontSize: 9, fontWeight: 800, marginTop: 6, display: "inline-block", letterSpacing: 1 }}>✦ AI</div>
               </div>
             ))}
           </div>
@@ -155,21 +169,49 @@ function PipelineMockup() {
 
 function PropiedadesMockup() {
   const props = [
-    { nombre: "Apto Piantini", precio: "$195,000", m2: "120 m²", beds: "3/2" },
-    { nombre: "Casa Naco", precio: "$380,000", m2: "280 m²", beds: "4/3" },
-    { nombre: "PH Serrallés", precio: "$520,000", m2: "340 m²", beds: "4/4" },
+    { nombre: "Apto Piantini",    precio: "$195,000", m2: "120 m²", beds: "3/2" },
+    { nombre: "Casa Naco",        precio: "$380,000", m2: "280 m²", beds: "4/3" },
+    { nombre: "PH Serrallés",     precio: "$520,000", m2: "340 m²", beds: "4/4" },
     { nombre: "Villa Cacicazgos", precio: "$890,000", m2: "600 m²", beds: "5/5" },
   ];
   return (
     <div style={{ background: "#0d0d0f", borderRadius: 16, padding: "20px", border: `1px solid ${BORDER}` }}>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-        {props.map((p) => (
+        {props.map((p, i) => (
           <div key={p.nombre} style={{ background: "#1a1a1d", borderRadius: 10 }}>
-            <div style={{ height: 60, background: "#222226", borderRadius: "10px 10px 0 0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22 }}>🏠</div>
+            {/* Placeholder geométrico en vez de emoji */}
+            <div style={{
+              height: 60,
+              borderRadius: "10px 10px 0 0",
+              background: "#1a1a1d",
+              position: "relative",
+              overflow: "hidden",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}>
+              {/* Patrón de grid de puntos */}
+              <svg width="100%" height="100%" style={{ position: "absolute", top: 0, left: 0, opacity: 0.18 }}>
+                <defs>
+                  <pattern id={`dots-${i}`} x="0" y="0" width="12" height="12" patternUnits="userSpaceOnUse">
+                    <circle cx="2" cy="2" r="1" fill="#CCFF00" />
+                  </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill={`url(#dots-${i})`} />
+              </svg>
+              {/* Indicador de "sin foto" minimalista */}
+              <div style={{ position: "relative", zIndex: 1, width: 20, height: 20, borderRadius: 4, border: "1px solid #333", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                  <rect x="1" y="2" width="8" height="6" rx="1" stroke="#444" strokeWidth="1"/>
+                  <circle cx="3.5" cy="4.5" r="1" fill="#444"/>
+                  <path d="M1 7l2.5-2 2 1.5L8 4l1 3" stroke="#444" strokeWidth="1" strokeLinejoin="round"/>
+                </svg>
+              </div>
+            </div>
             <div style={{ padding: "10px" }}>
               <div style={{ color: "#eee", fontSize: 11, fontWeight: 700 }}>{p.nombre}</div>
               <div style={{ color: LIME, fontSize: 13, fontWeight: 900, marginTop: 2 }}>{p.precio}</div>
-              <div style={{ color: "#aaa", fontSize: 10, marginTop: 3 }}>{p.m2} · {p.beds}</div>
+              <div style={{ color: "#555", fontSize: 10, marginTop: 3 }}>{p.m2} · {p.beds}</div>
             </div>
           </div>
         ))}
@@ -180,19 +222,46 @@ function PropiedadesMockup() {
 
 const Mockups = [DashboardMockup, TasksMockup, LeadsMockup, PipelineMockup, PropiedadesMockup];
 
+/* ─── MAIN COMPONENT ──────────────────────────────────────────────────────── */
+
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
-  const [email, setEmail] = useState("");
-  const [enviado, setEnviado] = useState(false);
+  const [email, setEmail]       = useState("");
+  const [enviado, setEnviado]   = useState(false);
   const [enviando, setEnviando] = useState(false);
+  const [error, setError]       = useState("");
 
+  // FIX: Supabase insert con manejo de errores explícito
   async function handleSubmit() {
-    if (!email || !email.includes("@")) return;
+    if (!email || !email.includes("@")) {
+      setError("Ingresa un email válido.");
+      return;
+    }
+    setError("");
     setEnviando(true);
-    await supabase.from("lista_espera").insert([{ email }]);
-    setEnviado(true);
-    setEnviando(false);
-    setEmail("");
+    try {
+      const { error: sbError } = await supabase
+        .from("lista_espera")
+        .insert([{ email }]);
+
+      if (sbError) {
+        console.error("Supabase error:", sbError);
+        // Duplicate email — tratar como éxito silencioso
+        if (sbError.code === "23505") {
+          setEnviado(true);
+        } else {
+          setError("Algo salió mal. Intenta de nuevo.");
+        }
+      } else {
+        setEnviado(true);
+      }
+    } catch (err) {
+      console.error("Network error:", err);
+      setError("Error de conexión. Intenta de nuevo.");
+    } finally {
+      setEnviando(false);
+      setEmail("");
+    }
   }
 
   useEffect(() => {
@@ -228,7 +297,7 @@ export default function LandingPage() {
         <div className="hero-label" style={{ fontSize: 13, fontWeight: 700, letterSpacing: 3, color: "#aaa", marginBottom: 32, textTransform: "uppercase" }}>
           🇩🇴 &nbsp; CRM Inmobiliario · República Dominicana
         </div>
-        <h1 style={{ fontSize: "clamp(52px, 10vw, 120px)", fontWeight: 900, lineHeight: 0.95, letterSpacing: -4, margin: "0 0 32px", maxWidth: 900 }}>
+        <h1 className="hero-h1" style={{ fontSize: "clamp(52px, 10vw, 120px)", fontWeight: 900, letterSpacing: -4, margin: "0 0 32px", maxWidth: 900 }}>
           Tu cartera de clientes,{" "}
           <em style={{ color: LIME, fontStyle: "italic" }}>bajo control total.</em>
         </h1>
@@ -249,10 +318,10 @@ export default function LandingPage() {
       <section className="stats-section" style={{ background: LIME }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 0 }}>
           {[
-            { value: "5 min", label: "Configuración inicial.\nCero drama." },
+            { value: "5 min",  label: "Configuración inicial.\nCero drama." },
             { value: "1 clic", label: "Fichas técnicas listas\npara WhatsApp." },
             { value: "7 en 1", label: "Leads, pipeline y\nfacturación juntos." },
-            { value: "0%", label: "Distracciones.\nSolo lo que cierra." },
+            { value: "0%",     label: "Distracciones.\nSolo lo que cierra." },
           ].map((s, i) => (
             <div key={s.value} style={{ padding: "20px 32px", borderLeft: i > 0 ? `1px solid rgba(0,0,0,0.15)` : "none" }}>
               <div style={{ fontSize: "clamp(48px, 6vw, 80px)", fontWeight: 900, color: BG, lineHeight: 1, letterSpacing: -3 }}>{s.value}</div>
@@ -262,25 +331,42 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* SECCIÓN RD */}
+      {/* SECCIÓN RD — rediseñada: sin píldoras masivas */}
       <section className="rd-section" style={{ borderBottom: `1px solid ${BORDER}` }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 3, color: "#aaa", marginBottom: 24, textTransform: "uppercase" }}>🇩🇴 &nbsp; Hecho para RD</div>
-          <h2 style={{ fontSize: "clamp(36px, 5vw, 64px)", fontWeight: 900, letterSpacing: -3, margin: "0 0 24px", maxWidth: 700, lineHeight: 1.15 }}>
+          <h2 className="rd-h2" style={{ fontSize: "clamp(36px, 5vw, 64px)", fontWeight: 900, letterSpacing: -3, margin: "0 0 24px", maxWidth: 700 }}>
             Construido para el ecosistema inmobiliario de la República Dominicana.
           </h2>
           <p style={{ color: "#999", fontSize: 18, maxWidth: 560, lineHeight: 1.6, marginBottom: 60 }}>
             Desde Piantini hasta Punta Cana, SECTOR conoce tu territorio.
           </p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-            <div style={{ width: "100%", fontSize: 13, fontWeight: 700, letterSpacing: 3, color: "#aaa", textTransform: "uppercase", marginBottom: 6 }}>Distrito Nacional y Gran Santo Domingo</div>
-            {sectors.map((s) => (
-              <div key={s} style={{ background: "#111", border: `1px solid ${BORDER}`, borderRadius: 100, padding: "8px 18px", fontSize: 13, color: LIME, fontWeight: 600 }}>{s}</div>
-            ))}
-            <div style={{ width: "100%", fontSize: 13, fontWeight: 700, letterSpacing: 3, color: "#aaa", textTransform: "uppercase", margin: "20px 0 6px" }}>Destinos turísticos e inversión</div>
-            {turisticos.map((s) => (
-              <div key={s} style={{ background: LIME + "15", border: `1px solid ${LIME}33`, borderRadius: 100, padding: "8px 18px", fontSize: 13, color: LIME, fontWeight: 600 }}>{s}</div>
-            ))}
+
+          {/* MAPA SIMPLIFICADO — dos columnas limpias en vez de 24 pills */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, maxWidth: 720 }}>
+            <div style={{ background: "#111", border: `1px solid ${BORDER}`, borderRadius: 16, padding: "28px 28px" }}>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "#444", textTransform: "uppercase", marginBottom: 16 }}>Distrito Nacional</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {sectors.slice(0, 6).map((s) => (
+                  <div key={s} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div style={{ width: 4, height: 4, borderRadius: "50%", background: LIME, flexShrink: 0 }} />
+                    <span style={{ color: "#ccc", fontSize: 14, fontWeight: 500 }}>{s}</span>
+                  </div>
+                ))}
+                <div style={{ color: "#444", fontSize: 12, marginTop: 4 }}>+{sectors.length - 6} sectores más</div>
+              </div>
+            </div>
+            <div style={{ background: "#111", border: `1px solid ${BORDER}`, borderRadius: 16, padding: "28px 28px" }}>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "#444", textTransform: "uppercase", marginBottom: 16 }}>Turismo e Inversión</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {turisticos.map((s) => (
+                  <div key={s} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div style={{ width: 4, height: 4, borderRadius: "50%", background: LIME + "99", flexShrink: 0 }} />
+                    <span style={{ color: "#ccc", fontSize: 14, fontWeight: 500 }}>{s}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -289,7 +375,7 @@ export default function LandingPage() {
       <section id="funciones">
         <div style={{ padding: "80px 48px 40px", textAlign: "center" }}>
           <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 3, color: "#aaa", marginBottom: 20, textTransform: "uppercase" }}>Todo lo que necesitas</div>
-          <h2 style={{ fontSize: "clamp(36px, 5vw, 64px)", fontWeight: 900, letterSpacing: -3, margin: 0, lineHeight: 1.15 }}>
+          <h2 className="features-h2" style={{ fontSize: "clamp(36px, 5vw, 64px)", fontWeight: 900, letterSpacing: -3, margin: 0 }}>
             7 herramientas de alto rendimiento.<br />Un solo lugar.
           </h2>
         </div>
@@ -302,18 +388,16 @@ export default function LandingPage() {
               background: isLime ? LIME : (i % 2 === 0 ? BG : "#0d0d0f"),
               borderTop: `1px solid ${isLime ? "transparent" : BORDER}`,
             }}>
-              <div className="feature-grid" style={{
-                direction: f.flip ? "rtl" : "ltr",
-              }}>
+              <div className="feature-grid" style={{ direction: f.flip ? "rtl" : "ltr" }}>
                 <div style={{ direction: "ltr" }}>
                   <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: isLime ? "rgba(0,0,0,0.4)" : "#444", textTransform: "uppercase", marginBottom: 16 }}>{f.num}</div>
-                  <h3 style={{ fontSize: "clamp(32px, 4vw, 52px)", fontWeight: 900, letterSpacing: -2, margin: "0 0 8px", color: isLime ? BG : "#fff", lineHeight: 1.15 }}>{f.title}</h3>
+                  <h3 className="feature-h3" style={{ fontSize: "clamp(32px, 4vw, 52px)", fontWeight: 900, letterSpacing: -2, margin: "0 0 8px", color: isLime ? BG : "#fff" }}>{f.title}</h3>
                   <div style={{ fontSize: 17, color: isLime ? "rgba(0,0,0,0.6)" : "#aaa", marginBottom: 24, fontStyle: "italic" }}>— {f.sub}</div>
                   <p style={{ color: isLime ? "rgba(0,0,0,0.7)" : "#aaa", fontSize: 16, lineHeight: 1.7, margin: "0 0 32px" }}>{f.desc}</p>
                   <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 12 }}>
                     {f.bullets.map((b) => (
                       <li key={b} style={{ display: "flex", alignItems: "center", gap: 12, color: isLime ? BG : "#ccc", fontSize: 15, fontWeight: 500 }}>
-                        <div style={{ width: 7, height: 7, borderRadius: "50%", background: isLime ? BG : LIME, flexShrink: 0 }} />
+                        <div style={{ width: 5, height: 5, borderRadius: "50%", background: isLime ? BG : LIME, flexShrink: 0 }} />
                         {b}
                       </li>
                     ))}
@@ -328,10 +412,10 @@ export default function LandingPage() {
         })}
       </section>
 
-      {/* CTA FINAL — fondo lima */}
+      {/* CTA FINAL */}
       <section id="acceso" className="cta-section" style={{ background: LIME, textAlign: "center" }}>
         <div style={{ fontSize: 28, marginBottom: 24 }}>🇩🇴</div>
-        <h2 style={{ fontSize: "clamp(40px, 7vw, 88px)", fontWeight: 900, letterSpacing: -4, margin: "0 0 20px", color: BG, lineHeight: 0.95 }}>
+        <h2 className="cta-h2" style={{ fontSize: "clamp(40px, 7vw, 88px)", fontWeight: 900, letterSpacing: -4, margin: "0 0 20px", color: BG }}>
           El CRM que el realtor<br />dominicano estaba esperando.
         </h2>
         <p style={{ color: "rgba(0,0,0,0.6)", fontSize: 18, maxWidth: 440, margin: "0 auto 52px", lineHeight: 1.6 }}>
@@ -344,21 +428,26 @@ export default function LandingPage() {
             <p style={{ color: "rgba(0,0,0,0.5)", fontSize: 14, margin: 0 }}>Recibirás un email cuando tu acceso esté listo.</p>
           </div>
         ) : (
-          <div style={{ display: "flex", gap: 12, maxWidth: 480, margin: "0 auto", flexWrap: "wrap", justifyContent: "center" }}>
-            <input
-              type="email"
-              placeholder="tu@email.com"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              onKeyDown={e => e.key === "Enter" && handleSubmit()}
-              style={{ flex: 1, minWidth: 240, background: "rgba(0,0,0,0.1)", border: "1px solid rgba(0,0,0,0.2)", color: BG, borderRadius: 100, padding: "16px 24px", fontSize: 15, outline: "none" }}
-            />
-            <button
-              onClick={handleSubmit}
-              disabled={enviando}
-              style={{ background: BG, color: LIME, borderRadius: 100, padding: "16px 32px", fontWeight: 800, fontSize: 14, border: "none", cursor: "pointer", opacity: enviando ? 0.7 : 1 }}>
-              {enviando ? "Enviando..." : "Solicitar Acceso"}
-            </button>
+          <div style={{ maxWidth: 480, margin: "0 auto" }}>
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
+              <input
+                type="email"
+                placeholder="tu@email.com"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && handleSubmit()}
+                style={{ flex: 1, minWidth: 240, background: "rgba(0,0,0,0.1)", border: "1px solid rgba(0,0,0,0.2)", color: BG, borderRadius: 100, padding: "16px 24px", fontSize: 15, outline: "none" }}
+              />
+              <button
+                onClick={handleSubmit}
+                disabled={enviando}
+                style={{ background: BG, color: LIME, borderRadius: 100, padding: "16px 32px", fontWeight: 800, fontSize: 14, border: "none", cursor: enviando ? "not-allowed" : "pointer", opacity: enviando ? 0.7 : 1 }}>
+                {enviando ? "Enviando..." : "Solicitar Acceso"}
+              </button>
+            </div>
+            {error && (
+              <p style={{ color: "rgba(0,0,0,0.6)", fontSize: 13, marginTop: 12, textAlign: "center" }}>{error}</p>
+            )}
           </div>
         )}
       </section>
@@ -378,6 +467,12 @@ export default function LandingPage() {
         * { box-sizing: border-box; }
         body { margin: 0; }
         input::placeholder { color: rgba(0,0,0,0.35); }
+
+        /* FIX: Ocultar Vercel Toolbar (botón flotante oscuro en móvil) */
+        [data-vercel-toolbar],
+        vercel-toolbar,
+        #vercel-live-feedback { display: none !important; }
+
         .feature-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
@@ -386,63 +481,44 @@ export default function LandingPage() {
           max-width: 1100px;
           margin: 0 auto;
         }
-        .feature-section {
-          padding: 100px 48px;
-        }
-        .hero-section {
-          padding: 120px 48px 80px;
-        }
-        .rd-section {
-          padding: 120px 48px;
-        }
-        .stats-section {
-          padding: 80px 48px;
-        }
-        .cta-section {
-          padding: 120px 48px;
-        }
+        .feature-section  { padding: 100px 48px; }
+        .hero-section     { padding: 120px 48px 80px; }
+        .rd-section       { padding: 120px 48px; }
+        .stats-section    { padding: 80px 48px; }
+        .cta-section      { padding: 120px 48px; }
+
+        /* FIX: lineHeight en headings en móvil — usando clases en vez de inline styles
+           Los inline styles tienen mayor especificidad que los media queries,
+           por eso el override no aplicaba. Con clases + !important en el media query sí aplica. */
         @media (max-width: 768px) {
           nav a:not(:last-child) { display: none; }
+
           .feature-grid {
             grid-template-columns: 1fr !important;
             direction: ltr !important;
             gap: 32px !important;
           }
-          .feature-grid > div {
-            direction: ltr !important;
-          }
-          .feature-section {
-            padding: 48px 20px !important;
-          }
-          .hero-section {
-            padding: 90px 20px 48px !important;
-          }
-          .rd-section {
-            padding: 48px 20px !important;
-          }
-          .stats-section {
-            padding: 40px 20px !important;
-          }
-          .cta-section {
-            padding: 48px 20px !important;
-          }
-          .hero-label {
-            letter-spacing: 1px !important;
-            font-size: 11px !important;
-          }
-          .footer-inner {
-            flex-direction: column !important;
-            align-items: center !important;
-            text-align: center !important;
-            gap: 8px !important;
-          }
-          .footer-text {
-            text-align: center !important;
-          }
-          h1, h2, h3 {
-            letter-spacing: -1px !important;
-            line-height: 1.1 !important;
-          }
+          .feature-grid > div { direction: ltr !important; }
+          .feature-section  { padding: 48px 20px !important; }
+          .hero-section     { padding: 90px 20px 48px !important; }
+          .rd-section       { padding: 48px 20px !important; }
+          .stats-section    { padding: 40px 20px !important; }
+          .cta-section      { padding: 48px 20px !important; }
+
+          .hero-label { letter-spacing: 1px !important; font-size: 11px !important; }
+
+          /* FIX: Clases específicas para cada heading — override de lineHeight funciona */
+          .hero-h1     { line-height: 1.05 !important; letter-spacing: -2px !important; }
+          .rd-h2       { line-height: 1.1 !important;  letter-spacing: -2px !important; }
+          .features-h2 { line-height: 1.1 !important;  letter-spacing: -2px !important; }
+          .feature-h3  { line-height: 1.1 !important;  letter-spacing: -1px !important; }
+          .cta-h2      { line-height: 1.0 !important;  letter-spacing: -2px !important; }
+
+          .footer-inner { flex-direction: column !important; align-items: center !important; text-align: center !important; gap: 8px !important; }
+          .footer-text  { text-align: center !important; }
+
+          /* Sección RD: una columna en móvil */
+          .rd-section .rd-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </div>
