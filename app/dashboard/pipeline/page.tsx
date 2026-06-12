@@ -62,6 +62,12 @@ export default function PipelinePage() {
       user_id: user?.id
     }])
     if (!error) {
+      const fecha3dias = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+      await supabase.from('recordatorios').insert([{
+        texto: 'Dar seguimiento a ' + newDeal.nombre_cliente + ' — ' + newDeal.propiedad,
+        fecha: fecha3dias,
+        completado: false
+      }])
       setNewDeal({ nombre_cliente: '', propiedad: '', precio: '', etapa: 'Interesado', telefono: '', email: '', notas: '', proyecto: '', unidad: '', proximo_pago_fecha: '', proximo_pago_monto: '' })
       setShowForm(false)
       fetchDeals()
