@@ -340,7 +340,7 @@ export default function LandingPage() {
       <footer style={{ background: BG, borderTop: `1px solid ${BORDER}`, overflow: "hidden" }}>
         <div className="footer-inner" style={{ padding: "40px 48px 0", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
           <div style={{ fontWeight: 900, fontSize: 20, letterSpacing: -1 }}>SECTOR<span style={{ color: LIME }}>.</span></div>
-          <div className="footer-text" style={{ color: "#aaa", fontSize: 12 }}>sector.do · CRM para Realtors en República Dominicana · 2026</div>
+          <div className="footer-text" style={{ color: "#444", fontSize: 12 }}>sector.do · CRM para Realtors en República Dominicana · 2026</div>
         </div>
         <div style={{ fontSize: "clamp(80px, 18vw, 220px)", fontWeight: 900, letterSpacing: -8, color: "#111", lineHeight: 0.85, padding: "0 32px", userSelect: "none", marginTop: 8 }}>
           SECTOR
