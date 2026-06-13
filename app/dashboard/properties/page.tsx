@@ -265,9 +265,10 @@ export default function PropertiesPage() {
               </select>
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Recámaras</label>
-<label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Habitaciones</label>            </div>
-            <div>
+<div>
+              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Habitaciones</label>
+              <input type="number" name="recamaras" value={formData.recamaras} onChange={handleChange} className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
+            </div>
               <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Baños</label>
               <input type="number" name="banos" value={formData.banos} onChange={handleChange} className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
             </div>
