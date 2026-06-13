@@ -1,4 +1,3 @@
-cat << 'EOF' > app/landing/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -76,7 +75,7 @@ function MapaMockup() {
     vendido: "#ef4444",
   };
   return (
-    <div style={{ background: "#0d0d0f", borderRadius: 16, padding: "20px", border: `1px solid ${BORDER}` }}>
+    <div style={{ background: "#0d0d0f", borderRadius: 16, padding: "20px", border: \`1px solid \${BORDER}\` }}>
       <div style={{ display: "flex", gap: 16, marginBottom: 16 }}>
         {[["libre","#22c55e"],["reservado","#f59e0b"],["vendido","#ef4444"]].map(([label, color]) => (
           <div key={label} style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -108,10 +107,10 @@ function IntranetMockup() {
     { nombre: "Luis Betances", unidades: 2, color: "#4da6ff" },
   ];
   return (
-    <div style={{ background: "#0d0d0f", borderRadius: 16, padding: "20px", border: `1px solid ${BORDER}` }}>
+    <div style={{ background: "#0d0d0f", borderRadius: 16, padding: "20px", border: \`1px solid \${BORDER}\` }}>
       <div style={{ color: "#666", fontSize: 10, fontFamily: "monospace", marginBottom: 14 }}>sector.do/proyecto/torre-piantini-abc123</div>
       {brokers.map((b) => (
-        <div key={b.nombre} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: `1px solid ${BORDER}` }}>
+        <div key={b.nombre} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: \`1px solid \${BORDER}\` }}>
           <div style={{ width: 34, height: 34, borderRadius: "50%", background: "#1a1a1d", display: "flex", alignItems: "center", justifyContent: "center", color: b.color, fontWeight: 900, fontSize: 14, flexShrink: 0 }}>
             {b.nombre[0]}
           </div>
@@ -136,7 +135,7 @@ function ProyectosMockup() {
     { nombre: "Residencias Naco", avance: 30, libre: 48, reservado: 5, vendido: 15 },
   ];
   return (
-    <div style={{ background: "#0d0d0f", borderRadius: 16, padding: "20px", border: `1px solid ${BORDER}` }}>
+    <div style={{ background: "#0d0d0f", borderRadius: 16, padding: "20px", border: \`1px solid \${BORDER}\` }}>
       {proyectos.map((p) => (
         <div key={p.nombre} style={{ background: "#1a1a1d", borderRadius: 12, padding: "16px", marginBottom: 12 }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
@@ -144,7 +143,7 @@ function ProyectosMockup() {
             <div style={{ color: LIME, fontSize: 12, fontWeight: 800 }}>{p.avance}% obra</div>
           </div>
           <div style={{ background: "#111", borderRadius: 4, height: 4, marginBottom: 12 }}>
-            <div style={{ background: LIME, height: 4, borderRadius: 4, width: `${p.avance}%` }} />
+            <div style={{ background: LIME, height: 4, borderRadius: 4, width: \`\${p.avance}%\` }} />
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, textAlign: "center" }}>
             <div>
@@ -217,7 +216,7 @@ export default function LandingPage() {
         padding: "0 48px", height: 64,
         display: "flex", alignItems: "center", justifyContent: "space-between",
         background: scrolled ? "rgba(9,9,11,0.96)" : "transparent",
-        borderBottom: scrolled ? `1px solid ${BORDER}` : "none",
+        borderBottom: scrolled ? \`1px solid \${BORDER}\` : "none",
         backdropFilter: scrolled ? "blur(16px)" : "none",
         transition: "all 0.3s",
       }}>
@@ -230,7 +229,6 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* HERO — fondo negro */}
       <section className="hero-section" style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
         <div className="hero-label" style={{ fontSize: 12, fontWeight: 700, letterSpacing: 2, color: "#aaa", marginBottom: 32, textTransform: "uppercase" }}>
           🇩🇴 &nbsp; Plataforma Comercial · República Dominicana
@@ -246,13 +244,12 @@ export default function LandingPage() {
           <a href="/login" style={{ background: LIME, color: BG, borderRadius: 100, padding: "18px 36px", fontWeight: 800, fontSize: 15, textDecoration: "none" }}>
             Acceder a SECTOR
           </a>
-          <a href="#funciones" style={{ background: "transparent", color: "#fff", borderRadius: 100, padding: "18px 36px", fontWeight: 600, fontSize: 15, textDecoration: "none", border: `1px solid #444` }}>
+          <a href="#funciones" style={{ background: "transparent", color: "#fff", borderRadius: 100, padding: "18px 36px", fontWeight: 600, fontSize: 15, textDecoration: "none", border: \`1px solid #444\` }}>
             Ver Funciones
           </a>
         </div>
       </section>
 
-      {/* STATS — franja verde inmediatamente después del hero */}
       <section className="stats-section" style={{ background: LIME }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 0 }}>
           {[
@@ -261,7 +258,7 @@ export default function LandingPage() {
             { value: "48 horas",    label: "Reserva temporal automática.\nSin perder unidades." },
             { value: "0%",          label: "Interferencia con\ntu ERP o contabilidad fiscal." },
           ].map((s, i) => (
-            <div key={s.value} style={{ padding: "20px 32px", borderLeft: i > 0 ? `1px solid rgba(0,0,0,0.15)` : "none" }}>
+            <div key={s.value} style={{ padding: "20px 32px", borderLeft: i > 0 ? \`1px solid rgba(0,0,0,0.15)\` : "none" }}>
               <div style={{ fontSize: "clamp(32px, 4vw, 56px)", fontWeight: 900, color: BG, lineHeight: 1, letterSpacing: -2 }}>{s.value}</div>
               <div style={{ fontSize: 13, color: "rgba(0,0,0,0.6)", marginTop: 10, lineHeight: 1.5, whiteSpace: "pre-line", fontWeight: 500 }}>{s.label}</div>
             </div>
@@ -269,7 +266,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* MÓDULOS */}
       <section id="funciones">
         <div style={{ padding: "100px 48px 40px", textAlign: "center" }}>
           <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 2, color: "#aaa", marginBottom: 20, textTransform: "uppercase" }}>Ecosistema Inteligente</div>
@@ -284,7 +280,7 @@ export default function LandingPage() {
           return (
             <div key={f.num} className="feature-section" style={{
               background: currentBg,
-              borderTop: `1px solid ${BORDER}`,
+              borderTop: \`1px solid \${BORDER}\`,
             }}>
               <div className="feature-grid" style={{ direction: f.flip ? "rtl" : "ltr" }}>
                 <div style={{ direction: "ltr" }}>
@@ -310,8 +306,7 @@ export default function LandingPage() {
         })}
       </section>
 
-      {/* FOOTER */}
-      <footer style={{ background: BG, borderTop: `1px solid ${BORDER}`, overflow: "hidden" }}>
+      <footer style={{ background: BG, borderTop: \`1px solid \${BORDER}\`, overflow: "hidden" }}>
         <div className="footer-inner" style={{ padding: "40px 48px 0", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
           <div style={{ fontWeight: 900, fontSize: 20, letterSpacing: -1 }}>SECTOR<span style={{ color: LIME }}>.</span></div>
           <div className="footer-text" style={{ color: "#aaa", fontSize: 12 }}>sector.do · Plataforma Comercial Inmobiliaria · República Dominicana · 2026</div>
@@ -321,7 +316,7 @@ export default function LandingPage() {
         </div>
       </footer>
 
-      <style>{`
+      <style>{\`
         * { box-sizing: border-box; }
         body { margin: 0; }
         input::placeholder { color: rgba(0,0,0,0.35); }
@@ -354,8 +349,7 @@ export default function LandingPage() {
           .footer-inner { flex-direction: column !important; align-items: center !important; text-align: center !important; gap: 8px !important; }
           .footer-text  { text-align: center !important; }
         }
-      `}</style>
+      \`}</style>
     </div>
   );
 }
-EOF
