@@ -14,7 +14,9 @@ const NAV = [
   { href: '/dashboard/reminders', label: 'Recordatorios' },
   { href: '/dashboard/usuarios', label: 'Usuarios' },
   { href: '/dashboard/perfil', label: 'Mi Perfil' },
+  { href: '/dashboard/constructoras', label: 'Constructoras' },
 ]
+
 export default function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
