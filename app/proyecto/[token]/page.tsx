@@ -72,12 +72,17 @@ export default function PortalBrokerPage() {
   }, [token]);
 
   const cargarPortal = async () => {
-    const { data: accesoData } = await supabase
+    console.log('Token buscado:', token);
+
+    const { data: accesoData, error: accesoError } = await supabase
       .from('proyecto_accesos')
       .select('id, nombre_agencia, proyecto_id')
       .eq('token', token)
       .eq('activo', true)
       .single();
+
+    console.log('Acceso data:', accesoData);
+    console.log('Acceso error:', accesoError);
 
     if (!accesoData) { setNoValido(true); setLoading(false); return; }
     setAcceso(accesoData);
@@ -148,7 +153,6 @@ export default function PortalBrokerPage() {
   return (
     <div style={{ background: BG, minHeight: '100vh', color: '#fff', fontFamily: 'Inter, sans-serif' }}>
 
-      {/* Header */}
       <div style={{ background: '#0d0d0f', borderBottom: `1px solid ${BORDER}`, padding: '16px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ fontWeight: 900, fontSize: 18, letterSpacing: -1 }}>
           SECTOR<span style={{ color: LIME }}>.</span>
@@ -162,7 +166,6 @@ export default function PortalBrokerPage() {
 
       <div style={{ maxWidth: 1000, margin: '0 auto', padding: '40px 24px' }}>
 
-        {/* Info del proyecto */}
         {proyecto && (
           <div style={{ marginBottom: 40 }}>
             <h1 style={{ fontSize: 'clamp(24px, 4vw, 40px)', fontWeight: 900, letterSpacing: -1.5, margin: '0 0 8px' }}>{proyecto.nombre}</h1>
@@ -184,14 +187,12 @@ export default function PortalBrokerPage() {
                 </div>
               ))}
             </div>
-            {/* Barra de avance */}
             <div style={{ marginTop: 16, background: '#111', borderRadius: 4, height: 4 }}>
               <div style={{ background: LIME, height: 4, borderRadius: 4, width: `${proyecto.porcentaje_avance}%`, transition: 'width 1s' }} />
             </div>
           </div>
         )}
 
-        {/* Contadores */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 28 }}>
           {[
             { label: 'Disponibles', value: conteo.libre, color: '#22c55e', border: '#22c55e30' },
@@ -205,7 +206,6 @@ export default function PortalBrokerPage() {
           ))}
         </div>
 
-        {/* Filtros */}
         <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
           {['todos', 'libre', 'reservado', 'vendido'].map(f => (
             <button key={f} onClick={() => setFiltro(f)}
@@ -215,7 +215,6 @@ export default function PortalBrokerPage() {
           ))}
         </div>
 
-        {/* Mapa por pisos */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {pisos.map(piso => {
             const unidadesPiso = unidadesFiltradas.filter(u => u.piso === piso);
@@ -262,7 +261,6 @@ export default function PortalBrokerPage() {
         </div>
       </div>
 
-      {/* Panel de reserva */}
       {unidadSeleccionada && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, zIndex: 50 }}>
           <div style={{ background: '#111', border: `1px solid ${BORDER}`, borderRadius: 20, padding: 32, width: '100%', maxWidth: 420 }}>
