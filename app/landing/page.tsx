@@ -214,13 +214,14 @@ export default function LandingPage() {
         </div>
       </nav>
 
+      {/* HERO — fondo negro */}
       <section className="hero-section" style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
         <div className="hero-label" style={{ fontSize: 13, fontWeight: 700, letterSpacing: 3, color: "#aaa", marginBottom: 32, textTransform: "uppercase" }}>
           🇩🇴 &nbsp; Plataforma Comercial · República Dominicana
         </div>
-        <h1 className="hero-h1" style={{ fontSize: "clamp(52px, 10vw, 120px)", fontWeight: 900, letterSpacing: -4, margin: "0 0 32px", maxWidth: 900 }}>
+        <h1 className="hero-h1" style={{ fontSize: "clamp(38px, 7vw, 88px)", fontWeight: 900, letterSpacing: -3, margin: "0 0 32px", maxWidth: 900, lineHeight: 1.05 }}>
           Tu inventario de preventa,{" "}
-          <em style={{ color: LIME, fontStyle: "italic" }}>en manos del mercado.</em>
+          <em style={{ color: LIME, fontStyle: "italic" }}>bajo tu control absoluto.</em>
         </h1>
         <p style={{ color: "#aaa", fontSize: "clamp(16px, 2vw, 20px)", maxWidth: 560, lineHeight: 1.6, margin: "0 0 52px", fontWeight: 400 }}>
           SECTOR conecta el inventario de tu constructora con el ejército de brokers de RD — en tiempo real, sin tocar tu ERP, desde cualquier celular.
@@ -235,6 +236,7 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* STATS — franja verde inmediatamente después del hero */}
       <section className="stats-section" style={{ background: LIME }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 0 }}>
           {[
@@ -251,6 +253,7 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* MÓDULOS */}
       <section id="funciones">
         <div style={{ padding: "80px 48px 40px", textAlign: "center" }}>
           <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 3, color: "#aaa", marginBottom: 20, textTransform: "uppercase" }}>La plataforma comercial</div>
@@ -291,45 +294,7 @@ export default function LandingPage() {
         })}
       </section>
 
-      <section id="acceso" className="cta-section" style={{ background: LIME, textAlign: "center" }}>
-        <div style={{ fontSize: 28, marginBottom: 24 }}>🇩🇴</div>
-        <h2 className="cta-h2" style={{ fontSize: "clamp(40px, 7vw, 88px)", fontWeight: 900, letterSpacing: -4, margin: "0 0 20px", color: BG }}>
-          La capa comercial que<br />tu constructora necesita.
-        </h2>
-        <p style={{ color: "rgba(0,0,0,0.6)", fontSize: 18, maxWidth: 480, margin: "0 auto 52px", lineHeight: 1.6 }}>
-          Sin tocar tu ERP. Sin cambiar tu contabilidad. Solo más ventas, más rápido.
-        </p>
-        {enviado ? (
-          <div style={{ background: "rgba(0,0,0,0.15)", borderRadius: 16, padding: "24px 32px", maxWidth: 480, margin: "0 auto", textAlign: "center" }}>
-            <div style={{ fontSize: 32, marginBottom: 12 }}>✓</div>
-            <p style={{ color: BG, fontWeight: 800, fontSize: 18, margin: "0 0 8px" }}>¡Listo! Te contactamos pronto.</p>
-            <p style={{ color: "rgba(0,0,0,0.5)", fontSize: 14, margin: 0 }}>Un asesor de SECTOR se pondrá en contacto contigo.</p>
-          </div>
-        ) : (
-          <div style={{ maxWidth: 480, margin: "0 auto" }}>
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
-              <input
-                type="email"
-                placeholder="tu@constructora.com"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                onKeyDown={e => e.key === "Enter" && handleSubmit()}
-                style={{ flex: 1, minWidth: 240, background: "rgba(0,0,0,0.1)", border: "1px solid rgba(0,0,0,0.2)", color: BG, borderRadius: 100, padding: "16px 24px", fontSize: 15, outline: "none" }}
-              />
-              <button
-                onClick={handleSubmit}
-                disabled={enviando}
-                style={{ background: BG, color: LIME, borderRadius: 100, padding: "16px 32px", fontWeight: 800, fontSize: 14, border: "none", cursor: enviando ? "not-allowed" : "pointer", opacity: enviando ? 0.7 : 1 }}>
-                {enviando ? "Enviando..." : "Solicitar Demo"}
-              </button>
-            </div>
-            {error && (
-              <p style={{ color: "rgba(0,0,0,0.6)", fontSize: 13, marginTop: 12, textAlign: "center" }}>{error}</p>
-            )}
-          </div>
-        )}
-      </section>
-
+      {/* FOOTER */}
       <footer style={{ background: BG, borderTop: `1px solid ${BORDER}`, overflow: "hidden" }}>
         <div className="footer-inner" style={{ padding: "40px 48px 0", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
           <div style={{ fontWeight: 900, fontSize: 20, letterSpacing: -1 }}>SECTOR<span style={{ color: LIME }}>.</span></div>
