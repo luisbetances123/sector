@@ -1,32 +1,24 @@
-import { createBrowserClient } from '@supabase/ssr'
+import { createBrowserClient, createServerClient as createSSRServerClient } from '@supabase/ssr'
 
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+
+// Cliente para componentes client
 export function createClient() {
-  return createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+  return createBrowserClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 }
 
-// Cliente singleton para uso directo en componentes client
-export const supabase = createBrowserClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+export const supabase = createBrowserClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-import { createServerClient as createSSRServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
-
-export function createServerClient() {
+// Cliente para Server Components
+export async function createServerClient() {
+  const { cookies } = await import('next/headers')
   const cookieStore = cookies()
-  return createSSRServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value
-        },
+  return createSSRServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    cookies: {
+      get(name: string) {
+        return cookieStore.get(name)?.value
       },
-    }
-  )
+    },
+  })
 }
