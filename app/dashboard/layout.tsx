@@ -9,11 +9,13 @@ import {
   Building2, 
   GitFork, 
   Calendar,
-  BarChart2, TrendingUp, Bell, Inbox, Calculator, MapPin,
-  UserCog,
+  BarChart2,
   LogOut,
   Menu,
-  X
+  X,
+  HardHat,
+  UserCircle,
+  TrendingUp
 } from 'lucide-react'
 
 export default function DashboardLayout({
@@ -36,14 +38,11 @@ export default function DashboardLayout({
     { name: 'Clientes', href: '/dashboard/clients', icon: Users },
     { name: 'Propiedades', href: '/dashboard/properties', icon: Building2 },
     { name: 'Pipeline', href: '/dashboard/pipeline', icon: GitFork },
-    { name: 'Precios', href: '/pricing', icon: TrendingUp },
     { name: 'Calendario', href: '/dashboard/calendar', icon: Calendar },
     { name: 'Reportes', href: '/dashboard/reports', icon: BarChart2 },
-    { name: 'Conversaciones', href: '/dashboard/inbox', icon: Inbox },
-    { name: 'Calculadora', href: '/dashboard/calculadora', icon: Calculator },
-    { name: 'Mercado', href: '/dashboard/mercado', icon: MapPin },
-    { name: 'Recordatorios', href: '/dashboard/reminders', icon: Bell },
-    { name: 'Usuarios', href: '/dashboard/usuarios', icon: UserCog },
+    { name: 'Precios', href: '/pricing', icon: TrendingUp },
+    { name: 'Mi Perfil', href: '/dashboard/perfil', icon: UserCircle },
+    { name: 'Constructoras', href: '/dashboard/constructoras', icon: HardHat },
   ]
 
   return (
