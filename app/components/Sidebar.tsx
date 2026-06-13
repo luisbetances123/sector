@@ -11,8 +11,6 @@ const NAV = [
   { href: '/dashboard/pipeline', label: 'Pipeline' },
   { href: '/dashboard/calendar', label: 'Calendario' },
   { href: '/dashboard/reports', label: 'Reportes' },
-  { href: '/dashboard/reminders', label: 'Recordatorios' },
-  { href: '/dashboard/usuarios', label: 'Usuarios' },
   { href: '/dashboard/perfil', label: 'Mi Perfil' },
   { href: '/dashboard/constructoras', label: 'Constructoras' },
 ]
@@ -32,7 +30,7 @@ export default function Sidebar() {
         <div className="w-2.5 h-2.5 rounded-full bg-[#CCFF00] animate-pulse" />
         <span className="text-white font-black text-lg tracking-tighter">SEC<span className="text-[#CCFF00]">TOR</span></span>
       </div>
-      <nav className="flex flex-col space-y-1 flex-1 overflow-y-auto">
+      <nav className="flex flex-col space-y-1 flex-1">
         {NAV.map(item => (
           <Link key={item.href} href={item.href}
             className={"block px-3 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all " +
