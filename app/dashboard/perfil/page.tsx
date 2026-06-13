@@ -22,6 +22,15 @@ export default function PerfilPage() {
     cargarPerfil();
   }, []);
 
+  const generarSlug = (texto: string) => {
+    return texto
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
+  };
+
   const cargarPerfil = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
@@ -31,9 +40,11 @@ export default function PerfilPage() {
       .eq('id', user.id)
       .single();
     if (profile) {
+      const nombre = profile.nombre || '';
+      const slug = profile.slug || generarSlug(nombre);
       setFormData({
-        nombre: profile.nombre || '',
-        slug: profile.slug || '',
+        nombre,
+        slug,
         bio: profile.bio || '',
         avatar_url: profile.avatar_url || '',
         whatsapp: profile.whatsapp || '',
@@ -41,15 +52,6 @@ export default function PerfilPage() {
       });
     }
     setLoading(false);
-  };
-
-  const generarSlug = (texto: string) => {
-    return texto
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '');
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -117,7 +119,6 @@ export default function PerfilPage() {
 
       <form onSubmit={handleGuardar} className="space-y-6">
 
-        {/* Foto y datos básicos */}
         <div className="bg-[#18181b] border border-zinc-800 p-6 rounded-xl shadow-2xl space-y-4">
           <h2 className="text-sm font-semibold text-zinc-300 uppercase tracking-wider">Información Personal</h2>
 
@@ -147,7 +148,6 @@ export default function PerfilPage() {
           </div>
         </div>
 
-        {/* Portal público */}
         <div className="bg-[#18181b] border border-zinc-800 p-6 rounded-xl shadow-2xl space-y-4">
           <h2 className="text-sm font-semibold text-zinc-300 uppercase tracking-wider">Portal Público</h2>
 
