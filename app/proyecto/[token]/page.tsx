@@ -79,8 +79,7 @@ export default function PortalBrokerPage() {
       .select('id, nombre_agencia, proyecto_id')
       .eq('token', token)
       .eq('activo', true)
-      .single();
-
+.maybeSingle()
     console.log('Acceso data:', accesoData);
     console.log('Acceso error:', accesoError);
 
