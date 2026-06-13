@@ -1,4 +1,4 @@
-import { supabase } from '@/app/lib/supabase';
+import { createServerClient } from '@/app/lib/supabase';
 import { notFound } from 'next/navigation';
 
 interface Propiedad {
@@ -15,6 +15,8 @@ interface Propiedad {
 }
 
 export default async function PortalRealtorPage({ params }: { params: { slug: string } }) {
+  const supabase = createServerClient();
+
   const { data: perfil } = await supabase
     .from('profiles')
     .select('id, nombre, bio, avatar_url, whatsapp, slug')
