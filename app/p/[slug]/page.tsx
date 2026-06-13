@@ -14,8 +14,7 @@ interface Propiedad {
 }
 
 export default async function PortalRealtorPage({ params }: { params: { slug: string } }) {
-const supabase = await createServerClient();
-
+const supabase = createClient();
   const { data: perfil } = await supabase
     .from('profiles')
     .select('id, nombre, bio, avatar_url, whatsapp, slug')
