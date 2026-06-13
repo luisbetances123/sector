@@ -181,13 +181,11 @@ export default function UnidadesPage() {
     vendido: unidades.filter(u => u.estado === 'vendido').length,
   };
 
-  // Agrupar por piso para el mapa
   const pisos = [...new Set(unidades.map(u => u.piso))].sort((a, b) => (b || 0) - (a || 0));
 
   return (
     <div className="p-8 max-w-6xl mx-auto min-h-screen bg-transparent text-zinc-100">
 
-      {/* Header */}
       <div className="flex justify-between items-center mb-8 border-b border-zinc-800 pb-5">
         <div>
           <button onClick={() => router.push(`/dashboard/constructoras/${constructoraId}/proyectos`)} className="text-xs text-zinc-500 hover:text-[#d4ff3b] font-mono mb-2 block transition">
@@ -201,7 +199,6 @@ export default function UnidadesPage() {
         </button>
       </div>
 
-      {/* Resumen de estados */}
       <div className="grid grid-cols-3 gap-4 mb-8">
         <div className="bg-[#18181b] border border-emerald-500/20 rounded-xl p-4 text-center">
           <span className="block text-2xl font-mono font-bold text-emerald-400">{conteo.libre}</span>
@@ -217,7 +214,6 @@ export default function UnidadesPage() {
         </div>
       </div>
 
-      {/* Formulario */}
       {mostrarFormulario && (
         <div className="bg-[#18181b] border border-zinc-800 p-6 rounded-xl shadow-2xl mb-8">
           <h2 className="text-sm font-semibold mb-5 text-zinc-300 uppercase tracking-wider">
@@ -262,7 +258,7 @@ export default function UnidadesPage() {
                 <input type="number" name="area_m2" value={formData.area_m2} onChange={handleChange} placeholder="120" className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
               </div>
               <div>
-                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Recámaras</label>
+                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Habitaciones</label>
                 <input type="number" name="recamaras" value={formData.recamaras} onChange={handleChange} placeholder="3" className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
               </div>
               <div>
@@ -302,7 +298,6 @@ export default function UnidadesPage() {
         </div>
       )}
 
-      {/* Filtros */}
       <div className="flex gap-2 mb-6">
         {['todos', 'libre', 'reservado', 'vendido'].map(f => (
           <button key={f} onClick={() => setFiltroEstado(f)} className={`text-xs px-3 py-1.5 rounded-lg font-mono uppercase tracking-wider transition border ${filtroEstado === f ? 'bg-[#d4ff3b] text-black border-[#d4ff3b]' : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:border-zinc-600'}`}>
@@ -311,7 +306,6 @@ export default function UnidadesPage() {
         ))}
       </div>
 
-      {/* Mapa visual por pisos */}
       {loading ? (
         <div className="text-center py-20 text-zinc-500 font-mono text-sm animate-pulse">Cargando unidades...</div>
       ) : unidades.length === 0 ? (
@@ -343,7 +337,6 @@ export default function UnidadesPage() {
         </div>
       )}
 
-      {/* Panel de detalle de unidad seleccionada */}
       {unidadSeleccionada && (
         <div className="fixed bottom-6 right-6 bg-[#18181b] border border-zinc-700 rounded-2xl shadow-2xl p-6 w-80 z-50">
           <div className="flex justify-between items-start mb-4">
@@ -365,7 +358,7 @@ export default function UnidadesPage() {
           <div className="space-y-1 text-xs text-zinc-400 mb-4">
             {unidadSeleccionada.precio && <p>💰 ${Number(unidadSeleccionada.precio).toLocaleString()}</p>}
             {unidadSeleccionada.area_m2 && <p>📐 {unidadSeleccionada.area_m2} m²</p>}
-            {unidadSeleccionada.recamaras && <p>🛏 {unidadSeleccionada.recamaras} recámaras · {unidadSeleccionada.banos} baños</p>}
+            {unidadSeleccionada.recamaras && <p>🛏 {unidadSeleccionada.recamaras} habitaciones · {unidadSeleccionada.banos} baños</p>}
             {unidadSeleccionada.vista && <p>🌅 Vista: {unidadSeleccionada.vista}</p>}
             {unidadSeleccionada.reservado_por && <p>👤 Broker: {unidadSeleccionada.reservado_por}</p>}
             {unidadSeleccionada.cliente_nombre && <p>🏠 Cliente: {unidadSeleccionada.cliente_nombre}</p>}
