@@ -10,10 +10,10 @@ export function createClient() {
 
 export const supabase = createBrowserClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-// Cliente para Server Components
+// Cliente para Server Components (Next.js 15)
 export async function createServerClient() {
   const { cookies } = await import('next/headers')
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
   return createSSRServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     cookies: {
       get(name: string) {
