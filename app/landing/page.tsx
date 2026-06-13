@@ -11,26 +11,41 @@ const BORDER = "#1a1a1d";
 const features = [
   {
     num: "01",
-    title: "Mapa de Disponibilidad",
-    sub: "Tu inventario en tiempo real, desde cualquier celular",
-    desc: "Visualiza el estado de cada unidad de tu torre en un mapa interactivo. Verde = Libre, Amarillo = Reservado, Rojo = Vendido. Tus brokers ven la disponibilidad real durante la cita con el cliente.",
-    bullets: ["Actualización en tiempo real", "Acceso desde cualquier celular sin app", "Cambio de estado con un toque", "Historial de movimientos por unidad"],
+    title: "Mapa de Disponibilidad Real",
+    sub: "Control visual absoluto de tus unidades en planos",
+    desc: "Visualiza y administra el estado de cada apartamento de tu torre desde una interfaz móvil intuitiva. Verde = Libre, Amarillo = Reservado, Rojo = Vendido. Bloqueos inmediatos en plena negociación.",
+    bullets: [
+      "Actualización e integración al instante para brokers",
+      "Bloqueo de unidades en tiempo real desde la cita",
+      "Acceso directo desde cualquier celular sin instalar apps",
+      "Historial de auditoría y movimientos por unidad"
+    ],
     flip: false,
   },
   {
     num: "02",
-    title: "Intranet de Proyecto",
-    sub: "Tu red de brokers conectada al inventario real",
-    desc: "Genera links únicos para cada agencia o broker externo. Remax, Plusval o agentes independientes acceden a tu disponibilidad sin crear cuentas ni instalar nada. El broker reserva desde la cita.",
-    bullets: ["Links únicos por agencia o broker", "Sin registro ni instalación para el broker", "Reserva temporal de 48 horas automática", "Control total de quién accede a qué"],
+    title: "Intranet de Proyecto Segura",
+    sub: "Tu red de ventas externa conectada sin intermediarios",
+    desc: "Asigna enlaces únicos y privados para agencias autorizadas o brokers independientes (Remax, Plusval, etc.). Permíteles consultar stock real y formalizar intenciones de compra sin crear cuentas.",
+    bullets: [
+      "Generación de links de acceso únicos por agencia en un clic",
+      "Control de acceso y permisos centralizados por el desarrollador",
+      "Reserva temporal automática de 48 horas bajo contrato digital",
+      "Trazabilidad absoluta del broker que originó el cliente"
+    ],
     flip: true,
   },
   {
     num: "03",
-    title: "Gestión de Proyectos",
-    sub: "Todas tus torres organizadas en un solo lugar",
-    desc: "Registra tus proyectos con pisos, unidades, avance de obra y fecha de entrega. Cada proyecto tiene su propio dashboard con métricas de ventas, reservas y disponibilidad actualizada.",
-    bullets: ["Dashboard por proyecto con métricas clave", "Barra de avance de obra en tiempo real", "Gestión de múltiples torres simultáneas", "Exportación de reportes de disponibilidad"],
+    title: "Gestión de Cobros y Postventa",
+    sub: "Monitoreo financiero y avance de obra unificados",
+    desc: "Centraliza múltiples proyectos inmobiliarios. Supervisa planes de pago de planos, automatiza alertas de cuotas de amortización para compradores y mantén un control de entregas de unidades.",
+    bullets: [
+      "Automatización de notificaciones de pago recurrentes",
+      "Estados de cuenta interactivos para compradores en planos",
+      "Reportes de rendimiento de ventas listos para tu junta directiva",
+      "Módulo de incidencias de postventa para ingenieros de obra"
+    ],
     flip: false,
   },
 ];
@@ -216,15 +231,15 @@ export default function LandingPage() {
 
       {/* HERO — fondo negro */}
       <section className="hero-section" style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
-        <div className="hero-label" style={{ fontSize: 13, fontWeight: 700, letterSpacing: 3, color: "#aaa", marginBottom: 32, textTransform: "uppercase" }}>
+        <div className="hero-label" style={{ fontSize: 12, fontWeight: 700, letterSpacing: 2, color: "#aaa", marginBottom: 32, textTransform: "uppercase" }}>
           🇩🇴 &nbsp; Plataforma Comercial · República Dominicana
         </div>
-        <h1 className="hero-h1" style={{ fontSize: "clamp(38px, 7vw, 88px)", fontWeight: 900, letterSpacing: -3, margin: "0 0 32px", maxWidth: 900, lineHeight: 1.05 }}>
+        <h1 className="hero-h1" style={{ fontSize: "clamp(34px, 6.5vw, 76px)", fontWeight: 900, letterSpacing: -2.5, margin: "0 0 32px", maxWidth: 960, lineHeight: 1.1 }}>
           Tu inventario de preventa,{" "}
           <em style={{ color: LIME, fontStyle: "italic" }}>bajo tu control absoluto.</em>
         </h1>
-        <p style={{ color: "#aaa", fontSize: "clamp(16px, 2vw, 20px)", maxWidth: 560, lineHeight: 1.6, margin: "0 0 52px", fontWeight: 400 }}>
-          SECTOR conecta el inventario de tu constructora con el ejército de brokers de RD — en tiempo real, sin tocar tu ERP, desde cualquier celular.
+        <p style={{ color: "#aaa", fontSize: "clamp(15px, 1.8vw, 19px)", maxWidth: 580, lineHeight: 1.6, margin: "0 0 52px", fontWeight: 400 }}>
+          SECTOR conecta el inventario de tu constructora con el ejército de brokers de RD — en tiempo real, sin tocar tu ERP contable y desde cualquier dispositivo móvil.
         </p>
         <div style={{ display: "flex", gap: 14, flexWrap: "wrap", justifyContent: "center" }}>
           <a href="/login" style={{ background: LIME, color: BG, borderRadius: 100, padding: "18px 36px", fontWeight: 800, fontSize: 15, textDecoration: "none" }}>
@@ -243,7 +258,7 @@ export default function LandingPage() {
             { value: "Tiempo real", label: "Disponibilidad sincronizada\nentre todos tus brokers." },
             { value: "0 apps",      label: "El broker accede desde\nsu navegador. Sin instalar nada." },
             { value: "48 horas",    label: "Reserva temporal automática.\nSin perder unidades." },
-            { value: "0%",          label: "Interferencia con\ntu ERP o contabilidad." },
+            { value: "0%",          label: "Interferencia con\ntu ERP o contabilidad fiscal." },
           ].map((s, i) => (
             <div key={s.value} style={{ padding: "20px 32px", borderLeft: i > 0 ? `1px solid rgba(0,0,0,0.15)` : "none" }}>
               <div style={{ fontSize: "clamp(32px, 4vw, 56px)", fontWeight: 900, color: BG, lineHeight: 1, letterSpacing: -2 }}>{s.value}</div>
@@ -255,31 +270,31 @@ export default function LandingPage() {
 
       {/* MÓDULOS */}
       <section id="funciones">
-        <div style={{ padding: "80px 48px 40px", textAlign: "center" }}>
-          <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 3, color: "#aaa", marginBottom: 20, textTransform: "uppercase" }}>La plataforma comercial</div>
-          <h2 className="features-h2" style={{ fontSize: "clamp(36px, 5vw, 64px)", fontWeight: 900, letterSpacing: -3, margin: 0 }}>
+        <div style={{ padding: "100px 48px 40px", textAlign: "center" }}>
+          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 2, color: "#aaa", marginBottom: 20, textTransform: "uppercase" }}>Ecosistema Inteligente</div>
+          <h2 className="features-h2" style={{ fontSize: "clamp(34px, 4.5vw, 58px)", fontWeight: 900, letterSpacing: -2.5, margin: 0 }}>
             3 módulos que transforman<br />cómo vendes en planos.
           </h2>
         </div>
 
         {features.map((f, i) => {
           const MockupComponent = Mockups[i];
-          const isLime = i % 3 === 2;
+          const currentBg = i % 2 === 0 ? BG : "#0d0d0f";
           return (
             <div key={f.num} className="feature-section" style={{
-              background: isLime ? LIME : (i % 2 === 0 ? BG : "#0d0d0f"),
-              borderTop: `1px solid ${isLime ? "transparent" : BORDER}`,
+              background: currentBg,
+              borderTop: `1px solid ${BORDER}`,
             }}>
               <div className="feature-grid" style={{ direction: f.flip ? "rtl" : "ltr" }}>
                 <div style={{ direction: "ltr" }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: isLime ? "rgba(0,0,0,0.5)" : "#888", textTransform: "uppercase", marginBottom: 16 }}>{f.num}</div>
-                  <h3 className="feature-h3" style={{ fontSize: "clamp(32px, 4vw, 52px)", fontWeight: 900, letterSpacing: -2, margin: "0 0 8px", color: isLime ? BG : "#fff" }}>{f.title}</h3>
-                  <div style={{ fontSize: 17, color: isLime ? "rgba(0,0,0,0.6)" : "#bbb", marginBottom: 24, fontStyle: "italic" }}>— {f.sub}</div>
-                  <p style={{ color: isLime ? "rgba(0,0,0,0.7)" : "#bbb", fontSize: 16, lineHeight: 1.7, margin: "0 0 32px" }}>{f.desc}</p>
+                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: LIME, textTransform: "uppercase", marginBottom: 16 }}>{f.num}</div>
+                  <h3 className="feature-h3" style={{ fontSize: "clamp(30px, 3.5vw, 46px)", fontWeight: 900, letterSpacing: -1.5, margin: "0 0 8px", color: "#fff" }}>{f.title}</h3>
+                  <div style={{ fontSize: 16, color: "#bbb", marginBottom: 24, fontStyle: "italic" }}>— {f.sub}</div>
+                  <p style={{ color: "#aaa", fontSize: 15, lineHeight: 1.7, margin: "0 0 32px" }}>{f.desc}</p>
                   <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 12 }}>
                     {f.bullets.map((b) => (
-                      <li key={b} style={{ display: "flex", alignItems: "center", gap: 12, color: isLime ? BG : "#ddd", fontSize: 15, fontWeight: 500 }}>
-                        <div style={{ width: 5, height: 5, borderRadius: "50%", background: isLime ? BG : LIME, flexShrink: 0 }} />
+                      <li key={b} style={{ display: "flex", alignItems: "center", gap: 12, color: "#ddd", fontSize: 14, fontWeight: 500 }}>
+                        <div style={{ width: 5, height: 5, borderRadius: "50%", background: LIME, flexShrink: 0 }} />
                         {b}
                       </li>
                     ))}
@@ -300,7 +315,7 @@ export default function LandingPage() {
           <div style={{ fontWeight: 900, fontSize: 20, letterSpacing: -1 }}>SECTOR<span style={{ color: LIME }}>.</span></div>
           <div className="footer-text" style={{ color: "#aaa", fontSize: 12 }}>sector.do · Plataforma Comercial Inmobiliaria · República Dominicana · 2026</div>
         </div>
-        <div style={{ fontSize: "clamp(80px, 18vw, 220px)", fontWeight: 900, letterSpacing: -8, color: "#222", lineHeight: 0.85, padding: "0 32px", userSelect: "none", marginTop: 8 }}>
+        <div style={{ fontSize: "clamp(80px, 18vw, 220px)", fontWeight: 900, letterSpacing: -8, color: "#161619", lineHeight: 0.85, padding: "0 32px", userSelect: "none", marginTop: 8 }}>
           SECTOR
         </div>
       </footer>
@@ -318,23 +333,23 @@ export default function LandingPage() {
           max-width: 1100px;
           margin: 0 auto;
         }
-        .feature-section  { padding: 100px 48px; }
+        .feature-section  { padding: 90px 48px; }
         .hero-section     { padding: 120px 48px 80px; }
         .stats-section    { padding: 80px 48px; }
         .cta-section      { padding: 120px 48px; }
         @media (max-width: 768px) {
           nav a:not(:last-child) { display: none; }
-          .feature-grid { grid-template-columns: 1fr !important; direction: ltr !important; gap: 32px !important; }
+          .feature-grid { grid-template-columns: 1fr !important; direction: ltr !important; gap: 42px !important; }
           .feature-grid > div { direction: ltr !important; }
-          .feature-section  { padding: 48px 20px !important; }
-          .hero-section     { padding: 90px 20px 48px !important; }
-          .stats-section    { padding: 40px 20px !important; }
-          .cta-section      { padding: 48px 20px !important; }
+          .feature-section  { padding: 56px 24px !important; }
+          .hero-section     { padding: 100px 24px 64px !important; }
+          .stats-section    { padding: 40px 24px !important; }
+          .cta-section      { padding: 56px 24px !important; }
           .hero-label  { letter-spacing: 1px !important; font-size: 11px !important; }
-          .hero-h1     { line-height: 1.05 !important; letter-spacing: -2px !important; }
-          .features-h2 { line-height: 1.1 !important;  letter-spacing: -2px !important; }
-          .feature-h3  { line-height: 1.1 !important;  letter-spacing: -1px !important; }
-          .cta-h2      { line-height: 1.0 !important;  letter-spacing: -2px !important; }
+          .hero-h1     { line-height: 1.1 !important; letter-spacing: -1.5px !important; }
+          .features-h2 { line-height: 1.15 !important;  letter-spacing: -1.5px !important; }
+          .feature-h3  { line-height: 1.15 !important;  letter-spacing: -1px !important; }
+          .cta-h2      { line-height: 1.0 !important;  letter-spacing: -1.5px !important; }
           .footer-inner { flex-direction: column !important; align-items: center !important; text-align: center !important; gap: 8px !important; }
           .footer-text  { text-align: center !important; }
         }
