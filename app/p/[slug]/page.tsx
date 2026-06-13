@@ -1,6 +1,5 @@
-import { createServerClient } from '@/app/lib/supabase';
+import { createClient } from '@/app/lib/supabase';
 import { notFound } from 'next/navigation';
-
 interface Propiedad {
   id: string;
   nombre: string;
