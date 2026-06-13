@@ -1,40 +1,58 @@
-import { createClient } from '@/app/lib/supabase';
-import { notFound } from 'next/navigation';
-interface Propiedad {
-  id: string;
-  nombre: string;
-  precio: string;
-  ubicacion: string;
-  imagen: string | null;
-  recamaras: string;
-  banos: string;
-  area: string;
-  descripcion: string;
-  tipo: string;
-}
+'use client';
 
-export default async function PortalRealtorPage({ params }: { params: { slug: string } }) {
-const supabase = createClient();
-  const { data: perfil } = await supabase
-    .from('profiles')
-    .select('id, nombre, bio, avatar_url, whatsapp, slug')
-    .eq('slug', params.slug)
-    .eq('portal_activo', true)
-    .single();
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
+import { supabase } from '@/app/lib/supabase';
 
-  if (!perfil) return notFound();
+export default function PortalRealtorPage() {
+  const params = useParams();
+  const slug = params?.slug as string;
+  const [perfil, setPerfil] = useState<any>(null);
+  const [propiedades, setPropiedades] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const { data: propiedades } = await supabase
-    .from('propiedades')
-    .select('*')
-    .eq('user_id', perfil.id)
-    .eq('estado', 'activo')
-    .order('created_at', { ascending: false });
+  useEffect(() => {
+    if (!slug) return;
+    cargarPortal();
+  }, [slug]);
+
+  const cargarPortal = async () => {
+    const { data: perfilData } = await supabase
+      .from('profiles')
+      .select('id, nombre, bio, avatar_url, whatsapp, slug')
+      .eq('slug', slug)
+      .eq('portal_activo', true)
+      .single();
+
+    if (!perfilData) { setLoading(false); return; }
+    setPerfil(perfilData);
+
+    const { data: propsData } = await supabase
+      .from('propiedades')
+      .select('*')
+      .eq('user_id', perfilData.id)
+      .eq('estado', 'activo')
+      .order('created_at', { ascending: false });
+
+    setPropiedades(propsData || []);
+    setLoading(false);
+  };
+
+  if (loading) return (
+    <div className="min-h-screen bg-[#09090b] flex items-center justify-center text-zinc-500 font-mono text-sm animate-pulse">
+      Cargando portal...
+    </div>
+  );
+
+  if (!perfil) return (
+    <div className="min-h-screen bg-[#09090b] flex items-center justify-center text-zinc-500 font-mono text-sm">
+      Portal no encontrado.
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-[#09090b] text-zinc-100">
 
-      {/* Header */}
       <div className="bg-zinc-950 border-b border-zinc-800 px-6 py-4 flex items-center justify-between">
         <span className="text-white font-black text-lg tracking-tighter">SEC<span className="text-[#CCFF00]">TOR</span></span>
         {perfil.whatsapp && (
@@ -45,7 +63,6 @@ const supabase = createClient();
         )}
       </div>
 
-      {/* Perfil del realtor */}
       <div className="max-w-5xl mx-auto px-6 py-12">
         <div className="flex items-center gap-6 mb-12">
           <div className="w-20 h-20 rounded-full overflow-hidden bg-zinc-800 border border-zinc-700 flex-shrink-0">
@@ -67,13 +84,12 @@ const supabase = createClient();
           </div>
         </div>
 
-        {/* Propiedades */}
         <div className="mb-6">
           <h2 className="text-lg font-bold text-white mb-1">Propiedades Disponibles</h2>
-          <p className="text-sm text-zinc-500">{propiedades?.length || 0} propiedades activas</p>
+          <p className="text-sm text-zinc-500">{propiedades.length} propiedades activas</p>
         </div>
 
-        {!propiedades || propiedades.length === 0 ? (
+        {propiedades.length === 0 ? (
           <div className="text-center py-20 text-zinc-600 font-mono text-sm">
             Este realtor no tiene propiedades activas en este momento.
           </div>
@@ -93,9 +109,7 @@ const supabase = createClient();
                     <span className="text-[10px] font-mono uppercase bg-[#d4ff3b]/10 text-[#d4ff3b] px-2 py-0.5 rounded border border-[#d4ff3b]/20">
                       {p.ubicacion}
                     </span>
-                    <span className="text-[10px] font-mono uppercase text-zinc-500">
-                      {p.tipo}
-                    </span>
+                    <span className="text-[10px] font-mono uppercase text-zinc-500">{p.tipo}</span>
                   </div>
                   <h3 className="text-sm font-bold text-white mt-2 line-clamp-1">{p.nombre}</h3>
                   <p className="text-lg font-mono font-bold text-white mt-1">
