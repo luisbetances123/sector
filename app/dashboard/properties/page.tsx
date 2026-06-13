@@ -7,15 +7,16 @@ export const dynamic = 'force-dynamic';
 
 interface Propiedad {
   id: string;
-  titulo: string;
+  nombre: string;
   precio: string;
-  sector: string;
+  ubicacion: string;
   imagen: string | null;
   recamaras: string;
   banos: string;
-  metros_cuadrados: string;
-  notas: string;
-  public: boolean;
+  area: string;
+  descripcion: string;
+  tipo: string;
+  estado: string;
   imagenes_galeria: string[];
 }
 
@@ -25,17 +26,18 @@ export default function PropertiesPage() {
   const [loading, setLoading] = useState(true);
   const [propiedadSeleccionada, setPropiedadSeleccionada] = useState<Propiedad | null>(null);
   const [fotoActivaIndex, setFotoActivaIndex] = useState<number>(0);
+  const [plan, setPlan] = useState<string>('free');
 
-  const [plan, setPlan] = useState<string>('free')
   const [formData, setFormData] = useState({
-    titulo: '',
+    nombre: '',
     precio: '',
-    sector: '',
+    ubicacion: '',
     imagen: '',
     recamaras: '4',
     banos: '5',
-    metros_cuadrados: '480',
-    notas: ''
+    area: '480',
+    descripcion: '',
+    tipo: 'venta',
   });
 
   useEffect(() => {
@@ -43,34 +45,39 @@ export default function PropertiesPage() {
   }, []);
 
   const cargarPropiedades = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
+    const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      const { data: profile } = await supabase.from('profiles').select('plan').eq('id', user.id).single()
-      if (profile) setPlan(profile.plan || 'free')
+      const { data: profile } = await supabase.from('profiles').select('plan').eq('id', user.id).single();
+      if (profile) setPlan(profile.plan || 'free');
     }
     setLoading(true);
     try {
+      const { data: { user: usuarioActual } } = await supabase.auth.getUser();
+      if (!usuarioActual) return;
+
       const { data, error } = await supabase
-        .from('properties')
+        .from('propiedades')
         .select('*')
+        .eq('user_id', usuarioActual.id)
         .order('created_at', { ascending: false });
 
       if (error) {
         console.error('Error Supabase:', error.message);
       } else if (data) {
         const mapeadas = data.map((item: any) => {
-          const imgPrincipal = item.image_url || 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200';
+          const imgPrincipal = item.imagen || 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200';
           return {
             id: item.id,
-            titulo: item.title || 'Propiedad sin título',
-            precio: item.price ? item.price.toString() : '0',
-            sector: item.location || '',
+            nombre: item.nombre || 'Propiedad sin título',
+            precio: item.precio ? item.precio.toString() : '0',
+            ubicacion: item.ubicacion || '',
             imagen: imgPrincipal,
-            recamaras: item.bedrooms ? item.bedrooms.toString() : '4',
-            banos: item.bathrooms ? item.bathrooms.toString() : '5',
-            metros_cuadrados: item.m2 ? item.m2.toString() : '480',
-            notas: item.descripcion || '',
-            public: item.public || false,
+            recamaras: item.recamaras ? item.recamaras.toString() : '4',
+            banos: item.banos ? item.banos.toString() : '5',
+            area: item.area ? item.area.toString() : '480',
+            descripcion: item.descripcion || '',
+            tipo: item.tipo || 'venta',
+            estado: item.estado || 'activo',
             imagenes_galeria: [
               imgPrincipal,
               'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800',
@@ -89,44 +96,40 @@ export default function PropertiesPage() {
     }
   };
 
-  const togglePublic = async (id: string, currentValue: boolean) => {
-    await supabase.from('properties').update({ public: !currentValue }).eq('id', id);
-    cargarPropiedades();
-  };
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return alert('Debes iniciar sesión para agregar propiedades.');
+
     const datosAEnviar: any = {
-      title: formData.titulo,
-      price: formData.precio,
-      location: formData.sector,
-      image_url: formData.imagen || 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200',
-      bedrooms: formData.recamaras ? Number(formData.recamaras) : 4,
-      bathrooms: formData.banos ? Number(formData.banos) : 5,
-      m2: formData.metros_cuadrados,
-      descripcion: formData.notas || '',
-      status: 'active',
-      public: true,
-      user_id: user?.id || null
+      nombre: formData.nombre,
+      precio: formData.precio,
+      ubicacion: formData.ubicacion,
+      imagen: formData.imagen || 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200',
+      recamaras: formData.recamaras ? Number(formData.recamaras) : 4,
+      banos: formData.banos ? Number(formData.banos) : 5,
+      area: formData.area,
+      descripcion: formData.descripcion || '',
+      tipo: formData.tipo || 'venta',
+      estado: 'activo',
+      user_id: user.id,
     };
 
     try {
       if (editandoId !== null) {
-        const { error } = await supabase.from('properties').update(datosAEnviar).eq('id', editandoId);
-        if (error) return alert("Error al actualizar: " + error.message);
+        const { error } = await supabase.from('propiedades').update(datosAEnviar).eq('id', editandoId);
+        if (error) return alert('Error al actualizar: ' + error.message);
         setEditandoId(null);
       } else {
-        const { error } = await supabase.from('properties').insert([datosAEnviar]);
-        if (error) return alert("Error al guardar: " + error.message);
+        const { error } = await supabase.from('propiedades').insert([datosAEnviar]);
+        if (error) return alert('Error al guardar: ' + error.message);
       }
 
-      setFormData({ titulo: '', precio: '', sector: '', imagen: '', recamaras: '4', banos: '5', metros_cuadrados: '480', notas: '' });
+      setFormData({ nombre: '', precio: '', ubicacion: '', imagen: '', recamaras: '4', banos: '5', area: '480', descripcion: '', tipo: 'venta' });
       cargarPropiedades();
     } catch (err) {
       console.error(err);
@@ -136,20 +139,21 @@ export default function PropertiesPage() {
   const iniciarEdicion = (propiedad: Propiedad) => {
     setEditandoId(propiedad.id);
     setFormData({
-      titulo: propiedad.titulo,
+      nombre: propiedad.nombre,
       precio: propiedad.precio,
-      sector: propiedad.sector,
+      ubicacion: propiedad.ubicacion,
       imagen: propiedad.imagen || '',
       recamaras: propiedad.recamaras,
       banos: propiedad.banos,
-      metros_cuadrados: propiedad.metros_cuadrados,
-      notas: propiedad.notas
+      area: propiedad.area,
+      descripcion: propiedad.descripcion,
+      tipo: propiedad.tipo,
     });
   };
 
   const eliminarPropiedad = async (id: string) => {
-    if (confirm("¿Remover esta propiedad de la lista de SECTOR?")) {
-      const { error } = await supabase.from('properties').delete().eq('id', id);
+    if (confirm('¿Remover esta propiedad de la lista de SECTOR?')) {
+      const { error } = await supabase.from('propiedades').delete().eq('id', id);
       if (!error) cargarPropiedades();
     }
   };
@@ -166,7 +170,7 @@ export default function PropertiesPage() {
 
   return (
     <div className="p-8 max-w-7xl mx-auto min-h-screen bg-transparent text-zinc-100 relative">
-      
+
       <div className="flex justify-between items-center mb-8 border-b border-zinc-800 pb-5">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-white">Catálogo de Propiedades</h1>
@@ -181,20 +185,30 @@ export default function PropertiesPage() {
         <h2 className="text-md font-semibold mb-5 text-zinc-300 flex items-center gap-2">
           {editandoId !== null ? '⚡ Editar Parámetros del Activo' : '＋ Registrar Nueva Propiedad'}
         </h2>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="md:col-span-2">
               <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Título de la Propiedad</label>
-              <input type="text" name="titulo" value={formData.titulo} onChange={handleChange} placeholder="Ej. Penthouse Duplex Minimalista con Vista al Golf" className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" required />
+              <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} placeholder="Ej. Penthouse Duplex Minimalista con Vista al Golf" className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" required />
             </div>
             <div>
               <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Precio de Salida</label>
               <input type="text" name="precio" value={formData.precio} onChange={handleChange} placeholder="Ej. 4250000" className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" required />
             </div>
             <div>
+              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Tipo</label>
+              <select name="tipo" value={formData.tipo} onChange={handleChange} className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition">
+                <option value="venta">Venta</option>
+                <option value="alquiler">Alquiler</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="md:col-span-2">
               <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Ubicación / Sector</label>
-              <select name="sector" value={formData.sector} onChange={handleChange} className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition">
+              <select name="ubicacion" value={formData.ubicacion} onChange={handleChange} className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition">
                 <option value="">Seleccionar sector...</option>
                 <optgroup label="Santo Domingo">
                   <option>Piantini</option>
@@ -250,9 +264,6 @@ export default function PropertiesPage() {
                 </optgroup>
               </select>
             </div>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
               <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Recámaras</label>
               <input type="number" name="recamaras" value={formData.recamaras} onChange={handleChange} className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
@@ -261,24 +272,27 @@ export default function PropertiesPage() {
               <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Baños</label>
               <input type="number" name="banos" value={formData.banos} onChange={handleChange} className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
             </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
               <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Área M²</label>
-              <input type="number" name="metros_cuadrados" value={formData.metros_cuadrados} onChange={handleChange} className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
+              <input type="number" name="area" value={formData.area} onChange={handleChange} className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
             </div>
-            <div>
+            <div className="md:col-span-3">
               <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">URL de Imagen Principal</label>
               <input type="text" name="imagen" value={formData.imagen} onChange={handleChange} placeholder="https://images.unsplash.com/..." className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
             </div>
           </div>
 
           <div>
-            <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Notas de Venta / Especificaciones</label>
-            <textarea name="notas" value={formData.notas} onChange={handleChange} rows={2} placeholder="Acabados, detalles o comentarios de venta..." className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition resize-none" />
+            <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Descripción / Especificaciones</label>
+            <textarea name="descripcion" value={formData.descripcion} onChange={handleChange} rows={2} placeholder="Acabados, detalles o comentarios de venta..." className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition resize-none" />
           </div>
 
           <div className="flex justify-end gap-2 pt-2">
             {editandoId !== null && (
-              <button type="button" onClick={() => { setEditandoId(null); setFormData({ titulo: '', precio: '', sector: '', imagen: '', recamaras: '4', banos: '5', metros_cuadrados: '480', notas: '' }); }} className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-4 py-2 rounded-lg text-sm font-medium transition">
+              <button type="button" onClick={() => { setEditandoId(null); setFormData({ nombre: '', precio: '', ubicacion: '', imagen: '', recamaras: '4', banos: '5', area: '480', descripcion: '', tipo: 'venta' }); }} className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-4 py-2 rounded-lg text-sm font-medium transition">
                 Cancelar
               </button>
             )}
@@ -304,17 +318,17 @@ export default function PropertiesPage() {
             <div key={propiedad.id} className="bg-[#18181b] border border-zinc-800/80 rounded-xl overflow-hidden shadow-xl hover:border-zinc-700 transition duration-300 flex flex-col justify-between">
               <div>
                 <div className="relative group overflow-hidden h-52 bg-zinc-950">
-                  <img src={propiedad.imagen || 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200'} alt={propiedad.titulo} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                  <img src={propiedad.imagen || 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200'} alt={propiedad.nombre} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                   <div className="absolute top-3 left-3 bg-[#09090b]/80 backdrop-blur-md text-[#d4ff3b] border border-zinc-800 text-[10px] font-mono px-2.5 py-1 rounded-md uppercase tracking-wider">
-                    {propiedad.sector}
+                    {propiedad.ubicacion}
+                  </div>
+                  <div className="absolute top-3 right-3 bg-[#09090b]/80 backdrop-blur-md text-zinc-400 border border-zinc-800 text-[10px] font-mono px-2.5 py-1 rounded-md uppercase tracking-wider">
+                    {propiedad.tipo}
                   </div>
                 </div>
 
                 <div className="p-6">
-                  <h3 className="text-lg font-bold text-white tracking-tight line-clamp-1">{propiedad.titulo}</h3>
-                  <button onClick={() => togglePublic(propiedad.id, propiedad.public)} className={`mt-1 text-xs px-2 py-1 rounded-full font-semibold ${propiedad.public ? 'bg-green-500 text-white' : 'bg-zinc-600 text-zinc-300'}`}>
-                    {propiedad.public ? 'Portal: ON' : 'Portal: OFF'}
-                  </button>
+                  <h3 className="text-lg font-bold text-white tracking-tight line-clamp-1">{propiedad.nombre}</h3>
                   <p className="text-2xl font-semibold text-white mt-1.5 font-mono">
                     ${Number(propiedad.precio) ? Number(propiedad.precio).toLocaleString() : propiedad.precio}
                   </p>
@@ -329,14 +343,14 @@ export default function PropertiesPage() {
                       <span className="text-[10px] text-zinc-500 uppercase tracking-wider">Baños</span>
                     </div>
                     <div>
-                      <span className="block text-white font-mono text-sm">{propiedad.metros_cuadrados} <span className="text-[10px] text-zinc-400">m²</span></span>
+                      <span className="block text-white font-mono text-sm">{propiedad.area} <span className="text-[10px] text-zinc-400">m²</span></span>
                       <span className="text-[10px] text-zinc-500 uppercase tracking-wider">Área</span>
                     </div>
                   </div>
 
                   <div className="mt-5 bg-[#09090b]/40 p-4 rounded-xl border border-zinc-800/40">
-                    <span className="block text-[10px] text-zinc-500 uppercase font-mono tracking-wider mb-1">Notas de Venta:</span>
-                    <p className="text-xs text-zinc-400 line-clamp-3 leading-relaxed">{propiedad.notas || 'Sin notas internas registradas.'}</p>
+                    <span className="block text-[10px] text-zinc-500 uppercase font-mono tracking-wider mb-1">Descripción:</span>
+                    <p className="text-xs text-zinc-400 line-clamp-3 leading-relaxed">{propiedad.descripcion || 'Sin descripción registrada.'}</p>
                   </div>
                 </div>
               </div>
@@ -345,7 +359,7 @@ export default function PropertiesPage() {
                 <button onClick={() => { setPropiedadSeleccionada(propiedad); setFotoActivaIndex(0); }} className="w-full bg-[#d4ff3b]/10 hover:bg-[#d4ff3b] text-[#d4ff3b] hover:text-black text-xs py-2.5 rounded-lg font-semibold transition border border-[#d4ff3b]/20 text-center block">
                   Ver Más Fotos / Detalles
                 </button>
-                <a href={"/api/pdf/propiedad?titulo=" + encodeURIComponent(propiedad.titulo) + "&precio=" + propiedad.precio + "&sector=" + encodeURIComponent(propiedad.sector) + "&recamaras=" + propiedad.recamaras + "&banos=" + propiedad.banos + "&area=" + propiedad.metros_cuadrados + "&notas=" + encodeURIComponent(propiedad.notas) + "&imagen=" + encodeURIComponent(propiedad.imagen || "")} target="_blank" rel="noopener noreferrer" className="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs py-2.5 rounded-lg font-semibold transition border border-zinc-700 text-center block">
+                <a href={"/api/pdf/propiedad?titulo=" + encodeURIComponent(propiedad.nombre) + "&precio=" + propiedad.precio + "&sector=" + encodeURIComponent(propiedad.ubicacion) + "&recamaras=" + propiedad.recamaras + "&banos=" + propiedad.banos + "&area=" + propiedad.area + "&notas=" + encodeURIComponent(propiedad.descripcion) + "&imagen=" + encodeURIComponent(propiedad.imagen || "")} target="_blank" rel="noopener noreferrer" className="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs py-2.5 rounded-lg font-semibold transition border border-zinc-700 text-center block">
                   Exportar Ficha PDF
                 </a>
                 <div className="flex gap-2">
@@ -381,8 +395,8 @@ export default function PropertiesPage() {
             <div className="p-6 overflow-y-auto space-y-4">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
                 <div>
-                  <span className="text-[10px] font-mono uppercase bg-[#d4ff3b]/10 text-[#d4ff3b] px-2.5 py-1 rounded-md border border-[#d4ff3b]/20 tracking-wider">{propiedadSeleccionada.sector}</span>
-                  <h2 className="text-xl font-bold text-white tracking-tight mt-2">{propiedadSeleccionada.titulo}</h2>
+                  <span className="text-[10px] font-mono uppercase bg-[#d4ff3b]/10 text-[#d4ff3b] px-2.5 py-1 rounded-md border border-[#d4ff3b]/20 tracking-wider">{propiedadSeleccionada.ubicacion}</span>
+                  <h2 className="text-xl font-bold text-white tracking-tight mt-2">{propiedadSeleccionada.nombre}</h2>
                 </div>
                 <div className="text-right">
                   <span className="text-[10px] text-zinc-500 uppercase block tracking-wider font-mono">Precio Solicitado</span>
@@ -400,14 +414,14 @@ export default function PropertiesPage() {
                   <span className="text-[10px] text-zinc-500 uppercase tracking-wider">Baños Completos</span>
                 </div>
                 <div>
-                  <span className="block text-md font-mono text-white font-bold">{propiedadSeleccionada.metros_cuadrados} m²</span>
+                  <span className="block text-md font-mono text-white font-bold">{propiedadSeleccionada.area} m²</span>
                   <span className="text-[10px] text-zinc-500 uppercase tracking-wider">Superficie Total</span>
                 </div>
               </div>
 
               <div>
                 <span className="block text-[11px] text-zinc-500 font-mono uppercase tracking-wider mb-1">Descripción y Detalles:</span>
-                <p className="text-sm text-zinc-300 leading-relaxed bg-[#09090b]/30 p-4 rounded-xl border border-zinc-800/40">{propiedadSeleccionada.notas || "Sin comentarios de venta adicionales."}</p>
+                <p className="text-sm text-zinc-300 leading-relaxed bg-[#09090b]/30 p-4 rounded-xl border border-zinc-800/40">{propiedadSeleccionada.descripcion || 'Sin comentarios de venta adicionales.'}</p>
               </div>
             </div>
           </div>
