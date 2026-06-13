@@ -24,6 +24,14 @@ interface Constructora {
   nombre: string;
 }
 
+interface Acceso {
+  id: string;
+  token: string;
+  nombre_agencia: string | null;
+  activo: boolean;
+  created_at: string;
+}
+
 export default function ProyectosPage() {
   const params = useParams();
   const router = useRouter();
@@ -34,6 +42,11 @@ export default function ProyectosPage() {
   const [loading, setLoading] = useState(true);
   const [editandoId, setEditandoId] = useState<string | null>(null);
   const [mensaje, setMensaje] = useState<{ tipo: 'exito' | 'error'; texto: string } | null>(null);
+  const [accesosProyecto, setAccesosProyecto] = useState<Record<string, Acceso[]>>({});
+  const [generandoLink, setGenerandoLink] = useState<string | null>(null);
+  const [nombreAgencia, setNombreAgencia] = useState('');
+  const [linkGenerado, setLinkGenerado] = useState<string | null>(null);
+
   const [formData, setFormData] = useState({
     nombre: '',
     descripcion: '',
@@ -47,9 +60,7 @@ export default function ProyectosPage() {
   });
 
   useEffect(() => {
-    if (constructoraId) {
-      cargarDatos();
-    }
+    if (constructoraId) cargarDatos();
   }, [constructoraId]);
 
   const cargarDatos = async () => {
@@ -66,14 +77,51 @@ export default function ProyectosPage() {
       .select('*')
       .eq('constructora_id', constructoraId)
       .order('created_at', { ascending: false });
-    if (p) setProyectos(p);
+    if (p) {
+      setProyectos(p);
+      for (const proyecto of p) {
+        const { data: accesos } = await supabase
+          .from('proyecto_accesos')
+          .select('*')
+          .eq('proyecto_id', proyecto.id)
+          .order('created_at', { ascending: false });
+        if (accesos) {
+          setAccesosProyecto(prev => ({ ...prev, [proyecto.id]: accesos }));
+        }
+      }
+    }
     setLoading(false);
   };
 
+  const generarToken = () => {
+    return Math.random().toString(36).substring(2, 10) +
+           Math.random().toString(36).substring(2, 10);
+  };
+
+  const generarLink = async (proyectoId: string) => {
+    if (!nombreAgencia.trim()) return;
+    const token = generarToken();
+    const { error } = await supabase.from('proyecto_accesos').insert([{
+      proyecto_id: proyectoId,
+      token,
+      nombre_agencia: nombreAgencia,
+      activo: true,
+    }]);
+    if (!error) {
+      const url = `${window.location.origin}/proyecto/${token}`;
+      setLinkGenerado(url);
+      setNombreAgencia('');
+      cargarDatos();
+    }
+  };
+
+  const desactivarAcceso = async (accesoId: string) => {
+    await supabase.from('proyecto_accesos').update({ activo: false }).eq('id', accesoId);
+    cargarDatos();
+  };
+
   const generarSlug = (texto: string) => {
-    return texto
-      .toLowerCase()
-      .normalize('NFD')
+    return texto.toLowerCase().normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-|-$/g, '');
@@ -86,7 +134,6 @@ export default function ProyectosPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMensaje(null);
-
     const datosAEnviar = {
       constructora_id: constructoraId,
       nombre: formData.nombre,
@@ -100,14 +147,12 @@ export default function ProyectosPage() {
       imagen_url: formData.imagen_url || null,
       slug: generarSlug(formData.nombre),
     };
-
     let error;
     if (editandoId) {
       ({ error } = await supabase.from('proyectos').update(datosAEnviar).eq('id', editandoId));
     } else {
       ({ error } = await supabase.from('proyectos').insert([datosAEnviar]));
     }
-
     if (error) {
       setMensaje({ tipo: 'error', texto: 'Error: ' + error.message });
     } else {
@@ -157,7 +202,6 @@ export default function ProyectosPage() {
         </span>
       </div>
 
-      {/* Formulario */}
       <div className="bg-[#18181b] border border-zinc-800 p-6 rounded-xl shadow-2xl mb-10">
         <h2 className="text-sm font-semibold mb-5 text-zinc-300 uppercase tracking-wider">
           {editandoId ? '⚡ Editar Proyecto' : '＋ Registrar Proyecto'}
@@ -188,7 +232,7 @@ export default function ProyectosPage() {
               <input type="date" name="fecha_entrega_estimada" value={formData.fecha_entrega_estimada} onChange={handleChange} className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Avance % </label>
+              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Avance %</label>
               <input type="number" name="porcentaje_avance" value={formData.porcentaje_avance} onChange={handleChange} min="0" max="100" className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
             </div>
           </div>
@@ -228,7 +272,6 @@ export default function ProyectosPage() {
         </form>
       </div>
 
-      {/* Lista de proyectos */}
       {loading ? (
         <div className="text-center py-20 text-zinc-500 font-mono text-sm animate-pulse">Cargando proyectos...</div>
       ) : proyectos.length === 0 ? (
@@ -259,19 +302,67 @@ export default function ProyectosPage() {
                   <div><span className="block text-white font-mono font-bold">{p.porcentaje_avance}%</span>Avance</div>
                 </div>
 
-                {/* Barra de progreso */}
                 <div className="w-full bg-zinc-800 rounded-full h-1.5 mb-4">
                   <div className="bg-[#d4ff3b] h-1.5 rounded-full transition-all" style={{ width: `${p.porcentaje_avance}%` }} />
                 </div>
 
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => router.push(`/dashboard/constructoras/${constructoraId}/proyectos/${p.id}/unidades`)}
+                <div className="flex gap-2 mb-4">
+                  <button onClick={() => router.push(`/dashboard/constructoras/${constructoraId}/proyectos/${p.id}/unidades`)}
                     className="flex-1 text-center bg-[#d4ff3b]/10 hover:bg-[#d4ff3b] text-[#d4ff3b] hover:text-black text-xs py-2 rounded-lg font-semibold transition border border-[#d4ff3b]/20">
                     Ver Unidades →
                   </button>
                   <button onClick={() => iniciarEdicion(p)} className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs px-3 py-2 rounded-lg transition border border-zinc-700">Editar</button>
                   <button onClick={() => eliminar(p.id)} className="bg-zinc-900 hover:bg-red-950/40 text-zinc-500 hover:text-red-400 text-xs px-3 py-2 rounded-lg transition border border-zinc-800">Borrar</button>
+                </div>
+
+                {/* Links para brokers */}
+                <div className="border-t border-zinc-800 pt-4">
+                  <div className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono mb-3">Links para Brokers</div>
+                  {(accesosProyecto[p.id] || []).filter(a => a.activo).map(acceso => (
+                    <div key={acceso.id} className="flex items-center gap-2 mb-2">
+                      <div className="flex-1 bg-[#09090b] border border-zinc-800 rounded-lg px-3 py-1.5">
+                        <div className="text-[10px] text-zinc-400 font-mono truncate">{acceso.nombre_agencia}</div>
+                        <div className="text-[10px] text-zinc-600 font-mono truncate">/proyecto/{acceso.token}</div>
+                      </div>
+                      <button onClick={() => navigator.clipboard.writeText(`${window.location.origin}/proyecto/${acceso.token}`)}
+                        className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[10px] px-2 py-1.5 rounded-lg transition">
+                        Copiar
+                      </button>
+                      <button onClick={() => desactivarAcceso(acceso.id)}
+                        className="bg-zinc-900 hover:bg-red-950/40 text-zinc-600 hover:text-red-400 text-[10px] px-2 py-1.5 rounded-lg transition">
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+
+                  {generandoLink === p.id ? (
+                    <div className="mt-2">
+                      <input type="text" value={nombreAgencia} onChange={e => setNombreAgencia(e.target.value)}
+                        placeholder="Nombre de la agencia o broker"
+                        className="w-full p-2 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-xs focus:outline-none focus:border-[#d4ff3b] transition mb-2" />
+                      {linkGenerado && (
+                        <div className="bg-[#d4ff3b]/10 border border-[#d4ff3b]/20 rounded-lg p-3 mb-2">
+                          <div className="text-[10px] text-[#d4ff3b] font-mono break-all">{linkGenerado}</div>
+                          <button onClick={() => navigator.clipboard.writeText(linkGenerado)} className="text-[10px] text-[#d4ff3b] underline mt-1">Copiar link</button>
+                        </div>
+                      )}
+                      <div className="flex gap-2">
+                        <button onClick={() => generarLink(p.id)} disabled={!nombreAgencia.trim()}
+                          className="flex-1 bg-[#d4ff3b] hover:bg-[#c2eb30] disabled:opacity-40 text-black text-xs py-1.5 rounded-lg font-semibold transition">
+                          Generar Link
+                        </button>
+                        <button onClick={() => { setGenerandoLink(null); setNombreAgencia(''); setLinkGenerado(null); }}
+                          className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs px-3 py-1.5 rounded-lg transition">
+                          Cancelar
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button onClick={() => { setGenerandoLink(p.id); setLinkGenerado(null); }}
+                      className="w-full text-center bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 text-xs py-2 rounded-lg transition border border-zinc-800 border-dashed mt-1">
+                      + Generar link para broker
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
