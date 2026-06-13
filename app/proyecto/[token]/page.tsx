@@ -74,12 +74,14 @@ export default function PortalBrokerPage() {
   const cargarPortal = async () => {
     console.log('Token buscado:', token);
 
-    const { data: accesoData, error: accesoError } = await supabase
+ const { data: accesoArray, error: accesoError } = await supabase
       .from('proyecto_accesos')
       .select('id, nombre_agencia, proyecto_id')
       .eq('token', token)
       .eq('activo', true)
-.maybeSingle()
+      .limit(1);
+
+const accesoData = accesoArray?.[0] || null;
     console.log('Acceso data:', accesoData);
     console.log('Acceso error:', accesoError);
 
