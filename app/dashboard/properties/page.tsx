@@ -266,8 +266,7 @@ export default function PropertiesPage() {
             </div>
             <div>
               <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Recámaras</label>
-              <input type="number" name="recamaras" value={formData.recamaras} onChange={handleChange} className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
-            </div>
+<label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Habitaciones</label>            </div>
             <div>
               <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Baños</label>
               <input type="number" name="banos" value={formData.banos} onChange={handleChange} className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
@@ -336,8 +335,7 @@ export default function PropertiesPage() {
                   <div className="grid grid-cols-3 gap-2 mt-5 py-4 border-y border-zinc-800/60 text-center text-xs font-medium text-zinc-400">
                     <div>
                       <span className="block text-white font-mono text-sm">{propiedad.recamaras}</span>
-                      <span className="text-[10px] text-zinc-500 uppercase tracking-wider">Recs</span>
-                    </div>
+<span className="text-[10px] text-zinc-500 uppercase tracking-wider">Hab.</span>                    </div>
                     <div className="border-x border-zinc-800/60">
                       <span className="block text-white font-mono text-sm">{propiedad.banos}</span>
                       <span className="text-[10px] text-zinc-500 uppercase tracking-wider">Baños</span>
