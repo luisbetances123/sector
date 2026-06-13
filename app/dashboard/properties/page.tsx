@@ -176,9 +176,9 @@ export default function PropertiesPage() {
           <h1 className="text-3xl font-bold tracking-tight text-white">Catálogo de Propiedades</h1>
           <p className="text-sm text-zinc-400 mt-1">Gestión de activos con visualizador flotante integrado multimedios.</p>
         </div>
-      <span className="bg-[#d4ff3b]/10 text-[#d4ff3b] border border-[#d4ff3b]/20 text-xs px-3 py-1.5 rounded-full font-mono uppercase tracking-widest">
-  {propiedades.length} {propiedades.length === 1 ? 'Propiedad' : 'Propiedades'}
-</span>
+        <span className="bg-[#d4ff3b]/10 text-[#d4ff3b] border border-[#d4ff3b]/20 text-xs px-3 py-1.5 rounded-full font-mono uppercase tracking-widest">
+          {propiedades.length} {propiedades.length === 1 ? 'Propiedad' : 'Propiedades'}
+        </span>
       </div>
 
       <div className="bg-[#18181b] border border-zinc-800 p-6 rounded-xl shadow-2xl mb-10">
@@ -265,10 +265,10 @@ export default function PropertiesPage() {
               </select>
             </div>
             <div>
-<div>
               <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Habitaciones</label>
               <input type="number" name="recamaras" value={formData.recamaras} onChange={handleChange} className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
             </div>
+            <div>
               <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Baños</label>
               <input type="number" name="banos" value={formData.banos} onChange={handleChange} className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
             </div>
@@ -336,7 +336,8 @@ export default function PropertiesPage() {
                   <div className="grid grid-cols-3 gap-2 mt-5 py-4 border-y border-zinc-800/60 text-center text-xs font-medium text-zinc-400">
                     <div>
                       <span className="block text-white font-mono text-sm">{propiedad.recamaras}</span>
-<span className="text-[10px] text-zinc-500 uppercase tracking-wider">Hab.</span>                    </div>
+                      <span className="text-[10px] text-zinc-500 uppercase tracking-wider">Hab.</span>
+                    </div>
                     <div className="border-x border-zinc-800/60">
                       <span className="block text-white font-mono text-sm">{propiedad.banos}</span>
                       <span className="text-[10px] text-zinc-500 uppercase tracking-wider">Baños</span>
