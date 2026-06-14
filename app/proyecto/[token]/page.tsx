@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { supabase } from '@/app/lib/supabase';
+import { createClient } from '@/app/lib/supabase';
 
 const LIME = "#CCFF00";
 const BG = "#09090b";
@@ -72,16 +72,17 @@ export default function PortalBrokerPage() {
   }, [token]);
 
   const cargarPortal = async () => {
+    const supabase = createClient();
     console.log('Token buscado:', token);
 
- const { data: accesoArray, error: accesoError } = await supabase
+    const { data: accesoArray, error: accesoError } = await supabase
       .from('proyecto_accesos')
       .select('id, nombre_agencia, proyecto_id')
       .eq('token', token)
       .eq('activo', true)
       .limit(1);
 
-const accesoData = accesoArray?.[0] || null;
+    const accesoData = accesoArray?.[0] || null;
     console.log('Acceso data:', accesoData);
     console.log('Acceso error:', accesoError);
 
@@ -109,6 +110,7 @@ const accesoData = accesoArray?.[0] || null;
   const reservarUnidad = async () => {
     if (!unidadSeleccionada || !nombreBroker.trim()) return;
     setReservando(true);
+    const supabase = createClient();
 
     const reservadoHasta = new Date();
     reservadoHasta.setHours(reservadoHasta.getHours() + 48);
