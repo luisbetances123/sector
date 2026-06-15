@@ -37,6 +37,7 @@ export default function DashboardLayout({
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Mi Empresa', href: '/dashboard/constructoras', icon: HardHat },
     { name: 'Brokers', href: '/dashboard/brokers', icon: Users },
+    { name: 'Cobranza', href: '/dashboard/cobranza', icon: BarChart2 },
     { name: 'Calendario', href: '/dashboard/calendar', icon: Calendar },
     { name: 'Precios', href: '/dashboard/precios', icon: TrendingUp },
     { name: 'Mi Perfil', href: '/dashboard/perfil', icon: UserCircle },
