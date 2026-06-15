@@ -441,6 +441,11 @@ export default function UnidadesPage() {
               <button onClick={() => iniciarEdicion(unidadSeleccionada)} className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs py-1.5 rounded-lg transition">Editar</button>
               <button onClick={() => eliminar(unidadSeleccionada.id)} className="bg-zinc-900 hover:bg-red-950/40 text-zinc-500 hover:text-red-400 text-xs px-3 py-1.5 rounded-lg transition border border-zinc-800">Borrar</button>
             </div>
+            <button
+              onClick={() => router.push(`/dashboard/constructoras/${constructoraId}/proyectos/${proyectoId}/unidades/${unidadSeleccionada.id}`)}
+              className="w-full bg-[#d4ff3b]/10 hover:bg-[#d4ff3b] text-[#d4ff3b] hover:text-black text-xs py-2 rounded-lg transition border border-[#d4ff3b]/20 font-semibold">
+              💳 Plan de pago →
+            </button>
           </div>
 
           {/* Historial */}
