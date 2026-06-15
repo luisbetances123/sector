@@ -9,63 +9,40 @@ export default function PerfilPage() {
   const [loading, setLoading] = useState(true);
   const [guardando, setGuardando] = useState(false);
   const [mensaje, setMensaje] = useState<{ tipo: 'exito' | 'error'; texto: string } | null>(null);
+  const [constructora, setConstructora] = useState<any>(null);
   const [formData, setFormData] = useState({
     nombre: '',
-    slug: '',
-    bio: '',
-    avatar_url: '',
-    whatsapp: '',
-    portal_activo: true,
+    contacto_nombre: '',
+    telefono: '',
+    email: '',
+    logo_url: '',
   });
 
   useEffect(() => {
     cargarPerfil();
   }, []);
 
-  const generarSlug = (texto: string) => {
-    return texto
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '');
-  };
-
   const cargarPerfil = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('nombre, slug, bio, avatar_url, whatsapp, portal_activo')
-      .eq('id', user.id)
-      .single();
-    if (profile) {
-      const nombre = profile.nombre || '';
-      const slug = profile.slug || generarSlug(nombre);
+    const { data } = await supabase
+      .from('constructoras')
+      .select('*')
+      .limit(1)
+      .maybeSingle();
+    if (data) {
+      setConstructora(data);
       setFormData({
-        nombre,
-        slug,
-        bio: profile.bio || '',
-        avatar_url: profile.avatar_url || '',
-        whatsapp: profile.whatsapp || '',
-        portal_activo: profile.portal_activo ?? true,
+        nombre: data.nombre || '',
+        contacto_nombre: data.contacto_nombre || '',
+        telefono: data.telefono || '',
+        email: data.email || '',
+        logo_url: data.logo_url || '',
       });
     }
     setLoading(false);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleNombreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const nombre = e.target.value;
-    setFormData(prev => ({
-      ...prev,
-      nombre,
-      slug: prev.slug || generarSlug(nombre),
-    }));
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleGuardar = async (e: React.FormEvent) => {
@@ -73,107 +50,77 @@ export default function PerfilPage() {
     setGuardando(true);
     setMensaje(null);
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const { error } = await supabase
-      .from('profiles')
-      .update({
-        nombre: formData.nombre,
-        slug: formData.slug,
-        bio: formData.bio,
-        avatar_url: formData.avatar_url,
-        whatsapp: formData.whatsapp,
-        portal_activo: formData.portal_activo,
-      })
-      .eq('id', user.id);
-
-    if (error) {
-      setMensaje({ tipo: 'error', texto: 'Error al guardar: ' + error.message });
-    } else {
-      setMensaje({ tipo: 'exito', texto: '¡Perfil actualizado correctamente!' });
+    if (constructora) {
+      const { error } = await supabase.from('constructoras').update(formData).eq('id', constructora.id);
+      if (error) {
+        setMensaje({ tipo: 'error', texto: 'Error: ' + error.message });
+      } else {
+        setMensaje({ tipo: 'exito', texto: 'Perfil actualizado.' });
+        cargarPerfil();
+      }
     }
     setGuardando(false);
   };
 
-  if (loading) {
-    return (
-      <div className="text-center py-20 text-zinc-500 font-mono text-sm tracking-widest animate-pulse">
-        Cargando perfil...
-      </div>
-    );
-  }
+  if (loading) return (
+    <div className="p-8 max-w-3xl mx-auto text-center py-32 text-zinc-500 font-mono text-sm animate-pulse">
+      Cargando perfil...
+    </div>
+  );
 
   return (
     <div className="p-8 max-w-3xl mx-auto min-h-screen bg-transparent text-zinc-100">
-
-      <div className="flex justify-between items-center mb-8 border-b border-zinc-800 pb-5">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">Mi Perfil</h1>
-          <p className="text-sm text-zinc-400 mt-1">Configura tu portal público en sector.do/p/{formData.slug || 'tu-nombre'}</p>
-        </div>
-        <span className={`text-xs px-3 py-1.5 rounded-full font-mono uppercase tracking-widest border ${formData.portal_activo ? 'bg-[#d4ff3b]/10 text-[#d4ff3b] border-[#d4ff3b]/20' : 'bg-zinc-800 text-zinc-500 border-zinc-700'}`}>
-          Portal {formData.portal_activo ? 'Activo' : 'Inactivo'}
-        </span>
+      <div className="mb-8 border-b border-zinc-800 pb-5">
+        <p className="text-xs text-[#d4ff3b] font-mono uppercase tracking-widest mb-1">Configuración</p>
+        <h1 className="text-3xl font-bold tracking-tight text-white">Mi Perfil</h1>
+        <p className="text-sm text-zinc-400 mt-1">Información de tu cuenta en SECTOR.</p>
       </div>
 
       <form onSubmit={handleGuardar} className="space-y-6">
-
-        <div className="bg-[#18181b] border border-zinc-800 p-6 rounded-xl shadow-2xl space-y-4">
-          <h2 className="text-sm font-semibold text-zinc-300 uppercase tracking-wider">Información Personal</h2>
+        <div className="bg-[#18181b] border border-zinc-800 p-6 rounded-2xl shadow-2xl space-y-5">
+          <h2 className="text-sm font-semibold text-zinc-300 uppercase tracking-wider">Información de la Empresa</h2>
 
           <div className="flex items-center gap-6">
-            <div className="w-20 h-20 rounded-full overflow-hidden bg-zinc-800 border border-zinc-700 flex-shrink-0">
-              {formData.avatar_url ? (
-                <img src={formData.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+            <div className="w-20 h-20 rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800 flex-shrink-0">
+              {formData.logo_url ? (
+                <img src={formData.logo_url} alt="Logo" className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-zinc-600 text-2xl">👤</div>
+                <div className="w-full h-full flex items-center justify-center text-3xl">🏗️</div>
               )}
             </div>
             <div className="flex-1">
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">URL de Foto de Perfil</label>
-              <input type="text" name="avatar_url" value={formData.avatar_url} onChange={handleChange} placeholder="https://..." className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
+              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">URL del Logo</label>
+              <input type="text" name="logo_url" value={formData.logo_url} onChange={handleChange}
+                placeholder="https://..."
+                className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
             </div>
           </div>
 
-          <div>
-            <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Nombre Completo</label>
-            <input type="text" name="nombre" value={formData.nombre} onChange={handleNombreChange} placeholder="Ej. María González" className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" required />
-          </div>
-
-          <div>
-            <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Biografía</label>
-            <textarea name="bio" value={formData.bio} onChange={handleChange} rows={3} maxLength={300} placeholder="Realtor especializado en propiedades de lujo en Santo Domingo..." className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition resize-none" />
-            <span className="text-[10px] text-zinc-600 font-mono">{formData.bio.length}/300</span>
-          </div>
-        </div>
-
-        <div className="bg-[#18181b] border border-zinc-800 p-6 rounded-xl shadow-2xl space-y-4">
-          <h2 className="text-sm font-semibold text-zinc-300 uppercase tracking-wider">Portal Público</h2>
-
-          <div>
-            <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">URL de tu Portal</label>
-            <div className="flex items-center gap-0">
-              <span className="p-2.5 bg-zinc-900 border border-r-0 border-zinc-800 rounded-l-lg text-zinc-500 text-sm font-mono">sector.do/p/</span>
-              <input type="text" name="slug" value={formData.slug} onChange={handleChange} placeholder="tu-nombre" className="flex-1 p-2.5 bg-[#09090b] border border-zinc-800 rounded-r-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition font-mono" />
-            </div>
-            <p className="text-[10px] text-zinc-600 mt-1">Solo letras, números y guiones. Ej: maria-gonzalez</p>
-          </div>
-
-          <div>
-            <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">WhatsApp</label>
-            <input type="text" name="whatsapp" value={formData.whatsapp} onChange={handleChange} placeholder="18091234567" className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition font-mono" />
-            <p className="text-[10px] text-zinc-600 mt-1">Sin espacios ni símbolos. Ej: 18091234567</p>
-          </div>
-
-          <div className="flex items-center justify-between p-4 bg-[#09090b]/60 border border-zinc-800 rounded-xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-white font-medium">Portal Activo</p>
-              <p className="text-[11px] text-zinc-500 mt-0.5">Tu portal será visible públicamente en sector.do/p/{formData.slug || 'tu-nombre'}</p>
+              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Nombre de la Empresa</label>
+              <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} required
+                placeholder="Grupo Minier"
+                className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
             </div>
-            <button type="button" onClick={() => setFormData(prev => ({ ...prev, portal_activo: !prev.portal_activo }))} className={`relative w-12 h-6 rounded-full transition-colors ${formData.portal_activo ? 'bg-[#d4ff3b]' : 'bg-zinc-700'}`}>
-              <span className={`absolute top-0.5 w-5 h-5 bg-black rounded-full transition-transform ${formData.portal_activo ? 'translate-x-6' : 'translate-x-0.5'}`} />
-            </button>
+            <div>
+              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Nombre del Contacto</label>
+              <input type="text" name="contacto_nombre" value={formData.contacto_nombre} onChange={handleChange}
+                placeholder="Roger Minier"
+                className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
+            </div>
+            <div>
+              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Teléfono</label>
+              <input type="text" name="telefono" value={formData.telefono} onChange={handleChange}
+                placeholder="809-000-0000"
+                className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
+            </div>
+            <div>
+              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Email</label>
+              <input type="email" name="email" value={formData.email} onChange={handleChange}
+                placeholder="contacto@empresa.com"
+                className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
+            </div>
           </div>
         </div>
 
@@ -184,11 +131,11 @@ export default function PerfilPage() {
         )}
 
         <div className="flex justify-end">
-          <button type="submit" disabled={guardando} className="bg-[#d4ff3b] hover:bg-[#c2eb30] disabled:opacity-50 text-black px-8 py-2.5 rounded-lg text-sm font-semibold transition shadow-md shadow-[#d4ff3b]/10">
-            {guardando ? 'Guardando...' : 'Guardar Perfil'}
+          <button type="submit" disabled={guardando}
+            className="bg-[#d4ff3b] hover:bg-[#c2eb30] disabled:opacity-50 text-black px-8 py-3 rounded-lg text-sm font-semibold transition">
+            {guardando ? 'Guardando...' : 'Guardar cambios'}
           </button>
         </div>
-
       </form>
     </div>
   );
