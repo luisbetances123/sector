@@ -201,11 +201,17 @@ export default function PlanPagoPage() {
             {mostrarGenerador ? 'Cancelar' : '+ Generar Plan'}
           </button>
         )}
-        {plan && (
-          <button onClick={eliminarPlan} className="bg-zinc-900 hover:bg-red-950/40 text-zinc-500 hover:text-red-400 text-xs px-4 py-2 rounded-lg transition border border-zinc-800">
-            Eliminar plan
+        <div className="flex gap-2">
+          <button onClick={() => router.push(`/dashboard/constructoras/${constructoraId}/proyectos/${proyectoId}/unidades/${unidadId}/incidencias`)}
+            className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs px-4 py-2 rounded-lg transition border border-zinc-700 font-medium">
+            🔧 Incidencias
           </button>
-        )}
+          {plan && (
+            <button onClick={eliminarPlan} className="bg-zinc-900 hover:bg-red-950/40 text-zinc-500 hover:text-red-400 text-xs px-4 py-2 rounded-lg transition border border-zinc-800">
+              Eliminar plan
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Generador de plan */}
