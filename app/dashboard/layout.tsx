@@ -35,14 +35,10 @@ export default function DashboardLayout({
 
   const menuItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'Clientes', href: '/dashboard/clients', icon: Users },
-    { name: 'Propiedades', href: '/dashboard/properties', icon: Building2 },
-    { name: 'Pipeline', href: '/dashboard/pipeline', icon: GitFork },
+    { name: 'Mi Empresa', href: '/dashboard/constructoras', icon: HardHat },
     { name: 'Calendario', href: '/dashboard/calendar', icon: Calendar },
-    { name: 'Reportes', href: '/dashboard/reports', icon: BarChart2 },
-    { name: 'Precios', href: '/pricing', icon: TrendingUp },
+    { name: 'Precios', href: '/dashboard/precios', icon: TrendingUp },
     { name: 'Mi Perfil', href: '/dashboard/perfil', icon: UserCircle },
-    { name: 'Constructoras', href: '/dashboard/constructoras', icon: HardHat },
   ]
 
   return (
