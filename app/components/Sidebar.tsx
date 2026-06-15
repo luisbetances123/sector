@@ -6,13 +6,10 @@ import { supabase } from '../lib/supabase'
 
 const NAV = [
   { href: '/dashboard', label: 'Dashboard' },
-  { href: '/dashboard/clients', label: 'Clientes' },
-  { href: '/dashboard/properties', label: 'Propiedades' },
-  { href: '/dashboard/pipeline', label: 'Pipeline' },
+  { href: '/dashboard/constructoras', label: 'Mi Empresa' },
   { href: '/dashboard/calendar', label: 'Calendario' },
-  { href: '/dashboard/reports', label: 'Reportes' },
+  { href: '/dashboard/pricing', label: 'Precios' },
   { href: '/dashboard/perfil', label: 'Mi Perfil' },
-  { href: '/dashboard/constructoras', label: 'Constructoras' },
 ]
 
 export default function Sidebar() {
