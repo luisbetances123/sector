@@ -12,7 +12,7 @@ interface Unidad {
   estado: string;
   precio: number | null;
   area_m2: number | null;
-  recamaras: number | null;
+  habitaciones: number | null;
   banos: number | null;
   estacionamientos: number | null;
   vista: string | null;
@@ -61,7 +61,7 @@ export default function UnidadesPage() {
     estado: 'libre',
     precio: '',
     area_m2: '',
-    recamaras: '',
+    habitaciones: '',
     banos: '',
     estacionamientos: '1',
     vista: '',
@@ -108,7 +108,7 @@ export default function UnidadesPage() {
       estado: formData.estado,
       precio: formData.precio ? Number(formData.precio) : null,
       area_m2: formData.area_m2 ? Number(formData.area_m2) : null,
-      recamaras: formData.recamaras ? Number(formData.recamaras) : null,
+      habitaciones: formData.habitaciones ? Number(formData.habitaciones) : null,
       banos: formData.banos ? Number(formData.banos) : null,
       estacionamientos: formData.estacionamientos ? Number(formData.estacionamientos) : 1,
       vista: formData.vista || null,
@@ -136,7 +136,7 @@ export default function UnidadesPage() {
   };
 
   const resetForm = () => {
-    setFormData({ numero: '', piso: '', tipo: 'apartamento', estado: 'libre', precio: '', area_m2: '', recamaras: '', banos: '', estacionamientos: '1', vista: '', reservado_por: '', cliente_nombre: '', notas: '' });
+    setFormData({ numero: '', piso: '', tipo: 'apartamento', estado: 'libre', precio: '', area_m2: '', habitaciones: '', banos: '', estacionamientos: '1', vista: '', reservado_por: '', cliente_nombre: '', notas: '' });
   };
 
   const iniciarEdicion = (u: Unidad) => {
@@ -148,7 +148,7 @@ export default function UnidadesPage() {
       estado: u.estado,
       precio: u.precio?.toString() || '',
       area_m2: u.area_m2?.toString() || '',
-      recamaras: u.recamaras?.toString() || '',
+      habitaciones: u.habitaciones?.toString() || '',
       banos: u.banos?.toString() || '',
       estacionamientos: u.estacionamientos?.toString() || '1',
       vista: u.vista || '',
@@ -259,7 +259,7 @@ export default function UnidadesPage() {
               </div>
               <div>
                 <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Habitaciones</label>
-                <input type="number" name="recamaras" value={formData.recamaras} onChange={handleChange} placeholder="3" className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
+                <input type="number" name="habitaciones" value={formData.habitaciones} onChange={handleChange} placeholder="3" className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
               </div>
               <div>
                 <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Baños</label>
@@ -358,7 +358,7 @@ export default function UnidadesPage() {
           <div className="space-y-1 text-xs text-zinc-400 mb-4">
             {unidadSeleccionada.precio && <p>💰 ${Number(unidadSeleccionada.precio).toLocaleString()}</p>}
             {unidadSeleccionada.area_m2 && <p>📐 {unidadSeleccionada.area_m2} m²</p>}
-            {unidadSeleccionada.recamaras && <p>🛏 {unidadSeleccionada.recamaras} habitaciones · {unidadSeleccionada.banos} baños</p>}
+            {unidadSeleccionada.habitaciones && <p>🛏 {unidadSeleccionada.habitaciones} habitaciones · {unidadSeleccionada.banos} baños</p>}
             {unidadSeleccionada.vista && <p>🌅 Vista: {unidadSeleccionada.vista}</p>}
             {unidadSeleccionada.reservado_por && <p>👤 Broker: {unidadSeleccionada.reservado_por}</p>}
             {unidadSeleccionada.cliente_nombre && <p>🏠 Cliente: {unidadSeleccionada.cliente_nombre}</p>}

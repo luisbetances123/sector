@@ -15,7 +15,7 @@ interface Unidad {
   estado: string;
   precio: number | null;
   area_m2: number | null;
-  recamaras: number | null;
+  habitaciones: number | null;
   banos: number | null;
   vista: string | null;
   reservado_por: string | null;
@@ -238,7 +238,7 @@ export default function PortalBrokerClient({ acceso, proyecto, unidadesIniciales
                 <div style={{ background: '#0d0d0f', borderRadius: 12, padding: 16, marginBottom: 20, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   {unidadSeleccionada.precio && <div><div style={{ color: '#666', fontSize: 10, textTransform: 'uppercase' }}>Precio</div><div style={{ color: '#fff', fontWeight: 700, fontSize: 16, fontFamily: 'monospace' }}>${Number(unidadSeleccionada.precio).toLocaleString()}</div></div>}
                   {unidadSeleccionada.area_m2 && <div><div style={{ color: '#666', fontSize: 10, textTransform: 'uppercase' }}>Área</div><div style={{ color: '#fff', fontWeight: 700, fontSize: 16 }}>{unidadSeleccionada.area_m2} m²</div></div>}
-                  {unidadSeleccionada.recamaras && <div><div style={{ color: '#666', fontSize: 10, textTransform: 'uppercase' }}>Habitaciones</div><div style={{ color: '#fff', fontWeight: 700, fontSize: 16 }}>{unidadSeleccionada.recamaras}</div></div>}
+                  {unidadSeleccionada.habitaciones && <div><div style={{ color: '#666', fontSize: 10, textTransform: 'uppercase' }}>Habitaciones</div><div style={{ color: '#fff', fontWeight: 700, fontSize: 16 }}>{unidadSeleccionada.habitaciones}</div></div>}
                   {unidadSeleccionada.vista && <div><div style={{ color: '#666', fontSize: 10, textTransform: 'uppercase' }}>Vista</div><div style={{ color: '#fff', fontWeight: 700, fontSize: 16 }}>{unidadSeleccionada.vista}</div></div>}
                 </div>
 
