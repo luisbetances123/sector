@@ -444,7 +444,12 @@ export default function UnidadesPage() {
             <button
               onClick={() => router.push(`/dashboard/constructoras/${constructoraId}/proyectos/${proyectoId}/unidades/${unidadSeleccionada.id}`)}
               className="w-full bg-[#d4ff3b]/10 hover:bg-[#d4ff3b] text-[#d4ff3b] hover:text-black text-xs py-2 rounded-lg transition border border-[#d4ff3b]/20 font-semibold">
-              💳 Plan de pago →
+              📋 Ficha completa →
+            </button>
+            <button
+              onClick={() => router.push(`/dashboard/constructoras/${constructoraId}/proyectos/${proyectoId}/unidades/${unidadSeleccionada.id}/incidencias`)}
+              className="w-full bg-zinc-800/50 hover:bg-zinc-700 text-zinc-300 text-xs py-2 rounded-lg transition border border-zinc-700 font-semibold">
+              🔧 Incidencias →
             </button>
           </div>
 
