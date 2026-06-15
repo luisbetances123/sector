@@ -32,6 +32,12 @@ interface Acceso {
   created_at: string;
 }
 
+const formVacio = {
+  nombre: '', descripcion: '', ubicacion: '', sector: '',
+  pisos: '', unidades_total: '', fecha_entrega_estimada: '',
+  porcentaje_avance: '0', imagen_url: '',
+};
+
 export default function ProyectosPage() {
   const params = useParams();
   const router = useRouter();
@@ -40,24 +46,14 @@ export default function ProyectosPage() {
   const [constructora, setConstructora] = useState<Constructora | null>(null);
   const [proyectos, setProyectos] = useState<Proyecto[]>([]);
   const [loading, setLoading] = useState(true);
+  const [mostrarForm, setMostrarForm] = useState(false);
   const [editandoId, setEditandoId] = useState<string | null>(null);
   const [mensaje, setMensaje] = useState<{ tipo: 'exito' | 'error'; texto: string } | null>(null);
   const [accesosProyecto, setAccesosProyecto] = useState<Record<string, Acceso[]>>({});
   const [generandoLink, setGenerandoLink] = useState<string | null>(null);
   const [nombreAgencia, setNombreAgencia] = useState('');
   const [linkGenerado, setLinkGenerado] = useState<string | null>(null);
-
-  const [formData, setFormData] = useState({
-    nombre: '',
-    descripcion: '',
-    ubicacion: '',
-    sector: '',
-    pisos: '',
-    unidades_total: '',
-    fecha_entrega_estimada: '',
-    porcentaje_avance: '0',
-    imagen_url: '',
-  });
+  const [formData, setFormData] = useState(formVacio);
 
   useEffect(() => {
     if (constructoraId) cargarDatos();
@@ -65,51 +61,28 @@ export default function ProyectosPage() {
 
   const cargarDatos = async () => {
     setLoading(true);
-    const { data: c } = await supabase
-      .from('constructoras')
-      .select('id, nombre')
-      .eq('id', constructoraId)
-      .single();
+    const { data: c } = await supabase.from('constructoras').select('id, nombre').eq('id', constructoraId).single();
     if (c) setConstructora(c);
 
-    const { data: p } = await supabase
-      .from('proyectos')
-      .select('*')
-      .eq('constructora_id', constructoraId)
-      .order('created_at', { ascending: false });
+    const { data: p } = await supabase.from('proyectos').select('*').eq('constructora_id', constructoraId).order('created_at', { ascending: false });
     if (p) {
       setProyectos(p);
       for (const proyecto of p) {
-        const { data: accesos } = await supabase
-          .from('proyecto_accesos')
-          .select('*')
-          .eq('proyecto_id', proyecto.id)
-          .order('created_at', { ascending: false });
-        if (accesos) {
-          setAccesosProyecto(prev => ({ ...prev, [proyecto.id]: accesos }));
-        }
+        const { data: accesos } = await supabase.from('proyecto_accesos').select('*').eq('proyecto_id', proyecto.id).order('created_at', { ascending: false });
+        if (accesos) setAccesosProyecto(prev => ({ ...prev, [proyecto.id]: accesos }));
       }
     }
     setLoading(false);
   };
 
-  const generarToken = () => {
-    return Math.random().toString(36).substring(2, 10) +
-           Math.random().toString(36).substring(2, 10);
-  };
+  const generarToken = () => Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10);
 
   const generarLink = async (proyectoId: string) => {
     if (!nombreAgencia.trim()) return;
     const token = generarToken();
-    const { error } = await supabase.from('proyecto_accesos').insert([{
-      proyecto_id: proyectoId,
-      token,
-      nombre_agencia: nombreAgencia,
-      activo: true,
-    }]);
+    const { error } = await supabase.from('proyecto_accesos').insert([{ proyecto_id: proyectoId, token, nombre_agencia: nombreAgencia, activo: true }]);
     if (!error) {
-      const url = `${window.location.origin}/proyecto/${token}`;
-      setLinkGenerado(url);
+      setLinkGenerado(`${window.location.origin}/proyecto/${token}`);
       setNombreAgencia('');
       cargarDatos();
     }
@@ -120,14 +93,10 @@ export default function ProyectosPage() {
     cargarDatos();
   };
 
-  const generarSlug = (texto: string) => {
-    return texto.toLowerCase().normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '');
-  };
+  const generarSlug = (texto: string) =>
+    texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -158,7 +127,8 @@ export default function ProyectosPage() {
     } else {
       setMensaje({ tipo: 'exito', texto: editandoId ? 'Proyecto actualizado.' : 'Proyecto registrado.' });
       setEditandoId(null);
-      setFormData({ nombre: '', descripcion: '', ubicacion: '', sector: '', pisos: '', unidades_total: '', fecha_entrega_estimada: '', porcentaje_avance: '0', imagen_url: '' });
+      setMostrarForm(false);
+      setFormData(formVacio);
       cargarDatos();
     }
   };
@@ -166,16 +136,22 @@ export default function ProyectosPage() {
   const iniciarEdicion = (p: Proyecto) => {
     setEditandoId(p.id);
     setFormData({
-      nombre: p.nombre,
-      descripcion: p.descripcion || '',
-      ubicacion: p.ubicacion || '',
-      sector: p.sector || '',
-      pisos: p.pisos?.toString() || '',
+      nombre: p.nombre, descripcion: p.descripcion || '', ubicacion: p.ubicacion || '',
+      sector: p.sector || '', pisos: p.pisos?.toString() || '',
       unidades_total: p.unidades_total?.toString() || '',
       fecha_entrega_estimada: p.fecha_entrega_estimada || '',
       porcentaje_avance: p.porcentaje_avance?.toString() || '0',
       imagen_url: p.imagen_url || '',
     });
+    setMostrarForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const cancelarForm = () => {
+    setMostrarForm(false);
+    setEditandoId(null);
+    setFormData(formVacio);
+    setMensaje(null);
   };
 
   const eliminar = async (id: string) => {
@@ -184,99 +160,130 @@ export default function ProyectosPage() {
     cargarDatos();
   };
 
+  if (loading) return (
+    <div className="p-8 max-w-6xl mx-auto text-center py-32 text-zinc-500 font-mono text-sm animate-pulse">Cargando proyectos...</div>
+  );
+
   return (
     <div className="p-8 max-w-6xl mx-auto min-h-screen bg-transparent text-zinc-100">
 
+      {/* Header */}
       <div className="flex justify-between items-center mb-8 border-b border-zinc-800 pb-5">
         <div>
           <button onClick={() => router.push('/dashboard/constructoras')} className="text-xs text-zinc-500 hover:text-[#d4ff3b] font-mono mb-2 block transition">
             ← Volver a Constructoras
           </button>
-          <h1 className="text-3xl font-bold tracking-tight text-white">
-            {constructora?.nombre || 'Cargando...'}
-          </h1>
-          <p className="text-sm text-zinc-400 mt-1">Proyectos y torres registradas.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-white">{constructora?.nombre || '...'}</h1>
+          <p className="text-sm text-zinc-400 mt-1">Proyectos registrados.</p>
         </div>
-        <span className="bg-[#d4ff3b]/10 text-[#d4ff3b] border border-[#d4ff3b]/20 text-xs px-3 py-1.5 rounded-full font-mono uppercase tracking-widest">
-          {proyectos.length} {proyectos.length === 1 ? 'Proyecto' : 'Proyectos'}
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="bg-[#d4ff3b]/10 text-[#d4ff3b] border border-[#d4ff3b]/20 text-xs px-3 py-1.5 rounded-full font-mono uppercase tracking-widest">
+            {proyectos.length} {proyectos.length === 1 ? 'Proyecto' : 'Proyectos'}
+          </span>
+          {!mostrarForm && (
+            <button onClick={() => setMostrarForm(true)}
+              className="bg-[#d4ff3b] hover:bg-[#c2eb30] text-black text-xs px-4 py-2 rounded-lg font-semibold transition">
+              + Nuevo Proyecto
+            </button>
+          )}
+        </div>
       </div>
 
-      <div className="bg-[#18181b] border border-zinc-800 p-6 rounded-xl shadow-2xl mb-10">
-        <h2 className="text-sm font-semibold mb-5 text-zinc-300 uppercase tracking-wider">
-          {editandoId ? '⚡ Editar Proyecto' : '＋ Registrar Proyecto'}
-        </h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="md:col-span-2">
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Nombre del Proyecto *</label>
-              <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} required placeholder="Ej. Torre Piantini Residences" className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
-            </div>
-            <div>
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Sector / Zona</label>
-              <input type="text" name="sector" value={formData.sector} onChange={handleChange} placeholder="Ej. Piantini" className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
-            </div>
+      {/* Formulario — solo visible cuando se activa */}
+      {mostrarForm && (
+        <div className="bg-[#18181b] border border-zinc-800 p-8 rounded-2xl shadow-2xl mb-10">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-sm font-semibold text-zinc-300 uppercase tracking-wider">
+              {editandoId ? 'Editar Proyecto' : 'Nuevo Proyecto'}
+            </h2>
+            <button onClick={cancelarForm} className="text-zinc-500 hover:text-zinc-300 text-xs transition">✕ Cancelar</button>
           </div>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="md:col-span-2">
+                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Nombre del Proyecto *</label>
+                <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} required placeholder="Ej. Torre Piantini Residences"
+                  className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
+              </div>
+              <div>
+                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Sector / Zona</label>
+                <input type="text" name="sector" value={formData.sector} onChange={handleChange} placeholder="Ej. Piantini"
+                  className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Pisos</label>
+                <input type="number" name="pisos" value={formData.pisos} onChange={handleChange} placeholder="20"
+                  className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
+              </div>
+              <div>
+                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Total Unidades</label>
+                <input type="number" name="unidades_total" value={formData.unidades_total} onChange={handleChange} placeholder="80"
+                  className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
+              </div>
+              <div>
+                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Entrega Estimada</label>
+                <input type="date" name="fecha_entrega_estimada" value={formData.fecha_entrega_estimada} onChange={handleChange}
+                  className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
+              </div>
+              <div>
+                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Avance %</label>
+                <input type="number" name="porcentaje_avance" value={formData.porcentaje_avance} onChange={handleChange} min="0" max="100"
+                  className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Ubicación</label>
+                <input type="text" name="ubicacion" value={formData.ubicacion} onChange={handleChange} placeholder="Ej. Av. Abraham Lincoln esq. Gustavo Mejía Ricart"
+                  className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
+              </div>
+              <div>
+                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">URL de Imagen</label>
+                <input type="text" name="imagen_url" value={formData.imagen_url} onChange={handleChange} placeholder="https://..."
+                  className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
+              </div>
+            </div>
+            <div>
+              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Descripción</label>
+              <textarea name="descripcion" value={formData.descripcion} onChange={handleChange} rows={2} placeholder="Descripción del proyecto..."
+                className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition resize-none" />
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Pisos</label>
-              <input type="number" name="pisos" value={formData.pisos} onChange={handleChange} placeholder="20" className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
-            </div>
-            <div>
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Total Unidades</label>
-              <input type="number" name="unidades_total" value={formData.unidades_total} onChange={handleChange} placeholder="80" className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
-            </div>
-            <div>
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Entrega Estimada</label>
-              <input type="date" name="fecha_entrega_estimada" value={formData.fecha_entrega_estimada} onChange={handleChange} className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
-            </div>
-            <div>
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Avance %</label>
-              <input type="number" name="porcentaje_avance" value={formData.porcentaje_avance} onChange={handleChange} min="0" max="100" className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
-            </div>
-          </div>
+            {mensaje && (
+              <div className={`text-sm px-4 py-3 rounded-lg border font-mono ${mensaje.tipo === 'exito' ? 'bg-[#d4ff3b]/10 text-[#d4ff3b] border-[#d4ff3b]/20' : 'bg-red-500/10 text-red-400 border-red-500/20'}`}>
+                {mensaje.texto}
+              </div>
+            )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Ubicación</label>
-              <input type="text" name="ubicacion" value={formData.ubicacion} onChange={handleChange} placeholder="Ej. Av. Abraham Lincoln esq. Gustavo Mejía Ricart" className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
-            </div>
-            <div>
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">URL de Imagen</label>
-              <input type="text" name="imagen_url" value={formData.imagen_url} onChange={handleChange} placeholder="https://..." className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Descripción</label>
-            <textarea name="descripcion" value={formData.descripcion} onChange={handleChange} rows={2} placeholder="Descripción del proyecto..." className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition resize-none" />
-          </div>
-
-          {mensaje && (
-            <div className={`text-sm px-4 py-3 rounded-lg border font-mono ${mensaje.tipo === 'exito' ? 'bg-[#d4ff3b]/10 text-[#d4ff3b] border-[#d4ff3b]/20' : 'bg-red-500/10 text-red-400 border-red-500/20'}`}>
-              {mensaje.texto}
-            </div>
-          )}
-
-          <div className="flex justify-end gap-2">
-            {editandoId && (
-              <button type="button" onClick={() => { setEditandoId(null); setFormData({ nombre: '', descripcion: '', ubicacion: '', sector: '', pisos: '', unidades_total: '', fecha_entrega_estimada: '', porcentaje_avance: '0', imagen_url: '' }); }} className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-4 py-2 rounded-lg text-sm font-medium transition">
+            <div className="flex justify-end gap-3 pt-2">
+              <button type="button" onClick={cancelarForm} className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-5 py-2.5 rounded-lg text-sm font-medium transition">
                 Cancelar
               </button>
-            )}
-            <button type="submit" className="bg-[#d4ff3b] hover:bg-[#c2eb30] text-black px-6 py-2 rounded-lg text-sm font-semibold transition">
-              {editandoId ? 'Actualizar' : 'Registrar Proyecto'}
-            </button>
-          </div>
-        </form>
-      </div>
+              <button type="submit" className="bg-[#d4ff3b] hover:bg-[#c2eb30] text-black px-6 py-2.5 rounded-lg text-sm font-semibold transition">
+                {editandoId ? 'Guardar cambios' : 'Registrar Proyecto'}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
 
-      {loading ? (
-        <div className="text-center py-20 text-zinc-500 font-mono text-sm animate-pulse">Cargando proyectos...</div>
-      ) : proyectos.length === 0 ? (
-        <div className="text-center py-20 text-zinc-600 font-mono text-sm">No hay proyectos registrados para esta constructora.</div>
-      ) : (
+      {/* Estado vacío */}
+      {proyectos.length === 0 && !mostrarForm && (
+        <div className="text-center py-32">
+          <div className="text-5xl mb-4">🏗️</div>
+          <p className="text-zinc-400 font-medium mb-2">No hay proyectos registrados aún</p>
+          <p className="text-zinc-600 text-sm mb-6">Agrega el primer proyecto de {constructora?.nombre}</p>
+          <button onClick={() => setMostrarForm(true)}
+            className="bg-[#d4ff3b] hover:bg-[#c2eb30] text-black px-6 py-3 rounded-lg font-semibold transition">
+            + Registrar primer proyecto
+          </button>
+        </div>
+      )}
+
+      {/* Lista de proyectos */}
+      {proyectos.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {proyectos.map((p) => (
             <div key={p.id} className="bg-[#18181b] border border-zinc-800 rounded-xl overflow-hidden hover:border-zinc-700 transition">
@@ -325,13 +332,9 @@ export default function ProyectosPage() {
                         <div className="text-[10px] text-zinc-600 font-mono truncate">/proyecto/{acceso.token}</div>
                       </div>
                       <button onClick={() => navigator.clipboard.writeText(`${window.location.origin}/proyecto/${acceso.token}`)}
-                        className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[10px] px-2 py-1.5 rounded-lg transition">
-                        Copiar
-                      </button>
+                        className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[10px] px-2 py-1.5 rounded-lg transition">Copiar</button>
                       <button onClick={() => desactivarAcceso(acceso.id)}
-                        className="bg-zinc-900 hover:bg-red-950/40 text-zinc-600 hover:text-red-400 text-[10px] px-2 py-1.5 rounded-lg transition">
-                        ✕
-                      </button>
+                        className="bg-zinc-900 hover:bg-red-950/40 text-zinc-600 hover:text-red-400 text-[10px] px-2 py-1.5 rounded-lg transition">✕</button>
                     </div>
                   ))}
 
@@ -352,9 +355,7 @@ export default function ProyectosPage() {
                           Generar Link
                         </button>
                         <button onClick={() => { setGenerandoLink(null); setNombreAgencia(''); setLinkGenerado(null); }}
-                          className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs px-3 py-1.5 rounded-lg transition">
-                          Cancelar
-                        </button>
+                          className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs px-3 py-1.5 rounded-lg transition">Cancelar</button>
                       </div>
                     </div>
                   ) : (
