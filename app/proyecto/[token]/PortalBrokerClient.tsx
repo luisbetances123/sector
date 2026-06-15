@@ -87,7 +87,16 @@ export default function PortalBrokerClient({ acceso, proyecto, unidadesIniciales
       estado: 'reservado',
       reservado_por: nombreBroker,
       reservado_hasta: reservadoHasta.toISOString(),
+      fecha_reserva: new Date().toISOString(),
     }).eq('id', unidadSeleccionada.id);
+
+    await supabase.from('unidad_historial').insert([{
+      unidad_id: unidadSeleccionada.id,
+      estado_anterior: 'libre',
+      estado_nuevo: 'reservado',
+      actor: nombreBroker,
+      nota: `Reserva 48h — ${acceso.nombre_agencia || 'Portal broker'}`,
+    }]);
 
     setReservaExitosa(true);
     setReservando(false);
