@@ -199,7 +199,7 @@ export default function DashboardPage() {
           <div key={m.label} onClick={m.action} className={`bg-[#18181b] border ${m.border} rounded-xl p-5 ${m.action ? 'cursor-pointer hover:border-zinc-600 transition' : ''}`}>
             <p className="text-[10px] text-white uppercase tracking-wider font-mono mb-2">{m.label}</p>
             <p className={`text-3xl font-bold font-mono ${m.color}`}>{m.value}</p>
-            <p className="text-xs text-zinc-600 mt-2">{m.sub}</p>
+            <p className="text-xs text-white mt-2">{m.sub}</p>
           </div>
         ))}
       </div>
@@ -219,7 +219,7 @@ export default function DashboardPage() {
           {[['bg-red-500', 'Vendidas', stats.unidades_vendidas], ['bg-amber-400', 'Reservadas', stats.unidades_reservadas], ['bg-emerald-500', 'Libres', stats.unidades_libres]].map(([color, label, val]) => (
             <div key={String(label)} className="flex items-center gap-1.5">
               <div className={`w-2.5 h-2.5 rounded-full ${color}`} />
-              <span className="text-[10px] text-zinc-500">{label}: <span className="text-white font-mono">{val}</span></span>
+              <span className="text-[10px] text-white">{label}: <span className="text-white font-mono">{val}</span></span>
             </div>
           ))}
         </div>
@@ -232,7 +232,7 @@ export default function DashboardPage() {
         <div className={`bg-[#18181b] border rounded-xl overflow-hidden ${alertasReserva.length > 0 ? 'border-amber-400/30' : 'border-zinc-800'}`}>
           <div className="px-5 py-4 border-b border-zinc-800 flex justify-between items-center">
             <p className="text-[10px] text-white uppercase tracking-wider font-mono">⏱ Reservas por vencer</p>
-            <span className={`text-xs font-mono font-bold ${alertasReserva.length > 0 ? 'text-amber-400' : 'text-zinc-600'}`}>{alertasReserva.length}</span>
+            <span className={`text-xs font-mono font-bold ${alertasReserva.length > 0 ? 'text-amber-400' : 'text-white'}`}>{alertasReserva.length}</span>
           </div>
           <div className="divide-y divide-zinc-800/60">
             {alertasReserva.length === 0 ? (
@@ -258,7 +258,7 @@ export default function DashboardPage() {
         <div className={`bg-[#18181b] border rounded-xl overflow-hidden ${alertasCuotas.length > 0 ? 'border-red-500/30' : 'border-zinc-800'}`}>
           <div className="px-5 py-4 border-b border-zinc-800 flex justify-between items-center">
             <p className="text-[10px] text-white uppercase tracking-wider font-mono">💸 Cuotas vencidas</p>
-            <span className={`text-xs font-mono font-bold ${alertasCuotas.length > 0 ? 'text-red-400' : 'text-zinc-600'}`}>{alertasCuotas.length}</span>
+            <span className={`text-xs font-mono font-bold ${alertasCuotas.length > 0 ? 'text-red-400' : 'text-white'}`}>{alertasCuotas.length}</span>
           </div>
           <div className="divide-y divide-zinc-800/60">
             {alertasCuotas.length === 0 ? (
@@ -288,7 +288,7 @@ export default function DashboardPage() {
         <div className={`bg-[#18181b] border rounded-xl overflow-hidden ${alertasIncidencias.length > 0 ? 'border-orange-500/30' : 'border-zinc-800'}`}>
           <div className="px-5 py-4 border-b border-zinc-800 flex justify-between items-center">
             <p className="text-[10px] text-white uppercase tracking-wider font-mono">🔧 Incidencias abiertas</p>
-            <span className={`text-xs font-mono font-bold ${alertasIncidencias.length > 0 ? 'text-orange-400' : 'text-zinc-600'}`}>{alertasIncidencias.length}</span>
+            <span className={`text-xs font-mono font-bold ${alertasIncidencias.length > 0 ? 'text-orange-400' : 'text-white'}`}>{alertasIncidencias.length}</span>
           </div>
           <div className="divide-y divide-zinc-800/60">
             {alertasIncidencias.length === 0 ? (
