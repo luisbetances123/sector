@@ -63,7 +63,7 @@ export default function PerfilPage() {
   };
 
   if (loading) return (
-    <div className="p-8 max-w-3xl mx-auto text-center py-32 text-zinc-500 font-mono text-sm animate-pulse">
+    <div className="p-8 max-w-3xl mx-auto text-center py-32 text-white font-mono text-sm animate-pulse">
       Cargando perfil...
     </div>
   );
@@ -73,12 +73,12 @@ export default function PerfilPage() {
       <div className="mb-8 border-b border-zinc-800 pb-5">
         <p className="text-xs text-[#d4ff3b] font-mono uppercase tracking-widest mb-1">Configuración</p>
         <h1 className="text-3xl font-bold tracking-tight text-white">Mi Perfil</h1>
-        <p className="text-sm text-zinc-300 mt-1">Información de tu cuenta en SECTOR.</p>
+        <p className="text-sm text-white mt-1">Información de tu cuenta en SECTOR.</p>
       </div>
 
       <form onSubmit={handleGuardar} className="space-y-6">
         <div className="bg-[#18181b] border border-zinc-800 p-6 rounded-2xl shadow-2xl space-y-5">
-          <h2 className="text-sm font-semibold text-zinc-300 uppercase tracking-wider">Información de la Empresa</h2>
+          <h2 className="text-sm font-semibold text-white uppercase tracking-wider">Información de la Empresa</h2>
 
           <div className="flex items-center gap-6">
             <div className="w-20 h-20 rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800 flex-shrink-0">
@@ -89,7 +89,7 @@ export default function PerfilPage() {
               )}
             </div>
             <div className="flex-1">
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">URL del Logo</label>
+              <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">URL del Logo</label>
               <input type="text" name="logo_url" value={formData.logo_url} onChange={handleChange}
                 placeholder="https://..."
                 className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
@@ -98,25 +98,25 @@ export default function PerfilPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Nombre de la Empresa</label>
+              <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Nombre de la Empresa</label>
               <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} required
                 placeholder="Grupo Minier"
                 className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Nombre del Contacto</label>
+              <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Nombre del Contacto</label>
               <input type="text" name="contacto_nombre" value={formData.contacto_nombre} onChange={handleChange}
                 placeholder="Roger Minier"
                 className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Teléfono</label>
+              <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Teléfono</label>
               <input type="text" name="telefono" value={formData.telefono} onChange={handleChange}
                 placeholder="809-000-0000"
                 className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Email</label>
+              <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Email</label>
               <input type="email" name="email" value={formData.email} onChange={handleChange}
                 placeholder="contacto@empresa.com"
                 className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />

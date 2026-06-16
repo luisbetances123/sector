@@ -76,24 +76,24 @@ export default function ReportsPage() {
       </header>
 
       {loading ? (
-        <div className="text-zinc-500 text-sm text-center py-20">Cargando datos...</div>
+        <div className="text-white text-sm text-center py-20">Cargando datos...</div>
       ) : (
         <>
           <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-zinc-950 p-5 rounded-2xl border border-zinc-900">
-              <p className="text-xs font-mono text-zinc-500 uppercase">Total Clientes</p>
+              <p className="text-xs font-mono text-white uppercase">Total Clientes</p>
               <p className="text-3xl font-black text-white mt-1">{totalClientes}</p>
             </div>
             <div className="bg-zinc-950 p-5 rounded-2xl border border-zinc-900">
-              <p className="text-xs font-mono text-zinc-500 uppercase">Deals Activos</p>
+              <p className="text-xs font-mono text-white uppercase">Deals Activos</p>
               <p className="text-3xl font-black text-[#CCFF00] mt-1">{stats.reduce((s,e) => s + e.count, 0)}</p>
             </div>
             <div className="bg-zinc-950 p-5 rounded-2xl border border-zinc-900">
-              <p className="text-xs font-mono text-zinc-500 uppercase">Volumen Total</p>
+              <p className="text-xs font-mono text-white uppercase">Volumen Total</p>
               <p className="text-2xl font-black text-white mt-1">US$ {totalVolumen.toLocaleString()}</p>
             </div>
             <div className="bg-zinc-950 p-5 rounded-2xl border border-zinc-900">
-              <p className="text-xs font-mono text-zinc-500 uppercase">En Cierre</p>
+              <p className="text-xs font-mono text-white uppercase">En Cierre</p>
               <p className="text-3xl font-black text-green-400 mt-1">
                 {stats.find(s => s.etapa === 'Cierre')?.count || 0}
               </p>
@@ -101,17 +101,17 @@ export default function ReportsPage() {
           </section>
 
           <section className="bg-zinc-950 border border-zinc-900 rounded-2xl p-6 space-y-6">
-            <h2 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Embudo de Ventas</h2>
+            <h2 className="text-xs font-mono text-white uppercase tracking-wider">Embudo de Ventas</h2>
             {stats.map((s, idx) => (
               <div key={s.etapa} className="space-y-2">
                 <div className="flex justify-between items-center text-xs">
                   <div className="flex items-center gap-3">
-                    <span className="font-mono text-zinc-400 w-4">{idx + 1}</span>
+                    <span className="font-mono text-white w-4">{idx + 1}</span>
                     <span className="font-bold text-white uppercase tracking-wide">{s.etapa}</span>
                     <span className="text-zinc-500">{s.count} deals</span>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className="text-zinc-500 font-mono">US$ {s.volumen.toLocaleString()}</span>
+                    <span className="text-white font-mono">US$ {s.volumen.toLocaleString()}</span>
                     <span className={'font-black font-mono text-sm ' + (s.conversion >= 50 ? 'text-[#CCFF00]' : s.conversion >= 25 ? 'text-yellow-400' : 'text-red-400')}>
                       {s.conversion}%
                     </span>
@@ -131,10 +131,10 @@ export default function ReportsPage() {
           </section>
 
           <section className="bg-zinc-950 border border-zinc-900 rounded-2xl p-6 space-y-4">
-            <h2 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Clientes por Temperatura</h2>
+            <h2 className="text-xs font-mono text-white uppercase tracking-wider">Clientes por Temperatura</h2>
             {clientesPorEtapa.map(item => (
               <div key={item.etapa} className="flex justify-between items-center">
-                <span className="text-sm text-zinc-300">{item.etapa}</span>
+                <span className="text-sm text-white">{item.etapa}</span>
                 <div className="flex items-center gap-3">
                   <div className="w-32 bg-zinc-900 rounded-full h-2">
                     <div
@@ -142,7 +142,7 @@ export default function ReportsPage() {
                       style={{ width: totalClientes > 0 ? (item.count / totalClientes * 100) + "%" : "0%" }}
                     />
                   </div>
-                  <span className="text-xs font-mono text-zinc-400 w-8 text-right">{item.count}</span>
+                  <span className="text-xs font-mono text-white w-8 text-right">{item.count}</span>
                   <span className="text-xs font-mono text-zinc-600 w-8 text-right">
                     {Math.round(item.count / totalClientes * 100)}%
                   </span>

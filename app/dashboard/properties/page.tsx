@@ -174,7 +174,7 @@ export default function PropertiesPage() {
       <div className="flex justify-between items-center mb-8 border-b border-zinc-800 pb-5">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-white">Catálogo de Propiedades</h1>
-          <p className="text-sm text-zinc-300 mt-1">Gestión de activos con visualizador flotante integrado multimedios.</p>
+          <p className="text-sm text-white mt-1">Gestión de activos con visualizador flotante integrado multimedios.</p>
         </div>
         <span className="bg-[#d4ff3b]/10 text-[#d4ff3b] border border-[#d4ff3b]/20 text-xs px-3 py-1.5 rounded-full font-mono uppercase tracking-widest">
           {propiedades.length} {propiedades.length === 1 ? 'Propiedad' : 'Propiedades'}
@@ -182,22 +182,22 @@ export default function PropertiesPage() {
       </div>
 
       <div className="bg-[#18181b] border border-zinc-800 p-6 rounded-xl shadow-2xl mb-10">
-        <h2 className="text-md font-semibold mb-5 text-zinc-300 flex items-center gap-2">
+        <h2 className="text-md font-semibold mb-5 text-white flex items-center gap-2">
           {editandoId !== null ? '⚡ Editar Parámetros del Activo' : '＋ Registrar Nueva Propiedad'}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="md:col-span-2">
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Título de la Propiedad</label>
+              <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Título de la Propiedad</label>
               <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} placeholder="Ej. Penthouse Duplex Minimalista con Vista al Golf" className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" required />
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Precio de Salida</label>
+              <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Precio de Salida</label>
               <input type="text" name="precio" value={formData.precio} onChange={handleChange} placeholder="Ej. 4250000" className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" required />
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Tipo</label>
+              <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Tipo</label>
               <select name="tipo" value={formData.tipo} onChange={handleChange} className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition">
                 <option value="venta">Venta</option>
                 <option value="alquiler">Alquiler</option>
@@ -207,7 +207,7 @@ export default function PropertiesPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="md:col-span-2">
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Ubicación / Sector</label>
+              <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Ubicación / Sector</label>
               <select name="ubicacion" value={formData.ubicacion} onChange={handleChange} className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition">
                 <option value="">Seleccionar sector...</option>
                 <optgroup label="Santo Domingo">
@@ -265,34 +265,34 @@ export default function PropertiesPage() {
               </select>
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Habitaciones</label>
+              <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Habitaciones</label>
               <input type="number" name="recamaras" value={formData.recamaras} onChange={handleChange} className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Baños</label>
+              <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Baños</label>
               <input type="number" name="banos" value={formData.banos} onChange={handleChange} className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Área M²</label>
+              <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Área M²</label>
               <input type="number" name="area" value={formData.area} onChange={handleChange} className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
             </div>
             <div className="md:col-span-3">
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">URL de Imagen Principal</label>
+              <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">URL de Imagen Principal</label>
               <input type="text" name="imagen" value={formData.imagen} onChange={handleChange} placeholder="https://images.unsplash.com/..." className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
             </div>
           </div>
 
           <div>
-            <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Descripción / Especificaciones</label>
+            <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Descripción / Especificaciones</label>
             <textarea name="descripcion" value={formData.descripcion} onChange={handleChange} rows={2} placeholder="Acabados, detalles o comentarios de venta..." className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition resize-none" />
           </div>
 
           <div className="flex justify-end gap-2 pt-2">
             {editandoId !== null && (
-              <button type="button" onClick={() => { setEditandoId(null); setFormData({ nombre: '', precio: '', ubicacion: '', imagen: '', recamaras: '4', banos: '5', area: '480', descripcion: '', tipo: 'venta' }); }} className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-4 py-2 rounded-lg text-sm font-medium transition">
+              <button type="button" onClick={() => { setEditandoId(null); setFormData({ nombre: '', precio: '', ubicacion: '', imagen: '', recamaras: '4', banos: '5', area: '480', descripcion: '', tipo: 'venta' }); }} className="bg-zinc-800 hover:bg-zinc-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
                 Cancelar
               </button>
             )}
@@ -309,7 +309,7 @@ export default function PropertiesPage() {
       </div>
 
       {loading ? (
-        <div className="text-center py-20 text-zinc-500 font-mono text-sm tracking-widest animate-pulse">
+        <div className="text-center py-20 text-white font-mono text-sm tracking-widest animate-pulse">
           Sincronizando base de datos de SECTOR...
         </div>
       ) : (
@@ -322,7 +322,7 @@ export default function PropertiesPage() {
                   <div className="absolute top-3 left-3 bg-[#09090b]/80 backdrop-blur-md text-[#d4ff3b] border border-zinc-800 text-[10px] font-mono px-2.5 py-1 rounded-md uppercase tracking-wider">
                     {propiedad.ubicacion}
                   </div>
-                  <div className="absolute top-3 right-3 bg-[#09090b]/80 backdrop-blur-md text-zinc-400 border border-zinc-800 text-[10px] font-mono px-2.5 py-1 rounded-md uppercase tracking-wider">
+                  <div className="absolute top-3 right-3 bg-[#09090b]/80 backdrop-blur-md text-white border border-zinc-800 text-[10px] font-mono px-2.5 py-1 rounded-md uppercase tracking-wider">
                     {propiedad.tipo}
                   </div>
                 </div>
@@ -333,24 +333,24 @@ export default function PropertiesPage() {
                     ${Number(propiedad.precio) ? Number(propiedad.precio).toLocaleString() : propiedad.precio}
                   </p>
 
-                  <div className="grid grid-cols-3 gap-2 mt-5 py-4 border-y border-zinc-800/60 text-center text-xs font-medium text-zinc-400">
+                  <div className="grid grid-cols-3 gap-2 mt-5 py-4 border-y border-zinc-800/60 text-center text-xs font-medium text-white">
                     <div>
                       <span className="block text-white font-mono text-sm">{propiedad.recamaras}</span>
-                      <span className="text-[10px] text-zinc-500 uppercase tracking-wider">Hab.</span>
+                      <span className="text-[10px] text-white uppercase tracking-wider">Hab.</span>
                     </div>
                     <div className="border-x border-zinc-800/60">
                       <span className="block text-white font-mono text-sm">{propiedad.banos}</span>
-                      <span className="text-[10px] text-zinc-500 uppercase tracking-wider">Baños</span>
+                      <span className="text-[10px] text-white uppercase tracking-wider">Baños</span>
                     </div>
                     <div>
-                      <span className="block text-white font-mono text-sm">{propiedad.area} <span className="text-[10px] text-zinc-400">m²</span></span>
-                      <span className="text-[10px] text-zinc-500 uppercase tracking-wider">Área</span>
+                      <span className="block text-white font-mono text-sm">{propiedad.area} <span className="text-[10px] text-white">m²</span></span>
+                      <span className="text-[10px] text-white uppercase tracking-wider">Área</span>
                     </div>
                   </div>
 
                   <div className="mt-5 bg-[#09090b]/40 p-4 rounded-xl border border-zinc-800/40">
-                    <span className="block text-[10px] text-zinc-500 uppercase font-mono tracking-wider mb-1">Descripción:</span>
-                    <p className="text-xs text-zinc-400 line-clamp-3 leading-relaxed">{propiedad.descripcion || 'Sin descripción registrada.'}</p>
+                    <span className="block text-[10px] text-white uppercase font-mono tracking-wider mb-1">Descripción:</span>
+                    <p className="text-xs text-white line-clamp-3 leading-relaxed">{propiedad.descripcion || 'Sin descripción registrada.'}</p>
                   </div>
                 </div>
               </div>
@@ -375,13 +375,13 @@ export default function PropertiesPage() {
       {propiedadSeleccionada && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
           <div className="bg-[#18181b] border border-zinc-800 w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]">
-            <button onClick={() => setPropiedadSeleccionada(null)} className="absolute top-4 right-4 z-10 bg-black/60 hover:bg-zinc-800 text-zinc-400 hover:text-white p-2 rounded-full border border-zinc-800 transition">✕</button>
+            <button onClick={() => setPropiedadSeleccionada(null)} className="absolute top-4 right-4 z-10 bg-black/60 hover:bg-zinc-800 text-white hover:text-white p-2 rounded-full border border-zinc-800 transition">✕</button>
 
             <div className="relative bg-zinc-950 aspect-[16/9] flex items-center justify-center overflow-hidden">
               <img src={propiedadSeleccionada.imagenes_galeria[fotoActivaIndex]} alt="Visualización" className="w-full h-full object-cover transition duration-500" />
               <button onClick={fotoAnterior} className="absolute left-4 bg-black/50 hover:bg-black/80 text-white p-3 rounded-full border border-zinc-700/50 backdrop-blur-sm transition">◀</button>
               <button onClick={fotoSiguiente} className="absolute right-4 bg-black/50 hover:bg-black/80 text-white p-3 rounded-full border border-zinc-700/50 backdrop-blur-sm transition">▶</button>
-              <div className="absolute bottom-4 right-4 bg-black/70 px-3 py-1 text-[11px] font-mono text-zinc-300 rounded-md border border-zinc-800">Foto {fotoActivaIndex + 1} de {propiedadSeleccionada.imagenes_galeria.length}</div>
+              <div className="absolute bottom-4 right-4 bg-black/70 px-3 py-1 text-[11px] font-mono text-white rounded-md border border-zinc-800">Foto {fotoActivaIndex + 1} de {propiedadSeleccionada.imagenes_galeria.length}</div>
             </div>
 
             <div className="p-4 bg-[#111113] border-b border-zinc-800/80 flex gap-2 overflow-x-auto">
@@ -399,7 +399,7 @@ export default function PropertiesPage() {
                   <h2 className="text-xl font-bold text-white tracking-tight mt-2">{propiedadSeleccionada.nombre}</h2>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] text-zinc-500 uppercase block tracking-wider font-mono">Precio Solicitado</span>
+                  <span className="text-[10px] text-white uppercase block tracking-wider font-mono">Precio Solicitado</span>
                   <span className="text-2xl font-mono font-bold text-white">${Number(propiedadSeleccionada.precio) ? Number(propiedadSeleccionada.precio).toLocaleString() : propiedadSeleccionada.precio}</span>
                 </div>
               </div>
@@ -407,21 +407,21 @@ export default function PropertiesPage() {
               <div className="grid grid-cols-3 gap-4 p-3 bg-[#09090b]/60 border border-zinc-800 rounded-xl text-center">
                 <div>
                   <span className="block text-md font-mono text-white font-bold">{propiedadSeleccionada.recamaras}</span>
-                  <span className="text-[10px] text-zinc-500 uppercase tracking-wider">Habitaciones</span>
+                  <span className="text-[10px] text-white uppercase tracking-wider">Habitaciones</span>
                 </div>
                 <div className="border-x border-zinc-800">
                   <span className="block text-md font-mono text-white font-bold">{propiedadSeleccionada.banos}</span>
-                  <span className="text-[10px] text-zinc-500 uppercase tracking-wider">Baños Completos</span>
+                  <span className="text-[10px] text-white uppercase tracking-wider">Baños Completos</span>
                 </div>
                 <div>
                   <span className="block text-md font-mono text-white font-bold">{propiedadSeleccionada.area} m²</span>
-                  <span className="text-[10px] text-zinc-500 uppercase tracking-wider">Superficie Total</span>
+                  <span className="text-[10px] text-white uppercase tracking-wider">Superficie Total</span>
                 </div>
               </div>
 
               <div>
-                <span className="block text-[11px] text-zinc-500 font-mono uppercase tracking-wider mb-1">Descripción y Detalles:</span>
-                <p className="text-sm text-zinc-300 leading-relaxed bg-[#09090b]/30 p-4 rounded-xl border border-zinc-800/40">{propiedadSeleccionada.descripcion || 'Sin comentarios de venta adicionales.'}</p>
+                <span className="block text-[11px] text-white font-mono uppercase tracking-wider mb-1">Descripción y Detalles:</span>
+                <p className="text-sm text-white leading-relaxed bg-[#09090b]/30 p-4 rounded-xl border border-zinc-800/40">{propiedadSeleccionada.descripcion || 'Sin comentarios de venta adicionales.'}</p>
               </div>
             </div>
           </div>

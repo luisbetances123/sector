@@ -135,7 +135,7 @@ export default function CobranzaPage() {
   const totalPlan = resumenes.reduce((s, r) => s + r.total_plan, 0);
   const pctCobrado = totalPlan > 0 ? Math.round((totalCobrado / totalPlan) * 100) : 0;
 
-  if (loading) return <div className="p-8 text-center py-32 text-zinc-500 font-mono text-sm animate-pulse">Cargando cobranza...</div>;
+  if (loading) return <div className="p-8 text-center py-32 text-white font-mono text-sm animate-pulse">Cargando cobranza...</div>;
 
   return (
     <div className="p-8 max-w-6xl mx-auto min-h-screen text-zinc-100">
@@ -144,37 +144,37 @@ export default function CobranzaPage() {
       <div className="mb-8 border-b border-zinc-800 pb-5">
         <p className="text-xs text-[#d4ff3b] font-mono uppercase tracking-widest mb-1">Finanzas</p>
         <h1 className="text-3xl font-bold tracking-tight text-white">Reporte de Cobranza</h1>
-        <p className="text-sm text-zinc-300 mt-1">Estado de todos los planes de pago activos.</p>
+        <p className="text-sm text-white mt-1">Estado de todos los planes de pago activos.</p>
       </div>
 
       {/* Métricas globales */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div className="bg-[#18181b] border border-emerald-500/20 rounded-xl p-5">
-          <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono mb-2">Total cobrado</p>
+          <p className="text-[10px] text-white uppercase tracking-wider font-mono mb-2">Total cobrado</p>
           <p className="text-2xl font-bold font-mono text-emerald-400">${totalCobrado.toLocaleString()}</p>
-          <p className="text-zinc-600 text-xs mt-1">{pctCobrado}% del plan total</p>
+          <p className="text-white text-xs mt-1">{pctCobrado}% del plan total</p>
         </div>
         <div className="bg-[#18181b] border border-red-500/20 rounded-xl p-5">
-          <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono mb-2">Cartera vencida</p>
+          <p className="text-[10px] text-white uppercase tracking-wider font-mono mb-2">Cartera vencida</p>
           <p className="text-2xl font-bold font-mono text-red-400">${totalVencido.toLocaleString()}</p>
-          <p className="text-zinc-600 text-xs mt-1">{cuotasVencidas.length} cuotas</p>
+          <p className="text-white text-xs mt-1">{cuotasVencidas.length} cuotas</p>
         </div>
         <div className="bg-[#18181b] border border-amber-400/20 rounded-xl p-5">
-          <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono mb-2">Por cobrar</p>
+          <p className="text-[10px] text-white uppercase tracking-wider font-mono mb-2">Por cobrar</p>
           <p className="text-2xl font-bold font-mono text-amber-400">${totalPendiente.toLocaleString()}</p>
-          <p className="text-zinc-600 text-xs mt-1">{cuotasProximas.length} en 30 días</p>
+          <p className="text-white text-xs mt-1">{cuotasProximas.length} en 30 días</p>
         </div>
         <div className="bg-[#18181b] border border-zinc-800 rounded-xl p-5">
-          <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono mb-2">Plan total</p>
+          <p className="text-[10px] text-white uppercase tracking-wider font-mono mb-2">Plan total</p>
           <p className="text-2xl font-bold font-mono text-white">${totalPlan.toLocaleString()}</p>
-          <p className="text-zinc-600 text-xs mt-1">en todos los proyectos</p>
+          <p className="text-white text-xs mt-1">en todos los proyectos</p>
         </div>
       </div>
 
       {/* Barra global */}
       <div className="bg-[#18181b] border border-zinc-800 rounded-xl p-5 mb-8">
         <div className="flex justify-between items-center mb-3">
-          <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono">Progreso de cobranza global</p>
+          <p className="text-[10px] text-white uppercase tracking-wider font-mono">Progreso de cobranza global</p>
           <p className="text-[#d4ff3b] font-mono font-bold text-sm">{pctCobrado}% cobrado</p>
         </div>
         <div className="w-full bg-zinc-800 rounded-full h-3 flex overflow-hidden">
@@ -199,7 +199,7 @@ export default function CobranzaPage() {
           { key: 'proximas', label: `Próximas 30 días (${cuotasProximas.length})` },
         ].map(t => (
           <button key={t.key} onClick={() => setTab(t.key as any)}
-            className={`text-xs px-4 py-2 rounded-lg font-mono uppercase tracking-wider transition border ${tab === t.key ? 'bg-[#d4ff3b] text-black border-[#d4ff3b]' : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:border-zinc-600'}`}>
+            className={`text-xs px-4 py-2 rounded-lg font-mono uppercase tracking-wider transition border ${tab === t.key ? 'bg-[#d4ff3b] text-black border-[#d4ff3b]' : 'bg-zinc-900 text-white border-zinc-800 hover:border-zinc-600'}`}>
             {t.label}
           </button>
         ))}
@@ -222,22 +222,22 @@ export default function CobranzaPage() {
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                   <div>
-                    <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">Cobrado</p>
+                    <p className="text-[10px] text-white uppercase tracking-wider mb-1">Cobrado</p>
                     <p className="text-emerald-400 font-mono font-bold">${r.total_cobrado.toLocaleString()}</p>
-                    <p className="text-zinc-600 text-[10px]">{r.cuotas_cobradas} cuotas</p>
+                    <p className="text-white text-[10px]">{r.cuotas_cobradas} cuotas</p>
                   </div>
                   <div>
-                    <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">Vencido</p>
+                    <p className="text-[10px] text-white uppercase tracking-wider mb-1">Vencido</p>
                     <p className={`font-mono font-bold ${r.total_vencido > 0 ? 'text-red-400' : 'text-zinc-600'}`}>${r.total_vencido.toLocaleString()}</p>
-                    <p className="text-zinc-600 text-[10px]">{r.cuotas_vencidas} cuotas</p>
+                    <p className="text-white text-[10px]">{r.cuotas_vencidas} cuotas</p>
                   </div>
                   <div>
-                    <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">Pendiente</p>
+                    <p className="text-[10px] text-white uppercase tracking-wider mb-1">Pendiente</p>
                     <p className="text-amber-400 font-mono font-bold">${r.total_pendiente.toLocaleString()}</p>
-                    <p className="text-zinc-600 text-[10px]">{r.cuotas_pendientes} cuotas</p>
+                    <p className="text-white text-[10px]">{r.cuotas_pendientes} cuotas</p>
                   </div>
                   <div>
-                    <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">Total plan</p>
+                    <p className="text-[10px] text-white uppercase tracking-wider mb-1">Total plan</p>
                     <p className="text-white font-mono font-bold">${r.total_plan.toLocaleString()}</p>
                   </div>
                 </div>
@@ -254,15 +254,15 @@ export default function CobranzaPage() {
       {tab === 'vencidas' && (
         <div className="bg-[#18181b] border border-zinc-800 rounded-2xl overflow-hidden">
           {cuotasVencidas.length === 0 ? (
-            <p className="text-zinc-600 text-sm p-8 text-center">Sin cuotas vencidas ✓</p>
+            <p className="text-white text-sm p-8 text-center">Sin cuotas vencidas ✓</p>
           ) : (
             <div className="divide-y divide-zinc-800/60">
               {cuotasVencidas.map(c => (
                 <div key={c.id} className="flex items-center justify-between px-6 py-4 border-l-2 border-red-500">
                   <div>
                     <p className="text-white font-semibold text-sm">Unidad {c.unidad_numero} — {c.proyecto_nombre}</p>
-                    {c.cliente_nombre && <p className="text-zinc-300 text-xs">{c.cliente_nombre}</p>}
-                    <p className="text-zinc-300 text-xs">{c.descripcion}</p>
+                    {c.cliente_nombre && <p className="text-white text-xs">{c.cliente_nombre}</p>}
+                    <p className="text-white text-xs">{c.descripcion}</p>
                     <p className="text-red-400 text-xs mt-0.5">{c.dias_vencida} días vencida · {new Date(c.fecha_vencimiento).toLocaleDateString('es-DO', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
                   </div>
                   <div className="flex items-center gap-3">
@@ -283,7 +283,7 @@ export default function CobranzaPage() {
       {tab === 'proximas' && (
         <div className="bg-[#18181b] border border-zinc-800 rounded-2xl overflow-hidden">
           {cuotasProximas.length === 0 ? (
-            <p className="text-zinc-600 text-sm p-8 text-center">Sin cuotas próximas en los próximos 30 días</p>
+            <p className="text-white text-sm p-8 text-center">Sin cuotas próximas en los próximos 30 días</p>
           ) : (
             <div className="divide-y divide-zinc-800/60">
               {cuotasProximas.map(c => {
@@ -292,8 +292,8 @@ export default function CobranzaPage() {
                   <div key={c.id} className="flex items-center justify-between px-6 py-4">
                     <div>
                       <p className="text-white font-semibold text-sm">Unidad {c.unidad_numero} — {c.proyecto_nombre}</p>
-                      {c.cliente_nombre && <p className="text-zinc-300 text-xs">{c.cliente_nombre}</p>}
-                      <p className="text-zinc-300 text-xs">{c.descripcion}</p>
+                      {c.cliente_nombre && <p className="text-white text-xs">{c.cliente_nombre}</p>}
+                      <p className="text-white text-xs">{c.descripcion}</p>
                       <p className="text-amber-400 text-xs mt-0.5">Vence en {diasRestantes} días · {new Date(c.fecha_vencimiento).toLocaleDateString('es-DO', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
                     </div>
                     <div className="flex items-center gap-3">

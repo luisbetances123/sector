@@ -120,19 +120,19 @@ export default function InboxPage() {
       {/* STATS */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-5">
-          <p className="text-xs font-mono text-zinc-500 uppercase">Sin leer</p>
+          <p className="text-xs font-mono text-white uppercase">Sin leer</p>
           <p className="text-3xl font-black text-[#CCFF00] mt-1">{noLeidos}</p>
         </div>
         <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-5">
-          <p className="text-xs font-mono text-zinc-500 uppercase">Total</p>
+          <p className="text-xs font-mono text-white uppercase">Total</p>
           <p className="text-3xl font-black text-white mt-1">{mensajes.length}</p>
         </div>
         <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-5">
-          <p className="text-xs font-mono text-zinc-500 uppercase">WhatsApp</p>
+          <p className="text-xs font-mono text-white uppercase">WhatsApp</p>
           <p className="text-3xl font-black text-green-400 mt-1">{mensajes.filter(m => m.canal === 'whatsapp').length}</p>
         </div>
         <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-5">
-          <p className="text-xs font-mono text-zinc-500 uppercase">Instagram</p>
+          <p className="text-xs font-mono text-white uppercase">Instagram</p>
           <p className="text-3xl font-black text-pink-400 mt-1">{mensajes.filter(m => m.canal === 'instagram').length}</p>
         </div>
       </div>
@@ -140,10 +140,10 @@ export default function InboxPage() {
       {/* FORM */}
       {showForm && (
         <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 space-y-4">
-          <h2 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Nueva Conversación</h2>
+          <h2 className="text-xs font-mono text-white uppercase tracking-wider">Nueva Conversación</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="text-[9px] font-mono text-zinc-500 uppercase">Cliente</label>
+              <label className="text-[9px] font-mono text-white uppercase">Cliente</label>
               <select value={form.cliente_id} onChange={e => setForm({...form, cliente_id: e.target.value})}
                 className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 mt-1 outline-none">
                 <option value="">Sin cliente asignado</option>
@@ -151,14 +151,14 @@ export default function InboxPage() {
               </select>
             </div>
             <div>
-              <label className="text-[9px] font-mono text-zinc-500 uppercase">Canal</label>
+              <label className="text-[9px] font-mono text-white uppercase">Canal</label>
               <select value={form.canal} onChange={e => setForm({...form, canal: e.target.value})}
                 className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 mt-1 outline-none">
                 {CANALES.map(c => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-[9px] font-mono text-zinc-500 uppercase">Dirección</label>
+              <label className="text-[9px] font-mono text-white uppercase">Dirección</label>
               <select value={form.direccion} onChange={e => setForm({...form, direccion: e.target.value})}
                 className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 mt-1 outline-none">
                 <option value="entrante">Entrante</option>
@@ -167,13 +167,13 @@ export default function InboxPage() {
             </div>
           </div>
           <div>
-            <label className="text-[9px] font-mono text-zinc-500 uppercase">Mensaje / Resumen</label>
+            <label className="text-[9px] font-mono text-white uppercase">Mensaje / Resumen</label>
             <textarea value={form.mensaje} onChange={e => setForm({...form, mensaje: e.target.value})}
               rows={3} placeholder="Resumen de la conversación..."
               className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 mt-1 outline-none resize-none placeholder-zinc-600" />
           </div>
           <div className="flex justify-end gap-3">
-            <button onClick={() => setShowForm(false)} className="text-zinc-500 text-xs px-4 py-2">Cancelar</button>
+            <button onClick={() => setShowForm(false)} className="text-white text-xs px-4 py-2">Cancelar</button>
             <button onClick={registrar} disabled={saving || !form.mensaje.trim()}
               className="bg-[#CCFF00] text-black font-black text-xs rounded-xl px-6 py-2.5 hover:bg-[#b8e600] transition-colors disabled:opacity-50">
               {saving ? 'Guardando...' : 'Registrar'}
@@ -185,38 +185,38 @@ export default function InboxPage() {
       {/* FILTROS */}
       <div className="flex gap-3 flex-wrap">
         <select value={filtroCanal} onChange={e => setFiltroCanal(e.target.value)}
-          className="bg-zinc-950 border border-zinc-800 text-zinc-300 text-xs rounded-xl px-4 py-2.5 outline-none">
+          className="bg-zinc-950 border border-zinc-800 text-white text-xs rounded-xl px-4 py-2.5 outline-none">
           <option value="todos">Todos los canales</option>
           {CANALES.map(c => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
         </select>
         <select value={filtroLeido} onChange={e => setFiltroLeido(e.target.value)}
-          className="bg-zinc-950 border border-zinc-800 text-zinc-300 text-xs rounded-xl px-4 py-2.5 outline-none">
+          className="bg-zinc-950 border border-zinc-800 text-white text-xs rounded-xl px-4 py-2.5 outline-none">
           <option value="todos">Todos</option>
           <option value="no_leido">Sin leer</option>
           <option value="leido">Leídos</option>
         </select>
-        <span className="text-zinc-600 text-xs self-center font-mono">{filtrados.length} mensajes</span>
+        <span className="text-white text-xs self-center font-mono">{filtrados.length} mensajes</span>
       </div>
 
       {/* LISTA */}
       {loading ? (
-        <div className="text-zinc-500 text-sm text-center py-10">Cargando conversaciones...</div>
+        <div className="text-white text-sm text-center py-10">Cargando conversaciones...</div>
       ) : filtrados.length === 0 ? (
-        <div className="text-zinc-600 text-sm text-center py-10">No hay mensajes. Registra el primero.</div>
+        <div className="text-white text-sm text-center py-10">No hay mensajes. Registra el primero.</div>
       ) : (
         <div className="space-y-3">
           {filtrados.map(m => (
             <div key={m.id} className={`flex items-start gap-4 p-4 rounded-xl border transition-all ${!m.leido ? 'border-[#CCFF00]/20 bg-[#CCFF00]/5' : 'border-zinc-800 bg-zinc-950'}`}>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap mb-1">
-                  <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${CANAL_COLORS[m.canal] || 'bg-zinc-900 text-zinc-400 border-zinc-800'}`}>
+                  <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${CANAL_COLORS[m.canal] || 'bg-zinc-900 text-white border-zinc-800'}`}>
                     {m.canal}
                   </span>
-                  <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border ${m.direccion === 'entrante' ? 'bg-zinc-900 text-zinc-400 border-zinc-800' : 'bg-blue-500/10 text-blue-400 border-blue-500/20'}`}>
+                  <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border ${m.direccion === 'entrante' ? 'bg-zinc-900 text-white border-zinc-800' : 'bg-blue-500/10 text-blue-400 border-blue-500/20'}`}>
                     {m.direccion === 'entrante' ? '← Entrante' : '→ Saliente'}
                   </span>
                   {m.cliente && (
-                    <span className="text-[10px] font-mono text-zinc-400">{m.cliente.name}</span>
+                    <span className="text-[10px] font-mono text-white">{m.cliente.name}</span>
                   )}
                   {!m.leido && (
                     <span className="text-[10px] font-mono text-[#CCFF00] font-bold">● Nuevo</span>

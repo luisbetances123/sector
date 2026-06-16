@@ -160,7 +160,7 @@ Responde SOLO con este JSON exacto:
           </div>
           <div className="flex items-end gap-6">
             <div className="text-right">
-              <p className="text-xs font-mono text-zinc-500 uppercase">Volumen Total</p>
+              <p className="text-xs font-mono text-white uppercase">Volumen Total</p>
               <p className="text-2xl font-black text-white">US$ {totalVolumen.toLocaleString()}</p>
             </div>
             <button onClick={() => setShowForm(!showForm)}
@@ -175,18 +175,18 @@ Responde SOLO con este JSON exacto:
           <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
               <div>
-                <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Reporte de Embudo</p>
+                <p className="text-[10px] font-mono text-white uppercase tracking-widest">Reporte de Embudo</p>
                 <p className="text-lg font-black text-white">{totalDeals} deals activos</p>
               </div>
               <div className="flex gap-6">
                 <div className="text-right">
-                  <p className="text-[10px] font-mono text-zinc-500 uppercase">Tasa de Cierre</p>
+                  <p className="text-[10px] font-mono text-white uppercase">Tasa de Cierre</p>
                   <p className="text-2xl font-black" style={{ color: tasaConversion > 0 ? '#00ff99' : '#4da6ff' }}>
                     {tasaConversion}%
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] font-mono text-zinc-500 uppercase">Entregados</p>
+                  <p className="text-[10px] font-mono text-white uppercase">Entregados</p>
                   <p className="text-2xl font-black text-white">{dealsEntregados}</p>
                 </div>
               </div>
@@ -201,7 +201,7 @@ Responde SOLO con este JSON exacto:
                 const color = ETAPA_COLORS[etapa]
                 return (
                   <div key={etapa} className="flex items-center gap-3">
-                    <div className="w-24 text-[10px] font-mono text-zinc-400 text-right shrink-0">{etapa}</div>
+                    <div className="w-24 text-[10px] font-mono text-white text-right shrink-0">{etapa}</div>
                     <div className="flex-1 bg-zinc-900 rounded-full h-5 overflow-hidden">
                       <div
                         className="h-full rounded-full flex items-center px-2 transition-all duration-500"
@@ -266,13 +266,13 @@ Responde SOLO con este JSON exacto:
                 className="bg-[#CCFF00] text-black font-black text-xs rounded-xl px-6 py-3 hover:bg-[#b8e600] transition-colors disabled:opacity-50">
                 {saving ? 'Guardando...' : 'Crear Deal'}
               </button>
-              <button onClick={() => setShowForm(false)} className="text-zinc-400 text-xs px-4 py-3">Cancelar</button>
+              <button onClick={() => setShowForm(false)} className="text-white text-xs px-4 py-3">Cancelar</button>
             </div>
           </div>
         )}
 
         {loading ? (
-          <div className="text-zinc-500 text-sm text-center py-20">Cargando pipeline...</div>
+          <div className="text-white text-sm text-center py-20">Cargando pipeline...</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             {ETAPAS.map(etapa => {
@@ -299,7 +299,7 @@ Responde SOLO con este JSON exacto:
                           <div className="font-bold text-white text-xs">{deal.nombre_cliente}</div>
                           {(() => { const dias = Math.floor((Date.now() - new Date(deal.updated_at).getTime()) / 86400000); return dias >= 3 ? <span className="text-[8px] font-mono bg-red-500/20 text-red-400 border border-red-500/30 px-1.5 py-0.5 rounded-full whitespace-nowrap shrink-0">{dias}d sin actividad</span> : dias >= 1 ? <span className="text-[8px] font-mono bg-orange-500/20 text-orange-400 border border-orange-500/30 px-1.5 py-0.5 rounded-full whitespace-nowrap shrink-0">{dias}d</span> : null })()}
                         </div>
-                        <div className="text-zinc-500 text-[11px] mt-0.5 truncate">{deal.propiedad}</div>
+                        <div className="text-white text-[11px] mt-0.5 truncate">{deal.propiedad}</div>
                         <div className="font-black text-sm mt-2" style={{ color }}>${(deal.precio || 0).toLocaleString()}</div>
                         {deal.notas && deal.notas.includes('Próximo pago:') && (
                           <div className="text-[10px] text-orange-400 font-mono mt-1">
@@ -308,12 +308,12 @@ Responde SOLO con este JSON exacto:
                         )}
                         <div className="flex justify-between items-center mt-3 pt-2 border-t border-zinc-900" onClick={e => e.stopPropagation()}>
                           <button disabled={etapa === ETAPAS[0]} onClick={() => moveDeal(deal.id, deal.etapa, 'backward')}
-                            className="text-[9px] p-1.5 bg-zinc-900 rounded disabled:opacity-20 text-zinc-400 hover:text-white">
+                            className="text-[9px] p-1.5 bg-zinc-900 rounded disabled:opacity-20 text-white hover:text-white">
                             ← Atrás
                           </button>
                           <button onClick={() => deleteDeal(deal.id)} className="text-[9px] text-red-500 hover:text-red-400">Borrar</button>
                           <button disabled={etapa === ETAPAS[ETAPAS.length-1]} onClick={() => moveDeal(deal.id, deal.etapa, 'forward')}
-                            className="text-[9px] p-1.5 bg-zinc-900 rounded disabled:opacity-20 text-zinc-400 hover:text-white">
+                            className="text-[9px] p-1.5 bg-zinc-900 rounded disabled:opacity-20 text-white hover:text-white">
                             Siguiente →
                           </button>
                         </div>
@@ -337,29 +337,29 @@ Responde SOLO con este JSON exacto:
 
             <div className="space-y-4">
               <div>
-                <label className="text-[9px] font-mono text-zinc-500 uppercase">Nombre del Cliente</label>
+                <label className="text-[9px] font-mono text-white uppercase">Nombre del Cliente</label>
                 <input value={selectedDeal.nombre_cliente} onChange={e => setSelectedDeal({...selectedDeal, nombre_cliente: e.target.value})}
                   className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-3 mt-1 outline-none" />
               </div>
               <div>
-                <label className="text-[9px] font-mono text-zinc-500 uppercase">Proyecto / Unidad</label>
+                <label className="text-[9px] font-mono text-white uppercase">Proyecto / Unidad</label>
                 <input value={selectedDeal.propiedad} onChange={e => setSelectedDeal({...selectedDeal, propiedad: e.target.value})}
                   className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 mt-1 outline-none" />
               </div>
               <div>
-                <label className="text-[9px] font-mono text-zinc-500 uppercase">Precio Total (USD)</label>
+                <label className="text-[9px] font-mono text-white uppercase">Precio Total (USD)</label>
                 <input type="number" value={selectedDeal.precio} onChange={e => setSelectedDeal({...selectedDeal, precio: Number(e.target.value)})}
                   className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-[#CCFF00] font-black text-sm rounded-xl px-4 py-3 mt-1 outline-none" />
               </div>
               <div>
-                <label className="text-[9px] font-mono text-zinc-500 uppercase">Teléfono</label>
+                <label className="text-[9px] font-mono text-white uppercase">Teléfono</label>
                 <input value={selectedDeal.telefono} onChange={e => setSelectedDeal({...selectedDeal, telefono: e.target.value})}
                   className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 mt-1 outline-none" />
               </div>
               <div>
-                <label className="text-[9px] font-mono text-zinc-500 uppercase">Notas</label>
+                <label className="text-[9px] font-mono text-white uppercase">Notas</label>
                 <textarea rows={3} value={selectedDeal.notas} onChange={e => setSelectedDeal({...selectedDeal, notas: e.target.value})}
-                  className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-zinc-300 text-xs rounded-xl px-4 py-3 mt-1 outline-none resize-none" />
+                  className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 mt-1 outline-none resize-none" />
               </div>
             </div>
 
@@ -368,12 +368,12 @@ Responde SOLO con este JSON exacto:
               <h3 className="text-xs font-mono text-orange-400 uppercase tracking-wider">⏰ Próximo Pago</h3>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[9px] font-mono text-zinc-500 uppercase">Fecha</label>
+                  <label className="text-[9px] font-mono text-white uppercase">Fecha</label>
                   <input type="date"
                     className="w-full bg-zinc-800 border border-zinc-700 focus:border-orange-400 text-white text-xs rounded-xl px-3 py-2 mt-1 outline-none" />
                 </div>
                 <div>
-                  <label className="text-[9px] font-mono text-zinc-500 uppercase">Monto (USD)</label>
+                  <label className="text-[9px] font-mono text-white uppercase">Monto (USD)</label>
                   <input type="number" placeholder="0"
                     className="w-full bg-zinc-800 border border-zinc-700 focus:border-orange-400 text-orange-400 font-black text-sm rounded-xl px-3 py-2 mt-1 outline-none" />
                 </div>
@@ -382,10 +382,10 @@ Responde SOLO con este JSON exacto:
 
             {/* CALCULADORA DE COMISIÓN */}
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3">
-              <h3 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Calculadora de Comisión</h3>
+              <h3 className="text-xs font-mono text-white uppercase tracking-wider">Calculadora de Comisión</h3>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[9px] font-mono text-zinc-500 uppercase">Porcentaje %</label>
+                  <label className="text-[9px] font-mono text-white uppercase">Porcentaje %</label>
                   <input type="number" defaultValue="3" min="0" max="100" step="0.5"
                     className="w-full bg-zinc-800 border border-zinc-700 focus:border-[#CCFF00] text-white text-sm rounded-xl px-3 py-2 mt-1 outline-none"
                     onChange={(e) => {
@@ -395,7 +395,7 @@ Responde SOLO con este JSON exacto:
                     }} />
                 </div>
                 <div>
-                  <label className="text-[9px] font-mono text-zinc-500 uppercase">Tu Comisión</label>
+                  <label className="text-[9px] font-mono text-white uppercase">Tu Comisión</label>
                   <div id="comision-result" className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 mt-1 text-[#CCFF00] font-black text-sm font-mono">
                     US$ {Math.round(selectedDeal.precio * 3 / 100).toLocaleString()}
                   </div>
@@ -413,19 +413,19 @@ Responde SOLO con este JSON exacto:
                 </button>
               </div>
               {aiLoading && (
-                <div className="text-zinc-500 text-xs font-mono animate-pulse text-center py-4">
+                <div className="text-white text-xs font-mono animate-pulse text-center py-4">
                   Analizando el deal con AI...
                 </div>
               )}
               {aiResult && (
                 <div className="space-y-4">
                   <div className="bg-zinc-800 rounded-xl p-3">
-                    <p className="text-[10px] font-mono text-zinc-500 uppercase mb-1">Próximo Paso</p>
+                    <p className="text-[10px] font-mono text-white uppercase mb-1">Próximo Paso</p>
                     <p className="text-sm text-white leading-relaxed">{aiResult.proximo_paso}</p>
                   </div>
                   <div className="bg-zinc-800 rounded-xl p-3">
                     <div className="flex justify-between items-center mb-1">
-                      <p className="text-[10px] font-mono text-zinc-500 uppercase">Mensaje WhatsApp</p>
+                      <p className="text-[10px] font-mono text-white uppercase">Mensaje WhatsApp</p>
                       <button onClick={() => navigator.clipboard.writeText(aiResult.mensaje_whatsapp)}
                         className="text-[10px] text-[#CCFF00] font-mono hover:underline">Copiar</button>
                     </div>
@@ -439,8 +439,8 @@ Responde SOLO con este JSON exacto:
                     )}
                   </div>
                   <div className="bg-zinc-800 rounded-xl p-3">
-                    <p className="text-[10px] font-mono text-zinc-500 uppercase mb-1">Análisis</p>
-                    <p className="text-sm text-zinc-300 leading-relaxed">{aiResult.analisis}</p>
+                    <p className="text-[10px] font-mono text-white uppercase mb-1">Análisis</p>
+                    <p className="text-sm text-white leading-relaxed">{aiResult.analisis}</p>
                   </div>
                 </div>
               )}

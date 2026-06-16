@@ -161,7 +161,7 @@ export default function ProyectosPage() {
   };
 
   if (loading) return (
-    <div className="p-8 max-w-6xl mx-auto text-center py-32 text-zinc-500 font-mono text-sm animate-pulse">Cargando proyectos...</div>
+    <div className="p-8 max-w-6xl mx-auto text-center py-32 text-white font-mono text-sm animate-pulse">Cargando proyectos...</div>
   );
 
   return (
@@ -174,7 +174,7 @@ export default function ProyectosPage() {
             ← Volver a Constructoras
           </button>
           <h1 className="text-3xl font-bold tracking-tight text-white">{constructora?.nombre || '...'}</h1>
-          <p className="text-sm text-zinc-300 mt-1">Proyectos registrados.</p>
+          <p className="text-sm text-white mt-1">Proyectos registrados.</p>
         </div>
         <div className="flex items-center gap-3">
           <span className="bg-[#d4ff3b]/10 text-[#d4ff3b] border border-[#d4ff3b]/20 text-xs px-3 py-1.5 rounded-full font-mono uppercase tracking-widest">
@@ -193,60 +193,60 @@ export default function ProyectosPage() {
       {mostrarForm && (
         <div className="bg-[#18181b] border border-zinc-800 p-8 rounded-2xl shadow-2xl mb-10">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-sm font-semibold text-zinc-300 uppercase tracking-wider">
+            <h2 className="text-sm font-semibold text-white uppercase tracking-wider">
               {editandoId ? 'Editar Proyecto' : 'Nuevo Proyecto'}
             </h2>
-            <button onClick={cancelarForm} className="text-zinc-500 hover:text-zinc-300 text-xs transition">✕ Cancelar</button>
+            <button onClick={cancelarForm} className="text-zinc-500 hover:text-white text-xs transition">✕ Cancelar</button>
           </div>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="md:col-span-2">
-                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Nombre del Proyecto *</label>
+                <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Nombre del Proyecto *</label>
                 <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} required placeholder="Ej. Torre Piantini Residences"
                   className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
               </div>
               <div>
-                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Sector / Zona</label>
+                <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Sector / Zona</label>
                 <input type="text" name="sector" value={formData.sector} onChange={handleChange} placeholder="Ej. Piantini"
                   className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
               </div>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div>
-                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Pisos</label>
+                <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Pisos</label>
                 <input type="number" name="pisos" value={formData.pisos} onChange={handleChange} placeholder="20"
                   className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
               </div>
               <div>
-                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Total Unidades</label>
+                <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Total Unidades</label>
                 <input type="number" name="unidades_total" value={formData.unidades_total} onChange={handleChange} placeholder="80"
                   className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
               </div>
               <div>
-                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Entrega Estimada</label>
+                <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Entrega Estimada</label>
                 <input type="date" name="fecha_entrega_estimada" value={formData.fecha_entrega_estimada} onChange={handleChange}
                   className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
               </div>
               <div>
-                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Avance %</label>
+                <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Avance %</label>
                 <input type="number" name="porcentaje_avance" value={formData.porcentaje_avance} onChange={handleChange} min="0" max="100"
                   className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Ubicación</label>
+                <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Ubicación</label>
                 <input type="text" name="ubicacion" value={formData.ubicacion} onChange={handleChange} placeholder="Ej. Av. Abraham Lincoln esq. Gustavo Mejía Ricart"
                   className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
               </div>
               <div>
-                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">URL de Imagen</label>
+                <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">URL de Imagen</label>
                 <input type="text" name="imagen_url" value={formData.imagen_url} onChange={handleChange} placeholder="https://..."
                   className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
               </div>
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Descripción</label>
+              <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Descripción</label>
               <textarea name="descripcion" value={formData.descripcion} onChange={handleChange} rows={2} placeholder="Descripción del proyecto..."
                 className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition resize-none" />
             </div>
@@ -258,7 +258,7 @@ export default function ProyectosPage() {
             )}
 
             <div className="flex justify-end gap-3 pt-2">
-              <button type="button" onClick={cancelarForm} className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-5 py-2.5 rounded-lg text-sm font-medium transition">
+              <button type="button" onClick={cancelarForm} className="bg-zinc-800 hover:bg-zinc-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition">
                 Cancelar
               </button>
               <button type="submit" className="bg-[#d4ff3b] hover:bg-[#c2eb30] text-black px-6 py-2.5 rounded-lg text-sm font-semibold transition">
@@ -273,8 +273,8 @@ export default function ProyectosPage() {
       {proyectos.length === 0 && !mostrarForm && (
         <div className="text-center py-32">
           <div className="text-5xl mb-4">🏗️</div>
-          <p className="text-zinc-400 font-medium mb-2">No hay proyectos registrados aún</p>
-          <p className="text-zinc-600 text-sm mb-6">Agrega el primer proyecto de {constructora?.nombre}</p>
+          <p className="text-white font-medium mb-2">No hay proyectos registrados aún</p>
+          <p className="text-white text-sm mb-6">Agrega el primer proyecto de {constructora?.nombre}</p>
           <button onClick={() => setMostrarForm(true)}
             className="bg-[#d4ff3b] hover:bg-[#c2eb30] text-black px-6 py-3 rounded-lg font-semibold transition">
             + Registrar primer proyecto
@@ -318,21 +318,21 @@ export default function ProyectosPage() {
                     className="flex-1 text-center bg-[#d4ff3b]/10 hover:bg-[#d4ff3b] text-[#d4ff3b] hover:text-black text-xs py-2 rounded-lg font-semibold transition border border-[#d4ff3b]/20">
                     Ver Unidades →
                   </button>
-                  <button onClick={() => iniciarEdicion(p)} className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs px-3 py-2 rounded-lg transition border border-zinc-700">Editar</button>
+                  <button onClick={() => iniciarEdicion(p)} className="bg-zinc-800 hover:bg-zinc-700 text-white text-xs px-3 py-2 rounded-lg transition border border-zinc-700">Editar</button>
                   <button onClick={() => eliminar(p.id)} className="bg-zinc-900 hover:bg-red-950/40 text-zinc-500 hover:text-red-400 text-xs px-3 py-2 rounded-lg transition border border-zinc-800">Borrar</button>
                 </div>
 
                 {/* Links para brokers */}
                 <div className="border-t border-zinc-800 pt-4">
-                  <div className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono mb-3">Links para Brokers</div>
+                  <div className="text-[10px] text-white uppercase tracking-wider font-mono mb-3">Links para Brokers</div>
                   {(accesosProyecto[p.id] || []).filter(a => a.activo).map(acceso => (
                     <div key={acceso.id} className="flex items-center gap-2 mb-2">
                       <div className="flex-1 bg-[#09090b] border border-zinc-800 rounded-lg px-3 py-1.5">
-                        <div className="text-[10px] text-zinc-400 font-mono truncate">{acceso.nombre_agencia}</div>
+                        <div className="text-[10px] text-white font-mono truncate">{acceso.nombre_agencia}</div>
                         <div className="text-[10px] text-zinc-600 font-mono truncate">/proyecto/{acceso.token}</div>
                       </div>
                       <button onClick={() => navigator.clipboard.writeText(`${window.location.origin}/proyecto/${acceso.token}`)}
-                        className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[10px] px-2 py-1.5 rounded-lg transition">Copiar</button>
+                        className="bg-zinc-800 hover:bg-zinc-700 text-white text-[10px] px-2 py-1.5 rounded-lg transition">Copiar</button>
                       <button onClick={() => desactivarAcceso(acceso.id)}
                         className="bg-zinc-900 hover:bg-red-950/40 text-zinc-600 hover:text-red-400 text-[10px] px-2 py-1.5 rounded-lg transition">✕</button>
                     </div>
@@ -355,12 +355,12 @@ export default function ProyectosPage() {
                           Generar Link
                         </button>
                         <button onClick={() => { setGenerandoLink(null); setNombreAgencia(''); setLinkGenerado(null); }}
-                          className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs px-3 py-1.5 rounded-lg transition">Cancelar</button>
+                          className="bg-zinc-800 hover:bg-zinc-700 text-white text-xs px-3 py-1.5 rounded-lg transition">Cancelar</button>
                       </div>
                     </div>
                   ) : (
                     <button onClick={() => { setGenerandoLink(p.id); setLinkGenerado(null); }}
-                      className="w-full text-center bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 text-xs py-2 rounded-lg transition border border-zinc-800 border-dashed mt-1">
+                      className="w-full text-center bg-zinc-900 hover:bg-zinc-800 text-white hover:text-zinc-200 text-xs py-2 rounded-lg transition border border-zinc-800 border-dashed mt-1">
                       + Generar link para broker
                     </button>
                   )}

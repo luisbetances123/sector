@@ -28,7 +28,7 @@ const CATEGORIAS = ['general', 'plomeria', 'electricidad', 'pintura', 'carpinter
 const PRIORIDADES: Record<string, { label: string; color: string; bg: string }> = {
   alta:   { label: 'Alta',   color: 'text-red-400',    bg: 'bg-red-500/10 border-red-500/20' },
   media:  { label: 'Media',  color: 'text-amber-400',  bg: 'bg-amber-400/10 border-amber-400/20' },
-  baja:   { label: 'Baja',   color: 'text-zinc-400',   bg: 'bg-zinc-800 border-zinc-700' },
+  baja:   { label: 'Baja',   color: 'text-white',   bg: 'bg-zinc-800 border-zinc-700' },
 };
 const ESTADOS: Record<string, { label: string; color: string; bg: string }> = {
   abierta:     { label: 'Abierta',     color: 'text-amber-400',  bg: 'bg-amber-400/10 border-amber-400/20' },
@@ -118,7 +118,7 @@ export default function IncidenciasPage() {
   };
 
   if (loading) return (
-    <div className="p-8 max-w-4xl mx-auto text-center py-32 text-zinc-500 font-mono text-sm animate-pulse">Cargando incidencias...</div>
+    <div className="p-8 max-w-4xl mx-auto text-center py-32 text-white font-mono text-sm animate-pulse">Cargando incidencias...</div>
   );
 
   return (
@@ -133,7 +133,7 @@ export default function IncidenciasPage() {
           </button>
           <p className="text-xs text-[#d4ff3b] font-mono uppercase tracking-widest mb-1">Unidad {unidad?.numero}</p>
           <h1 className="text-3xl font-bold tracking-tight text-white">Incidencias de Entrega</h1>
-          {unidad?.cliente_nombre && <p className="text-sm text-zinc-300 mt-1">Cliente: {unidad.cliente_nombre}</p>}
+          {unidad?.cliente_nombre && <p className="text-sm text-white mt-1">Cliente: {unidad.cliente_nombre}</p>}
         </div>
         <button onClick={() => setMostrarForm(!mostrarForm)}
           className="bg-[#d4ff3b] hover:bg-[#c2eb30] text-black text-xs font-bold px-4 py-2 rounded-lg transition">
@@ -145,39 +145,39 @@ export default function IncidenciasPage() {
       <div className="grid grid-cols-3 gap-4 mb-8">
         <div className="bg-[#18181b] border border-amber-400/20 rounded-xl p-4 text-center">
           <span className="block text-2xl font-mono font-bold text-amber-400">{conteo.abierta}</span>
-          <span className="text-[11px] text-zinc-500 uppercase tracking-wider">Abiertas</span>
+          <span className="text-[11px] text-white uppercase tracking-wider">Abiertas</span>
         </div>
         <div className="bg-[#18181b] border border-blue-500/20 rounded-xl p-4 text-center">
           <span className="block text-2xl font-mono font-bold text-blue-400">{conteo.en_proceso}</span>
-          <span className="text-[11px] text-zinc-500 uppercase tracking-wider">En Proceso</span>
+          <span className="text-[11px] text-white uppercase tracking-wider">En Proceso</span>
         </div>
         <div className="bg-[#18181b] border border-emerald-500/20 rounded-xl p-4 text-center">
           <span className="block text-2xl font-mono font-bold text-emerald-400">{conteo.resuelta}</span>
-          <span className="text-[11px] text-zinc-500 uppercase tracking-wider">Resueltas</span>
+          <span className="text-[11px] text-white uppercase tracking-wider">Resueltas</span>
         </div>
       </div>
 
       {/* Formulario */}
       {mostrarForm && (
         <div className="bg-[#18181b] border border-zinc-800 rounded-2xl p-8 mb-8 shadow-2xl">
-          <h2 className="text-sm font-semibold text-zinc-300 uppercase tracking-wider mb-6">Registrar Incidencia</h2>
+          <h2 className="text-sm font-semibold text-white uppercase tracking-wider mb-6">Registrar Incidencia</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Título *</label>
+              <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Título *</label>
               <input type="text" value={formData.titulo} onChange={e => setFormData({ ...formData, titulo: e.target.value })}
                 required placeholder="Ej. Filtración en techo del baño principal"
                 className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Categoría</label>
+                <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Categoría</label>
                 <select value={formData.categoria} onChange={e => setFormData({ ...formData, categoria: e.target.value })}
                   className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition capitalize">
                   {CATEGORIAS.map(c => <option key={c} value={c} className="capitalize">{c}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Prioridad</label>
+                <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Prioridad</label>
                 <select value={formData.prioridad} onChange={e => setFormData({ ...formData, prioridad: e.target.value })}
                   className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition">
                   <option value="alta">Alta</option>
@@ -186,20 +186,20 @@ export default function IncidenciasPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Reportado por</label>
+                <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Reportado por</label>
                 <input type="text" value={formData.reportado_por} onChange={e => setFormData({ ...formData, reportado_por: e.target.value })}
                   placeholder="Cliente o broker"
                   className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
               </div>
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Descripción</label>
+              <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Descripción</label>
               <textarea value={formData.descripcion} onChange={e => setFormData({ ...formData, descripcion: e.target.value })}
                 rows={3} placeholder="Describe el problema con detalle..."
                 className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition resize-none" />
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">URL de foto (opcional)</label>
+              <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">URL de foto (opcional)</label>
               <input type="text" value={formData.imagen_url} onChange={e => setFormData({ ...formData, imagen_url: e.target.value })}
                 placeholder="https://..."
                 className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
@@ -213,7 +213,7 @@ export default function IncidenciasPage() {
 
             <div className="flex justify-end gap-3">
               <button type="button" onClick={() => { setMostrarForm(false); setFormData(formVacio); }}
-                className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-5 py-2.5 rounded-lg text-sm font-medium transition">Cancelar</button>
+                className="bg-zinc-800 hover:bg-zinc-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition">Cancelar</button>
               <button type="submit" className="bg-[#d4ff3b] hover:bg-[#c2eb30] text-black px-6 py-2.5 rounded-lg text-sm font-semibold transition">
                 Registrar incidencia
               </button>
@@ -226,7 +226,7 @@ export default function IncidenciasPage() {
       <div className="flex gap-2 mb-6">
         {[['todas', 'Todas'], ['abierta', 'Abiertas'], ['en_proceso', 'En proceso'], ['resuelta', 'Resueltas']].map(([val, lbl]) => (
           <button key={val} onClick={() => setFiltro(val)}
-            className={`text-xs px-3 py-1.5 rounded-lg font-mono uppercase tracking-wider transition border ${filtro === val ? 'bg-[#d4ff3b] text-black border-[#d4ff3b]' : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:border-zinc-600'}`}>
+            className={`text-xs px-3 py-1.5 rounded-lg font-mono uppercase tracking-wider transition border ${filtro === val ? 'bg-[#d4ff3b] text-black border-[#d4ff3b]' : 'bg-zinc-900 text-white border-zinc-800 hover:border-zinc-600'}`}>
             {lbl}
           </button>
         ))}
@@ -236,8 +236,8 @@ export default function IncidenciasPage() {
       {incidencias.length === 0 && !mostrarForm && (
         <div className="text-center py-32">
           <div className="text-5xl mb-4">🔧</div>
-          <p className="text-zinc-400 font-medium mb-2">Sin incidencias registradas</p>
-          <p className="text-zinc-600 text-sm mb-6">Registra problemas detectados durante la entrega de la unidad</p>
+          <p className="text-white font-medium mb-2">Sin incidencias registradas</p>
+          <p className="text-white text-sm mb-6">Registra problemas detectados durante la entrega de la unidad</p>
           <button onClick={() => setMostrarForm(true)} className="bg-[#d4ff3b] hover:bg-[#c2eb30] text-black px-6 py-3 rounded-lg font-semibold transition">
             + Registrar primera incidencia
           </button>
@@ -259,22 +259,22 @@ export default function IncidenciasPage() {
                       <div className="flex items-center gap-2 mb-2 flex-wrap">
                         <span className={`text-[10px] px-2 py-1 rounded-full border font-mono ${est.bg} ${est.color}`}>{est.label}</span>
                         <span className={`text-[10px] px-2 py-1 rounded-full border font-mono ${pri.bg} ${pri.color}`}>{pri.label}</span>
-                        <span className="text-[10px] px-2 py-1 rounded-full border border-zinc-700 bg-zinc-800 text-zinc-400 font-mono capitalize">{inc.categoria}</span>
+                        <span className="text-[10px] px-2 py-1 rounded-full border border-zinc-700 bg-zinc-800 text-white font-mono capitalize">{inc.categoria}</span>
                       </div>
                       <h3 className="text-white font-semibold">{inc.titulo}</h3>
-                      {inc.reportado_por && <p className="text-zinc-500 text-xs mt-1">Reportado por: {inc.reportado_por}</p>}
-                      <p className="text-zinc-600 text-xs mt-1">
+                      {inc.reportado_por && <p className="text-white text-xs mt-1">Reportado por: {inc.reportado_por}</p>}
+                      <p className="text-white text-xs mt-1">
                         {new Date(inc.created_at).toLocaleDateString('es-DO', { day: '2-digit', month: 'short', year: 'numeric' })}
                       </p>
                     </div>
-                    <span className="text-zinc-300 text-sm">{isExpandida ? '▲' : '▼'}</span>
+                    <span className="text-white text-sm">{isExpandida ? '▲' : '▼'}</span>
                   </div>
                 </div>
 
                 {isExpandida && (
                   <div className="border-t border-zinc-800 p-5 space-y-4">
                     {inc.descripcion && (
-                      <p className="text-zinc-300 text-sm leading-relaxed">{inc.descripcion}</p>
+                      <p className="text-white text-sm leading-relaxed">{inc.descripcion}</p>
                     )}
                     {inc.imagen_url && (
                       <img src={inc.imagen_url} alt="Incidencia" className="w-full max-h-48 object-cover rounded-xl border border-zinc-800" />
@@ -312,7 +312,7 @@ export default function IncidenciasPage() {
                       )}
                       {inc.estado === 'resuelta' && (
                         <button onClick={() => cambiarEstado(inc.id, 'abierta')}
-                          className="bg-zinc-800 hover:bg-zinc-700 text-zinc-400 text-xs px-3 py-2 rounded-lg transition">
+                          className="bg-zinc-800 hover:bg-zinc-700 text-white text-xs px-3 py-2 rounded-lg transition">
                           Reabrir
                         </button>
                       )}

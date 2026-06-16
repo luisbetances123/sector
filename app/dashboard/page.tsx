@@ -163,7 +163,7 @@ export default function DashboardPage() {
   const totalAlertas = alertasReserva.length + alertasCuotas.length + alertasIncidencias.length;
 
   if (loading) return (
-    <div className="p-10 min-h-screen text-zinc-500 font-mono text-sm animate-pulse flex items-center justify-center">
+    <div className="p-10 min-h-screen text-white font-mono text-sm animate-pulse flex items-center justify-center">
       Cargando dashboard...
     </div>
   );
@@ -176,7 +176,7 @@ export default function DashboardPage() {
         <div>
           <p className="text-xs text-[#d4ff3b] font-mono uppercase tracking-widest mb-1">Panel General</p>
           <h1 className="text-3xl font-bold tracking-tight text-white">{stats.constructora_nombre || 'Dashboard'}</h1>
-          <p className="text-sm text-zinc-300 mt-1">
+          <p className="text-sm text-white mt-1">
             {new Date().toLocaleDateString('es-DO', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
           </p>
         </div>
@@ -197,7 +197,7 @@ export default function DashboardPage() {
           { label: 'Vendidas', value: stats.unidades_vendidas, color: 'text-red-400', border: 'border-red-500/20', sub: `${pctVendido}% del inventario` },
         ].map(m => (
           <div key={m.label} onClick={m.action} className={`bg-[#18181b] border ${m.border} rounded-xl p-5 ${m.action ? 'cursor-pointer hover:border-zinc-600 transition' : ''}`}>
-            <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono mb-2">{m.label}</p>
+            <p className="text-[10px] text-white uppercase tracking-wider font-mono mb-2">{m.label}</p>
             <p className={`text-3xl font-bold font-mono ${m.color}`}>{m.value}</p>
             <p className="text-xs text-zinc-600 mt-2">{m.sub}</p>
           </div>
@@ -207,8 +207,8 @@ export default function DashboardPage() {
       {/* Barra absorción */}
       <div className="bg-[#18181b] border border-zinc-800 rounded-xl p-5 mb-6">
         <div className="flex justify-between items-center mb-3">
-          <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono">Absorción del inventario</p>
-          <p className="text-xs text-zinc-400 font-mono">{stats.unidades_total} unidades totales</p>
+          <p className="text-[10px] text-white uppercase tracking-wider font-mono">Absorción del inventario</p>
+          <p className="text-xs text-white font-mono">{stats.unidades_total} unidades totales</p>
         </div>
         <div className="w-full bg-zinc-800 rounded-full h-3 flex overflow-hidden">
           <div className="bg-red-500 h-3 transition-all" style={{ width: `${pctVendido}%` }} />
@@ -219,7 +219,7 @@ export default function DashboardPage() {
           {[['bg-red-500', 'Vendidas', stats.unidades_vendidas], ['bg-amber-400', 'Reservadas', stats.unidades_reservadas], ['bg-emerald-500', 'Libres', stats.unidades_libres]].map(([color, label, val]) => (
             <div key={String(label)} className="flex items-center gap-1.5">
               <div className={`w-2.5 h-2.5 rounded-full ${color}`} />
-              <span className="text-[10px] text-zinc-500">{label}: <span className="text-zinc-300 font-mono">{val}</span></span>
+              <span className="text-[10px] text-zinc-500">{label}: <span className="text-white font-mono">{val}</span></span>
             </div>
           ))}
         </div>
@@ -231,19 +231,19 @@ export default function DashboardPage() {
         {/* Reservas por vencer */}
         <div className={`bg-[#18181b] border rounded-xl overflow-hidden ${alertasReserva.length > 0 ? 'border-amber-400/30' : 'border-zinc-800'}`}>
           <div className="px-5 py-4 border-b border-zinc-800 flex justify-between items-center">
-            <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono">⏱ Reservas por vencer</p>
+            <p className="text-[10px] text-white uppercase tracking-wider font-mono">⏱ Reservas por vencer</p>
             <span className={`text-xs font-mono font-bold ${alertasReserva.length > 0 ? 'text-amber-400' : 'text-zinc-600'}`}>{alertasReserva.length}</span>
           </div>
           <div className="divide-y divide-zinc-800/60">
             {alertasReserva.length === 0 ? (
-              <p className="text-zinc-600 text-xs p-5 text-center">Sin reservas críticas ✓</p>
+              <p className="text-white text-xs p-5 text-center">Sin reservas críticas ✓</p>
             ) : alertasReserva.map(a => (
               <div key={a.id} className="px-5 py-3">
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-white text-sm font-bold">Unidad {a.numero}</p>
-                    <p className="text-zinc-300 text-xs">{a.proyecto_nombre}</p>
-                    {a.reservado_por && <p className="text-zinc-400 text-xs">{a.reservado_por}</p>}
+                    <p className="text-white text-xs">{a.proyecto_nombre}</p>
+                    {a.reservado_por && <p className="text-white text-xs">{a.reservado_por}</p>}
                   </div>
                   <span className={`text-xs font-mono font-bold px-2 py-1 rounded-lg ${a.horas_restantes < 2 ? 'bg-red-500/20 text-red-400' : 'bg-amber-400/20 text-amber-400'}`}>
                     {a.horas_restantes < 1 ? `${Math.round(a.horas_restantes * 60)}m` : `${Math.round(a.horas_restantes)}h`}
@@ -257,18 +257,18 @@ export default function DashboardPage() {
         {/* Cuotas vencidas */}
         <div className={`bg-[#18181b] border rounded-xl overflow-hidden ${alertasCuotas.length > 0 ? 'border-red-500/30' : 'border-zinc-800'}`}>
           <div className="px-5 py-4 border-b border-zinc-800 flex justify-between items-center">
-            <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono">💸 Cuotas vencidas</p>
+            <p className="text-[10px] text-white uppercase tracking-wider font-mono">💸 Cuotas vencidas</p>
             <span className={`text-xs font-mono font-bold ${alertasCuotas.length > 0 ? 'text-red-400' : 'text-zinc-600'}`}>{alertasCuotas.length}</span>
           </div>
           <div className="divide-y divide-zinc-800/60">
             {alertasCuotas.length === 0 ? (
-              <p className="text-zinc-600 text-xs p-5 text-center">Todo al día ✓</p>
+              <p className="text-white text-xs p-5 text-center">Todo al día ✓</p>
             ) : alertasCuotas.slice(0, 4).map(c => (
               <div key={c.id} className="px-5 py-3">
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-white text-sm font-bold">Unidad {c.unidad_numero}</p>
-                    {c.cliente_nombre && <p className="text-zinc-300 text-xs">{c.cliente_nombre}</p>}
+                    {c.cliente_nombre && <p className="text-white text-xs">{c.cliente_nombre}</p>}
                     <p className="text-red-400/70 text-xs">{c.dias_vencida}d vencida</p>
                   </div>
                   <span className="text-red-400 text-xs font-mono font-bold">${c.monto.toLocaleString()}</span>
@@ -287,24 +287,24 @@ export default function DashboardPage() {
         {/* Incidencias sin atender */}
         <div className={`bg-[#18181b] border rounded-xl overflow-hidden ${alertasIncidencias.length > 0 ? 'border-orange-500/30' : 'border-zinc-800'}`}>
           <div className="px-5 py-4 border-b border-zinc-800 flex justify-between items-center">
-            <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono">🔧 Incidencias abiertas</p>
+            <p className="text-[10px] text-white uppercase tracking-wider font-mono">🔧 Incidencias abiertas</p>
             <span className={`text-xs font-mono font-bold ${alertasIncidencias.length > 0 ? 'text-orange-400' : 'text-zinc-600'}`}>{alertasIncidencias.length}</span>
           </div>
           <div className="divide-y divide-zinc-800/60">
             {alertasIncidencias.length === 0 ? (
-              <p className="text-zinc-600 text-xs p-5 text-center">Sin incidencias ✓</p>
+              <p className="text-white text-xs p-5 text-center">Sin incidencias ✓</p>
             ) : alertasIncidencias.slice(0, 4).map(i => (
               <div key={i.id} className="px-5 py-3">
                 <div className="flex justify-between items-start">
                   <div className="flex-1 min-w-0">
                     <p className="text-white text-sm font-bold truncate">{i.titulo}</p>
-                    <p className="text-zinc-300 text-xs">Unidad {i.unidad_numero}</p>
+                    <p className="text-white text-xs">Unidad {i.unidad_numero}</p>
                   </div>
                   <div className="flex flex-col items-end gap-1 ml-2">
                     <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono ${i.prioridad === 'alta' ? 'bg-red-500/20 text-red-400' : i.prioridad === 'media' ? 'bg-amber-400/20 text-amber-400' : 'bg-zinc-800 text-zinc-500'}`}>
                       {i.prioridad}
                     </span>
-                    <span className="text-zinc-600 text-[10px] font-mono">{i.dias_abierta}d</span>
+                    <span className="text-white text-[10px] font-mono">{i.dias_abierta}d</span>
                   </div>
                 </div>
               </div>
@@ -315,20 +315,20 @@ export default function DashboardPage() {
 
       {/* Resumen financiero */}
       <div className="bg-[#18181b] border border-zinc-800 rounded-xl p-5">
-        <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono mb-4">Resumen financiero</p>
+        <p className="text-[10px] text-white uppercase tracking-wider font-mono mb-4">Resumen financiero</p>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <div>
-            <p className="text-zinc-500 text-xs mb-1">Unidades vendidas</p>
+            <p className="text-white text-xs mb-1">Unidades vendidas</p>
             <p className="text-white font-mono font-bold text-lg">{stats.unidades_vendidas}</p>
           </div>
           <div>
-            <p className="text-zinc-500 text-xs mb-1">Cartera vencida</p>
+            <p className="text-white text-xs mb-1">Cartera vencida</p>
             <p className={`font-mono font-bold text-lg ${stats.cuotas_vencidas_monto > 0 ? 'text-red-400' : 'text-emerald-400'}`}>
               ${stats.cuotas_vencidas_monto.toLocaleString()}
             </p>
           </div>
           <div>
-            <p className="text-zinc-500 text-xs mb-1">Incidencias abiertas</p>
+            <p className="text-white text-xs mb-1">Incidencias abiertas</p>
             <p className={`font-mono font-bold text-lg ${alertasIncidencias.length > 0 ? 'text-orange-400' : 'text-emerald-400'}`}>
               {alertasIncidencias.length}
             </p>

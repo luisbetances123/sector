@@ -53,7 +53,7 @@ export default function DashboardLayout({
         </div>
         <button 
           onClick={() => setIsOpen(!isOpen)}
-          className="p-2 text-zinc-400 hover:text-white transition-colors"
+          className="p-2 text-white hover:text-white transition-colors"
           aria-label="Abrir menú"
         >
           {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -74,7 +74,7 @@ export default function DashboardLayout({
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
                     isActive
                       ? 'bg-[#CCFF00] text-black shadow-[0_0_20px_rgba(204,255,0,0.15)] font-black'
-                      : 'text-zinc-400 hover:text-white hover:bg-zinc-900/40'
+                      : 'text-white hover:text-white hover:bg-zinc-900/40'
                   }`}
                 >
                   <Icon className={`w-4 h-4 ${isActive ? 'stroke-[2.5]' : 'stroke-[2]'}`} />
@@ -112,7 +112,7 @@ export default function DashboardLayout({
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
                     isActive
                       ? 'bg-[#CCFF00] text-black shadow-[0_0_20px_rgba(204,255,0,0.15)] font-black'
-                      : 'text-zinc-400 hover:text-white hover:bg-zinc-900/40'
+                      : 'text-white hover:text-white hover:bg-zinc-900/40'
                   }`}
                 >
                   <Icon className={`w-4 h-4 ${isActive ? 'stroke-[2.5]' : 'stroke-[2]'}`} />

@@ -59,35 +59,35 @@ export default function MercadoPage() {
       <header className="border-b border-zinc-900 pb-6">
         <span className="text-sm font-mono text-[#CCFF00] uppercase tracking-widest">Inteligencia</span>
         <h1 className="text-4xl font-extrabold tracking-tighter text-white mt-1">Análisis de Mercado</h1>
-        <p className="text-zinc-500 text-sm mt-1">Precios por zona basados en tu inventario</p>
+        <p className="text-white text-sm mt-1">Precios por zona basados en tu inventario</p>
       </header>
 
       {/* STATS */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-5">
-          <p className="text-xs font-mono text-zinc-500 uppercase">Propiedades</p>
+          <p className="text-xs font-mono text-white uppercase">Propiedades</p>
           <p className="text-3xl font-black text-white mt-1">{totalPropiedades}</p>
         </div>
         <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-5">
-          <p className="text-xs font-mono text-zinc-500 uppercase">Precio Promedio</p>
+          <p className="text-xs font-mono text-white uppercase">Precio Promedio</p>
           <p className="text-2xl font-black text-[#CCFF00] mt-1">{fmt(precioPromedioCRM)}</p>
         </div>
         <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-5">
-          <p className="text-xs font-mono text-zinc-500 uppercase">Zonas Activas</p>
+          <p className="text-xs font-mono text-white uppercase">Zonas Activas</p>
           <p className="text-3xl font-black text-white mt-1">{analisisPorZona.length}</p>
         </div>
       </div>
 
       {loading ? (
-        <div className="text-zinc-500 text-sm text-center py-20 font-mono animate-pulse">Cargando datos del mercado...</div>
+        <div className="text-white text-sm text-center py-20 font-mono animate-pulse">Cargando datos del mercado...</div>
       ) : analisisPorZona.length === 0 ? (
         <div className="text-center py-20 space-y-3">
-          <p className="text-zinc-300 text-sm">No hay suficientes datos para el análisis.</p>
-          <p className="text-zinc-400 text-xs">Agrega más propiedades con ubicación y precio para ver el análisis.</p>
+          <p className="text-white text-sm">No hay suficientes datos para el análisis.</p>
+          <p className="text-white text-xs">Agrega más propiedades con ubicación y precio para ver el análisis.</p>
         </div>
       ) : (
         <div className="space-y-4">
-          <h2 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Precios por Zona</h2>
+          <h2 className="text-xs font-mono text-white uppercase tracking-wider">Precios por Zona</h2>
           {analisisPorZona.map((z, i) => (
             <div key={z.zona} className="bg-zinc-950 border border-zinc-800 rounded-2xl p-5 space-y-4">
               <div className="flex justify-between items-start">
@@ -95,11 +95,11 @@ export default function MercadoPage() {
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] font-mono text-zinc-600">#{i + 1}</span>
                     <h3 className="font-black text-white">{z.zona}</h3>
-                    <span className="text-[10px] font-mono bg-zinc-900 text-zinc-400 px-2 py-0.5 rounded-full">{z.total} prop.</span>
+                    <span className="text-[10px] font-mono bg-zinc-900 text-white px-2 py-0.5 rounded-full">{z.total} prop.</span>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] font-mono text-zinc-500 uppercase">Precio Promedio</p>
+                  <p className="text-[10px] font-mono text-white uppercase">Precio Promedio</p>
                   <p className="text-xl font-black text-[#CCFF00] font-mono">{fmt(z.promedio)}</p>
                 </div>
               </div>
@@ -113,15 +113,15 @@ export default function MercadoPage() {
               {/* DETALLES */}
               <div className="grid grid-cols-3 gap-3">
                 <div className="bg-zinc-900 rounded-xl p-3 text-center">
-                  <p className="text-[10px] font-mono text-zinc-500 uppercase">Mínimo</p>
+                  <p className="text-[10px] font-mono text-white uppercase">Mínimo</p>
                   <p className="text-sm font-black text-white mt-1">{fmt(z.minimo)}</p>
                 </div>
                 <div className="bg-zinc-900 rounded-xl p-3 text-center">
-                  <p className="text-[10px] font-mono text-zinc-500 uppercase">Máximo</p>
+                  <p className="text-[10px] font-mono text-white uppercase">Máximo</p>
                   <p className="text-sm font-black text-white mt-1">{fmt(z.maximo)}</p>
                 </div>
                 <div className="bg-zinc-900 rounded-xl p-3 text-center">
-                  <p className="text-[10px] font-mono text-zinc-500 uppercase">Precio/m²</p>
+                  <p className="text-[10px] font-mono text-white uppercase">Precio/m²</p>
                   <p className="text-sm font-black text-white mt-1">{z.promedioM2 > 0 ? fmt(z.promedioM2) : '-'}</p>
                 </div>
               </div>

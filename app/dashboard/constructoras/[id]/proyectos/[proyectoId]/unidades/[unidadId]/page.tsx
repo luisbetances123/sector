@@ -169,7 +169,7 @@ export default function FichaUnidadPage() {
     cargarDatos();
   };
 
-  if (loading) return <div className="p-8 text-center py-32 text-zinc-500 font-mono text-sm animate-pulse">Cargando ficha...</div>;
+  if (loading) return <div className="p-8 text-center py-32 text-white font-mono text-sm animate-pulse">Cargando ficha...</div>;
   if (!unidad) return <div className="p-8 text-center py-32 text-zinc-500">Unidad no encontrada</div>;
 
   const totalPagado = cuotas.filter(c => c.estado === 'pagado').reduce((s, c) => s + c.monto, 0);
@@ -190,7 +190,7 @@ export default function FichaUnidadPage() {
           <div>
             <p className="text-xs text-[#d4ff3b] font-mono uppercase tracking-widest mb-1">Ficha de Unidad</p>
             <h1 className="text-4xl font-black tracking-tight text-white">Unidad {unidad.numero}</h1>
-            {unidad.tipo && <p className="text-zinc-400 text-sm mt-1 capitalize">{unidad.tipo} · Piso {unidad.piso || '—'}</p>}
+            {unidad.tipo && <p className="text-white text-sm mt-1 capitalize">{unidad.tipo} · Piso {unidad.piso || '—'}</p>}
           </div>
           <span className={`text-sm font-bold px-3 py-1.5 rounded-full border ${ESTADO_COLORES[unidad.estado]}`}>
             {ESTADO_TEXTO[unidad.estado]}
@@ -203,7 +203,7 @@ export default function FichaUnidadPage() {
 
         {/* Especificaciones */}
         <div className="md:col-span-2 bg-[#18181b] border border-zinc-800 rounded-2xl p-6">
-          <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono mb-4">Especificaciones</p>
+          <p className="text-[10px] text-white uppercase tracking-wider font-mono mb-4">Especificaciones</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
             {[
               { label: 'Precio', value: unidad.precio ? `$${Number(unidad.precio).toLocaleString()}` : '—', highlight: true },
@@ -216,15 +216,15 @@ export default function FichaUnidadPage() {
               { label: 'Tipo', value: unidad.tipo || '—' },
             ].map(spec => (
               <div key={spec.label} className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-3">
-                <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">{spec.label}</p>
+                <p className="text-[10px] text-white uppercase tracking-wider mb-1">{spec.label}</p>
                 <p className={`font-bold text-sm ${spec.highlight ? 'text-[#d4ff3b]' : 'text-white'}`}>{spec.value}</p>
               </div>
             ))}
           </div>
           {unidad.notas && (
             <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-3">
-              <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">Notas</p>
-              <p className="text-zinc-300 text-sm">{unidad.notas}</p>
+              <p className="text-[10px] text-white uppercase tracking-wider mb-1">Notas</p>
+              <p className="text-white text-sm">{unidad.notas}</p>
             </div>
           )}
         </div>
@@ -233,7 +233,7 @@ export default function FichaUnidadPage() {
         <div className="flex flex-col gap-4">
           {/* Cliente / Broker */}
           <div className="bg-[#18181b] border border-zinc-800 rounded-2xl p-5 flex-1">
-            <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono mb-4">Asignación</p>
+            <p className="text-[10px] text-white uppercase tracking-wider font-mono mb-4">Asignación</p>
             <div className="space-y-3">
               <div>
                 <p className="text-[10px] text-zinc-600 uppercase tracking-wider mb-0.5">Cliente</p>
@@ -259,7 +259,7 @@ export default function FichaUnidadPage() {
 
           {/* Cambiar estado */}
           <div className="bg-[#18181b] border border-zinc-800 rounded-2xl p-5">
-            <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono mb-3">Cambiar estado</p>
+            <p className="text-[10px] text-white uppercase tracking-wider font-mono mb-3">Cambiar estado</p>
             <div className="flex flex-col gap-2">
               {unidad.estado !== 'libre' && (
                 <button onClick={() => cambiarEstado('libre')} className="bg-emerald-500/20 hover:bg-emerald-500 text-emerald-400 hover:text-white text-xs py-2 rounded-lg transition font-semibold">
@@ -277,7 +277,7 @@ export default function FichaUnidadPage() {
                 </button>
               )}
               <button onClick={() => router.push(`/dashboard/constructoras/${constructoraId}/proyectos/${proyectoId}/unidades/${unidadId}/incidencias`)}
-                className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs py-2 rounded-lg transition">
+                className="bg-zinc-800 hover:bg-zinc-700 text-white text-xs py-2 rounded-lg transition">
                 🔧 Ver incidencias ({incidencias.length})
               </button>
             </div>
@@ -289,21 +289,21 @@ export default function FichaUnidadPage() {
       {plan && (
         <div className="bg-[#18181b] border border-zinc-800 rounded-2xl p-6 mb-6">
           <div className="flex justify-between items-center mb-4">
-            <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono">Resumen financiero</p>
+            <p className="text-[10px] text-white uppercase tracking-wider font-mono">Resumen financiero</p>
             <span className="text-[#d4ff3b] font-mono font-bold text-sm">{progreso}% cobrado</span>
           </div>
           <div className="grid grid-cols-3 gap-4 mb-4">
             <div className="text-center">
               <p className="text-emerald-400 font-mono font-bold text-xl">${totalPagado.toLocaleString()}</p>
-              <p className="text-[10px] text-zinc-500 uppercase tracking-wider mt-1">Cobrado</p>
+              <p className="text-[10px] text-white uppercase tracking-wider mt-1">Cobrado</p>
             </div>
             <div className="text-center">
               <p className="text-amber-400 font-mono font-bold text-xl">${totalPendiente.toLocaleString()}</p>
-              <p className="text-[10px] text-zinc-500 uppercase tracking-wider mt-1">Pendiente</p>
+              <p className="text-[10px] text-white uppercase tracking-wider mt-1">Pendiente</p>
             </div>
             <div className="text-center">
               <p className="text-white font-mono font-bold text-xl">${plan.precio_total.toLocaleString()}</p>
-              <p className="text-[10px] text-zinc-500 uppercase tracking-wider mt-1">Total</p>
+              <p className="text-[10px] text-white uppercase tracking-wider mt-1">Total</p>
             </div>
           </div>
           <div className="w-full bg-zinc-800 rounded-full h-2">
@@ -320,7 +320,7 @@ export default function FichaUnidadPage() {
           { key: 'incidencias', label: `Incidencias (${incidencias.length})` },
         ].map(t => (
           <button key={t.key} onClick={() => setTab(t.key as any)}
-            className={`text-xs px-4 py-2 rounded-lg font-mono uppercase tracking-wider transition border ${tab === t.key ? 'bg-[#d4ff3b] text-black border-[#d4ff3b]' : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:border-zinc-600'}`}>
+            className={`text-xs px-4 py-2 rounded-lg font-mono uppercase tracking-wider transition border ${tab === t.key ? 'bg-[#d4ff3b] text-black border-[#d4ff3b]' : 'bg-zinc-900 text-white border-zinc-800 hover:border-zinc-600'}`}>
             {t.label}
           </button>
         ))}
@@ -332,7 +332,7 @@ export default function FichaUnidadPage() {
           {!plan && !mostrarGenerador && (
             <div className="text-center py-20 bg-[#18181b] border border-zinc-800 rounded-2xl">
               <div className="text-4xl mb-3">💳</div>
-              <p className="text-zinc-400 font-medium mb-4">Sin plan de pago</p>
+              <p className="text-white font-medium mb-4">Sin plan de pago</p>
               <button onClick={() => setMostrarGenerador(true)} className="bg-[#d4ff3b] hover:bg-[#c2eb30] text-black px-6 py-2.5 rounded-lg font-semibold text-sm transition">
                 + Generar plan
               </button>
@@ -341,39 +341,39 @@ export default function FichaUnidadPage() {
 
           {mostrarGenerador && !plan && (
             <div className="bg-[#18181b] border border-zinc-800 rounded-2xl p-6 mb-6">
-              <h3 className="text-sm font-semibold text-zinc-300 uppercase tracking-wider mb-5">Configurar Plan de Pago</h3>
+              <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-5">Configurar Plan de Pago</h3>
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[11px] text-zinc-400 uppercase tracking-wider mb-1">Precio Total (USD)</label>
+                    <label className="block text-[11px] text-white uppercase tracking-wider mb-1">Precio Total (USD)</label>
                     <input type="number" value={genData.precio_total} onChange={e => setGenData({ ...genData, precio_total: e.target.value })}
                       className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
                   </div>
                   <div>
-                    <label className="block text-[11px] text-zinc-400 uppercase tracking-wider mb-1">Fecha inicio</label>
+                    <label className="block text-[11px] text-white uppercase tracking-wider mb-1">Fecha inicio</label>
                     <input type="date" value={genData.fecha_inicio} onChange={e => setGenData({ ...genData, fecha_inicio: e.target.value })}
                       className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-[11px] text-zinc-400 uppercase tracking-wider mb-1">Inicial %</label>
+                    <label className="block text-[11px] text-white uppercase tracking-wider mb-1">Inicial %</label>
                     <input type="number" value={genData.inicial_pct} onChange={e => setGenData({ ...genData, inicial_pct: e.target.value })}
                       className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
                   </div>
                   <div>
-                    <label className="block text-[11px] text-zinc-400 uppercase tracking-wider mb-1">Cuotas construcción</label>
+                    <label className="block text-[11px] text-white uppercase tracking-wider mb-1">Cuotas construcción</label>
                     <input type="number" value={genData.cuotas_construccion} onChange={e => setGenData({ ...genData, cuotas_construccion: e.target.value })}
                       className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
                   </div>
                   <div>
-                    <label className="block text-[11px] text-zinc-400 uppercase tracking-wider mb-1">Entrega %</label>
+                    <label className="block text-[11px] text-white uppercase tracking-wider mb-1">Entrega %</label>
                     <input type="number" value={genData.entrega_pct} onChange={e => setGenData({ ...genData, entrega_pct: e.target.value })}
                       className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
                   </div>
                 </div>
                 <div className="flex justify-end gap-3">
-                  <button onClick={() => setMostrarGenerador(false)} className="bg-zinc-800 text-zinc-300 px-5 py-2.5 rounded-lg text-sm transition">Cancelar</button>
+                  <button onClick={() => setMostrarGenerador(false)} className="bg-zinc-800 text-white px-5 py-2.5 rounded-lg text-sm transition">Cancelar</button>
                   <button onClick={generarPlan} className="bg-[#d4ff3b] text-black px-6 py-2.5 rounded-lg text-sm font-bold transition">Generar plan</button>
                 </div>
               </div>
@@ -391,7 +391,7 @@ export default function FichaUnidadPage() {
                         <span className="text-zinc-600 font-mono text-xs w-6">{c.numero}</span>
                         <div>
                           <p className="text-white text-sm font-medium">{c.descripcion}</p>
-                          <p className="text-zinc-500 text-xs mt-0.5">
+                          <p className="text-white text-xs mt-0.5">
                             {new Date(c.fecha_vencimiento).toLocaleDateString('es-DO', { day: '2-digit', month: 'short', year: 'numeric' })}
                             {vencida && <span className="text-red-400 ml-2">VENCIDA</span>}
                             {c.fecha_pago && <span className="text-emerald-400 ml-2">· Pagado {new Date(c.fecha_pago).toLocaleDateString('es-DO', { day: '2-digit', month: 'short' })}</span>}
@@ -400,7 +400,7 @@ export default function FichaUnidadPage() {
                       </div>
                       <div className="flex items-center gap-3">
                         <span className="font-mono font-bold text-white">${c.monto.toLocaleString()}</span>
-                        <span className={`text-[10px] px-2 py-1 rounded-full border font-mono ${c.estado === 'pagado' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : vencida ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-zinc-800 text-zinc-400 border-zinc-700'}`}>
+                        <span className={`text-[10px] px-2 py-1 rounded-full border font-mono ${c.estado === 'pagado' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : vencida ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-zinc-800 text-white border-zinc-700'}`}>
                           {c.estado === 'pagado' ? 'Pagado' : vencida ? 'Vencida' : 'Pendiente'}
                         </span>
                         {c.estado !== 'pagado' ? (
@@ -408,7 +408,7 @@ export default function FichaUnidadPage() {
                             Marcar pagado
                           </button>
                         ) : (
-                          <button onClick={() => marcarCuotaPendiente(c.id)} className="bg-zinc-800 hover:bg-zinc-700 text-zinc-400 text-[10px] px-3 py-1.5 rounded-lg transition">
+                          <button onClick={() => marcarCuotaPendiente(c.id)} className="bg-zinc-800 hover:bg-zinc-700 text-white text-[10px] px-3 py-1.5 rounded-lg transition">
                             Revertir
                           </button>
                         )}
@@ -426,7 +426,7 @@ export default function FichaUnidadPage() {
       {tab === 'historial' && (
         <div className="bg-[#18181b] border border-zinc-800 rounded-2xl overflow-hidden">
           {historial.length === 0 ? (
-            <p className="text-zinc-600 text-sm p-8 text-center">Sin movimientos registrados</p>
+            <p className="text-white text-sm p-8 text-center">Sin movimientos registrados</p>
           ) : (
             <div className="divide-y divide-zinc-800/60">
               {historial.map(h => (
@@ -441,11 +441,11 @@ export default function FichaUnidadPage() {
                           {h.estado_nuevo}
                         </span>
                       </p>
-                      {h.actor && <p className="text-zinc-600 text-xs mt-0.5">{h.actor}</p>}
-                      {h.nota && <p className="text-zinc-400 text-xs">{h.nota}</p>}
+                      {h.actor && <p className="text-white text-xs mt-0.5">{h.actor}</p>}
+                      {h.nota && <p className="text-white text-xs">{h.nota}</p>}
                     </div>
                   </div>
-                  <p className="text-zinc-600 text-xs font-mono">
+                  <p className="text-white text-xs font-mono">
                     {new Date(h.created_at).toLocaleDateString('es-DO', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>
@@ -460,7 +460,7 @@ export default function FichaUnidadPage() {
         <div className="bg-[#18181b] border border-zinc-800 rounded-2xl overflow-hidden">
           {incidencias.length === 0 ? (
             <div className="text-center py-16">
-              <p className="text-zinc-600 text-sm mb-4">Sin incidencias registradas</p>
+              <p className="text-white text-sm mb-4">Sin incidencias registradas</p>
               <button onClick={() => router.push(`/dashboard/constructoras/${constructoraId}/proyectos/${proyectoId}/unidades/${unidadId}/incidencias`)}
                 className="bg-[#d4ff3b] hover:bg-[#c2eb30] text-black px-5 py-2 rounded-lg text-sm font-semibold transition">
                 + Registrar incidencia
@@ -472,7 +472,7 @@ export default function FichaUnidadPage() {
                 <div key={i.id} className="flex items-center justify-between px-6 py-4">
                   <div>
                     <p className="text-white text-sm font-medium">{i.titulo}</p>
-                    <p className="text-zinc-500 text-xs mt-0.5">
+                    <p className="text-white text-xs mt-0.5">
                       {new Date(i.created_at).toLocaleDateString('es-DO', { day: '2-digit', month: 'short', year: 'numeric' })}
                     </p>
                   </div>

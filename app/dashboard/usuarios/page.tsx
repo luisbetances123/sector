@@ -50,12 +50,12 @@ export default function UsuariosPage() {
     setSaving(false)
   }
 
-  if (loading) return <div className="text-zinc-500 text-sm text-center py-20">Cargando...</div>
+  if (loading) return <div className="text-white text-sm text-center py-20">Cargando...</div>
 
   if (currentUserRol !== 'admin') {
     return (
       <div className="text-center py-20">
-        <p className="text-zinc-300 text-sm">Solo el administrador puede acceder a esta pagina.</p>
+        <p className="text-white text-sm">Solo el administrador puede acceder a esta pagina.</p>
       </div>
     )
   }
@@ -78,7 +78,7 @@ export default function UsuariosPage() {
       <section className="bg-zinc-950 border border-zinc-900 rounded-2xl overflow-hidden">
         <table className="w-full text-left">
           <thead>
-            <tr className="border-b border-zinc-900 bg-zinc-950 text-zinc-500 font-mono text-[10px] uppercase tracking-wider">
+            <tr className="border-b border-zinc-900 bg-zinc-950 text-white font-mono text-[10px] uppercase tracking-wider">
               <th className="p-4 pl-6">Usuario</th>
               <th className="p-4">Rol</th>
               <th className="p-4">Cambiar Rol</th>
@@ -89,10 +89,10 @@ export default function UsuariosPage() {
               <tr key={profile.id} className="hover:bg-zinc-900/20 transition-colors">
                 <td className="p-4 pl-6">
                   <div className="font-bold text-white">{profile.nombre || 'Sin nombre'}</div>
-                  <div className="text-zinc-500 font-mono text-[11px] mt-0.5">{profile.id.substring(0, 8)}...</div>
+                  <div className="text-white font-mono text-[11px] mt-0.5">{profile.id.substring(0, 8)}...</div>
                 </td>
                 <td className="p-4">
-                  <span className={'inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-mono font-bold border ' + (profile.rol === 'admin' ? 'bg-[#CCFF00]/10 text-[#CCFF00] border-[#CCFF00]/20' : 'bg-zinc-900 text-zinc-400 border-zinc-800')}>
+                  <span className={'inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-mono font-bold border ' + (profile.rol === 'admin' ? 'bg-[#CCFF00]/10 text-[#CCFF00] border-[#CCFF00]/20' : 'bg-zinc-900 text-white border-zinc-800')}>
                     {profile.rol}
                   </span>
                 </td>
@@ -115,7 +115,7 @@ export default function UsuariosPage() {
 
       <section className="bg-zinc-950 border border-zinc-900 rounded-2xl p-6 space-y-4">
         <div className="flex justify-between items-center">
-          <h2 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Invitar Nuevo Usuario</h2>
+          <h2 className="text-xs font-mono text-white uppercase tracking-wider">Invitar Nuevo Usuario</h2>
           <button onClick={() => setShowForm(!showForm)}
             className="bg-[#CCFF00] text-black font-black text-xs rounded-xl px-4 py-2 hover:bg-[#b8e600] transition-colors">
             + Invitar
@@ -123,11 +123,11 @@ export default function UsuariosPage() {
         </div>
         {showForm && (
           <div className="space-y-3 pt-2 border-t border-zinc-900">
-            <p className="text-zinc-300 text-xs">Para invitar un nuevo usuario, comparte el link de registro de SECTOR con su email. El nuevo usuario debe registrarse en:</p>
+            <p className="text-white text-xs">Para invitar un nuevo usuario, comparte el link de registro de SECTOR con su email. El nuevo usuario debe registrarse en:</p>
             <div className="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 font-mono text-xs text-[#CCFF00]">
               {typeof window !== 'undefined' ? window.location.origin : ''}/register
             </div>
-            <p className="text-zinc-600 text-[10px]">Despues de registrarse, asignales el rol desde esta tabla.</p>
+            <p className="text-white text-[10px]">Despues de registrarse, asignales el rol desde esta tabla.</p>
           </div>
         )}
       </section>

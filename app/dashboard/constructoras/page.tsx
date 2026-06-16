@@ -90,7 +90,7 @@ export default function ConstructorasPage() {
 
   if (loading) {
     return (
-      <div className="p-8 max-w-3xl mx-auto text-center py-32 text-zinc-500 font-mono text-sm animate-pulse">
+      <div className="p-8 max-w-3xl mx-auto text-center py-32 text-white font-mono text-sm animate-pulse">
         Cargando perfil...
       </div>
     );
@@ -104,12 +104,12 @@ export default function ConstructorasPage() {
         <div>
           <p className="text-xs text-[#d4ff3b] font-mono uppercase tracking-widest mb-1">Mi Empresa</p>
           <h1 className="text-3xl font-bold tracking-tight text-white">Perfil de Constructora</h1>
-          <p className="text-sm text-zinc-300 mt-1">Información de tu empresa en SECTOR.</p>
+          <p className="text-sm text-white mt-1">Información de tu empresa en SECTOR.</p>
         </div>
         {constructora && !editando && (
           <button
             onClick={() => setEditando(true)}
-            className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs px-4 py-2 rounded-lg transition border border-zinc-700 font-medium"
+            className="bg-zinc-800 hover:bg-zinc-700 text-white text-xs px-4 py-2 rounded-lg transition border border-zinc-700 font-medium"
           >
             Editar perfil
           </button>
@@ -131,7 +131,7 @@ export default function ConstructorasPage() {
             <div>
               <h2 className="text-2xl font-bold text-white">{constructora.nombre}</h2>
               {constructora.contacto_nombre && (
-                <p className="text-zinc-400 text-sm mt-1">Contacto: {constructora.contacto_nombre}</p>
+                <p className="text-white text-sm mt-1">Contacto: {constructora.contacto_nombre}</p>
               )}
               <span className={`inline-block mt-2 text-[10px] px-2 py-1 rounded-full font-mono border ${constructora.activa ? 'bg-[#d4ff3b]/10 text-[#d4ff3b] border-[#d4ff3b]/20' : 'bg-zinc-800 text-zinc-500 border-zinc-700'}`}>
                 {constructora.activa ? 'Activa' : 'Inactiva'}
@@ -142,11 +142,11 @@ export default function ConstructorasPage() {
           {/* Datos de contacto */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4">
-              <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-mono mb-1">Teléfono</p>
+              <p className="text-[10px] text-white uppercase tracking-widest font-mono mb-1">Teléfono</p>
               <p className="text-white text-sm font-medium">{constructora.telefono || <span className="text-zinc-600">No registrado</span>}</p>
             </div>
             <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4">
-              <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-mono mb-1">Email</p>
+              <p className="text-[10px] text-white uppercase tracking-widest font-mono mb-1">Email</p>
               <p className="text-white text-sm font-medium">{constructora.email || <span className="text-zinc-600">No registrado</span>}</p>
             </div>
           </div>
@@ -167,36 +167,36 @@ export default function ConstructorasPage() {
       {/* Formulario (modo edición o primera vez) */}
       {editando && (
         <div className="bg-[#18181b] border border-zinc-800 p-8 rounded-2xl shadow-2xl">
-          <h2 className="text-sm font-semibold mb-6 text-zinc-300 uppercase tracking-wider">
+          <h2 className="text-sm font-semibold mb-6 text-white uppercase tracking-wider">
             {constructora ? 'Editar información' : 'Completa el perfil de tu empresa'}
           </h2>
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Nombre de la Empresa *</label>
+                <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Nombre de la Empresa *</label>
                 <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} required placeholder="Ej. Grupo Puntacana"
                   className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
               </div>
               <div>
-                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Nombre del Contacto</label>
+                <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Nombre del Contacto</label>
                 <input type="text" name="contacto_nombre" value={formData.contacto_nombre} onChange={handleChange} placeholder="Ej. María Rodríguez"
                   className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Teléfono</label>
+                <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Teléfono</label>
                 <input type="text" name="telefono" value={formData.telefono} onChange={handleChange} placeholder="809-123-4567"
                   className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
               </div>
               <div>
-                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Email</label>
+                <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Email</label>
                 <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="contacto@empresa.com"
                   className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
               </div>
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">URL del Logo</label>
+              <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">URL del Logo</label>
               <input type="text" name="logo_url" value={formData.logo_url} onChange={handleChange} placeholder="https://..."
                 className="w-full p-3 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
             </div>
@@ -210,7 +210,7 @@ export default function ConstructorasPage() {
             <div className="flex justify-end gap-3 pt-2">
               {constructora && (
                 <button type="button" onClick={() => { setEditando(false); setMensaje(null); }}
-                  className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-5 py-2.5 rounded-lg text-sm font-medium transition">
+                  className="bg-zinc-800 hover:bg-zinc-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition">
                   Cancelar
                 </button>
               )}

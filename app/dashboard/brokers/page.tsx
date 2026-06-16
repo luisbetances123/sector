@@ -96,7 +96,7 @@ export default function BrokersPage() {
   const totalVendidas = brokers.filter(b => b.activo).reduce((s, b) => s + b.unidades_vendidas, 0);
 
   if (loading) return (
-    <div className="p-8 text-center py-32 text-zinc-500 font-mono text-sm animate-pulse">Cargando brokers...</div>
+    <div className="p-8 text-center py-32 text-white font-mono text-sm animate-pulse">Cargando brokers...</div>
   );
 
   return (
@@ -106,25 +106,25 @@ export default function BrokersPage() {
       <div className="mb-8 border-b border-zinc-800 pb-5">
         <p className="text-xs text-[#d4ff3b] font-mono uppercase tracking-widest mb-1">Red de Ventas</p>
         <h1 className="text-3xl font-bold tracking-tight text-white">Brokers Autorizados</h1>
-        <p className="text-sm text-zinc-300 mt-1">Agencias y brokers con acceso a tus proyectos.</p>
+        <p className="text-sm text-white mt-1">Agencias y brokers con acceso a tus proyectos.</p>
       </div>
 
       {/* Resumen */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <div className="bg-[#18181b] border border-zinc-800 rounded-xl p-5">
-          <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono mb-2">Brokers activos</p>
+          <p className="text-[10px] text-white uppercase tracking-wider font-mono mb-2">Brokers activos</p>
           <p className="text-3xl font-bold font-mono text-white">{brokers.filter(b => b.activo).length}</p>
         </div>
         <div className="bg-[#18181b] border border-amber-400/20 rounded-xl p-5">
-          <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono mb-2">Unidades reservadas</p>
+          <p className="text-[10px] text-white uppercase tracking-wider font-mono mb-2">Unidades reservadas</p>
           <p className="text-3xl font-bold font-mono text-amber-400">{totalReservadas}</p>
         </div>
         <div className="bg-[#18181b] border border-red-500/20 rounded-xl p-5">
-          <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono mb-2">Unidades vendidas</p>
+          <p className="text-[10px] text-white uppercase tracking-wider font-mono mb-2">Unidades vendidas</p>
           <p className="text-3xl font-bold font-mono text-red-400">{totalVendidas}</p>
         </div>
         <div className="bg-[#18181b] border border-[#d4ff3b]/20 rounded-xl p-5">
-          <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono mb-2">Volumen total</p>
+          <p className="text-[10px] text-white uppercase tracking-wider font-mono mb-2">Volumen total</p>
           <p className="text-2xl font-bold font-mono text-[#d4ff3b]">${totalVolumen.toLocaleString()}</p>
         </div>
       </div>
@@ -133,7 +133,7 @@ export default function BrokersPage() {
       <div className="flex gap-2 mb-6">
         {[['activos', 'Activos'], ['todos', 'Todos']].map(([val, lbl]) => (
           <button key={val} onClick={() => setFiltro(val as any)}
-            className={`text-xs px-4 py-2 rounded-lg font-mono uppercase tracking-wider transition border ${filtro === val ? 'bg-[#d4ff3b] text-black border-[#d4ff3b]' : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:border-zinc-600'}`}>
+            className={`text-xs px-4 py-2 rounded-lg font-mono uppercase tracking-wider transition border ${filtro === val ? 'bg-[#d4ff3b] text-black border-[#d4ff3b]' : 'bg-zinc-900 text-white border-zinc-800 hover:border-zinc-600'}`}>
             {lbl}
           </button>
         ))}
@@ -143,20 +143,20 @@ export default function BrokersPage() {
       {brokersFiltrados.length === 0 ? (
         <div className="text-center py-32 bg-[#18181b] border border-zinc-800 rounded-2xl">
           <div className="text-5xl mb-4">🤝</div>
-          <p className="text-zinc-400 font-medium mb-2">Sin brokers registrados</p>
-          <p className="text-zinc-400 text-sm">Genera un link desde la página de tu proyecto para autorizar brokers</p>
+          <p className="text-white font-medium mb-2">Sin brokers registrados</p>
+          <p className="text-white text-sm">Genera un link desde la página de tu proyecto para autorizar brokers</p>
         </div>
       ) : (
         <div className="bg-[#18181b] border border-zinc-800 rounded-2xl overflow-hidden">
           {/* Header tabla */}
           <div className="grid grid-cols-12 gap-4 px-6 py-3 border-b border-zinc-800 bg-zinc-900/50">
-            <p className="col-span-3 text-[10px] text-zinc-500 uppercase tracking-wider font-mono">Broker / Agencia</p>
-            <p className="col-span-2 text-[10px] text-zinc-500 uppercase tracking-wider font-mono">Proyecto</p>
-            <p className="col-span-1 text-[10px] text-zinc-500 uppercase tracking-wider font-mono text-center">Reservadas</p>
-            <p className="col-span-1 text-[10px] text-zinc-500 uppercase tracking-wider font-mono text-center">Vendidas</p>
-            <p className="col-span-2 text-[10px] text-zinc-500 uppercase tracking-wider font-mono text-right">Volumen</p>
-            <p className="col-span-1 text-[10px] text-zinc-500 uppercase tracking-wider font-mono text-center">Estado</p>
-            <p className="col-span-2 text-[10px] text-zinc-500 uppercase tracking-wider font-mono text-right">Acciones</p>
+            <p className="col-span-3 text-[10px] text-white uppercase tracking-wider font-mono">Broker / Agencia</p>
+            <p className="col-span-2 text-[10px] text-white uppercase tracking-wider font-mono">Proyecto</p>
+            <p className="col-span-1 text-[10px] text-white uppercase tracking-wider font-mono text-center">Reservadas</p>
+            <p className="col-span-1 text-[10px] text-white uppercase tracking-wider font-mono text-center">Vendidas</p>
+            <p className="col-span-2 text-[10px] text-white uppercase tracking-wider font-mono text-right">Volumen</p>
+            <p className="col-span-1 text-[10px] text-white uppercase tracking-wider font-mono text-center">Estado</p>
+            <p className="col-span-2 text-[10px] text-white uppercase tracking-wider font-mono text-right">Acciones</p>
           </div>
 
           <div className="divide-y divide-zinc-800/60">
@@ -165,12 +165,12 @@ export default function BrokersPage() {
                 {/* Nombre */}
                 <div className="col-span-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-bold text-zinc-300 flex-shrink-0">
+                    <div className="w-8 h-8 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-bold text-white flex-shrink-0">
                       {b.nombre_agencia.charAt(0).toUpperCase()}
                     </div>
                     <div>
                       <p className="text-white text-sm font-semibold">{b.nombre_agencia}</p>
-                      <p className="text-zinc-600 text-[10px] font-mono">
+                      <p className="text-white text-[10px] font-mono">
                         {new Date(b.created_at).toLocaleDateString('es-DO', { day: '2-digit', month: 'short', year: 'numeric' })}
                       </p>
                     </div>
@@ -179,7 +179,7 @@ export default function BrokersPage() {
 
                 {/* Proyecto */}
                 <div className="col-span-2">
-                  <p className="text-zinc-300 text-sm truncate">{b.proyecto_nombre}</p>
+                  <p className="text-white text-sm truncate">{b.proyecto_nombre}</p>
                 </div>
 
                 {/* Reservadas */}
@@ -202,7 +202,7 @@ export default function BrokersPage() {
                     ${(b.volumen_reservado + b.volumen_vendido).toLocaleString()}
                   </p>
                   {b.volumen_reservado > 0 && b.volumen_vendido > 0 && (
-                    <p className="text-zinc-600 text-[10px] font-mono">${b.volumen_reservado.toLocaleString()} reservado</p>
+                    <p className="text-white text-[10px] font-mono">${b.volumen_reservado.toLocaleString()} reservado</p>
                   )}
                 </div>
 
@@ -216,7 +216,7 @@ export default function BrokersPage() {
                 {/* Acciones */}
                 <div className="col-span-2 flex justify-end gap-2">
                   <button onClick={() => copiarLink(b.token)}
-                    className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[10px] px-3 py-1.5 rounded-lg transition font-mono">
+                    className="bg-zinc-800 hover:bg-zinc-700 text-white text-[10px] px-3 py-1.5 rounded-lg transition font-mono">
                     Copiar link
                   </button>
                   {b.activo && (

@@ -235,7 +235,7 @@ export default function UnidadesPage() {
             ← Volver a Proyectos
           </button>
           <h1 className="text-3xl font-bold tracking-tight text-white">{proyecto?.nombre || 'Cargando...'}</h1>
-          <p className="text-sm text-zinc-300 mt-1">Mapa de disponibilidad de unidades.</p>
+          <p className="text-sm text-white mt-1">Mapa de disponibilidad de unidades.</p>
         </div>
         <button onClick={() => { setMostrarFormulario(!mostrarFormulario); setEditandoId(null); setFormData(formVacio); }}
           className="bg-[#d4ff3b] hover:bg-[#c2eb30] text-black text-xs font-bold px-4 py-2 rounded-lg transition">
@@ -247,36 +247,36 @@ export default function UnidadesPage() {
       <div className="grid grid-cols-3 gap-4 mb-8">
         <div className="bg-[#18181b] border border-emerald-500/20 rounded-xl p-4 text-center">
           <span className="block text-2xl font-mono font-bold text-emerald-400">{conteo.libre}</span>
-          <span className="text-[11px] text-zinc-500 uppercase tracking-wider">Disponibles</span>
+          <span className="text-[11px] text-white uppercase tracking-wider">Disponibles</span>
         </div>
         <div className="bg-[#18181b] border border-amber-400/20 rounded-xl p-4 text-center">
           <span className="block text-2xl font-mono font-bold text-amber-400">{conteo.reservado}</span>
-          <span className="text-[11px] text-zinc-500 uppercase tracking-wider">Reservadas</span>
+          <span className="text-[11px] text-white uppercase tracking-wider">Reservadas</span>
         </div>
         <div className="bg-[#18181b] border border-red-500/20 rounded-xl p-4 text-center">
           <span className="block text-2xl font-mono font-bold text-red-400">{conteo.vendido}</span>
-          <span className="text-[11px] text-zinc-500 uppercase tracking-wider">Vendidas</span>
+          <span className="text-[11px] text-white uppercase tracking-wider">Vendidas</span>
         </div>
       </div>
 
       {/* Formulario */}
       {mostrarFormulario && (
         <div className="bg-[#18181b] border border-zinc-800 p-6 rounded-xl shadow-2xl mb-8">
-          <h2 className="text-sm font-semibold mb-5 text-zinc-300 uppercase tracking-wider">
+          <h2 className="text-sm font-semibold mb-5 text-white uppercase tracking-wider">
             {editandoId ? '⚡ Editar Unidad' : '＋ Registrar Unidad'}
           </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div>
-                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Número *</label>
+                <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Número *</label>
                 <input type="text" name="numero" value={formData.numero} onChange={handleChange} required placeholder="4A" className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
               </div>
               <div>
-                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Piso</label>
+                <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Piso</label>
                 <input type="number" name="piso" value={formData.piso} onChange={handleChange} placeholder="4" className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
               </div>
               <div>
-                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Tipo</label>
+                <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Tipo</label>
                 <select name="tipo" value={formData.tipo} onChange={handleChange} className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition">
                   <option value="apartamento">Apartamento</option>
                   <option value="penthouse">Penthouse</option>
@@ -285,7 +285,7 @@ export default function UnidadesPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Estado</label>
+                <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Estado</label>
                 <select name="estado" value={formData.estado} onChange={handleChange} className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#d4ff3b] transition">
                   <option value="libre">Libre</option>
                   <option value="reservado">Reservado</option>
@@ -295,33 +295,33 @@ export default function UnidadesPage() {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div>
-                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Precio USD</label>
+                <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Precio USD</label>
                 <input type="number" name="precio" value={formData.precio} onChange={handleChange} placeholder="250000" className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
               </div>
               <div>
-                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Área M²</label>
+                <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Área M²</label>
                 <input type="number" name="area_m2" value={formData.area_m2} onChange={handleChange} placeholder="120" className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
               </div>
               <div>
-                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Habitaciones</label>
+                <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Habitaciones</label>
                 <input type="number" name="habitaciones" value={formData.habitaciones} onChange={handleChange} placeholder="3" className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
               </div>
               <div>
-                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Baños</label>
+                <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Baños</label>
                 <input type="number" name="banos" value={formData.banos} onChange={handleChange} placeholder="2" className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Vista</label>
+                <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Vista</label>
                 <input type="text" name="vista" value={formData.vista} onChange={handleChange} placeholder="Mar, Ciudad, Jardín..." className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
               </div>
               <div>
-                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Reservado por</label>
+                <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Reservado por</label>
                 <input type="text" name="reservado_por" value={formData.reservado_por} onChange={handleChange} placeholder="Nombre del broker" className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
               </div>
               <div>
-                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">Cliente</label>
+                <label className="block text-[11px] font-medium text-white uppercase tracking-wider mb-1">Cliente</label>
                 <input type="text" name="cliente_nombre" value={formData.cliente_nombre} onChange={handleChange} placeholder="Nombre del comprador" className="w-full p-2.5 bg-[#09090b] border border-zinc-800 rounded-lg text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#d4ff3b] transition" />
               </div>
             </div>
@@ -333,7 +333,7 @@ export default function UnidadesPage() {
             )}
 
             <div className="flex justify-end gap-2">
-              <button type="button" onClick={() => { setMostrarFormulario(false); setEditandoId(null); setFormData(formVacio); }} className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-4 py-2 rounded-lg text-sm font-medium transition">Cancelar</button>
+              <button type="button" onClick={() => { setMostrarFormulario(false); setEditandoId(null); setFormData(formVacio); }} className="bg-zinc-800 hover:bg-zinc-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">Cancelar</button>
               <button type="submit" className="bg-[#d4ff3b] hover:bg-[#c2eb30] text-black px-6 py-2 rounded-lg text-sm font-semibold transition">
                 {editandoId ? 'Actualizar' : 'Registrar Unidad'}
               </button>
@@ -345,7 +345,7 @@ export default function UnidadesPage() {
       {/* Filtros */}
       <div className="flex gap-2 mb-6">
         {['todos', 'libre', 'reservado', 'vendido'].map(f => (
-          <button key={f} onClick={() => setFiltroEstado(f)} className={`text-xs px-3 py-1.5 rounded-lg font-mono uppercase tracking-wider transition border ${filtroEstado === f ? 'bg-[#d4ff3b] text-black border-[#d4ff3b]' : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:border-zinc-600'}`}>
+          <button key={f} onClick={() => setFiltroEstado(f)} className={`text-xs px-3 py-1.5 rounded-lg font-mono uppercase tracking-wider transition border ${filtroEstado === f ? 'bg-[#d4ff3b] text-black border-[#d4ff3b]' : 'bg-zinc-900 text-white border-zinc-800 hover:border-zinc-600'}`}>
             {f === 'todos' ? 'Todas' : ESTADO_TEXTO[f]}
           </button>
         ))}
@@ -353,7 +353,7 @@ export default function UnidadesPage() {
 
       {/* Mapa de unidades */}
       {loading ? (
-        <div className="text-center py-20 text-zinc-500 font-mono text-sm animate-pulse">Cargando unidades...</div>
+        <div className="text-center py-20 text-white font-mono text-sm animate-pulse">Cargando unidades...</div>
       ) : unidades.length === 0 ? (
         <div className="text-center py-20 text-zinc-600 font-mono text-sm">No hay unidades registradas. Agrega la primera unidad.</div>
       ) : (
@@ -363,7 +363,7 @@ export default function UnidadesPage() {
             if (unidadesPiso.length === 0) return null;
             return (
               <div key={piso} className="bg-[#18181b] border border-zinc-800 rounded-xl p-4">
-                <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-3 block">Piso {piso}</span>
+                <span className="text-[10px] font-mono text-white uppercase tracking-wider mb-3 block">Piso {piso}</span>
                 <div className="flex flex-wrap gap-2">
                   {unidadesPiso.map(u => (
                     <button key={u.id} onClick={() => seleccionarUnidad(u)}
@@ -383,7 +383,7 @@ export default function UnidadesPage() {
         <div className="fixed bottom-6 right-6 bg-[#18181b] border border-zinc-700 rounded-2xl shadow-2xl p-6 w-84 z-50 max-h-[90vh] overflow-y-auto" style={{width: '340px'}}>
           <div className="flex justify-between items-start mb-4">
             <div>
-              <span className="text-[10px] font-mono text-zinc-500 uppercase">Unidad</span>
+              <span className="text-[10px] font-mono text-white uppercase">Unidad</span>
               <h3 className="text-xl font-bold text-white">{unidadSeleccionada.numero}</h3>
             </div>
             <button onClick={() => { setUnidadSeleccionada(null); setHistorial([]); }} className="text-zinc-500 hover:text-white transition text-lg">✕</button>
@@ -410,7 +410,7 @@ export default function UnidadesPage() {
             </div>
           )}
 
-          <div className="space-y-1 text-xs text-zinc-400 mb-4">
+          <div className="space-y-1 text-xs text-white mb-4">
             {unidadSeleccionada.precio && <p>💰 ${Number(unidadSeleccionada.precio).toLocaleString()}</p>}
             {unidadSeleccionada.area_m2 && <p>📐 {unidadSeleccionada.area_m2} m²</p>}
             {unidadSeleccionada.habitaciones && <p>🛏 {unidadSeleccionada.habitaciones} hab · {unidadSeleccionada.banos} baños</p>}
@@ -438,7 +438,7 @@ export default function UnidadesPage() {
               )}
             </div>
             <div className="flex gap-2">
-              <button onClick={() => iniciarEdicion(unidadSeleccionada)} className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs py-1.5 rounded-lg transition">Editar</button>
+              <button onClick={() => iniciarEdicion(unidadSeleccionada)} className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white text-xs py-1.5 rounded-lg transition">Editar</button>
               <button onClick={() => eliminar(unidadSeleccionada.id)} className="bg-zinc-900 hover:bg-red-950/40 text-zinc-500 hover:text-red-400 text-xs px-3 py-1.5 rounded-lg transition border border-zinc-800">Borrar</button>
             </div>
             <button
@@ -448,7 +448,7 @@ export default function UnidadesPage() {
             </button>
             <button
               onClick={() => router.push(`/dashboard/constructoras/${constructoraId}/proyectos/${proyectoId}/unidades/${unidadSeleccionada.id}/incidencias`)}
-              className="w-full bg-zinc-800/50 hover:bg-zinc-700 text-zinc-300 text-xs py-2 rounded-lg transition border border-zinc-700 font-semibold">
+              className="w-full bg-zinc-800/50 hover:bg-zinc-700 text-white text-xs py-2 rounded-lg transition border border-zinc-700 font-semibold">
               🔧 Incidencias →
             </button>
           </div>
@@ -456,13 +456,13 @@ export default function UnidadesPage() {
           {/* Historial */}
           {historial.length > 0 && (
             <div className="border-t border-zinc-800 pt-4">
-              <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono mb-3">Historial de movimientos</p>
+              <p className="text-[10px] text-white uppercase tracking-wider font-mono mb-3">Historial de movimientos</p>
               <div className="space-y-2">
                 {historial.map(h => (
                   <div key={h.id} className="flex items-start gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-zinc-600 mt-1.5 flex-shrink-0" />
                     <div>
-                      <p className="text-xs text-zinc-300">
+                      <p className="text-xs text-white">
                         <span className="text-zinc-500">{ESTADO_TEXTO[h.estado_anterior] || h.estado_anterior}</span>
                         {' → '}
                         <span className={

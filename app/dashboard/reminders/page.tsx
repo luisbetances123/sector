@@ -80,22 +80,22 @@ export default function RemindersPage() {
       {/* STATS */}
       <div className="grid grid-cols-3 gap-4">
         <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-5">
-          <p className="text-xs font-mono text-zinc-500 uppercase">Vencidos</p>
+          <p className="text-xs font-mono text-white uppercase">Vencidos</p>
           <p className="text-3xl font-black text-red-400 mt-1">{vencidos.length}</p>
         </div>
         <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-5">
-          <p className="text-xs font-mono text-zinc-500 uppercase">Pendientes</p>
+          <p className="text-xs font-mono text-white uppercase">Pendientes</p>
           <p className="text-3xl font-black text-[#CCFF00] mt-1">{pendientes.length}</p>
         </div>
         <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-5">
-          <p className="text-xs font-mono text-zinc-500 uppercase">Completados</p>
-          <p className="text-3xl font-black text-zinc-300 mt-1">{completados.length}</p>
+          <p className="text-xs font-mono text-white uppercase">Completados</p>
+          <p className="text-3xl font-black text-white mt-1">{completados.length}</p>
         </div>
       </div>
 
       {/* FORM */}
       <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 space-y-4">
-        <h2 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Nuevo Recordatorio</h2>
+        <h2 className="text-xs font-mono text-white uppercase tracking-wider">Nuevo Recordatorio</h2>
         <div className="flex gap-3">
           <input value={texto} onChange={e => setTexto(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && agregar()}
@@ -111,7 +111,7 @@ export default function RemindersPage() {
       </div>
 
       {loading ? (
-        <div className="text-zinc-500 text-sm text-center py-10">Cargando...</div>
+        <div className="text-white text-sm text-center py-10">Cargando...</div>
       ) : (
         <div className="space-y-6">
           {vencidos.length > 0 && (
@@ -122,18 +122,18 @@ export default function RemindersPage() {
           )}
           {pendientes.length > 0 && (
             <div className="space-y-3">
-              <h2 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Pendientes ({pendientes.length})</h2>
+              <h2 className="text-xs font-mono text-white uppercase tracking-wider">Pendientes ({pendientes.length})</h2>
               {pendientes.map(r => <RCard key={r.id} r={r} />)}
             </div>
           )}
           {completados.length > 0 && (
             <div className="space-y-3">
-              <h2 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Completados ({completados.length})</h2>
+              <h2 className="text-xs font-mono text-white uppercase tracking-wider">Completados ({completados.length})</h2>
               {completados.map(r => <RCard key={r.id} r={r} />)}
             </div>
           )}
           {recordatorios.length === 0 && (
-            <p className="text-zinc-600 text-sm text-center py-10">No hay recordatorios. Agrega el primero.</p>
+            <p className="text-white text-sm text-center py-10">No hay recordatorios. Agrega el primero.</p>
           )}
         </div>
       )}
