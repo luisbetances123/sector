@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/cron/liberar-reservas",
-      "schedule": "0 * * * *"
+      "schedule": "0 9 * * *"
     }
   ]
 }
