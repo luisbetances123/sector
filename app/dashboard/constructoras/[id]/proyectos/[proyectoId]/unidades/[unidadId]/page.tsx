@@ -192,9 +192,15 @@ export default function FichaUnidadPage() {
             <h1 className="text-4xl font-black tracking-tight text-white">Unidad {unidad.numero}</h1>
             {unidad.tipo && <p className="text-white text-sm mt-1 capitalize">{unidad.tipo} · Piso {unidad.piso || '—'}</p>}
           </div>
-          <span className={`text-sm font-bold px-3 py-1.5 rounded-full border ${ESTADO_COLORES[unidad.estado]}`}>
-            {ESTADO_TEXTO[unidad.estado]}
-          </span>
+          <div className="flex items-center gap-3">
+            <a href={`/api/pdf-unidad?unidadId=${unidadId}`} target="_blank" rel="noopener noreferrer"
+              className="bg-[#d4ff3b] hover:bg-[#c2eb30] text-black text-xs font-bold px-4 py-2 rounded-lg transition">
+              ↓ Descargar PDF
+            </a>
+            <span className={`text-sm font-bold px-3 py-1.5 rounded-full border ${ESTADO_COLORES[unidad.estado]}`}>
+              {ESTADO_TEXTO[unidad.estado]}
+            </span>
+          </div>
         </div>
       </div>
 
