@@ -8,7 +8,8 @@ const BG = "#09090b";
 
 export default async function PortalBrokerPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
-  const supabase = await createServerClient();
+  let supabase;
+  try { supabase = await createServerClient(); } catch { return <div style={{background:"#09090b",minHeight:"100vh",color:"#aaa",display:"flex",alignItems:"center",justifyContent:"center"}}><p>Error de configuración.</p></div>; }
 
   const { data: accesoArray, error } = await supabase
     .from('proyecto_accesos')
