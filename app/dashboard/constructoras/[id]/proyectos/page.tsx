@@ -174,7 +174,7 @@ export default function ProyectosPage() {
             ← Volver a Constructoras
           </button>
           <h1 className="text-3xl font-bold tracking-tight text-white">{constructora?.nombre || '...'}</h1>
-          <p className="text-sm text-zinc-400 mt-1">Proyectos registrados.</p>
+          <p className="text-sm text-zinc-300 mt-1">Proyectos registrados.</p>
         </div>
         <div className="flex items-center gap-3">
           <span className="bg-[#d4ff3b]/10 text-[#d4ff3b] border border-[#d4ff3b]/20 text-xs px-3 py-1.5 rounded-full font-mono uppercase tracking-widest">

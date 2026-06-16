@@ -54,7 +54,7 @@ export default function PreciosPage() {
       <div className="mb-10 border-b border-zinc-800 pb-5">
         <p className="text-xs text-[#d4ff3b] font-mono uppercase tracking-widest mb-1">Planes</p>
         <h1 className="text-3xl font-bold tracking-tight text-white">Simple y transparente</h1>
-        <p className="text-sm text-zinc-400 mt-1">Sin tarjeta de crédito para empezar. Sin sorpresas.</p>
+        <p className="text-sm text-zinc-300 mt-1">Sin tarjeta de crédito para empezar. Sin sorpresas.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -100,7 +100,7 @@ export default function PreciosPage() {
       </div>
 
       <div className="mt-10 bg-[#18181b] border border-zinc-800 rounded-2xl p-6 text-center">
-        <p className="text-zinc-400 text-sm">¿Preguntas? Escríbenos a <span className="text-[#d4ff3b]">ventas@sector.do</span></p>
+        <p className="text-zinc-300 text-sm">¿Preguntas? Escríbenos a <span className="text-[#d4ff3b]">ventas@sector.do</span></p>
       </div>
     </div>
   );

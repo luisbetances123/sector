@@ -82,8 +82,8 @@ export default function MercadoPage() {
         <div className="text-zinc-500 text-sm text-center py-20 font-mono animate-pulse">Cargando datos del mercado...</div>
       ) : analisisPorZona.length === 0 ? (
         <div className="text-center py-20 space-y-3">
-          <p className="text-zinc-500 text-sm">No hay suficientes datos para el análisis.</p>
-          <p className="text-zinc-600 text-xs">Agrega más propiedades con ubicación y precio para ver el análisis.</p>
+          <p className="text-zinc-300 text-sm">No hay suficientes datos para el análisis.</p>
+          <p className="text-zinc-400 text-xs">Agrega más propiedades con ubicación y precio para ver el análisis.</p>
         </div>
       ) : (
         <div className="space-y-4">

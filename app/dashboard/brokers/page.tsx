@@ -106,7 +106,7 @@ export default function BrokersPage() {
       <div className="mb-8 border-b border-zinc-800 pb-5">
         <p className="text-xs text-[#d4ff3b] font-mono uppercase tracking-widest mb-1">Red de Ventas</p>
         <h1 className="text-3xl font-bold tracking-tight text-white">Brokers Autorizados</h1>
-        <p className="text-sm text-zinc-400 mt-1">Agencias y brokers con acceso a tus proyectos.</p>
+        <p className="text-sm text-zinc-300 mt-1">Agencias y brokers con acceso a tus proyectos.</p>
       </div>
 
       {/* Resumen */}
@@ -144,7 +144,7 @@ export default function BrokersPage() {
         <div className="text-center py-32 bg-[#18181b] border border-zinc-800 rounded-2xl">
           <div className="text-5xl mb-4">🤝</div>
           <p className="text-zinc-400 font-medium mb-2">Sin brokers registrados</p>
-          <p className="text-zinc-600 text-sm">Genera un link desde la página de tu proyecto para autorizar brokers</p>
+          <p className="text-zinc-400 text-sm">Genera un link desde la página de tu proyecto para autorizar brokers</p>
         </div>
       ) : (
         <div className="bg-[#18181b] border border-zinc-800 rounded-2xl overflow-hidden">

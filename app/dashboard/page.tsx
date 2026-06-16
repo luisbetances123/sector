@@ -176,7 +176,7 @@ export default function DashboardPage() {
         <div>
           <p className="text-xs text-[#d4ff3b] font-mono uppercase tracking-widest mb-1">Panel General</p>
           <h1 className="text-3xl font-bold tracking-tight text-white">{stats.constructora_nombre || 'Dashboard'}</h1>
-          <p className="text-sm text-zinc-400 mt-1">
+          <p className="text-sm text-zinc-300 mt-1">
             {new Date().toLocaleDateString('es-DO', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
           </p>
         </div>
@@ -242,8 +242,8 @@ export default function DashboardPage() {
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-white text-sm font-bold">Unidad {a.numero}</p>
-                    <p className="text-zinc-500 text-xs">{a.proyecto_nombre}</p>
-                    {a.reservado_por && <p className="text-zinc-600 text-xs">{a.reservado_por}</p>}
+                    <p className="text-zinc-300 text-xs">{a.proyecto_nombre}</p>
+                    {a.reservado_por && <p className="text-zinc-400 text-xs">{a.reservado_por}</p>}
                   </div>
                   <span className={`text-xs font-mono font-bold px-2 py-1 rounded-lg ${a.horas_restantes < 2 ? 'bg-red-500/20 text-red-400' : 'bg-amber-400/20 text-amber-400'}`}>
                     {a.horas_restantes < 1 ? `${Math.round(a.horas_restantes * 60)}m` : `${Math.round(a.horas_restantes)}h`}
@@ -268,7 +268,7 @@ export default function DashboardPage() {
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-white text-sm font-bold">Unidad {c.unidad_numero}</p>
-                    {c.cliente_nombre && <p className="text-zinc-500 text-xs">{c.cliente_nombre}</p>}
+                    {c.cliente_nombre && <p className="text-zinc-300 text-xs">{c.cliente_nombre}</p>}
                     <p className="text-red-400/70 text-xs">{c.dias_vencida}d vencida</p>
                   </div>
                   <span className="text-red-400 text-xs font-mono font-bold">${c.monto.toLocaleString()}</span>
@@ -298,7 +298,7 @@ export default function DashboardPage() {
                 <div className="flex justify-between items-start">
                   <div className="flex-1 min-w-0">
                     <p className="text-white text-sm font-bold truncate">{i.titulo}</p>
-                    <p className="text-zinc-500 text-xs">Unidad {i.unidad_numero}</p>
+                    <p className="text-zinc-300 text-xs">Unidad {i.unidad_numero}</p>
                   </div>
                   <div className="flex flex-col items-end gap-1 ml-2">
                     <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono ${i.prioridad === 'alta' ? 'bg-red-500/20 text-red-400' : i.prioridad === 'media' ? 'bg-amber-400/20 text-amber-400' : 'bg-zinc-800 text-zinc-500'}`}>

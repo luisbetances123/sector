@@ -442,7 +442,7 @@ export default function FichaUnidadPage() {
                         </span>
                       </p>
                       {h.actor && <p className="text-zinc-600 text-xs mt-0.5">{h.actor}</p>}
-                      {h.nota && <p className="text-zinc-600 text-xs">{h.nota}</p>}
+                      {h.nota && <p className="text-zinc-400 text-xs">{h.nota}</p>}
                     </div>
                   </div>
                   <p className="text-zinc-600 text-xs font-mono">

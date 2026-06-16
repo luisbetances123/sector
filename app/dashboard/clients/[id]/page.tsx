@@ -206,7 +206,7 @@ export default function ClienteFichaPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-zinc-500">Registrado</span>
-                <span className="text-zinc-400 text-xs">{formatFecha(cliente.created_at)}</span>
+                <span className="text-zinc-300 text-xs">{formatFecha(cliente.created_at)}</span>
               </div>
               {cliente.notes && (
                 <div className="pt-2 border-t border-zinc-900">

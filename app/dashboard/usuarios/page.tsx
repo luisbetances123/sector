@@ -55,7 +55,7 @@ export default function UsuariosPage() {
   if (currentUserRol !== 'admin') {
     return (
       <div className="text-center py-20">
-        <p className="text-zinc-500 text-sm">Solo el administrador puede acceder a esta pagina.</p>
+        <p className="text-zinc-300 text-sm">Solo el administrador puede acceder a esta pagina.</p>
       </div>
     )
   }
@@ -123,7 +123,7 @@ export default function UsuariosPage() {
         </div>
         {showForm && (
           <div className="space-y-3 pt-2 border-t border-zinc-900">
-            <p className="text-zinc-500 text-xs">Para invitar un nuevo usuario, comparte el link de registro de SECTOR con su email. El nuevo usuario debe registrarse en:</p>
+            <p className="text-zinc-300 text-xs">Para invitar un nuevo usuario, comparte el link de registro de SECTOR con su email. El nuevo usuario debe registrarse en:</p>
             <div className="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 font-mono text-xs text-[#CCFF00]">
               {typeof window !== 'undefined' ? window.location.origin : ''}/register
             </div>

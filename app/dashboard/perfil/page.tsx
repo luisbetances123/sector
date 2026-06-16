@@ -73,7 +73,7 @@ export default function PerfilPage() {
       <div className="mb-8 border-b border-zinc-800 pb-5">
         <p className="text-xs text-[#d4ff3b] font-mono uppercase tracking-widest mb-1">Configuración</p>
         <h1 className="text-3xl font-bold tracking-tight text-white">Mi Perfil</h1>
-        <p className="text-sm text-zinc-400 mt-1">Información de tu cuenta en SECTOR.</p>
+        <p className="text-sm text-zinc-300 mt-1">Información de tu cuenta en SECTOR.</p>
       </div>
 
       <form onSubmit={handleGuardar} className="space-y-6">

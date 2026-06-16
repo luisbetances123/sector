@@ -133,7 +133,7 @@ export default function IncidenciasPage() {
           </button>
           <p className="text-xs text-[#d4ff3b] font-mono uppercase tracking-widest mb-1">Unidad {unidad?.numero}</p>
           <h1 className="text-3xl font-bold tracking-tight text-white">Incidencias de Entrega</h1>
-          {unidad?.cliente_nombre && <p className="text-sm text-zinc-400 mt-1">Cliente: {unidad.cliente_nombre}</p>}
+          {unidad?.cliente_nombre && <p className="text-sm text-zinc-300 mt-1">Cliente: {unidad.cliente_nombre}</p>}
         </div>
         <button onClick={() => setMostrarForm(!mostrarForm)}
           className="bg-[#d4ff3b] hover:bg-[#c2eb30] text-black text-xs font-bold px-4 py-2 rounded-lg transition">
@@ -267,7 +267,7 @@ export default function IncidenciasPage() {
                         {new Date(inc.created_at).toLocaleDateString('es-DO', { day: '2-digit', month: 'short', year: 'numeric' })}
                       </p>
                     </div>
-                    <span className="text-zinc-500 text-sm">{isExpandida ? '▲' : '▼'}</span>
+                    <span className="text-zinc-300 text-sm">{isExpandida ? '▲' : '▼'}</span>
                   </div>
                 </div>
 

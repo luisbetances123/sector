@@ -174,7 +174,7 @@ export default function PropertiesPage() {
       <div className="flex justify-between items-center mb-8 border-b border-zinc-800 pb-5">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-white">Catálogo de Propiedades</h1>
-          <p className="text-sm text-zinc-400 mt-1">Gestión de activos con visualizador flotante integrado multimedios.</p>
+          <p className="text-sm text-zinc-300 mt-1">Gestión de activos con visualizador flotante integrado multimedios.</p>
         </div>
         <span className="bg-[#d4ff3b]/10 text-[#d4ff3b] border border-[#d4ff3b]/20 text-xs px-3 py-1.5 rounded-full font-mono uppercase tracking-widest">
           {propiedades.length} {propiedades.length === 1 ? 'Propiedad' : 'Propiedades'}

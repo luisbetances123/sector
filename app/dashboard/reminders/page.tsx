@@ -89,7 +89,7 @@ export default function RemindersPage() {
         </div>
         <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-5">
           <p className="text-xs font-mono text-zinc-500 uppercase">Completados</p>
-          <p className="text-3xl font-black text-zinc-400 mt-1">{completados.length}</p>
+          <p className="text-3xl font-black text-zinc-300 mt-1">{completados.length}</p>
         </div>
       </div>
 

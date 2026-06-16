@@ -144,7 +144,7 @@ export default function CobranzaPage() {
       <div className="mb-8 border-b border-zinc-800 pb-5">
         <p className="text-xs text-[#d4ff3b] font-mono uppercase tracking-widest mb-1">Finanzas</p>
         <h1 className="text-3xl font-bold tracking-tight text-white">Reporte de Cobranza</h1>
-        <p className="text-sm text-zinc-400 mt-1">Estado de todos los planes de pago activos.</p>
+        <p className="text-sm text-zinc-300 mt-1">Estado de todos los planes de pago activos.</p>
       </div>
 
       {/* Métricas globales */}
@@ -261,8 +261,8 @@ export default function CobranzaPage() {
                 <div key={c.id} className="flex items-center justify-between px-6 py-4 border-l-2 border-red-500">
                   <div>
                     <p className="text-white font-semibold text-sm">Unidad {c.unidad_numero} — {c.proyecto_nombre}</p>
-                    {c.cliente_nombre && <p className="text-zinc-400 text-xs">{c.cliente_nombre}</p>}
-                    <p className="text-zinc-500 text-xs">{c.descripcion}</p>
+                    {c.cliente_nombre && <p className="text-zinc-300 text-xs">{c.cliente_nombre}</p>}
+                    <p className="text-zinc-300 text-xs">{c.descripcion}</p>
                     <p className="text-red-400 text-xs mt-0.5">{c.dias_vencida} días vencida · {new Date(c.fecha_vencimiento).toLocaleDateString('es-DO', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
                   </div>
                   <div className="flex items-center gap-3">
@@ -292,8 +292,8 @@ export default function CobranzaPage() {
                   <div key={c.id} className="flex items-center justify-between px-6 py-4">
                     <div>
                       <p className="text-white font-semibold text-sm">Unidad {c.unidad_numero} — {c.proyecto_nombre}</p>
-                      {c.cliente_nombre && <p className="text-zinc-400 text-xs">{c.cliente_nombre}</p>}
-                      <p className="text-zinc-500 text-xs">{c.descripcion}</p>
+                      {c.cliente_nombre && <p className="text-zinc-300 text-xs">{c.cliente_nombre}</p>}
+                      <p className="text-zinc-300 text-xs">{c.descripcion}</p>
                       <p className="text-amber-400 text-xs mt-0.5">Vence en {diasRestantes} días · {new Date(c.fecha_vencimiento).toLocaleDateString('es-DO', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
                     </div>
                     <div className="flex items-center gap-3">

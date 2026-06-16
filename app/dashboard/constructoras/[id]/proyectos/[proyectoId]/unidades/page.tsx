@@ -235,7 +235,7 @@ export default function UnidadesPage() {
             ← Volver a Proyectos
           </button>
           <h1 className="text-3xl font-bold tracking-tight text-white">{proyecto?.nombre || 'Cargando...'}</h1>
-          <p className="text-sm text-zinc-400 mt-1">Mapa de disponibilidad de unidades.</p>
+          <p className="text-sm text-zinc-300 mt-1">Mapa de disponibilidad de unidades.</p>
         </div>
         <button onClick={() => { setMostrarFormulario(!mostrarFormulario); setEditandoId(null); setFormData(formVacio); }}
           className="bg-[#d4ff3b] hover:bg-[#c2eb30] text-black text-xs font-bold px-4 py-2 rounded-lg transition">

@@ -104,7 +104,7 @@ export default function ConstructorasPage() {
         <div>
           <p className="text-xs text-[#d4ff3b] font-mono uppercase tracking-widest mb-1">Mi Empresa</p>
           <h1 className="text-3xl font-bold tracking-tight text-white">Perfil de Constructora</h1>
-          <p className="text-sm text-zinc-400 mt-1">Información de tu empresa en SECTOR.</p>
+          <p className="text-sm text-zinc-300 mt-1">Información de tu empresa en SECTOR.</p>
         </div>
         {constructora && !editando && (
           <button

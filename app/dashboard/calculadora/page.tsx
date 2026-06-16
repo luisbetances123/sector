@@ -69,7 +69,7 @@ export default function CalculadoraPage() {
                 <span>10%</span><span>50%</span>
               </div>
               {precioNum > 0 && (
-                <p className="text-xs text-zinc-400 mt-1">Inicial: <span className="text-[#CCFF00] font-black">{fmt(montoInicial)}</span> — Financiado: <span className="text-white font-black">{fmt(montoFinanciado)}</span></p>
+                <p className="text-xs text-zinc-300 mt-1">Inicial: <span className="text-[#CCFF00] font-black">{fmt(montoInicial)}</span> — Financiado: <span className="text-white font-black">{fmt(montoFinanciado)}</span></p>
               )}
             </div>
 
