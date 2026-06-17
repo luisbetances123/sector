@@ -1,7 +1,9 @@
-'use client'
-import { useState, useEffect } from 'react'
-import { supabase } from '@/app/lib/supabase'
+"use client";
 
+export const dynamic = "force-dynamic";
+
+import { useState, useEffect } from 'react';
+import { supabase } from '@/app/lib/supabase';
 interface Mensaje {
   id: string
   cliente_id: string | null

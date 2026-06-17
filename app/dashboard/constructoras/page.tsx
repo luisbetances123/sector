@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/app/lib/supabase';
+import { createClient } from '@/app/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,7 +34,7 @@ export default function ConstructorasPage() {
 
   const cargarConstructora = async () => {
     setLoading(true);
-    const { data, error } = await supabase
+    const { data, error } = await createClient()
       .from('constructoras')
       .select('*')
       .order('created_at', { ascending: true })
@@ -74,9 +74,9 @@ export default function ConstructorasPage() {
 
     let error;
     if (constructora) {
-      ({ error } = await supabase.from('constructoras').update(datosAEnviar).eq('id', constructora.id));
+      ({ error } = createClient().from('constructoras').update(datosAEnviar).eq('id', constructora.id));
     } else {
-      ({ error } = await supabase.from('constructoras').insert([datosAEnviar]));
+      ({ error } = createClient().from('constructoras').insert([datosAEnviar]));
     }
 
     if (error) {
