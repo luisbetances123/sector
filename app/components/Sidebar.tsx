@@ -7,6 +7,11 @@ import { supabase } from '../lib/supabase'
 const NAV = [
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/dashboard/constructoras', label: 'Mi Empresa' },
+  { href: '/dashboard/pipeline', label: 'Pipeline' },
+  { href: '/dashboard/clients', label: 'Clientes' },
+  { href: '/dashboard/properties', label: 'Propiedades' },
+  { href: '/dashboard/brokers', label: 'Brokers' },
+  { href: '/dashboard/cobranza', label: 'Cobranza' },
   { href: '/dashboard/calendar', label: 'Calendario' },
   { href: '/dashboard/pricing', label: 'Precios' },
   { href: '/dashboard/perfil', label: 'Mi Perfil' },
