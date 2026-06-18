@@ -135,7 +135,7 @@ export default function CobranzaPage() {
   const totalPlan = resumenes.reduce((s, r) => s + r.total_plan, 0);
   const pctCobrado = totalPlan > 0 ? Math.round((totalCobrado / totalPlan) * 100) : 0;
 
-  if (loading) return <div className="p-8 text-center py-32 text-white font-mono text-sm animate-pulse">Cargando cobranza...</div>;
+  if (loading) return <div className="p-8 text-center py-32 text-white font-mono text-sm animate-pulse">Cargando finanzas...</div>;
 
   return (
     <div className="p-8 max-w-6xl mx-auto min-h-screen text-zinc-100">
@@ -143,7 +143,7 @@ export default function CobranzaPage() {
       {/* Header */}
       <div className="mb-8 border-b border-zinc-800 pb-5">
         <p className="text-xs text-[#d4ff3b] font-mono uppercase tracking-widest mb-1">Finanzas</p>
-        <h1 className="text-3xl font-bold tracking-tight text-white">Reporte de Cobranza</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-white">Reporte de Finanzas</h1>
         <p className="text-sm text-white mt-1">Estado de todos los planes de pago activos.</p>
       </div>
 
@@ -174,7 +174,7 @@ export default function CobranzaPage() {
       {/* Barra global */}
       <div className="bg-[#18181b] border border-zinc-800 rounded-xl p-5 mb-8">
         <div className="flex justify-between items-center mb-3">
-          <p className="text-[10px] text-white uppercase tracking-wider font-mono">Progreso de cobranza global</p>
+          <p className="text-[10px] text-white uppercase tracking-wider font-mono">Progreso financiero global</p>
           <p className="text-[#d4ff3b] font-mono font-bold text-sm">{pctCobrado}% cobrado</p>
         </div>
         <div className="w-full bg-zinc-800 rounded-full h-3 flex overflow-hidden">
