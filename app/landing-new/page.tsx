@@ -347,7 +347,7 @@ export default function Page() {
               </div>
               <h1 className="h-title">
                 El sistema de control<br />
-                de inventario para <span className="acc">{typed}</span><span className="h-cursor" />
+                de inventario para <span className="acc" style={{ display: 'inline-block', minWidth: '8.8ch', textAlign: 'left' }}>{typed}</span><span className="h-cursor" />
               </h1>
               <p className="h-desc">Un solo lugar para tu inventario, tus finanzas y tu pipeline. Datos en tiempo real sobre cada unidad, cada torre, cada proyecto — sin hojas de Excel que se desactualizan.</p>
               <div className="h-actions">
