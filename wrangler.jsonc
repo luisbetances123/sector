@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "sector",
-  "main": ".open-next/worker.js",
+  "main": "worker-entry.js",
   "compatibility_date": "2026-06-17",
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
@@ -10,5 +10,8 @@
   },
   "observability": {
     "enabled": true
+  },
+  "triggers": {
+    "crons": ["0 13 * * *"]
   }
 }
