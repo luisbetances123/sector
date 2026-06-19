@@ -148,7 +148,7 @@ export default function Page() {
 
   useEffect(() => {
     const tick = () => {
-      if (clockRef.current) clockRef.current.textContent = new Date().toLocaleTimeString('es-DO', { hour12: false })
+      if (clockRef.current) clockRef.current.textContent = new Date().toLocaleTimeString('es-DO', { hour12: true, hour: 'numeric', minute: '2-digit', second: '2-digit' })
     }
     tick()
     const id = setInterval(tick, 1000)
