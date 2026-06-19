@@ -313,6 +313,8 @@ export default function Page() {
         @media (min-width: 480px) { .cta-form { flex-direction: row; } }
         .cta-input { background: #050505; border: 1px solid #222; border-radius: 4px; padding: 10px 14px; font-size: 13px; color: #fff; min-width: 220px; }
         .cta-input::placeholder { color: #555; }
+        .foot-email { color: rgba(255,255,255,0.5); text-decoration: none; transition: color .15s; }
+        .foot-email:hover { color: #CCFF00; }
         .cta-btn { background: #CCFF00; color: #000; border: none; border-radius: 4px; padding: 10px 18px; font-size: 13px; font-weight: 500; white-space: nowrap; }
         .cta-btn:disabled { opacity: 0.6; }
         .foot { padding: 24px; text-align: center; font-family: var(--mono); font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 0.5px; }
@@ -522,7 +524,11 @@ export default function Page() {
           </div>
         </section>
 
-        <footer className="foot">© 2026 SECTOR · CRM para constructoras · República Dominicana</footer>
+        <footer className="foot">
+          © 2026 SECTOR · CRM para constructoras · República Dominicana
+          <span style={{ margin: '0 8px', opacity: 0.4 }}>·</span>
+          <a href="mailto:ventas@sector.do" className="foot-email">ventas@sector.do</a>
+        </footer>
       </div>
     </div>
   )
