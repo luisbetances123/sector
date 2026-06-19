@@ -321,7 +321,7 @@ export default function Page() {
       <header className="h-nav">
         <div className="h-nav-inner">
           <div className="h-logo">
-            <Image src="/sector-logo.png" alt="SECTOR" width={120} height={28} priority style={{ height: '24px', width: 'auto' }} />
+            <Image src="/sector-logo.png" alt="SECTOR" width={300} height={160} priority style={{ height: '40px', width: 'auto' }} />
           </div>
           <div className="h-status">
             <span className="h-dot" />
