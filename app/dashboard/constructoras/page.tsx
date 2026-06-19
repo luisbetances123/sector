@@ -169,41 +169,40 @@ export default function ConstructorasPage() {
       ) : constructoras.length === 0 ? (
         <div className="text-center py-20 text-zinc-600 font-mono text-sm">No hay constructoras registradas aún.</div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="flex flex-col gap-4">
           {constructoras.map((c) => (
-            <div key={c.id} className="bg-[#18181b] border border-zinc-800 rounded-xl p-6 hover:border-zinc-700 transition">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center overflow-hidden flex-shrink-0">
-                    {c.logo_url ? (
-                      <img src={c.logo_url} alt={c.nombre} className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-zinc-600 text-xl">🏗️</span>
-                    )}
-                  </div>
-                  <div>
-                    <h3 className="text-white font-bold text-sm">{c.nombre}</h3>
-                    {c.contacto_nombre && <p className="text-zinc-500 text-xs mt-0.5">{c.contacto_nombre}</p>}
-                  </div>
+            <div key={c.id} className="bg-[#18181b] border border-zinc-800 rounded-xl p-6 hover:border-zinc-700 transition flex flex-col md:flex-row md:items-center gap-5">
+              <div className="flex items-center gap-4 md:w-72 flex-shrink-0">
+                <div className="w-12 h-12 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center overflow-hidden flex-shrink-0">
+                  {c.logo_url ? (
+                    <img src={c.logo_url} alt={c.nombre} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-zinc-600 text-xl">🏗️</span>
+                  )}
                 </div>
-                <span className={`text-[10px] px-2 py-1 rounded-full font-mono border ${c.activa ? 'bg-[#d4ff3b]/10 text-[#d4ff3b] border-[#d4ff3b]/20' : 'bg-zinc-800 text-zinc-500 border-zinc-700'}`}>
-                  {c.activa ? 'Activa' : 'Inactiva'}
-                </span>
+                <div>
+                  <h3 className="text-white font-bold text-sm">{c.nombre}</h3>
+                  {c.contacto_nombre && <p className="text-zinc-500 text-xs mt-0.5">{c.contacto_nombre}</p>}
+                </div>
               </div>
 
-              <div className="mt-4 space-y-1">
+              <div className="flex-1 flex flex-wrap gap-x-6 gap-y-1">
                 {c.telefono && <p className="text-xs text-zinc-500 font-mono">📞 {c.telefono}</p>}
                 {c.email && <p className="text-xs text-zinc-500 font-mono">✉️ {c.email}</p>}
               </div>
 
-              <div className="flex gap-2 mt-5">
-                <a href={`/dashboard/constructoras/${c.id}/proyectos`} className="flex-1 text-center bg-[#d4ff3b]/10 hover:bg-[#d4ff3b] text-[#d4ff3b] hover:text-black text-xs py-2 rounded-lg font-semibold transition border border-[#d4ff3b]/20">
+              <span className={`text-[10px] px-2 py-1 rounded-full font-mono border self-start md:self-center ${c.activa ? 'bg-[#d4ff3b]/10 text-[#d4ff3b] border-[#d4ff3b]/20' : 'bg-zinc-800 text-zinc-500 border-zinc-700'}`}>
+                {c.activa ? 'Activa' : 'Inactiva'}
+              </span>
+
+              <div className="flex gap-2 flex-shrink-0">
+                <a href={`/dashboard/constructoras/${c.id}/proyectos`} className="text-center bg-[#d4ff3b]/10 hover:bg-[#d4ff3b] text-[#d4ff3b] hover:text-black text-xs px-3 py-2 rounded-lg font-semibold transition border border-[#d4ff3b]/20 whitespace-nowrap">
                   Ver Proyectos →
                 </a>
                 <button onClick={() => iniciarEdicion(c)} className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs px-3 py-2 rounded-lg transition border border-zinc-700">
                   Editar
                 </button>
-                <button onClick={() => toggleActiva(c.id, c.activa)} className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs px-3 py-2 rounded-lg transition border border-zinc-700">
+                <button onClick={() => toggleActiva(c.id, c.activa)} className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs px-3 py-2 rounded-lg transition border border-zinc-700 whitespace-nowrap">
                   {c.activa ? 'Desactivar' : 'Activar'}
                 </button>
                 <button onClick={() => eliminar(c.id)} className="bg-zinc-900 hover:bg-red-950/40 text-zinc-500 hover:text-red-400 text-xs px-3 py-2 rounded-lg transition border border-zinc-800">
