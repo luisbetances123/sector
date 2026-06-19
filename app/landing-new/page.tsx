@@ -320,24 +320,8 @@ export default function Page() {
 
       <header className="h-nav">
         <div className="h-nav-inner">
-          <div className="h-logo" style={{ display: 'flex', alignItems: 'center', height: '100%', position: 'relative' }}>
-            <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
-              <Image src="/sector-logo.png" alt="SECTOR" width={1520} height={311} priority style={{ height: '36px', width: 'auto', maxWidth: 'none', maxHeight: 'none', display: 'block' }} />
-              <MapPin
-                size={18}
-                color="#20d70d"
-                fill="#20d70d"
-                strokeWidth={1.5}
-                style={{
-                  position: 'absolute',
-                  left: '17.43%',
-                  top: '40.8%',
-                  transform: 'translate(-50%, -100%)',
-                  filter: 'drop-shadow(0 0 4px #20d70d)',
-                  pointerEvents: 'none',
-                }}
-              />
-            </div>
+          <div className="h-logo">
+            <Image src="/sector-logo.png" alt="SECTOR" width={1520} height={311} priority style={{ height: '36px', width: 'auto', maxWidth: 'none', maxHeight: 'none', display: 'block' }} />
           </div>
           <div className="h-status">
             <span className="h-dot" />
@@ -345,7 +329,7 @@ export default function Page() {
             <span className="sep">·</span>
             <span ref={clockRef} />
           </div>
-          <Link href="/dashboard" className="h-cta-btn" style={{ color: '#000' }}>Acceder</Link>
+          <Link href="/dashboard" className="h-cta-btn" style={{ color: '#000', position: 'relative', top: '3px' }}>Acceder</Link>
         </div>
       </header>
 
