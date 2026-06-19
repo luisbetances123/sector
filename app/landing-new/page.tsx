@@ -204,8 +204,9 @@ export default function Page() {
         @keyframes blink { 50% { opacity: 0; } }
         .h-desc { max-width: 420px; margin: 20px 0 0; font-size: 15px; line-height: 1.6; color: #888; }
         .h-actions { display: flex; align-items: center; gap: 16px; margin-top: 32px; }
-        .h-btn-primary { display: inline-flex; align-items: center; gap: 8px; background: #CCFF00; color: #000; border: none; border-radius: 6px; padding: 10px 16px; font-size: 14px; font-weight: 500; transition: transform .15s; }
-        .h-btn-primary:hover { transform: translateX(2px); }
+        .h-btn-primary { display: inline-flex; align-items: center; gap: 8px; background: #CCFF00; color: #000 !important; border: none; border-radius: 6px; padding: 10px 16px; font-size: 14px; font-weight: 500; transition: transform .15s; }
+        .h-btn-primary:hover { transform: translateX(2px); color: #000 !important; }
+        .h-btn-primary svg { color: #000; stroke: #000; }
         .h-btn-secondary { display: inline-flex; align-items: center; gap: 4px; background: none; border: none; color: #888; font-size: 14px; transition: color .15s; }
         .h-btn-secondary:hover { color: #fff; }
         .h-stats { margin-top: 48px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; border: 1px solid #1a1a1a; font-family: var(--mono); }
@@ -346,9 +347,9 @@ export default function Page() {
                 El sistema de control<br />
                 de inventario para <span className="acc">{typed}</span><span className="h-cursor" />
               </h1>
-              <p className="h-desc">Un solo lugar para tu inventario, tu cobranza y tu pipeline. Datos en tiempo real sobre cada unidad, cada torre, cada proyecto — sin hojas de Excel que se desactualizan.</p>
+              <p className="h-desc">Un solo lugar para tu inventario, tus finanzas y tu pipeline. Datos en tiempo real sobre cada unidad, cada torre, cada proyecto — sin hojas de Excel que se desactualizan.</p>
               <div className="h-actions">
-                <a href="#contacto" className="h-btn-primary">Solicitar acceso <ArrowUpRight size={14} /></a>
+                <a href="#contacto" className="h-btn-primary" style={{ color: '#000' }}>Solicitar acceso <ArrowUpRight size={14} color="#000" /></a>
                 <a href="#modulos" className="h-btn-secondary">Ver demo <ChevronRight size={14} /></a>
               </div>
               <div className="h-stats">
