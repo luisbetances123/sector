@@ -2,6 +2,7 @@
 import { supabase } from '../lib/supabase'
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Building2, MapPin, ArrowUpRight, ChevronRight, TrendingUp, ChevronDown } from 'lucide-react'
 
 // ── Typewriter cíclico del hero ──────────────────────────────────────────────
@@ -320,8 +321,7 @@ export default function Page() {
       <header className="h-nav">
         <div className="h-nav-inner">
           <div className="h-logo">
-            <div className="h-logo-mark"><Building2 size={11} color="#000" strokeWidth={2.5} /></div>
-            <span className="h-logo-text">SECTOR</span>
+            <Image src="/sector-logo.png" alt="SECTOR" width={120} height={28} priority style={{ height: '24px', width: 'auto' }} />
           </div>
           <div className="h-status">
             <span className="h-dot" />
