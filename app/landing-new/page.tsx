@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase'
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Building2, MapPin, ArrowUpRight, ChevronRight, TrendingUp, ChevronDown } from 'lucide-react'
+import { Building2, MapPin, ArrowUpRight, ChevronRight, TrendingUp, ChevronDown, Instagram, Linkedin } from 'lucide-react'
 
 // ── Typewriter cíclico del hero ──────────────────────────────────────────────
 function useCyclingTypewriter(words: string[]) {
@@ -315,6 +315,8 @@ export default function Page() {
         .cta-input::placeholder { color: #555; }
         .foot-email { color: rgba(255,255,255,0.5); text-decoration: none; transition: color .15s; }
         .foot-email:hover { color: #CCFF00; }
+        .foot-social { color: rgba(255,255,255,0.45); display: inline-flex; transition: color .15s; }
+        .foot-social:hover { color: #CCFF00; }
         .cta-btn { background: #CCFF00; color: #000; border: none; border-radius: 4px; padding: 10px 18px; font-size: 13px; font-weight: 500; white-space: nowrap; }
         .cta-btn:disabled { opacity: 0.6; }
         .foot { padding: 24px; text-align: center; font-family: var(--mono); font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 0.5px; }
@@ -525,9 +527,21 @@ export default function Page() {
         </section>
 
         <footer className="foot">
-          © 2026 SECTOR · CRM para constructoras · República Dominicana
-          <span style={{ margin: '0 8px', opacity: 0.4 }}>·</span>
-          <a href="mailto:ventas@sector.do" className="foot-email">ventas@sector.do</a>
+          <div>
+            © 2026 SECTOR · CRM para constructoras · República Dominicana
+            <span style={{ margin: '0 8px', opacity: 0.4 }}>·</span>
+            <a href="mailto:ventas@sector.do" className="foot-email">ventas@sector.do</a>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '14px', marginTop: '12px', flexWrap: 'wrap' }}>
+            <a href="https://www.instagram.com/sector.do" target="_blank" rel="noopener noreferrer" className="foot-social" aria-label="Instagram">
+              <Instagram size={14} />
+            </a>
+            <a href="https://www.linkedin.com/in/luis-betances-054905181/" target="_blank" rel="noopener noreferrer" className="foot-social" aria-label="LinkedIn">
+              <Linkedin size={14} />
+            </a>
+            <span style={{ opacity: 0.25 }}>|</span>
+            <span style={{ opacity: 0.5 }}>Developed by LB Software · New York, USA</span>
+          </div>
         </footer>
       </div>
     </div>
