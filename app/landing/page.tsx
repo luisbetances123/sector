@@ -1,298 +1,568 @@
-"use client";
+'use client'
+import { supabase } from '../lib/supabase'
+import { useState, useEffect, useRef } from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
+import { Building2, MapPin, ArrowUpRight, ChevronRight, TrendingUp, ChevronDown } from 'lucide-react'
 
-import { useEffect, useState } from "react";
-import { supabase } from "@/app/lib/supabase";
-
-const LIME = "#CCFF00";
-const BG = "#09090b";
-const BORDER = "#1a1a1d";
-
-const modules = [
-  {
-    num: "01",
-    title: "Mapa de Disponibilidad Real",
-    bullets: [
-      "Control visual de unidades",
-      "Actualización al instante para brokers",
-      "Filtrado por etapa de obra",
-    ],
-    mockup: "mapa",
-  },
-  {
-    num: "02",
-    title: "Intranet de Proyecto Segura",
-    bullets: [
-      "Acceso privado para agencias autorizadas",
-      "Reservas de 48H con firma digital",
-      "Trazabilidad total de ventas",
-    ],
-    mockup: "intranet",
-  },
-  {
-    num: "03",
-    title: "Gestión de Cobros y Postventa",
-    bullets: [
-      "Automatización de planes de pago",
-      "Estados de cuenta interactivos para clientes",
-      "Portal de incidencias de entrega",
-    ],
-    mockup: "proyectos",
-  },
-];
-
-function MapaPreview() {
-  const colores: Record<string, string> = { libre: "#22c55e", reservado: "#f59e0b", vendido: "#ef4444" };
-  const pisos = [
-    { piso: "PH", unidades: [{ id: "PH1", estado: "reservado" }, { id: "PH2", estado: "libre" }] },
-    { piso: "4", unidades: [{ id: "4A", estado: "vendido" }, { id: "4B", estado: "libre" }, { id: "4C", estado: "reservado" }, { id: "4D", estado: "libre" }] },
-    { piso: "1", unidades: [{ id: "1A", estado: "libre" }, { id: "1B", estado: "vendido" }, { id: "1C", estado: "libre" }, { id: "1D", estado: "reservado" }] },
-  ];
+function InstagramIcon({ size = 14 }: { size?: number }) {
   return (
-    <div style={{ background: "#0d0d0f", borderRadius: 12, padding: 16, border: `1px solid ${BORDER}`, marginBottom: 20 }}>
-      <div style={{ display: "flex", gap: 10, marginBottom: 12 }}>
-        {[["libre", "#22c55e"], ["reservado", "#f59e0b"], ["vendido", "#ef4444"]].map(([l, c]) => (
-          <div key={l} style={{ display: "flex", alignItems: "center", gap: 4 }}>
-            <div style={{ width: 6, height: 6, borderRadius: 2, background: c }} />
-            <span style={{ color: "#888", fontSize: 9, textTransform: "capitalize" }}>{l}</span>
-          </div>
-        ))}
-      </div>
-      {pisos.map(p => (
-        <div key={p.piso} style={{ marginBottom: 8 }}>
-          <div style={{ color: "#555", fontSize: 9, marginBottom: 4, fontFamily: "monospace" }}>Piso {p.piso}</div>
-          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-            {p.unidades.map(u => (
-              <div key={u.id} style={{ background: colores[u.estado], borderRadius: 6, padding: "5px 10px", color: "#fff", fontWeight: 800, fontSize: 10 }}>{u.id}</div>
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+    </svg>
+  )
 }
 
-function IntranetPreview() {
-  const brokers = [
-    { nombre: "Remax Capital", u: 3, color: LIME },
-    { nombre: "Plusval RD", u: 1, color: "#f59e0b" },
-    { nombre: "Luis Betances", u: 2, color: "#4da6ff" },
-  ];
+function LinkedinIcon({ size = 14 }: { size?: number }) {
   return (
-    <div style={{ background: "#0d0d0f", borderRadius: 12, padding: 16, border: `1px solid ${BORDER}`, marginBottom: 20 }}>
-      <div style={{ color: "#555", fontSize: 9, fontFamily: "monospace", marginBottom: 10 }}>sector.do/proyecto/torre-abc123</div>
-      {brokers.map(b => (
-        <div key={b.nombre} style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 0", borderBottom: `1px solid ${BORDER}` }}>
-          <div style={{ width: 26, height: 26, borderRadius: "50%", background: "#1a1a1d", display: "flex", alignItems: "center", justifyContent: "center", color: b.color, fontWeight: 900, fontSize: 11, flexShrink: 0 }}>{b.nombre[0]}</div>
-          <div style={{ flex: 1 }}>
-            <div style={{ color: "#eee", fontWeight: 600, fontSize: 11 }}>{b.nombre}</div>
-            <div style={{ color: "#888", fontSize: 10 }}>{b.u} unidades</div>
-          </div>
-          <div style={{ background: b.color + "20", color: b.color, borderRadius: 4, padding: "2px 8px", fontSize: 9, fontWeight: 800 }}>Activo</div>
-        </div>
-      ))}
-    </div>
-  );
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.124 2.062 2.062 0 0 1 0 4.124zM7.114 20.452H3.56V9h3.554v11.452z"/>
+    </svg>
+  )
 }
 
-function ProyectosPreview() {
-  const proyectos = [
-    { nombre: "Torre Piantini", avance: 65, libre: 24, reservado: 8, vendido: 40 },
-    { nombre: "Residencias Naco", avance: 30, libre: 48, reservado: 5, vendido: 15 },
-  ];
-  return (
-    <div style={{ background: "#0d0d0f", borderRadius: 12, padding: 16, border: `1px solid ${BORDER}`, marginBottom: 20 }}>
-      {proyectos.map(p => (
-        <div key={p.nombre} style={{ background: "#1a1a1d", borderRadius: 10, padding: 12, marginBottom: 10 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-            <div style={{ color: "#eee", fontWeight: 700, fontSize: 11 }}>{p.nombre}</div>
-            <div style={{ color: LIME, fontSize: 10, fontWeight: 800 }}>{p.avance}% obra</div>
-          </div>
-          <div style={{ background: "#111", borderRadius: 3, height: 3, marginBottom: 8 }}>
-            <div style={{ background: LIME, height: 3, borderRadius: 3, width: `${p.avance}%` }} />
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", textAlign: "center" }}>
-            <div><div style={{ color: "#22c55e", fontWeight: 900, fontSize: 14 }}>{p.libre}</div><div style={{ color: "#666", fontSize: 9 }}>Libres</div></div>
-            <div><div style={{ color: "#f59e0b", fontWeight: 900, fontSize: 14 }}>{p.reservado}</div><div style={{ color: "#666", fontSize: 9 }}>Reservadas</div></div>
-            <div><div style={{ color: "#ef4444", fontWeight: 900, fontSize: 14 }}>{p.vendido}</div><div style={{ color: "#666", fontSize: 9 }}>Vendidas</div></div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
 
-export default function LandingPage() {
-  const [scrolled, setScrolled] = useState(false);
-  const [email, setEmail] = useState("");
-  const [enviado, setEnviado] = useState(false);
-  const [enviando, setEnviando] = useState(false);
-  const [error, setError] = useState("");
-
-  async function handleSubmit() {
-    if (!email || !email.includes("@")) { setError("Ingresa un email válido."); return; }
-    setError("");
-    setEnviando(true);
-    try {
-      const { error: sbError } = await supabase.from("lista_espera").insert([{ email }]);
-      if (sbError) { if (sbError.code === "23505") { setEnviado(true); } else { setError("Algo salió mal. Intenta de nuevo."); } }
-      else { setEnviado(true); }
-    } catch { setError("Error de conexión. Intenta de nuevo."); }
-    finally { setEnviando(false); setEmail(""); }
-  }
+// ── Typewriter cíclico del hero ──────────────────────────────────────────────
+function useCyclingTypewriter(words: string[]) {
+  const [text, setText] = useState('')
+  const [wordIndex, setWordIndex] = useState(0)
+  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", handler);
-    return () => window.removeEventListener("scroll", handler);
-  }, []);
+    const current = words[wordIndex]
+    const speed = deleting ? 35 : 55
+    const timeout = setTimeout(() => {
+      if (!deleting && text.length < current.length) {
+        setText(current.slice(0, text.length + 1))
+      } else if (!deleting && text.length === current.length) {
+        setTimeout(() => setDeleting(true), 1400)
+      } else if (deleting && text.length > 0) {
+        setText(text.slice(0, -1))
+      } else {
+        setDeleting(false)
+        setWordIndex((wordIndex + 1) % words.length)
+      }
+    }, speed)
+    return () => clearTimeout(timeout)
+  }, [text, deleting, wordIndex, words])
+
+  return text
+}
+
+// ── Sparkline de 7 puntos para cada unidad ───────────────────────────────────
+function Sparkline({ data, positive = true }: { data: number[]; positive?: boolean }) {
+  const w = 64, h = 20
+  const max = Math.max(...data)
+  const min = Math.min(...data)
+  const range = max - min || 1
+  const points = data
+    .map((v, i) => {
+      const x = (i / (data.length - 1)) * w
+      const y = h - ((v - min) / range) * h
+      return `${x.toFixed(1)},${y.toFixed(1)}`
+    })
+    .join(' ')
+  return (
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`}>
+      <polyline points={points} fill="none" stroke={positive ? '#CCFF00' : '#666666'} strokeWidth="1" strokeLinejoin="round" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+// ── Gráfico de absorción estilo terminal de trading ──────────────────────────
+function AbsorptionChart() {
+  const data = [12, 14, 13, 18, 22, 21, 26, 30, 29, 34, 38, 41, 39, 45, 50, 54, 58, 56, 61, 65]
+  const w = 100, h = 100
+  const max = Math.max(...data)
+  const min = Math.min(...data)
+  const coords = data.map((v, i) => {
+    const x = (i / (data.length - 1)) * w
+    const y = h - ((v - min) / (max - min)) * h * 0.85 - 8
+    return [x, y]
+  })
+  const line = coords.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ')
+  const area = `0,${h} ${line} ${w},${h}`
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" width="100%" height="100%">
+      <defs>
+        <linearGradient id="absFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#CCFF00" stopOpacity="0.18" />
+          <stop offset="100%" stopColor="#CCFF00" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <polygon points={area} fill="url(#absFill)" />
+      <polyline points={line} fill="none" stroke="#CCFF00" strokeWidth="0.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+// ── Datos estáticos ──────────────────────────────────────────────────────────
+const UNITS = [
+  { id: 'PNT-014', proyecto: 'Torre Piantini', piso: '14', m2: 142, estado: 'Libre', trend: [2, 3, 3, 5, 4, 6, 7] },
+  { id: 'PNT-021', proyecto: 'Torre Piantini', piso: '21', m2: 98, estado: 'Reservado', trend: [4, 4, 5, 5, 6, 6, 6] },
+  { id: 'NCO-007', proyecto: 'Naco Residences', piso: '07', m2: 110, estado: 'Libre', trend: [6, 5, 6, 7, 7, 8, 9] },
+  { id: 'NCO-012', proyecto: 'Naco Residences', piso: '12', m2: 156, estado: 'Vendido', trend: [3, 4, 6, 6, 7, 9, 9] },
+  { id: 'PNT-005', proyecto: 'Torre Piantini', piso: '05', m2: 87, estado: 'Reservado', trend: [5, 5, 4, 5, 6, 6, 7] },
+]
+
+const ZONES = [
+  { zona: 'Piantini', coord: 'SDE · 18.47N', idx: '0.92', status: '[ ALTA ABSORCIÓN ]', nivel: 'alta' },
+  { zona: 'Naco', coord: 'SDE · 18.46N', idx: '0.88', status: '[ ALTA ABSORCIÓN ]', nivel: 'alta' },
+  { zona: 'Bella Vista', coord: 'SDE · 18.45N', idx: '0.61', status: '[ MEDIA ABSORCIÓN ]', nivel: 'media' },
+  { zona: 'Los Cacicazgos', coord: 'SDE · 18.48N', idx: '0.57', status: '[ MEDIA ABSORCIÓN ]', nivel: 'media' },
+  { zona: 'La Esperilla', coord: 'SDE · 18.47N', idx: '0.44', status: '[ ESTABLE ]', nivel: 'media' },
+  { zona: 'Mirador Norte', coord: 'SDE · 18.49N', idx: '0.51', status: '[ ESTABLE ]', nivel: 'media' },
+  { zona: 'Las Terrenas', coord: 'SAM · 19.31N', idx: '0.95', status: '[ ALTA PLUSVALÍA ]', nivel: 'alta' },
+  { zona: 'Punta Cana', coord: 'LAA · 18.58N', idx: '0.97', status: '[ ALTA PLUSVALÍA ]', nivel: 'alta' },
+]
+
+const FLOOR_15: ('libre' | 'reservado' | 'vendido')[] = ['libre', 'vendido', 'vendido', 'libre', 'vendido', 'libre', 'vendido', 'vendido']
+const FLOOR_14: ('libre' | 'reservado' | 'vendido')[] = ['libre', 'libre', 'reservado', 'libre', 'libre', 'vendido', 'libre', 'vendido']
+
+const KANBAN = [
+  { titulo: '01. LEAD', cards: [
+    { nm: 'Maria Núñez', pr: 'Torre Piantini · 4A', am: 'US$250,000' },
+    { nm: 'Seung Lee', pr: 'Naco Residences · 12', am: 'US$220,000' },
+  ]},
+  { titulo: '02. RESERVA', cards: [
+    { nm: 'Eric Peña', pr: 'Torre Piantini · 21', am: 'US$210,000' },
+  ]},
+  { titulo: '03. CIERRE', cards: [
+    { nm: 'Liz Betances', pr: 'Naco Residences · 07', am: 'US$195,000' },
+  ]},
+]
+
+const LOG_EVENTS = [
+  '[09:14] Broker Luz Minier reservó unidad PNT-014 — Torre Piantini',
+  '[10:02] Cliente Maria Núñez firmó contrato — Naco Residences',
+  '[11:47] Broker Clara Núñez cerró venta NCO-012 — US$210,000',
+  '[13:15] Sistema liberó reserva vencida PNT-021',
+]
+
+const FAQS = [
+  { q: '¿Necesito instalar algo?', a: 'No. SECTOR es 100% en la nube. Accedes desde tu computadora, tablet o celular desde cualquier lugar de Santo Domingo o el interior, sin descargar nada.' },
+  { q: '¿Puedo usar SECTOR con mi equipo de brokers?', a: 'Sí. El sistema está hecho para constructoras con redes de venta externas. Cada broker puede tener acceso controlado a las unidades disponibles, con total trazabilidad de cada venta.' },
+  { q: '¿Mis datos de proyectos están protegidos?', a: 'Totalmente. Implementamos encriptación de nivel bancario y políticas estrictas de privacidad en Supabase.' },
+  { q: '¿Cómo migro mis unidades desde un Excel?', a: 'SECTOR cuenta con un proceso de importación rápido para tu inventario actual. Sube tu base de datos y estarás operando en minutos.' },
+  { q: '¿Cómo funciona el envío por WhatsApp?', a: 'Desde la ficha de cualquier unidad en Mi Empresa, generas un PDF profesional listo para enviar directo a tu broker o cliente por WhatsApp.' },
+  { q: '¿Hay un límite de proyectos o unidades?', a: 'Ninguno. Sube todo el inventario de preventas y proyectos en construcción que manejes.' },
+]
+
+const PILL_CLASS: Record<string, string> = {
+  Libre: 'pill libre',
+  Reservado: 'pill reservado',
+  Vendido: 'pill vendido',
+}
+
+export default function Page() {
+  const typed = useCyclingTypewriter(['constructoras.', 'ingenieros.', 'desarrolladoras.'])
+  const [activeTab, setActiveTab] = useState<'a' | 'b' | 'c'>('a')
+  const [faqOpen, setFaqOpen] = useState<number | null>(null)
+  const [email, setEmail] = useState('')
+  const [enviado, setEnviado] = useState(false)
+  const [cargando, setCargando] = useState(false)
+  const clockRef = useRef<HTMLSpanElement>(null)
+
+  useEffect(() => {
+    const tick = () => {
+      if (clockRef.current) clockRef.current.textContent = new Date().toLocaleTimeString('es-DO', { hour12: true, hour: 'numeric', minute: '2-digit', second: '2-digit' })
+    }
+    tick()
+    const id = setInterval(tick, 1000)
+    return () => clearInterval(id)
+  }, [])
+
+  const guardarEmail = async () => {
+    if (!email.trim()) return
+    setCargando(true)
+    await supabase.from('beta_emails').insert({ email: email.trim() })
+    setEnviado(true)
+    setCargando(false)
+  }
 
   return (
-    <div style={{ background: BG, color: "#fff", fontFamily: "'Inter', system-ui, sans-serif", minHeight: "100vh", overflowX: "hidden" }}>
+    <div className="sector-landing">
+      <style jsx global>{`
+        .sector-landing {
+          --mono: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+          --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+          background: #09090b;
+          color: #fff;
+          font-family: var(--sans);
+          overflow-x: hidden;
+        }
+        .sector-landing * { box-sizing: border-box; }
+        .sector-landing a { text-decoration: none; color: inherit; }
+        .sector-landing button { font-family: inherit; cursor: pointer; }
+        .frame { max-width: 1152px; margin: 0 auto; border-left: 1px solid #1a1a1a; border-right: 1px solid #1a1a1a; }
+        .h-nav { position: sticky; top: 0; z-index: 20; background: rgba(0,0,0,0.92); backdrop-filter: blur(4px); border-bottom: 1px solid #1a1a1a; }
+        .h-nav-inner { max-width: 1152px; margin: 0 auto; height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; }
+        .h-logo { display: flex; align-items: center; gap: 10px; }
+        .h-logo-mark { width: 20px; height: 20px; border-radius: 3px; background: #CCFF00; display: flex; align-items: center; justify-content: center; }
+        .h-logo-text { font-size: 15px; font-weight: 600; letter-spacing: -0.2px; }
+        .h-status { display: none; align-items: center; gap: 6px; border: 1px solid #222; border-radius: 999px; padding: 4px 12px; font-family: var(--mono); font-size: 11px; color: rgba(255,255,255,0.65); }
+        @media (min-width: 640px) { .h-status { display: flex; } }
+        .h-dot { width: 6px; height: 6px; border-radius: 50%; background: #CCFF00; flex-shrink: 0; }
+        .h-status .acc { color: #CCFF00; letter-spacing: 0.3px; }
+        .h-status .sep { color: #444; }
+        .h-cta-btn { background: #fff; color: #000 !important; border: none; border-radius: 6px; padding: 7px 14px; font-size: 13px; font-weight: 500; transition: background .15s; }
+        .h-cta-btn:hover { background: #CCFF00; color: #000 !important; }
+        .h-hero { position: relative; border-bottom: 1px solid #1a1a1a; }
+        .h-grid-bg { position: absolute; inset: 0; opacity: 0.35; pointer-events: none; background-image: linear-gradient(to right, #161616 1px, transparent 1px), linear-gradient(to bottom, #161616 1px, transparent 1px); background-size: 64px 64px; }
+        .h-hero-row { position: relative; display: grid; grid-template-columns: 1fr; }
+        @media (min-width: 1024px) { .h-hero-row { grid-template-columns: 5fr 7fr; } }
+        .h-copy { padding: 64px 24px; border-bottom: 1px solid #1a1a1a; display: flex; flex-direction: column; justify-content: center; }
+        @media (min-width: 1024px) { .h-copy { padding: 96px 40px; border-bottom: none; border-right: 1px solid #1a1a1a; } }
+        .h-badge { display: inline-flex; align-items: center; gap: 8px; width: fit-content; border: 1px solid #222; border-radius: 999px; padding: 5px 12px; font-family: var(--mono); font-size: 11px; color: rgba(255,255,255,0.65); margin-bottom: 20px; }
+        .h-badge svg { width: 12px; height: 12px; color: #CCFF00; }
+        .h-title { font-size: 36px; font-weight: 500; line-height: 1.12; letter-spacing: -0.5px; margin: 0; }
+        @media (min-width: 1024px) { .h-title { font-size: 48px; } }
+        .h-title .acc { color: #CCFF00; }
+        .h-cursor { display: inline-block; width: 1px; height: 0.9em; background: #CCFF00; margin-left: 2px; vertical-align: -2px; animation: blink 1s step-end infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+        .h-desc { max-width: 420px; margin: 20px 0 0; font-size: 15px; line-height: 1.6; color: rgba(255,255,255,0.6); }
+        .h-actions { display: flex; align-items: center; gap: 16px; margin-top: 32px; }
+        .h-btn-primary { display: inline-flex; align-items: center; gap: 8px; background: #CCFF00; color: #000 !important; border: none; border-radius: 6px; padding: 10px 16px; font-size: 14px; font-weight: 500; transition: transform .15s; }
+        .h-btn-primary:hover { transform: translateX(2px); color: #000 !important; }
+        .h-btn-primary svg { color: #000; stroke: #000; }
+        .h-btn-secondary { display: inline-flex; align-items: center; gap: 4px; background: none; border: none; color: rgba(255,255,255,0.65); font-size: 14px; transition: color .15s; }
+        .h-btn-secondary:hover { color: #fff; }
+        .h-stats { margin-top: 48px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; border: 1px solid #1a1a1a; font-family: var(--mono); }
+        .h-stat { background: #0a0a0a; padding: 12px; }
+        .h-stat-num { font-size: 16px; font-weight: 600; color: #fff; }
+        .h-stat-label { margin-top: 2px; font-size: 10px; line-height: 1.3; color: rgba(255,255,255,0.55); }
+        .h-artifact-wrap { display: flex; align-items: center; justify-content: center; background: #050505; padding: 48px 24px; }
+        @media (min-width: 1024px) { .h-artifact-wrap { padding: 64px 40px; } }
+        .h-monitor { width: 100%; max-width: 560px; border: 1px solid #222; border-radius: 8px; background: #0a0a0a; box-shadow: 0 40px 80px -40px rgba(0,0,0,0.9); overflow: hidden; }
+        .h-monitor-bar { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #1a1a1a; padding: 10px 16px; }
+        .h-monitor-dots { display: flex; gap: 6px; }
+        .h-monitor-dots span { width: 8px; height: 8px; border-radius: 50%; background: #2a2a2a; }
+        .h-monitor-url { font-family: var(--mono); font-size: 11px; color: rgba(255,255,255,0.5); }
+        .h-monitor-live { font-family: var(--mono); font-size: 11px; color: #CCFF00; }
+        .h-monitor-body { display: grid; grid-template-columns: 1fr; }
+        @media (min-width: 640px) { .h-monitor-body { grid-template-columns: 1fr 120px; } }
+        .h-table-col { border-bottom: 1px solid #1a1a1a; }
+        @media (min-width: 640px) { .h-table-col { border-bottom: none; border-right: 1px solid #1a1a1a; } }
+        .h-table-head { padding: 10px 16px; font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255,255,255,0.55); border-top: 1px solid #1a1a1a; }
+        table.h-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 11px; }
+        table.h-table th { padding: 6px 16px; text-align: left; color: rgba(255,255,255,0.5); font-weight: 400; border-bottom: 1px solid #1a1a1a; }
+        table.h-table th:last-child { text-align: right; }
+        table.h-table td { padding: 8px 16px; border-bottom: 1px solid #141414; vertical-align: middle; }
+        table.h-table tr:last-child td { border-bottom: none; }
+        .unit-id { color: #fff; }
+        .unit-meta { font-size: 10px; color: rgba(255,255,255,0.55); margin-top: 1px; }
+        .pill { display: inline-block; border-radius: 3px; padding: 2px 6px; font-size: 10px; border: 1px solid; }
+        .pill.libre { color: #CCFF00; border-color: rgba(204,255,0,0.3); background: rgba(204,255,0,0.06); }
+        .pill.reservado { color: #888; border-color: #333; background: rgba(255,255,255,0.02); }
+        .pill.vendido { color: #555; border-color: #222; background: transparent; }
+        .h-abs-col { padding: 16px; display: flex; flex-direction: column; }
+        .h-abs-label { display: flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255,255,255,0.55); }
+        .h-abs-label svg { width: 12px; height: 12px; color: #CCFF00; }
+        .h-abs-num { margin-top: 4px; font-family: var(--mono); font-size: 20px; font-weight: 600; color: #fff; }
+        .h-abs-delta { font-family: var(--mono); font-size: 10px; color: #CCFF00; }
+        .h-abs-chart { margin-top: 12px; height: 80px; width: 100%; }
+        .h-abs-dates { margin-top: auto; display: flex; justify-content: space-between; font-family: var(--mono); font-size: 9px; color: rgba(255,255,255,0.45); }
+        .sec { border-bottom: 1px solid #1a1a1a; padding: 56px 24px; }
+        @media (min-width: 1024px) { .sec { padding: 72px 40px; } }
+        .sec-eyebrow { font-family: var(--mono); font-size: 11px; color: rgba(255,255,255,0.55); text-transform: uppercase; letter-spacing: 1px; }
+        .sec-eyebrow .n { color: #CCFF00; }
+        .sec-title { font-size: 26px; font-weight: 500; letter-spacing: -0.3px; margin: 8px 0 0; }
+        @media (min-width: 1024px) { .sec-title { font-size: 30px; } }
+        .sec-desc { margin: 10px 0 0; max-width: 480px; font-size: 14px; line-height: 1.6; color: rgba(255,255,255,0.6); }
+        .loc-row { display: grid; grid-template-columns: 1fr; gap: 32px; margin-top: 32px; }
+        @media (min-width: 1024px) { .loc-row { grid-template-columns: 4fr 8fr; gap: 0; margin-top: 40px; } }
+        .loc-matrix { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #1a1a1a; border: 1px solid #1a1a1a; }
+        @media (min-width: 640px) { .loc-matrix { grid-template-columns: 1fr 1fr 1fr 1fr; } }
+        .loc-node { background: #0a0a0a; padding: 14px 16px; font-family: var(--mono); }
+        .loc-node .zone { font-size: 12px; color: #fff; }
+        .loc-node .coord { margin-top: 2px; font-size: 10px; color: rgba(255,255,255,0.45); }
+        .loc-node .idx { margin-top: 12px; font-size: 18px; font-weight: 600; color: #fff; }
+        .loc-node .status { margin-top: 4px; font-size: 10px; letter-spacing: 0.3px; }
+        .loc-node .status.alta { color: #CCFF00; }
+        .loc-node .status.media { color: rgba(255,255,255,0.65); }
+        .tabs-row { display: flex; gap: 0; margin-top: 32px; border: 1px solid #1a1a1a; border-bottom: none; }
+        .tab-btn { flex: 1; background: #0a0a0a; border: none; border-right: 1px solid #1a1a1a; color: rgba(255,255,255,0.5); font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; padding: 12px 14px; text-align: left; transition: color .15s, background .15s; }
+        .tab-btn:last-child { border-right: none; }
+        .tab-btn .lbl { display: block; color: #fff; font-size: 12px; font-family: var(--sans); text-transform: none; margin-top: 3px; }
+        .tab-btn.active { background: #111; color: #CCFF00; }
+        .tab-btn.active .lbl { color: #fff; }
+        .tab-panel { border: 1px solid #1a1a1a; background: #0a0a0a; padding: 24px; }
+        .floor-row { display: flex; align-items: center; gap: 16px; padding: 12px 0; border-bottom: 1px solid #1a1a1a; }
+        .floor-row:last-child { border-bottom: none; }
+        .floor-label { font-family: var(--mono); font-size: 11px; color: rgba(255,255,255,0.55); width: 52px; flex-shrink: 0; }
+        .floor-units { display: flex; gap: 4px; flex: 1; flex-wrap: wrap; }
+        .unit-sq { width: 22px; height: 22px; border-radius: 2px; border: 1px solid; flex-shrink: 0; }
+        .unit-sq.libre { border-color: rgba(204,255,0,0.5); background: rgba(204,255,0,0.08); }
+        .unit-sq.reservado { border-color: #333; background: #1c1c1c; }
+        .unit-sq.vendido { border-color: #222; background: #161616; }
+        .floor-summary { font-family: var(--mono); font-size: 10px; color: rgba(255,255,255,0.55); white-space: nowrap; }
+        .floor-summary .acc { color: #CCFF00; }
+        .floor-legend { display: flex; gap: 16px; margin-top: 16px; font-family: var(--mono); font-size: 10px; color: rgba(255,255,255,0.55); }
+        .floor-legend span { display: inline-flex; align-items: center; gap: 6px; }
+        .leg-sq { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+        .kanban { display: grid; grid-template-columns: 1fr; gap: 1px; background: #1a1a1a; }
+        @media (min-width: 768px) { .kanban { grid-template-columns: 1fr 1fr 1fr; } }
+        .kanban-col { background: #0a0a0a; padding: 14px; }
+        .kanban-head { font-family: var(--mono); font-size: 10px; color: rgba(255,255,255,0.55); letter-spacing: 0.5px; margin-bottom: 12px; }
+        .kanban-card { border: 1px solid #1a1a1a; border-radius: 4px; padding: 10px 12px; margin-bottom: 8px; }
+        .kanban-card .nm { font-size: 12px; color: #fff; }
+        .kanban-card .pr { font-family: var(--mono); font-size: 10px; color: rgba(255,255,255,0.55); margin-top: 3px; }
+        .kanban-card .am { font-family: var(--mono); font-size: 11px; color: #CCFF00; margin-top: 4px; }
+        .log-list { font-family: var(--mono); font-size: 12px; line-height: 1.9; }
+        .log-list .t { color: rgba(255,255,255,0.5); margin-right: 8px; }
+        .log-list div { color: #999; }
+        .log-cursor { margin-top: 8px; color: #CCFF00; }
+        .log-cursor .blk { display: inline-block; width: 6px; height: 12px; background: #CCFF00; margin-left: 4px; vertical-align: -2px; animation: blink 1s step-end infinite; }
+        .faq-row { margin-top: 24px; }
+        .faq-item { border-top: 1px solid #1a1a1a; }
+        .faq-item:last-child { border-bottom: 1px solid #1a1a1a; }
+        .faq-q { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; background: none; border: none; color: #ddd; font-size: 13px; text-align: left; padding: 16px 0; }
+        .faq-chevron { width: 14px; height: 14px; color: #666; flex-shrink: 0; transition: transform .15s; }
+        .faq-item.open .faq-chevron { transform: rotate(180deg); color: #CCFF00; }
+        .faq-a { overflow: hidden; transition: max-height .2s ease; }
+        .faq-a p { font-size: 13px; line-height: 1.65; color: rgba(255,255,255,0.6); margin: 0; padding: 0 0 18px; max-width: 600px; }
+        .cta-sec { padding: 56px 24px; }
+        .cta-box { background: #0e0e0e; border: 1px solid #1a1a1a; border-radius: 6px; padding: 32px 28px; display: flex; flex-direction: column; gap: 18px; }
+        @media (min-width: 768px) { .cta-box { flex-direction: row; align-items: center; justify-content: space-between; padding: 36px 40px; } }
+        .cta-copy h2 { font-size: 20px; font-weight: 500; margin: 0; letter-spacing: -0.2px; }
+        .cta-copy p { margin: 6px 0 0; font-size: 13px; color: rgba(255,255,255,0.6); max-width: 360px; }
+        .cta-form { display: flex; gap: 10px; flex-direction: column; }
+        @media (min-width: 480px) { .cta-form { flex-direction: row; } }
+        .cta-input { background: #050505; border: 1px solid #222; border-radius: 4px; padding: 10px 14px; font-size: 13px; color: #fff; min-width: 220px; }
+        .cta-input::placeholder { color: #555; }
+        .foot-email { color: rgba(255,255,255,0.5); text-decoration: none; transition: color .15s; }
+        .foot-email:hover { color: #CCFF00; }
+        .foot-social { color: rgba(255,255,255,0.45); display: inline-flex; transition: color .15s; }
+        .foot-social:hover { color: #CCFF00; }
+        .cta-btn { background: #CCFF00; color: #000; border: none; border-radius: 4px; padding: 10px 18px; font-size: 13px; font-weight: 500; white-space: nowrap; }
+        .cta-btn:disabled { opacity: 0.6; }
+        .foot { padding: 24px; text-align: center; font-family: var(--mono); font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 0.5px; }
+      `}</style>
 
-      <nav style={{
-        position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-        padding: "0 48px", height: 64,
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        background: scrolled ? "rgba(9,9,11,0.96)" : "transparent",
-        borderBottom: scrolled ? `1px solid ${BORDER}` : "none",
-        backdropFilter: scrolled ? "blur(16px)" : "none",
-        transition: "all 0.3s",
-      }}>
-        <div style={{ fontWeight: 900, fontSize: 22, letterSpacing: -1 }}>
-          SECTOR<span style={{ color: LIME }}>.</span>
-        </div>
-        <div style={{ display: "flex", gap: 36, alignItems: "center" }}>
-          <a href="#funciones" style={{ color: "#aaa", fontSize: 13, textDecoration: "none", fontWeight: 500 }}>Funciones</a>
-          <a href="/pricing" style={{ color: "#aaa", fontSize: 13, textDecoration: "none", fontWeight: 500 }}>Precios</a>
-          <a href="/login" style={{ background: LIME, color: BG, borderRadius: 100, padding: "9px 22px", fontSize: 13, fontWeight: 800, textDecoration: "none" }}>Acceder →</a>
-        </div>
-      </nav>
-
-      {/* HERO */}
-      <section style={{ minHeight: "85vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "120px 48px 60px" }}>
-        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "#aaa", marginBottom: 28, textTransform: "uppercase" }}>
-          🇩🇴 &nbsp; Plataforma Comercial · República Dominicana
-        </div>
-        <h1 style={{ fontSize: "clamp(38px, 7vw, 84px)", fontWeight: 900, letterSpacing: -3, margin: "0 0 28px", maxWidth: 900, lineHeight: 1.05 }}>
-          Tu inventario de preventa,{" "}
-          <em style={{ color: LIME, fontStyle: "italic" }}>bajo tu control absoluto.</em>
-        </h1>
-        <p style={{ color: "#aaa", fontSize: "clamp(15px, 1.8vw, 18px)", maxWidth: 560, lineHeight: 1.6, margin: "0 0 44px", fontWeight: 400 }}>
-          SECTOR conecta el inventario de tu constructora con el ejército de brokers de RD — en tiempo real, sin tocar tu ERP, desde cualquier celular.
-        </p>
-        <div style={{ display: "flex", gap: 14, flexWrap: "wrap", justifyContent: "center" }}>
-          <a href="/login" style={{ background: LIME, color: BG, borderRadius: 100, padding: "16px 32px", fontWeight: 800, fontSize: 15, textDecoration: "none" }}>
-            Acceder a SECTOR
-          </a>
-          <a href="#funciones" style={{ background: "transparent", color: "#fff", borderRadius: 100, padding: "16px 32px", fontWeight: 600, fontSize: 15, textDecoration: "none", border: `1px solid #444` }}>
-            Ver Funciones
-          </a>
-        </div>
-      </section>
-
-      {/* 3 MÓDULOS EN FILA */}
-      <section id="funciones" style={{ padding: "0 48px 100px" }}>
-        <div style={{ textAlign: "center", marginBottom: 60 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "#aaa", marginBottom: 16, textTransform: "uppercase" }}>3 Módulos que Revolucionan la Preventa</div>
-        </div>
-        <div className="modules-grid">
-          {modules.map((m) => (
-            <div key={m.num} style={{ background: "#111113", border: `1px solid ${BORDER}`, borderRadius: 20, padding: "28px", display: "flex", flexDirection: "column" }}>
-              {m.mockup === "mapa" && <MapaPreview />}
-              {m.mockup === "intranet" && <IntranetPreview />}
-              {m.mockup === "proyectos" && <ProyectosPreview />}
-              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, color: LIME, textTransform: "uppercase", marginBottom: 10 }}>{m.num}</div>
-              <h3 style={{ fontSize: "clamp(18px, 2vw, 22px)", fontWeight: 900, letterSpacing: -0.5, margin: "0 0 16px", color: "#fff" }}>{m.title}</h3>
-              <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 10 }}>
-                {m.bullets.map((b) => (
-                  <li key={b} style={{ display: "flex", alignItems: "center", gap: 10, color: "#aaa", fontSize: 13, fontWeight: 500 }}>
-                    <div style={{ width: 4, height: 4, borderRadius: "50%", background: LIME, flexShrink: 0 }} />
-                    {b}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* STATS */}
-      <section style={{ background: LIME, padding: "60px 48px" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 0 }}>
-          {[
-            { value: "Tiempo real", label: "Disponibilidad sincronizada\nentre todos tus brokers." },
-            { value: "0 apps", label: "El broker accede desde\nsu navegador. Sin instalar nada." },
-            { value: "48 horas", label: "Reserva temporal automática.\nSin perder unidades." },
-            { value: "0%", label: "Interferencia con\ntu ERP o contabilidad fiscal." },
-          ].map((s, i) => (
-            <div key={s.value} style={{ padding: "20px 32px", borderLeft: i > 0 ? `1px solid rgba(0,0,0,0.15)` : "none" }}>
-              <div style={{ fontSize: "clamp(28px, 3.5vw, 48px)", fontWeight: 900, color: BG, lineHeight: 1, letterSpacing: -2 }}>{s.value}</div>
-              <div style={{ fontSize: 13, color: "rgba(0,0,0,0.6)", marginTop: 10, lineHeight: 1.5, whiteSpace: "pre-line", fontWeight: 500 }}>{s.label}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section style={{ padding: "100px 48px", textAlign: "center", borderTop: `1px solid ${BORDER}` }}>
-        <h2 style={{ fontSize: "clamp(32px, 5vw, 64px)", fontWeight: 900, letterSpacing: -3, margin: "0 0 20px" }}>
-          ¿Listo para digitalizar<br />tu fuerza de ventas?
-        </h2>
-        <p style={{ color: "#aaa", fontSize: 17, maxWidth: 440, margin: "0 auto 48px", lineHeight: 1.6 }}>
-          Sin tocar tu ERP. Sin cambiar tu contabilidad. Solo más ventas, más rápido.
-        </p>
-        {enviado ? (
-          <div style={{ background: "#1a1a1d", borderRadius: 16, padding: "24px 32px", maxWidth: 480, margin: "0 auto", textAlign: "center" }}>
-            <div style={{ fontSize: 32, marginBottom: 12 }}>✓</div>
-            <p style={{ color: LIME, fontWeight: 800, fontSize: 18, margin: "0 0 8px" }}>¡Listo! Te contactamos pronto.</p>
+      <header className="h-nav">
+        <div className="h-nav-inner">
+          <div className="h-logo">
+            <Image src="/sector-logo.png" alt="SECTOR" width={1520} height={311} priority style={{ height: '36px', width: 'auto', maxWidth: 'none', maxHeight: 'none', display: 'block' }} />
           </div>
-        ) : (
-          <div style={{ maxWidth: 480, margin: "0 auto" }}>
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
+          <div className="h-status">
+            <span className="h-dot" />
+            <span className="acc">STATUS: LIVE</span>
+            <span className="sep">·</span>
+            <span ref={clockRef} />
+          </div>
+          <Link href="/dashboard" className="h-cta-btn" style={{ color: '#000', position: 'relative', top: '3px' }}>Acceder</Link>
+        </div>
+      </header>
+
+      <div className="frame">
+        {/* HERO */}
+        <section className="h-hero">
+          <div className="h-grid-bg" />
+          <div className="h-hero-row">
+            <div className="h-copy">
+              <div className="h-badge">
+                <MapPin size={12} />
+                <span>Hecho para constructoras dominicanas</span>
+              </div>
+              <h1 className="h-title">
+                El sistema de control<br />
+                de inventario para <span className="acc" style={{ display: 'inline-block', minWidth: '8.8ch', textAlign: 'left' }}>{typed}</span><span className="h-cursor" />
+              </h1>
+              <p className="h-desc">Un solo lugar para tu inventario, tus finanzas y tu pipeline. Datos en tiempo real sobre cada unidad, cada torre, cada proyecto — sin hojas de Excel que se desactualizan.</p>
+              <div className="h-actions">
+                <a href="#contacto" className="h-btn-primary" style={{ color: '#000' }}>Solicitar acceso <ArrowUpRight size={14} color="#000" /></a>
+                <a href="#modulos" className="h-btn-secondary">Ver demo <ChevronRight size={14} /></a>
+              </div>
+              <div className="h-stats">
+                <div className="h-stat"><div className="h-stat-num">1,204</div><div className="h-stat-label">unidades activas</div></div>
+                <div className="h-stat"><div className="h-stat-num">38</div><div className="h-stat-label">proyectos</div></div>
+                <div className="h-stat"><div className="h-stat-num">99.2%</div><div className="h-stat-label">uptime</div></div>
+              </div>
+            </div>
+            <div className="h-artifact-wrap">
+              <div className="h-monitor">
+                <div className="h-monitor-bar">
+                  <div className="h-monitor-dots"><span /><span /><span /></div>
+                  <span className="h-monitor-url">sector.do/inventario</span>
+                  <span className="h-monitor-live">● live</span>
+                </div>
+                <div className="h-monitor-body">
+                  <div className="h-table-col">
+                    <div className="h-table-head">Inventario · 2 proyectos</div>
+                    <table className="h-table">
+                      <thead><tr><th>Unidad</th><th>m²</th><th>Estado</th><th>30d</th></tr></thead>
+                      <tbody>
+                        {UNITS.map((u) => (
+                          <tr key={u.id}>
+                            <td><div className="unit-id">{u.id}</div><div className="unit-meta">{u.proyecto} · piso {u.piso}</div></td>
+                            <td>{u.m2}</td>
+                            <td><span className={PILL_CLASS[u.estado]}>{u.estado}</span></td>
+                            <td style={{ textAlign: 'right' }}><Sparkline data={u.trend} positive={u.estado !== 'Vendido'} /></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="h-abs-col">
+                    <div className="h-abs-label"><TrendingUp size={12} />Absorción</div>
+                    <div className="h-abs-num">65%</div>
+                    <div className="h-abs-delta">+12.4% · 30d</div>
+                    <div className="h-abs-chart"><AbsorptionChart /></div>
+                    <div className="h-abs-dates"><span>1 may</span><span>30 may</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 01 — LOCALIZACION */}
+        <section className="sec">
+          <div className="sec-eyebrow"><span className="n">01</span> · Cobertura geográfica</div>
+          <div className="loc-row">
+            <div>
+              <h2 className="sec-title">Densidad y plusvalía.</h2>
+              <p className="sec-desc">SECTOR está calibrado con los nodos donde se concentra la actividad inmobiliaria real del país — desde las torres de Santo Domingo hasta los polos turísticos de mayor inversión.</p>
+            </div>
+            <div className="loc-matrix">
+              {ZONES.map((z) => (
+                <div className="loc-node" key={z.zona}>
+                  <div className="zone">{z.zona}</div>
+                  <div className="coord">{z.coord}</div>
+                  <div className="idx">{z.idx}</div>
+                  <div className={`status ${z.nivel}`}>{z.status}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* 02 — PIPELINE TECNICO */}
+        <section className="sec" id="modulos">
+          <div className="sec-eyebrow"><span className="n">02</span> · Operación</div>
+          <h2 className="sec-title">Tres módulos. Un solo sistema.</h2>
+          <p className="sec-desc">Inventario, ventas y red de brokers conectados entre sí — sin hojas sueltas ni reportes manuales.</p>
+
+          <div className="tabs-row">
+            <button className={`tab-btn ${activeTab === 'a' ? 'active' : ''}`} onClick={() => setActiveTab('a')}>MÓDULO A<span className="lbl">Control de unidades</span></button>
+            <button className={`tab-btn ${activeTab === 'b' ? 'active' : ''}`} onClick={() => setActiveTab('b')}>MÓDULO B<span className="lbl">Pipeline comercial</span></button>
+            <button className={`tab-btn ${activeTab === 'c' ? 'active' : ''}`} onClick={() => setActiveTab('c')}>MÓDULO C<span className="lbl">Red de brokers</span></button>
+          </div>
+
+          {activeTab === 'a' && (
+            <div className="tab-panel">
+              <div className="floor-row">
+                <div className="floor-label">Piso 15</div>
+                <div className="floor-units">{FLOOR_15.map((s, i) => <div key={i} className={`unit-sq ${s}`} />)}</div>
+                <div className="floor-summary"><span className="acc">3</span> libres / 5 vendidas</div>
+              </div>
+              <div className="floor-row">
+                <div className="floor-label">Piso 14</div>
+                <div className="floor-units">{FLOOR_14.map((s, i) => <div key={i} className={`unit-sq ${s}`} />)}</div>
+                <div className="floor-summary"><span className="acc">6</span> libres / 2 vendidas</div>
+              </div>
+              <div className="floor-legend">
+                <span><span className="leg-sq" style={{ border: '1px solid rgba(204,255,0,0.5)', background: 'rgba(204,255,0,0.08)' }} />Libre</span>
+                <span><span className="leg-sq" style={{ background: '#1c1c1c', border: '1px solid #333' }} />Reservado</span>
+                <span><span className="leg-sq" style={{ background: '#161616', border: '1px solid #222' }} />Vendido</span>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'b' && (
+            <div className="tab-panel">
+              <div className="kanban">
+                {KANBAN.map((col) => (
+                  <div className="kanban-col" key={col.titulo}>
+                    <div className="kanban-head">{col.titulo}</div>
+                    {col.cards.map((c) => (
+                      <div className="kanban-card" key={c.nm}>
+                        <div className="nm">{c.nm}</div>
+                        <div className="pr">{c.pr}</div>
+                        <div className="am">{c.am}</div>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'c' && (
+            <div className="tab-panel">
+              <div className="log-list">
+                {LOG_EVENTS.map((line, i) => {
+                  const close = line.indexOf(']') + 1
+                  return <div key={i}><span className="t">{line.slice(0, close)}</span>{line.slice(close)}</div>
+                })}
+                <div className="log-cursor">&gt; esperando próximo evento<span className="blk" /></div>
+              </div>
+            </div>
+          )}
+        </section>
+
+        {/* 03 — FAQ */}
+        <section className="sec">
+          <div className="sec-eyebrow"><span className="n">03</span> · Soporte</div>
+          <h2 className="sec-title">Preguntas frecuentes.</h2>
+          <div className="faq-row">
+            {FAQS.map((f, i) => (
+              <div className={`faq-item ${faqOpen === i ? 'open' : ''}`} key={f.q}>
+                <button className="faq-q" onClick={() => setFaqOpen(faqOpen === i ? null : i)}>
+                  {f.q}
+                  <ChevronDown className="faq-chevron" />
+                </button>
+                <div className="faq-a" style={{ maxHeight: faqOpen === i ? 160 : 0 }}>
+                  <p>{f.a}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* 04 — CTA */}
+        <section className="cta-sec" id="contacto">
+          <div className="cta-box">
+            <div className="cta-copy">
+              <h2>Solicitar credenciales de acceso.</h2>
+              <p>Configuramos tu inventario inicial y te damos acceso directo, sin intermediarios.</p>
+            </div>
+            <div className="cta-form">
               <input
-                type="email" placeholder="tu@constructora.com" value={email}
-                onChange={e => setEmail(e.target.value)}
-                onKeyDown={e => e.key === "Enter" && handleSubmit()}
-                style={{ flex: 1, minWidth: 240, background: "#111", border: `1px solid ${BORDER}`, color: "#fff", borderRadius: 100, padding: "16px 24px", fontSize: 15, outline: "none" }}
+                className="cta-input"
+                type="email"
+                placeholder="tu@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={cargando || enviado}
               />
-              <button onClick={handleSubmit} disabled={enviando}
-                style={{ background: LIME, color: BG, borderRadius: 100, padding: "16px 32px", fontWeight: 800, fontSize: 14, border: "none", cursor: "pointer" }}>
-                {enviando ? "Enviando..." : "Solicitar Demo"}
+              <button className="cta-btn" onClick={guardarEmail} disabled={cargando || enviado}>
+                {enviado ? 'Solicitado ✓' : cargando ? 'Enviando...' : 'Solicitar acceso'}
               </button>
             </div>
-            {error && <p style={{ color: "#aaa", fontSize: 13, marginTop: 12 }}>{error}</p>}
           </div>
-        )}
-      </section>
+        </section>
 
-      {/* FOOTER */}
-      <footer style={{ background: BG, borderTop: `1px solid ${BORDER}`, overflow: "hidden" }}>
-        <div style={{ padding: "40px 48px 0", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
-          <div style={{ fontWeight: 900, fontSize: 20, letterSpacing: -1 }}>SECTOR<span style={{ color: LIME }}>.</span></div>
-          <div style={{ color: "#aaa", fontSize: 12 }}>sector.do · Plataforma Comercial Inmobiliaria · República Dominicana · 2026</div>
-        </div>
-        <div style={{ fontSize: "clamp(80px, 18vw, 220px)", fontWeight: 900, letterSpacing: -8, color: "#161619", lineHeight: 0.85, padding: "0 32px", userSelect: "none", marginTop: 8 }}>
-          SECTOR
-        </div>
-      </footer>
-
-      <style>{`
-        * { box-sizing: border-box; }
-        body { margin: 0; }
-        input::placeholder { color: #555; }
-        [data-vercel-toolbar], vercel-toolbar, #vercel-live-feedback { display: none !important; }
-        .modules-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 24px;
-          max-width: 1100px;
-          margin: 0 auto;
-        }
-        @media (max-width: 900px) {
-          .modules-grid { grid-template-columns: 1fr !important; }
-          nav a:not(:last-child) { display: none; }
-        }
-      `}</style>
+        <footer className="foot">
+          <div>
+            © 2026 SECTOR · CRM para constructoras · República Dominicana
+            <span style={{ margin: '0 8px', opacity: 0.4 }}>·</span>
+            <a href="mailto:ventas@sector.do" className="foot-email">ventas@sector.do</a>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '14px', marginTop: '12px', flexWrap: 'wrap' }}>
+            <a href="https://www.instagram.com/sector.do" target="_blank" rel="noopener noreferrer" className="foot-social" aria-label="Instagram">
+              <InstagramIcon size={14} />
+            </a>
+            <a href="https://www.linkedin.com/in/luis-betances-054905181/" target="_blank" rel="noopener noreferrer" className="foot-social" aria-label="LinkedIn">
+              <LinkedinIcon size={14} />
+            </a>
+            <span style={{ opacity: 0.25 }}>|</span>
+            <span style={{ opacity: 0.5 }}>Developed by LB Software · New York, USA</span>
+          </div>
+        </footer>
+      </div>
     </div>
-  );
+  )
 }
