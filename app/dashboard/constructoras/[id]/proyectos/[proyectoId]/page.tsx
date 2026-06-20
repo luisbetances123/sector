@@ -174,7 +174,7 @@ export default function ProyectoDetallePage() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  
+                  <a
                     href={doc.url}
                     target="_blank"
                     rel="noopener noreferrer"
