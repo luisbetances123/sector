@@ -547,7 +547,7 @@ export default function Page() {
 
         <footer className="foot">
           <div>
-            © 2026 SECTOR · CRM para constructoras · República Dominicana
+            © 2026 SECTOR · Sistema de inventario para constructoras · República Dominicana
             <span style={{ margin: '0 8px', opacity: 0.4 }}>·</span>
             <a href="mailto:ventas@sector.do" className="foot-email">ventas@sector.do</a>
           </div>
