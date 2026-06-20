@@ -559,7 +559,7 @@ export default function Page() {
               <LinkedinIcon size={14} />
             </a>
             <span style={{ opacity: 0.25 }}>|</span>
-            <span style={{ opacity: 0.5 }}>Developed by LB Software · New York, USA</span>
+            <span>Developed by Fraglaz Software · New York, USA</span>
           </div>
         </footer>
       </div>
