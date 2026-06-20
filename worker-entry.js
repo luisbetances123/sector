@@ -14,9 +14,8 @@ import openNextWorker, {
   BucketCachePurge,
 } from "./.open-next/worker.js";
 
-// URL publica donde vive la app (usar el dominio real cuando el DNS de
-// sector.do ya apunte a Cloudflare; mientras tanto, usar la URL de workers.dev)
-const APP_URL = "https://sector.mwn6frmgwm.workers.dev";
+// URL publica donde vive la app (DNS de sector.do ya apunta a Cloudflare)
+const APP_URL = "https://sector.do";
 
 export default {
   // Reutiliza el fetch handler normal de la app (sin tocarlo)
@@ -35,6 +34,28 @@ export default {
       console.log(`[cron] liberar-reservas -> status ${res.status}: ${body}`);
     } catch (err) {
       console.error("[cron] Error ejecutando liberar-reservas:", err);
+    }
+
+    try {
+      const res = await fetch(
+        `${APP_URL}/api/cron/fantasmas?key=${env.CRON_SECRET}`,
+        { method: "GET" }
+      );
+      const body = await res.text();
+      console.log(`[cron] fantasmas -> status ${res.status}: ${body}`);
+    } catch (err) {
+      console.error("[cron] Error ejecutando fantasmas:", err);
+    }
+
+    try {
+      const res = await fetch(
+        `${APP_URL}/api/reminders?key=${env.CRON_SECRET}`,
+        { method: "GET" }
+      );
+      const body = await res.text();
+      console.log(`[cron] reminders -> status ${res.status}: ${body}`);
+    } catch (err) {
+      console.error("[cron] Error ejecutando reminders:", err);
     }
   },
 };
