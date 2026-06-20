@@ -64,7 +64,10 @@ export default function ProyectoDetallePage() {
 
     setSubiendo(true)
 
-    const rutaArchivo = `${proyectoId}/${Date.now()}-${file.name}`
+    const nombreSanitizado = file.name
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9.\-]/g, '_')
+    const rutaArchivo = `${proyectoId}/${Date.now()}-${nombreSanitizado}`
 
     const { error: errorUpload } = await supabase.storage
       .from('documentos-proyecto')
