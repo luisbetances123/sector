@@ -1,6 +1,7 @@
 'use client'
 import React, { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { supabase } from '@/app/lib/supabase'
 import { 
@@ -56,8 +57,8 @@ const menuItems = [
       
       <header className="md:hidden w-full border-b border-zinc-900 bg-black/60 backdrop-blur-md px-6 py-4 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-3">
-          <div className="w-2.5 h-2.5 rounded-full bg-[#CCFF00] animate-pulse" />
-<span className="text-base font-black tracking-tighter uppercase">SECTOR<span className="text-[#CCFF00]">.</span></span>        </div>
+          <Image src="/sector-logo.png" alt="SECTOR" width={300} height={160} priority style={{ height: '28px', width: 'auto' }} />
+        </div>
         <button 
           onClick={() => setIsOpen(!isOpen)}
           className="p-2 text-white hover:text-white transition-colors"
@@ -105,8 +106,8 @@ const menuItems = [
       <aside className="hidden md:flex w-64 border-r border-zinc-900 bg-black/40 backdrop-blur-md flex-col justify-between p-6 shrink-0 h-screen sticky top-0">
         <div className="space-y-8">
           <div className="flex items-center gap-3 px-2">
-            <div className="w-3 h-3 rounded-full bg-[#CCFF00] animate-pulse" />
-<span className="text-lg font-black tracking-tighter uppercase">SECTOR<span className="text-[#CCFF00]">.</span></span>          </div>
+            <Image src="/sector-logo.png" alt="SECTOR" width={300} height={160} priority style={{ height: '32px', width: 'auto' }} />
+          </div>
           <nav className="space-y-1.5">
             {menuItems.map((item) => {
               const Icon = item.icon
