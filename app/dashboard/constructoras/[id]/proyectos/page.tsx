@@ -318,6 +318,10 @@ export default function ProyectosPage() {
                     className="flex-1 text-center bg-[#d4ff3b]/10 hover:bg-[#d4ff3b] text-[#d4ff3b] hover:text-black text-xs py-2 rounded-lg font-semibold transition border border-[#d4ff3b]/20">
                     Ver Unidades →
                   </button>
+                  <button onClick={() => router.push(`/dashboard/constructoras/${constructoraId}/proyectos/${p.id}`)}
+                    className="flex-1 text-center bg-zinc-800 hover:bg-zinc-700 text-white text-xs py-2 rounded-lg font-semibold transition border border-zinc-700">
+                    Documentos
+                  </button>
                   <button onClick={() => iniciarEdicion(p)} className="bg-zinc-800 hover:bg-zinc-700 text-white text-xs px-3 py-2 rounded-lg transition border border-zinc-700">Editar</button>
                   <button onClick={() => eliminar(p.id)} className="bg-zinc-900 hover:bg-red-950/40 text-zinc-500 hover:text-red-400 text-xs px-3 py-2 rounded-lg transition border border-zinc-800">Borrar</button>
                 </div>
