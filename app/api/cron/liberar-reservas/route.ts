@@ -27,7 +27,7 @@ export async function GET(request: Request) {
   // Obtener unidades reservadas
   const { data: unidades, error: errorUnidades } = await supabase
     .from('unidades')
-    .select('id, numero, estado, fecha_reserva')
+    .select('id, numero, estado, reservado_hasta')
     .eq('estado', 'reservado')
 
   if (errorUnidades) {
@@ -39,9 +39,9 @@ export async function GET(request: Request) {
   const unidadesVencidas = []
 
   for (const unidad of (unidades || [])) {
-    if (!unidad.fecha_reserva) continue
+    if (!unidad.reservado_hasta) continue
     
-    const fechaReserva = new Date(unidad.fecha_reserva)
+    const fechaReserva = new Date(unidad.reservado_hasta)
     const diferenciaHoras = (ahora.getTime() - fechaReserva.getTime()) / (1000 * 60 * 60)
 
     // Si pasaron más de 48 horas
@@ -51,7 +51,7 @@ export async function GET(request: Request) {
       // 1. Actualizar estado de la unidad
       await supabase
         .from('unidades')
-        .update({ estado: 'libre', fecha_reserva: null })
+        .update({ estado: 'libre', reservado_hasta: null, reservado_por: null })
         .eq('id', unidad.id)
 
       // 2. Registrar en el historial de cambios
