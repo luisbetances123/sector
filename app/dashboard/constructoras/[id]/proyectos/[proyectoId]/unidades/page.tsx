@@ -108,6 +108,8 @@ export default function UnidadesPage() {
       Object.entries(diasPorPiso).forEach(([piso, dias]) => {
         promedios[Number(piso)] = dias.reduce((a, b) => a + b, 0) / dias.length;
       });
+      console.log('DEBUG hist:', hist);
+      console.log('DEBUG promedios:', promedios);
       setVelocidadPorPiso(promedios);
     }
     setLoading(false);
