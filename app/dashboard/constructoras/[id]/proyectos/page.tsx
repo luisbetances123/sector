@@ -161,11 +161,11 @@ export default function ProyectosPage() {
   };
 
   if (loading) return (
-    <div className="p-8 max-w-6xl mx-auto text-center py-32 text-white font-mono text-sm animate-pulse">Cargando proyectos...</div>
+    <div className="p-8 text-center py-32 text-white font-mono text-sm animate-pulse">Cargando proyectos...</div>
   );
 
   return (
-    <div className="p-8 max-w-6xl mx-auto min-h-screen bg-transparent text-zinc-100">
+    <div className="p-8 min-h-screen bg-transparent text-zinc-100">
 
       {/* Header */}
       <div className="flex justify-between items-center mb-8 border-b border-zinc-800 pb-5">
