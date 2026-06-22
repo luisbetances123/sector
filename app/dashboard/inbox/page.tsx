@@ -21,13 +21,14 @@ interface Cliente {
   phone: string
 }
 
-const CANALES = ['whatsapp', 'instagram', 'facebook', 'email', 'llamada']
+const CANALES = ['whatsapp', 'instagram', 'facebook', 'email', 'llamada', 'sistema']
 const CANAL_COLORS: Record<string, string> = {
   whatsapp: 'bg-green-500/10 text-green-400 border-green-500/20',
   instagram: 'bg-pink-500/10 text-pink-400 border-pink-500/20',
   facebook: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
   email: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
   llamada: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+  sistema: 'bg-zinc-500/10 text-zinc-400 border-zinc-500/30',
 }
 
 export default function InboxPage() {
