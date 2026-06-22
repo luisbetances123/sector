@@ -271,6 +271,12 @@ export default function Page() {
         .sec-title { font-size: 26px; font-weight: 500; letter-spacing: -0.3px; margin: 8px 0 0; }
         @media (min-width: 1024px) { .sec-title { font-size: 30px; } }
         .sec-desc { margin: 10px 0 0; max-width: 480px; font-size: 14px; line-height: 1.6; color: rgba(255,255,255,0.6); }
+        .hiw-grid { display: grid; grid-template-columns: 1fr; gap: 1px; background: #1a1a1a; border: 1px solid #1a1a1a; margin-top: 32px; }
+        @media (min-width: 1024px) { .hiw-grid { grid-template-columns: 1fr 1fr 1fr 1fr; } }
+        .hiw-step { background: #0a0a0a; padding: 24px 20px; }
+        .hiw-num { font-family: var(--mono); font-size: 22px; font-weight: 600; color: #CCFF00; }
+        .hiw-step-title { margin-top: 10px; font-size: 15px; font-weight: 600; color: #fff; }
+        .hiw-step-desc { margin-top: 8px; font-size: 13px; line-height: 1.55; color: rgba(255,255,255,0.6); }
         .loc-row { display: grid; grid-template-columns: 1fr; gap: 32px; margin-top: 32px; }
         @media (min-width: 1024px) { .loc-row { grid-template-columns: 4fr 8fr; gap: 0; margin-top: 40px; } }
         .loc-matrix { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #1a1a1a; border: 1px solid #1a1a1a; }
@@ -414,6 +420,34 @@ export default function Page() {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* COMO FUNCIONA */}
+        <section className="sec">
+          <div className="sec-eyebrow">Cómo funciona</div>
+          <h2 className="sec-title">De tu Excel a tu inventario en cuatro pasos.</h2>
+          <div className="hiw-grid">
+            <div className="hiw-step">
+              <div className="hiw-num">01</div>
+              <div className="hiw-step-title">Sube tu inventario</div>
+              <p className="hiw-step-desc">Importa tus proyectos y unidades desde Excel, o regístralos directo en SECTOR. Sin migraciones complicadas.</p>
+            </div>
+            <div className="hiw-step">
+              <div className="hiw-num">02</div>
+              <div className="hiw-step-title">Invita a tus brokers</div>
+              <p className="hiw-step-desc">Genera links únicos por broker. Cada uno ve solo el inventario que le corresponde, sin necesidad de crear cuentas.</p>
+            </div>
+            <div className="hiw-step">
+              <div className="hiw-num">03</div>
+              <div className="hiw-step-title">Controla reservas en tiempo real</div>
+              <p className="hiw-step-desc">Cada reserva, venta y cambio de estado se registra automáticamente. Visibilidad total sin llamadas ni mensajes de WhatsApp.</p>
+            </div>
+            <div className="hiw-step">
+              <div className="hiw-num">04</div>
+              <div className="hiw-step-title">Reportes automáticos</div>
+              <p className="hiw-step-desc">Velocidad de venta, absorción y desempeño por proyecto, listos para mostrar sin armar una hoja de cálculo.</p>
             </div>
           </div>
         </section>
