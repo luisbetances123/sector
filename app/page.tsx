@@ -277,6 +277,13 @@ export default function Page() {
         .hiw-num { font-family: var(--mono); font-size: 22px; font-weight: 600; color: #CCFF00; }
         .hiw-step-title { margin-top: 10px; font-size: 15px; font-weight: 600; color: #fff; }
         .hiw-step-desc { margin-top: 8px; font-size: 13px; line-height: 1.55; color: rgba(255,255,255,0.6); }
+        .mod-intro { margin-bottom: 24px; }
+        .mod-sub { font-size: 14px; line-height: 1.6; color: rgba(255,255,255,0.65); max-width: 620px; }
+        .mod-points { display: grid; grid-template-columns: 1fr; gap: 1px; background: #1a1a1a; border: 1px solid #1a1a1a; margin-top: 20px; }
+        @media (min-width: 1024px) { .mod-points { grid-template-columns: 1fr 1fr 1fr; } }
+        .mod-point { background: #0a0a0a; padding: 18px 18px; }
+        .mod-point-title { display: block; font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #CCFF00; }
+        .mod-point p { margin-top: 8px; font-size: 13px; line-height: 1.55; color: rgba(255,255,255,0.6); }
         .loc-row { display: grid; grid-template-columns: 1fr; gap: 32px; margin-top: 32px; }
         @media (min-width: 1024px) { .loc-row { grid-template-columns: 4fr 8fr; gap: 0; margin-top: 40px; } }
         .loc-matrix { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #1a1a1a; border: 1px solid #1a1a1a; }
@@ -487,7 +494,15 @@ export default function Page() {
 
           {activeTab === 'a' && (
             <div className="tab-panel">
-              <div className="floor-row">
+              <div className="mod-intro">
+              <p className="mod-sub">Tu inventario maestro y la inteligencia detrás de cada metro cuadrado. Centraliza el estado real de tus torres y proyectos para eliminar los errores humanos de raíz.</p>
+              <div className="mod-points">
+                <div className="mod-point"><span className="mod-point-title">Gestión del Mercado y Precios</span><p>Monitorea el valor por metro cuadrado, ajusta listas de precios según la demanda del sector y calibra tus unidades frente al ritmo de absorción de la zona.</p></div>
+                <div className="mod-point"><span className="mod-point-title">Calculadora Integrada</span><p>Cotiza unidades al instante. Calcula planes de pago personalizados, iniciales, cuotas durante la construcción y montos de separación frente al cliente sin salir del sistema.</p></div>
+                <div className="mod-point"><span className="mod-point-title">Calendario Operativo y Recordatorios</span><p>Monitorea las fechas de entrega de obras, hitos de construcción y tareas clave del equipo para que ningún proyecto se desfase.</p></div>
+              </div>
+            </div>
+            <div className="floor-row">
                 <div className="floor-label">Piso 15</div>
                 <div className="floor-units">{FLOOR_15.map((s, i) => <div key={i} className={`unit-sq ${s}`} />)}</div>
                 <div className="floor-summary"><span className="acc">3</span> libres / 5 vendidas</div>
@@ -507,7 +522,15 @@ export default function Page() {
 
           {activeTab === 'b' && (
             <div className="tab-panel">
-              <div className="kanban">
+              <div className="mod-intro">
+              <p className="mod-sub">El motor financiero y el flujo de tus contratos. Desde el primer depósito de separación hasta el cierre definitivo, con visibilidad total de tu caja.</p>
+              <div className="mod-points">
+                <div className="mod-point"><span className="mod-point-title">Pipeline de Ventas Transparente</span><p>Visualiza en qué etapa está cada negocio (Separación, Contrato, Financiamiento, Entrega). Identifica cuellos de botella antes de que afecten el flujo.</p></div>
+                <div className="mod-point"><span className="mod-point-title">Gestión de Clientes y Perfiles</span><p>Historial centralizado de cada comprador. Documentos, contratos firmados, estados de cuenta y comunicaciones en un solo expediente digital protegido.</p></div>
+                <div className="mod-point"><span className="mod-point-title">Control de Finanzas</span><p>Rastrea pagos, abonos a iniciales y cubicaciones. El sistema te alerta automáticamente si una reserva venció sin recibir el depósito para liberar la unidad de inmediato.</p></div>
+              </div>
+            </div>
+            <div className="kanban">
                 {KANBAN.map((col) => (
                   <div className="kanban-col" key={col.titulo}>
                     <div className="kanban-head">{col.titulo}</div>
@@ -526,7 +549,15 @@ export default function Page() {
 
           {activeTab === 'c' && (
             <div className="tab-panel">
-              <div className="log-list">
+              <div className="mod-intro">
+              <p className="mod-sub">Tu fuerza de ventas externa, bajo tu control. Conecta con las agencias inmobiliarias del país y gestiona la comunicación sin depender de chats infinitos.</p>
+              <div className="mod-points">
+                <div className="mod-point"><span className="mod-point-title">Portal de Brokers</span><p>Dale a las agencias externas acceso a enlaces interactivos de disponibilidad. Ven lo que está libre en tiempo real para vender más rápido, pero jamás modifican tus datos.</p></div>
+                <div className="mod-point"><span className="mod-point-title">Inbox Centralizado</span><p>Consolida los mensajes de prospectos y brokers en un solo lugar. Responde dudas, confirma disponibilidad y recibe comprobantes de pago sin perder el rastro en WhatsApp.</p></div>
+                <div className="mod-point"><span className="mod-point-title">Control de Usuarios y Mi Empresa</span><p>Administra los permisos de tu equipo interno y las agencias aliadas. Define quién puede ver reportes financieros, quién aprueba descuentos y quién solo consulta el inventario.</p></div>
+              </div>
+            </div>
+            <div className="log-list">
                 {LOG_EVENTS.map((line, i) => {
                   const close = line.indexOf(']') + 1
                   return <div key={i}><span className="t">{line.slice(0, close)}</span>{line.slice(close)}</div>
@@ -535,6 +566,13 @@ export default function Page() {
               </div>
             </div>
           )}
+        </section>
+
+        {/* REPORTES AUTOMATICOS */}
+        <section className="sec">
+          <div className="sec-eyebrow">Inteligencia de negocio</div>
+          <h2 className="sec-title">Reportes automáticos para la toma de decisiones</h2>
+          <p className="sec-desc">Deja de armar tablas dinámicas los domingos por la noche. SECTOR genera analíticas en tiempo real sobre la velocidad de venta de tus proyectos, el desempeño de tus brokers y la salud financiera de tu constructora, listas para presentar a tus socios o al banco.</p>
         </section>
 
         {/* 03 — FAQ */}
