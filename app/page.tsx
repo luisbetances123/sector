@@ -357,7 +357,7 @@ export default function Page() {
       <header className="h-nav">
         <div className="h-nav-inner">
           <div className="h-logo">
-            <Image src="/sector-logo.png" alt="SECTOR" width={1520} height={311} priority style={{ height: '36px', width: 'auto', maxWidth: 'none', maxHeight: 'none', display: 'block' }} />
+            <Image src="/sector-logo-nuevo.png" alt="SECTOR" width={841} height={183} className="h-9 w-auto" priority />
           </div>
           <div className="h-status">
             <span className="h-dot" />
