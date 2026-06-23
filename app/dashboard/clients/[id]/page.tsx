@@ -19,7 +19,16 @@ interface Nota {
   id: string
   cliente_id: string
   nota: string
+  tipo: string
   created_at: string
+}
+
+const TIPOS_INTERACCION: Record<string, { label: string; icon: string; color: string }> = {
+  llamada:  { label: 'Llamada',  icon: '📞', color: '#3B82F6' },
+  whatsapp: { label: 'WhatsApp', icon: '💬', color: '#22C55E' },
+  visita:   { label: 'Visita',   icon: '🏠', color: '#A855F7' },
+  email:    { label: 'Email',    icon: '✉️', color: '#F59E0B' },
+  nota:     { label: 'Nota',     icon: '📝', color: '#71717A' },
 }
 
 export default function ClienteFichaPage() {
@@ -28,6 +37,7 @@ export default function ClienteFichaPage() {
   const [cliente, setCliente] = useState<Cliente | null>(null)
   const [notas, setNotas] = useState<Nota[]>([])
   const [nuevaNota, setNuevaNota] = useState('')
+  const [tipoNota, setTipoNota] = useState('nota')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [editando, setEditando] = useState(false)
@@ -61,8 +71,9 @@ export default function ClienteFichaPage() {
   async function agregarNota() {
     if (!nuevaNota.trim()) return
     setSaving(true)
-    await supabase.from('bitacora_cliente').insert([{ cliente_id: id, nota: nuevaNota.trim() }])
+    await supabase.from('bitacora_cliente').insert([{ cliente_id: id, nota: nuevaNota.trim(), tipo: tipoNota }])
     setNuevaNota('')
+    setTipoNota('nota')
     fetchNotas()
     setSaving(false)
   }
@@ -220,6 +231,21 @@ export default function ClienteFichaPage() {
 
         <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-6 space-y-4">
           <h2 className="text-xs font-mono text-white uppercase tracking-wider">Historial de Interacciones</h2>
+          <div className="flex flex-wrap gap-1.5 mb-1">
+            {Object.entries(TIPOS_INTERACCION).map(([clave, cfg]) => (
+              <button
+                key={clave}
+                onClick={() => setTipoNota(clave)}
+                style={tipoNota === clave ? { backgroundColor: cfg.color + '22', borderColor: cfg.color, color: cfg.color } : {}}
+                className={`flex items-center gap-1 text-[10px] font-mono font-bold px-2.5 py-1 rounded-lg border transition-all ${
+                  tipoNota === clave ? '' : 'border-zinc-700 text-zinc-500 hover:border-zinc-500 hover:text-zinc-300'
+                }`}
+              >
+                <span>{cfg.icon}</span>
+                <span>{cfg.label}</span>
+              </button>
+            ))}
+          </div>
           <div className="flex gap-2">
             <input
               value={nuevaNota}
@@ -237,18 +263,29 @@ export default function ClienteFichaPage() {
             {notas.length === 0 ? (
               <p className="text-white text-xs text-center py-6">Sin interacciones registradas.</p>
             ) : (
-              notas.map(nota => (
-                <div key={nota.id} className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-3 group">
-                  <div className="flex justify-between items-start gap-2">
-                    <p className="text-white text-xs leading-relaxed flex-1">{nota.nota}</p>
-                    <button onClick={() => eliminarNota(nota.id)}
-                      className="text-zinc-600 hover:text-red-400 text-[10px] opacity-0 group-hover:opacity-100 transition-all">
-                      x
-                    </button>
+              notas.map(nota => {
+                const tipo = TIPOS_INTERACCION[nota.tipo] ?? TIPOS_INTERACCION['nota']
+                return (
+                  <div key={nota.id}
+                    className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-3 group"
+                    style={{ borderLeft: `3px solid ${tipo.color}` }}
+                  >
+                    <div className="flex justify-between items-start gap-2">
+                      <div className="flex-1">
+                        <span className="text-[10px] font-mono font-bold mb-1 block" style={{ color: tipo.color }}>
+                          {tipo.icon} {tipo.label}
+                        </span>
+                        <p className="text-white text-xs leading-relaxed">{nota.nota}</p>
+                      </div>
+                      <button onClick={() => eliminarNota(nota.id)}
+                        className="text-zinc-600 hover:text-red-400 text-[10px] opacity-0 group-hover:opacity-100 transition-all">
+                        x
+                      </button>
+                    </div>
+                    <p className="text-white text-[10px] font-mono mt-1">{formatFecha(nota.created_at)}</p>
                   </div>
-                  <p className="text-white text-[10px] font-mono mt-1">{formatFecha(nota.created_at)}</p>
-                </div>
-              ))
+                )
+              })
             )}
           </div>
         </div>
