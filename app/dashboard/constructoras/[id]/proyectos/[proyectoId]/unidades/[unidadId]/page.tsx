@@ -150,7 +150,7 @@ export default function FichaUnidadPage() {
     const fechaInicio = new Date(genData.fecha_inicio);
 
     const { data: nuevoPlan, error } = await supabase.from('planes_pago')
-      .insert([{ unidad_id: unidadId, cliente_nombre: unidad.cliente_nombre, precio_total: precio, moneda: 'USD' }])
+      .insert([{ unidad_id: unidadId, precio_total: precio, fecha_inicio: genData.fecha_inicio, inicial_porcentaje: Number(genData.inicial_pct), cuotas_construccion: nCuotas, entrega_porcentaje: Number(genData.entrega_pct) }])
       .select().single();
     if (error || !nuevoPlan) { setMensaje({ tipo: 'error', texto: 'Error: ' + error?.message }); return; }
 
