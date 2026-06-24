@@ -2,153 +2,199 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/app/lib/supabase'
 
-interface EtapaStats {
-  etapa: string
-  count: number
+interface Unidad {
+  estado: string
+  precio: number | null
+  reservado_por: string | null
+  fecha_venta: string | null
+}
+
+interface BrokerStats {
+  nombre: string
+  vendidas: number
+  reservadas: number
   volumen: number
-  conversion: number
+}
+
+interface MesStats {
+  label: string
+  count: number
 }
 
 export default function ReportsPage() {
-  const [stats, setStats] = useState<EtapaStats[]>([])
-  const [totalClientes, setTotalClientes] = useState(0)
-  const [clientesPorEtapa, setClientesPorEtapa] = useState<{etapa: string, count: number}[]>([])
+  const [unidades, setUnidades] = useState<Unidad[]>([])
   const [loading, setLoading] = useState(true)
-
-  const ETAPAS_PIPELINE = ['Prospectos', 'Visitas', 'Negociacion', 'Cierre']
 
   useEffect(() => {
     fetchData()
   }, [])
 
   async function fetchData() {
-    const [dealsRes, clientesRes] = await Promise.all([
-      supabase.from('pipeline_deals').select('etapa, precio'),
-      supabase.from('clients').select('etapa')
-    ])
+    const { data } = await supabase
+      .from('unidades')
+      .select('estado, precio, reservado_por, fecha_venta')
 
-    if (dealsRes.data) {
-      const etapaMap: Record<string, {count: number, volumen: number}> = {}
-      ETAPAS_PIPELINE.forEach(e => { etapaMap[e] = { count: 0, volumen: 0 } })
-      
-      dealsRes.data.forEach((deal: any) => {
-        if (etapaMap[deal.etapa]) {
-          etapaMap[deal.etapa].count++
-          etapaMap[deal.etapa].volumen += deal.precio || 0
-        }
-      })
-
-      const totalDeals = dealsRes.data.length
-      const statsArr: EtapaStats[] = ETAPAS_PIPELINE.map((etapa, idx) => {
-        const prev = idx === 0 ? totalDeals : etapaMap[ETAPAS_PIPELINE[idx-1]].count
-        const conversion = prev > 0 ? Math.round((etapaMap[etapa].count / (idx === 0 ? totalDeals : prev)) * 100) : 0
-        return {
-          etapa,
-          count: etapaMap[etapa].count,
-          volumen: etapaMap[etapa].volumen,
-          conversion: idx === 0 ? 100 : conversion
-        }
-      })
-      setStats(statsArr)
-    }
-
-    if (clientesRes.data) {
-      setTotalClientes(clientesRes.data.length)
-      const etapaCount: Record<string, number> = {}
-      clientesRes.data.forEach((c: any) => {
-        const e = c.etapa || 'Sin etapa'
-        etapaCount[e] = (etapaCount[e] || 0) + 1
-      })
-      setClientesPorEtapa(Object.entries(etapaCount).map(([etapa, count]) => ({ etapa, count })))
-    }
-
+    setUnidades(data || [])
     setLoading(false)
   }
 
-  const maxCount = Math.max(...stats.map(s => s.count), 1)
-  const totalVolumen = stats.reduce((s, e) => s + e.volumen, 0)
+  const total = unidades.length
+  const libres = unidades.filter(u => u.estado === 'libre').length
+  const reservadas = unidades.filter(u => u.estado === 'reservado').length
+  const vendidas = unidades.filter(u => u.estado === 'vendido').length
+  const volumenVendido = unidades
+    .filter(u => u.estado === 'vendido')
+    .reduce((s, u) => s + (u.precio || 0), 0)
+
+  const pctVendido = total > 0 ? Math.round(vendidas / total * 100) : 0
+  const pctReservado = total > 0 ? Math.round(reservadas / total * 100) : 0
+  const pctLibre = 100 - pctVendido - pctReservado
+
+  const ventasPorMes: Record<string, number> = {}
+  unidades
+    .filter(u => u.estado === 'vendido' && u.fecha_venta)
+    .forEach(u => {
+      const d = new Date(u.fecha_venta!)
+      const label = d.toLocaleDateString('es', { month: 'short', year: 'numeric' })
+      ventasPorMes[label] = (ventasPorMes[label] || 0) + 1
+    })
+  const meses: MesStats[] = Object.entries(ventasPorMes)
+    .map(([label, count]) => ({ label, count }))
+    .sort((a, b) => {
+      const parse = (l: string) => new Date(l)
+      return parse(a.label).getTime() - parse(b.label).getTime()
+    })
+  const maxMes = Math.max(...meses.map(m => m.count), 1)
+
+  const brokerMap: Record<string, BrokerStats> = {}
+  unidades
+    .filter(u => (u.estado === 'vendido' || u.estado === 'reservado') && u.reservado_por)
+    .forEach(u => {
+      const nombre = u.reservado_por!
+      if (!brokerMap[nombre]) brokerMap[nombre] = { nombre, vendidas: 0, reservadas: 0, volumen: 0 }
+      if (u.estado === 'vendido') {
+        brokerMap[nombre].vendidas++
+        brokerMap[nombre].volumen += u.precio || 0
+      } else {
+        brokerMap[nombre].reservadas++
+        brokerMap[nombre].volumen += u.precio || 0
+      }
+    })
+  const brokers = Object.values(brokerMap).sort((a, b) => b.volumen - a.volumen)
 
   return (
     <div className="text-zinc-100 font-sans space-y-8">
       <header className="border-b border-zinc-900 pb-6">
         <span className="text-sm font-mono text-[#CCFF00] uppercase tracking-widest">Analitica</span>
-        <h1 className="text-4xl font-extrabold tracking-tighter text-white mt-1">Reporte de Embudo</h1>
+        <h1 className="text-4xl font-extrabold tracking-tighter text-white mt-1">Inventario y Absorción</h1>
       </header>
 
       {loading ? (
         <div className="text-white text-sm text-center py-20">Cargando datos...</div>
       ) : (
         <>
-          <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <section className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <div className="bg-zinc-950 p-5 rounded-2xl border border-zinc-900">
-              <p className="text-xs font-mono text-white uppercase">Total Clientes</p>
-              <p className="text-3xl font-black text-white mt-1">{totalClientes}</p>
+              <p className="text-xs font-mono text-white uppercase">Total Unidades</p>
+              <p className="text-3xl font-black text-white mt-1">{total}</p>
             </div>
             <div className="bg-zinc-950 p-5 rounded-2xl border border-zinc-900">
-              <p className="text-xs font-mono text-white uppercase">Deals Activos</p>
-              <p className="text-3xl font-black text-[#CCFF00] mt-1">{stats.reduce((s,e) => s + e.count, 0)}</p>
+              <p className="text-xs font-mono text-zinc-400 uppercase">Libres</p>
+              <p className="text-3xl font-black text-zinc-400 mt-1">{libres}</p>
             </div>
             <div className="bg-zinc-950 p-5 rounded-2xl border border-zinc-900">
-              <p className="text-xs font-mono text-white uppercase">Volumen Total</p>
-              <p className="text-2xl font-black text-white mt-1">US$ {totalVolumen.toLocaleString()}</p>
+              <p className="text-xs font-mono text-yellow-400 uppercase">Reservadas</p>
+              <p className="text-3xl font-black text-yellow-400 mt-1">{reservadas}</p>
             </div>
             <div className="bg-zinc-950 p-5 rounded-2xl border border-zinc-900">
-              <p className="text-xs font-mono text-white uppercase">En Cierre</p>
-              <p className="text-3xl font-black text-green-400 mt-1">
-                {stats.find(s => s.etapa === 'Cierre')?.count || 0}
-              </p>
+              <p className="text-xs font-mono text-green-400 uppercase">Vendidas</p>
+              <p className="text-3xl font-black text-green-400 mt-1">{vendidas}</p>
             </div>
-          </section>
-
-          <section className="bg-zinc-950 border border-zinc-900 rounded-2xl p-6 space-y-6">
-            <h2 className="text-xs font-mono text-white uppercase tracking-wider">Embudo de Ventas</h2>
-            {stats.map((s, idx) => (
-              <div key={s.etapa} className="space-y-2">
-                <div className="flex justify-between items-center text-xs">
-                  <div className="flex items-center gap-3">
-                    <span className="font-mono text-white w-4">{idx + 1}</span>
-                    <span className="font-bold text-white uppercase tracking-wide">{s.etapa}</span>
-                    <span className="text-zinc-500">{s.count} deals</span>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span className="text-white font-mono">US$ {s.volumen.toLocaleString()}</span>
-                    <span className={'font-black font-mono text-sm ' + (s.conversion >= 50 ? 'text-[#CCFF00]' : s.conversion >= 25 ? 'text-yellow-400' : 'text-red-400')}>
-                      {s.conversion}%
-                    </span>
-                  </div>
-                </div>
-                <div className="w-full bg-zinc-900 rounded-full h-3">
-                  <div
-                    className="h-3 rounded-full transition-all duration-500"
-                    style={{
-                      width: maxCount > 0 ? (s.count / maxCount * 100) + "%" : "0%",
-                      backgroundColor: idx === 0 ? "#CCFF00" : idx === 1 ? "#84cc16" : idx === 2 ? "#eab308" : "#22c55e"
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
+            <div className="bg-zinc-950 p-5 rounded-2xl border border-zinc-900">
+              <p className="text-xs font-mono text-[#CCFF00] uppercase">Volumen Vendido</p>
+              <p className="text-xl font-black text-[#CCFF00] mt-1">US$ {volumenVendido.toLocaleString()}</p>
+            </div>
           </section>
 
           <section className="bg-zinc-950 border border-zinc-900 rounded-2xl p-6 space-y-4">
-            <h2 className="text-xs font-mono text-white uppercase tracking-wider">Clientes por Temperatura</h2>
-            {clientesPorEtapa.map(item => (
-              <div key={item.etapa} className="flex justify-between items-center">
-                <span className="text-sm text-white">{item.etapa}</span>
-                <div className="flex items-center gap-3">
-                  <div className="w-32 bg-zinc-900 rounded-full h-2">
-                    <div
-                      className="h-2 rounded-full bg-[#CCFF00]"
-                      style={{ width: totalClientes > 0 ? (item.count / totalClientes * 100) + "%" : "0%" }}
-                    />
+            <h2 className="text-xs font-mono text-white uppercase tracking-wider">Absorción</h2>
+            <div className="flex items-end gap-4">
+              <span className="text-6xl font-black text-[#CCFF00]">{pctVendido}%</span>
+              <span className="text-zinc-500 text-sm mb-2">vendido del total</span>
+            </div>
+            <div className="w-full h-5 rounded-full overflow-hidden flex">
+              <div
+                className="h-full bg-green-400 transition-all duration-500"
+                style={{ width: pctVendido + '%' }}
+                title={`Vendido ${pctVendido}%`}
+              />
+              <div
+                className="h-full bg-yellow-400 transition-all duration-500"
+                style={{ width: pctReservado + '%' }}
+                title={`Reservado ${pctReservado}%`}
+              />
+              <div
+                className="h-full bg-zinc-700 transition-all duration-500"
+                style={{ width: pctLibre + '%' }}
+                title={`Libre ${pctLibre}%`}
+              />
+            </div>
+            <div className="flex gap-6 text-xs font-mono">
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-green-400 inline-block" />
+                Vendido {pctVendido}%
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-yellow-400 inline-block" />
+                Reservado {pctReservado}%
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-zinc-700 inline-block" />
+                Libre {pctLibre}%
+              </span>
+            </div>
+          </section>
+
+          <section className="bg-zinc-950 border border-zinc-900 rounded-2xl p-6 space-y-4">
+            <h2 className="text-xs font-mono text-white uppercase tracking-wider">Velocidad de Venta · Ventas por Mes</h2>
+            {meses.length === 0 ? (
+              <p className="text-zinc-600 text-sm">Sin ventas registradas con fecha.</p>
+            ) : (
+              <div className="space-y-3">
+                {meses.map(m => (
+                  <div key={m.label} className="flex items-center gap-4">
+                    <span className="text-xs font-mono text-zinc-400 w-20 shrink-0 capitalize">{m.label}</span>
+                    <div className="flex-1 bg-zinc-900 rounded-full h-4 overflow-hidden">
+                      <div
+                        className="h-4 rounded-full bg-[#CCFF00] transition-all duration-500"
+                        style={{ width: (m.count / maxMes * 100) + '%' }}
+                      />
+                    </div>
+                    <span className="text-xs font-mono text-white w-8 text-right">{m.count}</span>
                   </div>
-                  <span className="text-xs font-mono text-white w-8 text-right">{item.count}</span>
-                  <span className="text-xs font-mono text-zinc-600 w-8 text-right">
-                    {Math.round(item.count / totalClientes * 100)}%
-                  </span>
-                </div>
+                ))}
               </div>
-            ))}
+            )}
+          </section>
+
+          <section className="bg-zinc-950 border border-zinc-900 rounded-2xl p-6 space-y-4">
+            <h2 className="text-xs font-mono text-white uppercase tracking-wider">Desempeño por Broker</h2>
+            {brokers.length === 0 ? (
+              <p className="text-zinc-600 text-sm">Sin datos de broker.</p>
+            ) : (
+              <div className="space-y-1">
+                {brokers.map(b => (
+                  <div key={b.nombre} className="flex items-center justify-between gap-4 py-3 border-b border-zinc-900 last:border-0">
+                    <span className="font-semibold text-white text-sm w-36 truncate">{b.nombre}</span>
+                    <div className="flex items-center gap-5 text-xs font-mono">
+                      <span className="text-green-400">{b.vendidas} vendidas</span>
+                      <span className="text-yellow-400">{b.reservadas} reservadas</span>
+                      <span className="text-[#CCFF00]">US$ {b.volumen.toLocaleString()}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </section>
         </>
       )}
