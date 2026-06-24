@@ -89,6 +89,7 @@ export default function FichaUnidadPage() {
   const [cuotas, setCuotas] = useState<Cuota[]>([]);
   const [historial, setHistorial] = useState<Historial[]>([]);
   const [incidencias, setIncidencias] = useState<Incidencia[]>([]);
+  const [prospectos, setProspectos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<'plan' | 'historial' | 'incidencias'>('plan');
   const [mensaje, setMensaje] = useState<{ tipo: 'exito' | 'error'; texto: string } | null>(null);
@@ -114,6 +115,9 @@ export default function FichaUnidadPage() {
 
     const { data: i } = await supabase.from('incidencias').select('*').eq('unidad_id', unidadId).order('created_at', { ascending: false });
     if (i) setIncidencias(i);
+
+    const { data: pros } = await supabase.from('prospectos').select('*').eq('unidad_id', unidadId).eq('compartido', true).order('created_at', { ascending: false });
+    if (pros) setProspectos(pros);
 
     setLoading(false);
   }, [unidadId]);
@@ -289,6 +293,57 @@ export default function FichaUnidadPage() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Prospectos compartidos */}
+      <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6 mb-8">
+        <div className="flex items-center gap-3 mb-4">
+          <h3 className="text-[10px] text-white uppercase tracking-wider font-mono">Prospectos compartidos</h3>
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-400">
+            {prospectos.length}
+          </span>
+        </div>
+        {prospectos.length === 0 ? (
+          <p className="text-zinc-600 text-sm">Ningún broker ha compartido prospectos para esta unidad todavía.</p>
+        ) : (
+          <div className="space-y-3">
+            {prospectos.map(p => {
+              const estadoBg: Record<string, string> = {
+                interesado: 'bg-zinc-800 border-zinc-700',
+                visita_agendada: 'bg-blue-500/10 border-blue-500/30',
+                visito: 'bg-purple-500/10 border-purple-500/30',
+                negociando: 'bg-amber-400/10 border-amber-400/30',
+              };
+              const estadoText: Record<string, string> = {
+                interesado: 'text-zinc-500',
+                visita_agendada: 'text-blue-400',
+                visito: 'text-purple-400',
+                negociando: 'text-amber-400',
+              };
+              const estadoLabel: Record<string, string> = {
+                interesado: 'Interesado',
+                visita_agendada: 'Visita agendada',
+                visito: 'Visitó',
+                negociando: 'Negociando',
+              };
+              return (
+                <div key={p.id} className="bg-[#18181b] border border-zinc-800 rounded-xl px-5 py-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white font-bold text-sm">{p.nombre}</p>
+                      {p.contacto && <p className="text-zinc-500 text-xs mt-0.5">{p.contacto}</p>}
+                      {p.nota && <p className="text-zinc-500 text-xs mt-1">{p.nota}</p>}
+                      <p className="text-[#d4ff3b]/70 text-xs mt-2">Compartido por {p.broker_nombre}</p>
+                    </div>
+                    <span className={`flex-shrink-0 text-[10px] px-2.5 py-1 rounded-full border font-mono ${estadoBg[p.estado] || 'bg-zinc-800 border-zinc-700'} ${estadoText[p.estado] || 'text-zinc-500'}`}>
+                      {estadoLabel[p.estado] || p.estado}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Resumen financiero */}
