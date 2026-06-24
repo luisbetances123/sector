@@ -49,6 +49,7 @@ interface Prospecto {
   estado: string;
   nota: string | null;
   created_at: string;
+  compartido: boolean;
 }
 
 const ESTADO_COLORES: Record<string, string> = {
@@ -140,6 +141,14 @@ export default function PortalBrokerClient({ acceso, proyecto, unidadesIniciales
     setAgregandoProspecto(false);
   };
 
+  const toggleCompartir = async () => {
+    if (!unidadSeleccionada) return;
+    const nuevoValor = !prospectosCompartidos;
+    const supabase = createClient();
+    await supabase.from('prospectos').update({ compartido: nuevoValor }).eq('unidad_id', unidadSeleccionada.id);
+    await cargarProspectos(unidadSeleccionada.id);
+  };
+
   const reservarUnidad = async () => {
     if (!unidadSeleccionada || !nombreBroker.trim()) return;
     setReservando(true);
@@ -172,6 +181,8 @@ export default function PortalBrokerClient({ acceso, proyecto, unidadesIniciales
       setNombreBroker('');
     }, 3000);
   };
+
+  const prospectosCompartidos = prospectos.length > 0 && prospectos.every(p => p.compartido);
 
   const pisos = [...new Set(unidades.map(u => u.piso))].sort((a, b) => (b || 0) - (a || 0));
   const unidadesFiltradas = filtro === 'todos' ? unidades : unidades.filter(u => u.estado === filtro);
@@ -320,6 +331,35 @@ export default function PortalBrokerClient({ acceso, proyecto, unidadesIniciales
                   <div style={{ color: '#aaa', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10 }}>
                     Prospectos de esta unidad
                   </div>
+
+                  {prospectos.length > 0 && (
+                    <div style={{ marginBottom: 14 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <span style={{ color: '#ccc', fontSize: 13 }}>Compartir con el desarrollador</span>
+                        <div
+                          onClick={toggleCompartir}
+                          style={{
+                            width: 44, height: 24, borderRadius: 12,
+                            background: prospectosCompartidos ? LIME : '#333',
+                            position: 'relative', cursor: 'pointer',
+                            transition: 'background 0.2s',
+                            flexShrink: 0,
+                          }}
+                        >
+                          <div style={{
+                            position: 'absolute', top: 3,
+                            left: prospectosCompartidos ? 23 : 3,
+                            width: 18, height: 18, borderRadius: '50%',
+                            background: '#fff',
+                            transition: 'left 0.2s',
+                          }} />
+                        </div>
+                      </div>
+                      <div style={{ marginTop: 6, fontSize: 11, color: prospectosCompartidos ? LIME : '#555' }}>
+                        {prospectosCompartidos ? 'El desarrollador puede ver estos prospectos' : 'Solo tú ves estos prospectos'}
+                      </div>
+                    </div>
+                  )}
 
                   {prospectos.length === 0
                     ? <div style={{ color: '#444', fontSize: 13, textAlign: 'center', padding: '8px 0', marginBottom: 10 }}>Sin prospectos aún</div>
