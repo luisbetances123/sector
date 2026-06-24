@@ -39,6 +39,18 @@ interface Acceso {
   proyecto_id: string;
 }
 
+interface Prospecto {
+  id: string;
+  unidad_id: string;
+  proyecto_id: string;
+  broker_nombre: string | null;
+  nombre: string;
+  contacto: string;
+  estado: string;
+  nota: string | null;
+  created_at: string;
+}
+
 const ESTADO_COLORES: Record<string, string> = {
   libre: '#22c55e',
   reservado: '#f59e0b',
@@ -49,6 +61,22 @@ const ESTADO_TEXTO: Record<string, string> = {
   libre: 'Libre',
   reservado: 'Reservado',
   vendido: 'Vendido',
+};
+
+const PROSPECTO_ESTADO_COLORES: Record<string, string> = {
+  interesado: '#666',
+  visita_agendada: '#3b82f6',
+  visito: '#a855f7',
+  negociando: '#f59e0b',
+  reservo: '#CCFF00',
+};
+
+const PROSPECTO_ESTADO_TEXTO: Record<string, string> = {
+  interesado: 'Interesado',
+  visita_agendada: 'Visita agendada',
+  visito: 'Visitó',
+  negociando: 'Negociando',
+  reservo: 'Reservó',
 };
 
 interface Props {
@@ -64,6 +92,12 @@ export default function PortalBrokerClient({ acceso, proyecto, unidadesIniciales
   const [nombreBroker, setNombreBroker] = useState('');
   const [reservando, setReservando] = useState(false);
   const [reservaExitosa, setReservaExitosa] = useState(false);
+  const [prospectos, setProspectos] = useState<Prospecto[]>([]);
+  const [nuevoNombre, setNuevoNombre] = useState('');
+  const [nuevoContacto, setNuevoContacto] = useState('');
+  const [nuevoEstado, setNuevoEstado] = useState('interesado');
+  const [nuevaNota, setNuevaNota] = useState('');
+  const [agregandoProspecto, setAgregandoProspecto] = useState(false);
 
   const recargarUnidades = async () => {
     const supabase = createClient();
@@ -73,6 +107,37 @@ export default function PortalBrokerClient({ acceso, proyecto, unidadesIniciales
       .eq('proyecto_id', acceso.proyecto_id)
       .order('piso', { ascending: true });
     if (data) setUnidades(data);
+  };
+
+  const cargarProspectos = async (unidadId: string) => {
+    const supabase = createClient();
+    const { data } = await supabase
+      .from('prospectos')
+      .select('*')
+      .eq('unidad_id', unidadId)
+      .order('created_at', { ascending: false });
+    if (data) setProspectos(data);
+  };
+
+  const agregarProspecto = async () => {
+    if (!unidadSeleccionada || !nuevoNombre.trim()) return;
+    setAgregandoProspecto(true);
+    const supabase = createClient();
+    await supabase.from('prospectos').insert([{
+      unidad_id: unidadSeleccionada.id,
+      proyecto_id: acceso.proyecto_id,
+      broker_nombre: acceso.nombre_agencia,
+      nombre: nuevoNombre,
+      contacto: nuevoContacto,
+      estado: nuevoEstado,
+      nota: nuevaNota || null,
+    }]);
+    await cargarProspectos(unidadSeleccionada.id);
+    setNuevoNombre('');
+    setNuevoContacto('');
+    setNuevoEstado('interesado');
+    setNuevaNota('');
+    setAgregandoProspecto(false);
   };
 
   const reservarUnidad = async () => {
@@ -191,7 +256,7 @@ export default function PortalBrokerClient({ acceso, proyecto, unidadesIniciales
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                   {unidadesPiso.map(u => (
                     <button key={u.id}
-                      onClick={() => u.estado === 'libre' ? setUnidadSeleccionada(u) : undefined}
+                      onClick={() => { if (u.estado === 'libre') { setUnidadSeleccionada(u); cargarProspectos(u.id); } }}
                       style={{
                         background: ESTADO_COLORES[u.estado],
                         color: '#fff',
@@ -227,7 +292,7 @@ export default function PortalBrokerClient({ acceso, proyecto, unidadesIniciales
 
       {unidadSeleccionada && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, zIndex: 50 }}>
-          <div style={{ background: '#111', border: `1px solid ${BORDER}`, borderRadius: 20, padding: 32, width: '100%', maxWidth: 420 }}>
+          <div style={{ background: '#111', border: `1px solid ${BORDER}`, borderRadius: 20, padding: 32, width: '100%', maxWidth: 480, maxHeight: '90vh', overflowY: 'auto' }}>
             {reservaExitosa ? (
               <div style={{ textAlign: 'center', padding: '20px 0' }}>
                 <div style={{ fontSize: 48, marginBottom: 16 }}>✅</div>
@@ -249,6 +314,62 @@ export default function PortalBrokerClient({ acceso, proyecto, unidadesIniciales
                   {unidadSeleccionada.area_m2 && <div><div style={{ color: '#666', fontSize: 10, textTransform: 'uppercase' }}>Área</div><div style={{ color: '#fff', fontWeight: 700, fontSize: 16 }}>{unidadSeleccionada.area_m2} m²</div></div>}
                   {unidadSeleccionada.habitaciones && <div><div style={{ color: '#666', fontSize: 10, textTransform: 'uppercase' }}>Habitaciones</div><div style={{ color: '#fff', fontWeight: 700, fontSize: 16 }}>{unidadSeleccionada.habitaciones}</div></div>}
                   {unidadSeleccionada.vista && <div><div style={{ color: '#666', fontSize: 10, textTransform: 'uppercase' }}>Vista</div><div style={{ color: '#fff', fontWeight: 700, fontSize: 16 }}>{unidadSeleccionada.vista}</div></div>}
+                </div>
+
+                <div style={{ marginBottom: 20 }}>
+                  <div style={{ color: '#aaa', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10 }}>
+                    Prospectos de esta unidad
+                  </div>
+
+                  {prospectos.length === 0
+                    ? <div style={{ color: '#444', fontSize: 13, textAlign: 'center', padding: '8px 0', marginBottom: 10 }}>Sin prospectos aún</div>
+                    : <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 12 }}>
+                        {prospectos.map(p => (
+                          <div key={p.id} style={{ background: '#0d0d0f', border: `1px solid ${BORDER}`, borderRadius: 10, padding: '10px 14px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+                              <div>
+                                <div style={{ color: '#fff', fontWeight: 700, fontSize: 13 }}>{p.nombre}</div>
+                                {p.contacto && <div style={{ color: '#666', fontSize: 12 }}>{p.contacto}</div>}
+                                {p.nota && <div style={{ color: '#555', fontSize: 12, marginTop: 4 }}>{p.nota}</div>}
+                              </div>
+                              <span style={{
+                                background: PROSPECTO_ESTADO_COLORES[p.estado] + '22',
+                                color: PROSPECTO_ESTADO_COLORES[p.estado],
+                                border: `1px solid ${PROSPECTO_ESTADO_COLORES[p.estado]}50`,
+                                borderRadius: 6, padding: '3px 8px', fontSize: 11,
+                                fontWeight: 700, whiteSpace: 'nowrap', flexShrink: 0,
+                              }}>
+                                {PROSPECTO_ESTADO_TEXTO[p.estado] || p.estado}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                  }
+
+                  <div style={{ background: '#0d0d0f', border: `1px solid ${BORDER}`, borderRadius: 12, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <input type="text" value={nuevoNombre} onChange={e => setNuevoNombre(e.target.value)}
+                      placeholder="Nombre del prospecto"
+                      style={{ width: '100%', background: '#111', border: `1px solid ${BORDER}`, borderRadius: 8, padding: '10px 12px', color: '#fff', fontSize: 13, outline: 'none', boxSizing: 'border-box' }} />
+                    <input type="text" value={nuevoContacto} onChange={e => setNuevoContacto(e.target.value)}
+                      placeholder="Teléfono o email"
+                      style={{ width: '100%', background: '#111', border: `1px solid ${BORDER}`, borderRadius: 8, padding: '10px 12px', color: '#fff', fontSize: 13, outline: 'none', boxSizing: 'border-box' }} />
+                    <select value={nuevoEstado} onChange={e => setNuevoEstado(e.target.value)}
+                      style={{ width: '100%', background: '#111', border: `1px solid ${BORDER}`, borderRadius: 8, padding: '10px 12px', color: '#fff', fontSize: 13, outline: 'none' }}>
+                      <option value="interesado">Interesado</option>
+                      <option value="visita_agendada">Visita agendada</option>
+                      <option value="visito">Visitó</option>
+                      <option value="negociando">Negociando</option>
+                      <option value="reservo">Reservó</option>
+                    </select>
+                    <textarea value={nuevaNota} onChange={e => setNuevaNota(e.target.value)}
+                      placeholder="Nota opcional..." rows={2}
+                      style={{ width: '100%', background: '#111', border: `1px solid ${BORDER}`, borderRadius: 8, padding: '10px 12px', color: '#fff', fontSize: 13, outline: 'none', resize: 'none', boxSizing: 'border-box' }} />
+                    <button onClick={agregarProspecto} disabled={agregandoProspecto || !nuevoNombre.trim()}
+                      style={{ background: nuevoNombre.trim() ? LIME : '#333', color: nuevoNombre.trim() ? BG : '#666', border: 'none', borderRadius: 8, padding: '10px', fontWeight: 700, fontSize: 13, cursor: nuevoNombre.trim() ? 'pointer' : 'not-allowed', transition: 'all 0.2s' }}>
+                      {agregandoProspecto ? 'Agregando...' : '+ Agregar prospecto'}
+                    </button>
+                  </div>
                 </div>
 
                 <div style={{ marginBottom: 16 }}>

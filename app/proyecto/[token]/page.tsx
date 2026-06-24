@@ -3,20 +3,22 @@
 export const dynamic = 'force-dynamic';
 
 import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 import { createClient } from '@/app/lib/supabase';
 import PortalBrokerClient from './PortalBrokerClient';
 
-const supabase = createClient();
 const BG = "#09090b";
 
-export default function PortalBrokerPage({ params }: { params: { token: string } }) {
-  const token = params.token;
+export default function PortalBrokerPage() {
+  const params = useParams();
+  const token = params.token as string;
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
   useEffect(() => {
     async function cargar() {
+      const supabase = createClient();
       const { data: accesoArray } = await supabase
         .from('proyecto_accesos')
         .select('id, nombre_agencia, proyecto_id')
