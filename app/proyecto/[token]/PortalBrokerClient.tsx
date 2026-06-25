@@ -141,6 +141,12 @@ export default function PortalBrokerClient({ acceso, proyecto, unidadesIniciales
     setAgregandoProspecto(false);
   };
 
+  const actualizarEstadoProspecto = async (id: string, nuevoEstado: string) => {
+    const supabase = createClient();
+    await supabase.from('prospectos').update({ estado: nuevoEstado }).eq('id', id);
+    await cargarProspectos(unidadSeleccionada!.id);
+  };
+
   const toggleCompartir = async () => {
     if (!unidadSeleccionada) return;
     const nuevoValor = !prospectosCompartidos;
@@ -372,15 +378,24 @@ export default function PortalBrokerClient({ acceso, proyecto, unidadesIniciales
                                 {p.contacto && <div style={{ color: '#666', fontSize: 12 }}>{p.contacto}</div>}
                                 {p.nota && <div style={{ color: '#555', fontSize: 12, marginTop: 4 }}>{p.nota}</div>}
                               </div>
-                              <span style={{
-                                background: PROSPECTO_ESTADO_COLORES[p.estado] + '22',
-                                color: PROSPECTO_ESTADO_COLORES[p.estado],
-                                border: `1px solid ${PROSPECTO_ESTADO_COLORES[p.estado]}50`,
-                                borderRadius: 6, padding: '3px 8px', fontSize: 11,
-                                fontWeight: 700, whiteSpace: 'nowrap', flexShrink: 0,
-                              }}>
-                                {PROSPECTO_ESTADO_TEXTO[p.estado] || p.estado}
-                              </span>
+                              <select
+                                value={p.estado}
+                                onChange={e => actualizarEstadoProspecto(p.id, e.target.value)}
+                                style={{
+                                  background: PROSPECTO_ESTADO_COLORES[p.estado] + '22',
+                                  color: PROSPECTO_ESTADO_COLORES[p.estado],
+                                  border: `1px solid ${PROSPECTO_ESTADO_COLORES[p.estado]}50`,
+                                  borderRadius: 6, padding: '3px 8px', fontSize: 11,
+                                  fontWeight: 700, whiteSpace: 'nowrap', flexShrink: 0,
+                                  cursor: 'pointer', outline: 'none',
+                                }}
+                              >
+                                <option value="interesado">Interesado</option>
+                                <option value="visita_agendada">Visita agendada</option>
+                                <option value="visito">Visitó</option>
+                                <option value="negociando">Negociando</option>
+                                <option value="reservo">Reservó</option>
+                              </select>
                             </div>
                           </div>
                         ))}
