@@ -144,6 +144,31 @@ export default function PortalBrokerClient({ acceso, proyecto, unidadesIniciales
   const actualizarEstadoProspecto = async (id: string, nuevoEstado: string) => {
     const supabase = createClient();
     await supabase.from('prospectos').update({ estado: nuevoEstado }).eq('id', id);
+
+    if (nuevoEstado === 'reservo') {
+      const prospecto = prospectos.find(p => p.id === id);
+      if (prospecto) {
+        const { data: unidad } = await supabase.from('unidades').select('estado').eq('id', prospecto.unidad_id).single();
+        if (unidad?.estado === 'libre') {
+          const reservadoHasta = new Date();
+          reservadoHasta.setHours(reservadoHasta.getHours() + 48);
+          await supabase.from('unidades').update({
+            estado: 'reservado',
+            reservado_por: prospecto.broker_nombre,
+            reservado_hasta: reservadoHasta.toISOString(),
+          }).eq('id', prospecto.unidad_id);
+          await supabase.from('unidad_historial').insert([{
+            unidad_id: prospecto.unidad_id,
+            estado_anterior: 'libre',
+            estado_nuevo: 'reservado',
+            actor: prospecto.broker_nombre,
+            nota: `Prospecto reservó — ${prospecto.nombre}`,
+          }]);
+          recargarUnidades();
+        }
+      }
+    }
+
     await cargarProspectos(unidadSeleccionada!.id);
   };
 
