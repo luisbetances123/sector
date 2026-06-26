@@ -55,7 +55,7 @@ export async function GET(request: Request) {
         .eq('id', unidad.id)
 
       // 2. Registrar en el historial de cambios
-      await supabase.from('historial_unidades').insert([{
+      await supabase.from('unidad_historial').insert([{
         unidad_id: unidad.id,
         estado_anterior: 'reservado',
         estado_nuevo: 'libre',

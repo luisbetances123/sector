@@ -128,6 +128,7 @@ export default function FichaUnidadPage() {
     if (!unidad) return;
     const extras: Record<string, string | null> = {};
     if (nuevoEstado === 'libre') { extras.reservado_por = null; extras.reservado_hasta = null; extras.fecha_reserva = null; }
+    if (nuevoEstado === 'reservado') { extras.fecha_reserva = new Date().toISOString(); extras.reservado_por = 'Desarrollador'; }
     await supabase.from('unidades').update({ estado: nuevoEstado, ...extras }).eq('id', unidad.id);
     await supabase.from('unidad_historial').insert([{ unidad_id: unidad.id, estado_anterior: unidad.estado, estado_nuevo: nuevoEstado, actor: 'Constructora' }]);
     cargarDatos();
@@ -167,6 +168,10 @@ export default function FichaUnidadPage() {
     }
     const fEntrega = new Date(fechaInicio); fEntrega.setMonth(fEntrega.getMonth() + nCuotas + 1);
     cuotasArr.push({ plan_id: nuevoPlan.id, numero: nCuotas + 2, descripcion: 'Cuota a la entrega', monto: Math.round(precio * entregaPct), fecha_vencimiento: fEntrega.toISOString().split('T')[0], estado: 'pendiente' });
+
+    const sumaCuotas = cuotasArr.reduce((s, c) => s + c.monto, 0);
+    const diferencia = precio - sumaCuotas;
+    cuotasArr[cuotasArr.length - 1].monto += diferencia;
 
     await supabase.from('cuotas').insert(cuotasArr);
     setMostrarGenerador(false);
@@ -257,6 +262,16 @@ export default function FichaUnidadPage() {
                 <div className="bg-amber-400/10 border border-amber-400/20 rounded-xl p-3">
                   <p className="text-[10px] text-amber-400 uppercase tracking-wider">⏱ Reserva temporal</p>
                   <p className="text-amber-300 font-bold text-sm mt-1">{tiempoRestante(unidad.reservado_hasta)}</p>
+                  {unidad.fecha_reserva && (
+                    <p className="text-amber-400/50 text-[10px] mt-0.5">
+                      Desde {new Date(unidad.fecha_reserva).toLocaleDateString('es-DO', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                    </p>
+                  )}
+                </div>
+              )}
+              {unidad.estado === 'reservado' && !unidad.reservado_hasta && (
+                <div className="bg-amber-400/10 border border-amber-400/20 rounded-xl p-3">
+                  <p className="text-[10px] text-amber-400 uppercase tracking-wider">Reservada por {unidad.reservado_por}</p>
                   {unidad.fecha_reserva && (
                     <p className="text-amber-400/50 text-[10px] mt-0.5">
                       Desde {new Date(unidad.fecha_reserva).toLocaleDateString('es-DO', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}

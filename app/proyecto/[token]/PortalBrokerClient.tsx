@@ -156,6 +156,7 @@ export default function PortalBrokerClient({ acceso, proyecto, unidadesIniciales
             estado: 'reservado',
             reservado_por: prospecto.broker_nombre,
             reservado_hasta: reservadoHasta.toISOString(),
+            fecha_reserva: new Date().toISOString(),
           }).eq('id', prospecto.unidad_id);
           await supabase.from('unidad_historial').insert([{
             unidad_id: prospecto.unidad_id,

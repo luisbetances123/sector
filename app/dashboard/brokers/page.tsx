@@ -5,6 +5,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/app/lib/supabase';
 import { useRouter } from 'next/navigation';
 
+interface UnidadItem {
+  numero: string;
+  precio: number;
+}
+
 interface BrokerStats {
   nombre_agencia: string;
   token: string;
@@ -17,6 +22,8 @@ interface BrokerStats {
   unidades_vendidas: number;
   volumen_reservado: number;
   volumen_vendido: number;
+  lista_reservadas: UnidadItem[];
+  lista_vendidas: UnidadItem[];
 }
 
 export default function BrokersPage() {
@@ -24,6 +31,7 @@ export default function BrokersPage() {
   const [brokers, setBrokers] = useState<BrokerStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [filtro, setFiltro] = useState<'todos' | 'activos'>('activos');
+  const [expandido, setExpandido] = useState<string | null>(null);
 
   const cargarBrokers = useCallback(async () => {
     setLoading(true);
@@ -45,7 +53,7 @@ export default function BrokersPage() {
       // Unidades reservadas por este broker
       const { data: unidadesReservadas } = await supabase
         .from('unidades')
-        .select('precio')
+        .select('numero, precio')
         .eq('proyecto_id', proyectoId)
         .eq('estado', 'reservado')
         .eq('reservado_por', acceso.nombre_agencia);
@@ -53,7 +61,7 @@ export default function BrokersPage() {
       // Unidades vendidas donde el broker participó
       const { data: unidadesVendidas } = await supabase
         .from('unidades')
-        .select('precio')
+        .select('numero, precio')
         .eq('proyecto_id', proyectoId)
         .eq('estado', 'vendido')
         .eq('reservado_por', acceso.nombre_agencia);
@@ -73,6 +81,8 @@ export default function BrokersPage() {
         unidades_vendidas: unidadesVendidas?.length || 0,
         volumen_reservado: volumenReservado,
         volumen_vendido: volumenVendido,
+        lista_reservadas: (unidadesReservadas || []) as UnidadItem[],
+        lista_vendidas: (unidadesVendidas || []) as UnidadItem[],
       });
     }
 
@@ -162,71 +172,114 @@ export default function BrokersPage() {
 
           <div className="divide-y divide-zinc-800/60">
             {brokersFiltrados.map((b, idx) => (
-              <div key={idx} className="grid grid-cols-12 gap-4 px-6 py-4 hover:bg-zinc-900/30 transition items-center">
-                {/* Nombre */}
-                <div className="col-span-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-bold text-white flex-shrink-0">
-                      {b.nombre_agencia.charAt(0).toUpperCase()}
+              <div key={idx}>
+                {/* Fila principal — clickeable */}
+                <div
+                  className="grid grid-cols-12 gap-4 px-6 py-4 hover:bg-zinc-900/30 transition items-center cursor-pointer"
+                  onClick={() => setExpandido(expandido === b.token ? null : b.token)}
+                >
+                  {/* Nombre */}
+                  <div className="col-span-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-bold text-white flex-shrink-0">
+                        {b.nombre_agencia.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="text-white text-sm font-semibold">{b.nombre_agencia}</p>
+                        <p className="text-white text-[10px] font-mono">
+                          {new Date(b.created_at).toLocaleDateString('es-DO', { day: '2-digit', month: 'short', year: 'numeric' })}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-white text-sm font-semibold">{b.nombre_agencia}</p>
-                      <p className="text-white text-[10px] font-mono">
-                        {new Date(b.created_at).toLocaleDateString('es-DO', { day: '2-digit', month: 'short', year: 'numeric' })}
-                      </p>
-                    </div>
+                  </div>
+
+                  {/* Proyecto */}
+                  <div className="col-span-2">
+                    <p className="text-white text-sm truncate">{b.proyecto_nombre}</p>
+                  </div>
+
+                  {/* Reservadas */}
+                  <div className="col-span-1 text-center">
+                    <span className={`font-mono font-bold text-sm ${b.unidades_reservadas > 0 ? 'text-amber-400' : 'text-zinc-600'}`}>
+                      {b.unidades_reservadas}
+                    </span>
+                  </div>
+
+                  {/* Vendidas */}
+                  <div className="col-span-1 text-center">
+                    <span className={`font-mono font-bold text-sm ${b.unidades_vendidas > 0 ? 'text-red-400' : 'text-zinc-600'}`}>
+                      {b.unidades_vendidas}
+                    </span>
+                  </div>
+
+                  {/* Volumen */}
+                  <div className="col-span-2 text-right">
+                    <p className={`font-mono font-bold text-sm ${b.volumen_reservado + b.volumen_vendido > 0 ? 'text-[#d4ff3b]' : 'text-zinc-600'}`}>
+                      ${(b.volumen_reservado + b.volumen_vendido).toLocaleString()}
+                    </p>
+                    {b.volumen_reservado > 0 && b.volumen_vendido > 0 && (
+                      <p className="text-white text-[10px] font-mono">${b.volumen_reservado.toLocaleString()} reservado</p>
+                    )}
+                  </div>
+
+                  {/* Estado */}
+                  <div className="col-span-1 text-center">
+                    <span className={`text-[10px] px-2 py-1 rounded-full border font-mono ${b.activo ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-zinc-800 text-zinc-500 border-zinc-700'}`}>
+                      {b.activo ? 'Activo' : 'Inactivo'}
+                    </span>
+                  </div>
+
+                  {/* Acciones + flecha */}
+                  <div className="col-span-2 flex justify-end items-center gap-2">
+                    <span className={`text-zinc-500 text-xs font-mono inline-block transition-transform duration-200 ${expandido === b.token ? 'rotate-180' : ''}`}>
+                      ▾
+                    </span>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); copiarLink(b.token); }}
+                      className="bg-zinc-800 hover:bg-zinc-700 text-white text-[10px] px-3 py-1.5 rounded-lg transition font-mono"
+                    >
+                      Copiar link
+                    </button>
+                    {b.activo && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); desactivarAcceso(b.token); }}
+                        className="bg-zinc-900 hover:bg-red-950/40 text-zinc-600 hover:text-red-400 text-[10px] px-2 py-1.5 rounded-lg transition border border-zinc-800"
+                      >
+                        ✕
+                      </button>
+                    )}
                   </div>
                 </div>
 
-                {/* Proyecto */}
-                <div className="col-span-2">
-                  <p className="text-white text-sm truncate">{b.proyecto_nombre}</p>
-                </div>
-
-                {/* Reservadas */}
-                <div className="col-span-1 text-center">
-                  <span className={`font-mono font-bold text-sm ${b.unidades_reservadas > 0 ? 'text-amber-400' : 'text-zinc-600'}`}>
-                    {b.unidades_reservadas}
-                  </span>
-                </div>
-
-                {/* Vendidas */}
-                <div className="col-span-1 text-center">
-                  <span className={`font-mono font-bold text-sm ${b.unidades_vendidas > 0 ? 'text-red-400' : 'text-zinc-600'}`}>
-                    {b.unidades_vendidas}
-                  </span>
-                </div>
-
-                {/* Volumen */}
-                <div className="col-span-2 text-right">
-                  <p className={`font-mono font-bold text-sm ${b.volumen_reservado + b.volumen_vendido > 0 ? 'text-[#d4ff3b]' : 'text-zinc-600'}`}>
-                    ${(b.volumen_reservado + b.volumen_vendido).toLocaleString()}
-                  </p>
-                  {b.volumen_reservado > 0 && b.volumen_vendido > 0 && (
-                    <p className="text-white text-[10px] font-mono">${b.volumen_reservado.toLocaleString()} reservado</p>
-                  )}
-                </div>
-
-                {/* Estado */}
-                <div className="col-span-1 text-center">
-                  <span className={`text-[10px] px-2 py-1 rounded-full border font-mono ${b.activo ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-zinc-800 text-zinc-500 border-zinc-700'}`}>
-                    {b.activo ? 'Activo' : 'Inactivo'}
-                  </span>
-                </div>
-
-                {/* Acciones */}
-                <div className="col-span-2 flex justify-end gap-2">
-                  <button onClick={() => copiarLink(b.token)}
-                    className="bg-zinc-800 hover:bg-zinc-700 text-white text-[10px] px-3 py-1.5 rounded-lg transition font-mono">
-                    Copiar link
-                  </button>
-                  {b.activo && (
-                    <button onClick={() => desactivarAcceso(b.token)}
-                      className="bg-zinc-900 hover:bg-red-950/40 text-zinc-600 hover:text-red-400 text-[10px] px-2 py-1.5 rounded-lg transition border border-zinc-800">
-                      ✕
-                    </button>
-                  )}
-                </div>
+                {/* Panel expandido */}
+                {expandido === b.token && (b.lista_reservadas.length > 0 || b.lista_vendidas.length > 0) && (
+                  <div className="px-6 pb-5 pt-1 bg-zinc-900/50 border-t border-zinc-800/50">
+                    {b.lista_reservadas.length > 0 && (
+                      <div className="mb-3">
+                        <p className="text-[10px] text-amber-400 font-mono uppercase tracking-wider mb-2">Reservadas:</p>
+                        <div className="flex flex-wrap gap-2">
+                          {b.lista_reservadas.map((u, i) => (
+                            <span key={i} className="text-xs font-mono bg-amber-400/10 border border-amber-400/20 text-amber-300 px-2.5 py-1 rounded-lg">
+                              {u.numero} · ${u.precio.toLocaleString()}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {b.lista_vendidas.length > 0 && (
+                      <div>
+                        <p className="text-[10px] text-red-400 font-mono uppercase tracking-wider mb-2">Vendidas:</p>
+                        <div className="flex flex-wrap gap-2">
+                          {b.lista_vendidas.map((u, i) => (
+                            <span key={i} className="text-xs font-mono bg-red-500/10 border border-red-500/20 text-red-300 px-2.5 py-1 rounded-lg">
+                              {u.numero} · ${u.precio.toLocaleString()}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
           </div>
