@@ -6,14 +6,10 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/app/lib/supabase'
 
 interface Propiedad {
-  id: string
-  title: string
-  price: number
-  location: string
-  type: string
-  bedrooms: number
-  m2: number
-  precio_m2_usd: number
+  precio: number
+  area_m2: number
+  proyecto_id: string
+  proyectos: { sector: string } | null
 }
 
 export default function MercadoPage() {
@@ -21,22 +17,54 @@ export default function MercadoPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    supabase
-      .from('properties')
-      .select('id, title, price, location, type, bedrooms, m2, precio_m2_usd')
-      .not('price', 'is', null)
-      .then(({ data }) => {
-        if (data) setPropiedades(data)
-        setLoading(false)
-      })
+    async function cargar() {
+      const { data: constructora } = await supabase
+        .from('constructoras')
+        .select('id')
+        .eq('activa', true)
+        .limit(1)
+        .maybeSingle()
+
+      if (!constructora) { setLoading(false); return }
+
+      const { data: proyectos } = await supabase
+        .from('proyectos')
+        .select('id, sector')
+        .eq('constructora_id', constructora.id)
+
+      if (!proyectos?.length) { setLoading(false); return }
+
+      const proyectoIds = proyectos.map(p => p.id)
+
+      const { data: unidades } = await supabase
+        .from('unidades')
+        .select('precio, area_m2, proyecto_id, proyectos(sector)')
+        .in('proyecto_id', proyectoIds)
+        .not('precio', 'is', null)
+
+      if (unidades) {
+        const mapeadas: Propiedad[] = unidades.map((u: any) => ({
+          precio: u.precio,
+          area_m2: u.area_m2,
+          proyecto_id: u.proyecto_id,
+          proyectos: { sector: Array.isArray(u.proyectos) ? u.proyectos[0]?.sector : u.proyectos?.sector }
+        }))
+        setPropiedades(mapeadas)
+      }
+      setLoading(false)
+    }
+    cargar()
   }, [])
 
-  const zonas = Array.from(new Set(propiedades.map(p => p.location).filter(Boolean))).sort()
+  const zonas = Array.from(new Set(propiedades.map(p => p.proyectos?.sector).filter(Boolean))).sort() as string[]
 
   const analisisPorZona = zonas.map(zona => {
-    const props = propiedades.filter(p => p.location === zona)
-    const precios = props.map(p => Number(p.price)).filter(p => p > 0)
-    const preciosM2 = props.map(p => Number(p.precio_m2_usd)).filter(p => p > 0)
+    const props = propiedades.filter(p => p.proyectos?.sector === zona)
+    const precios = props.map(p => Number(p.precio)).filter(p => p > 0)
+    const preciosM2 = props
+      .filter(p => Number(p.area_m2) > 0)
+      .map(p => Number(p.precio) / Number(p.area_m2))
+      .filter(v => v > 0)
 
     const promedio = precios.length ? precios.reduce((a, b) => a + b, 0) / precios.length : 0
     const minimo = precios.length ? Math.min(...precios) : 0
@@ -48,7 +76,7 @@ export default function MercadoPage() {
 
   const totalPropiedades = propiedades.length
   const precioPromedioCRM = propiedades.length
-    ? propiedades.reduce((a, p) => a + Number(p.price), 0) / propiedades.length
+    ? propiedades.reduce((a, p) => a + Number(p.precio), 0) / propiedades.length
     : 0
 
   const fmt = (n: number) => n > 0
