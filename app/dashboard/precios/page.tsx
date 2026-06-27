@@ -4,9 +4,8 @@ export default function PreciosPage() {
   const planes = [
     {
       nombre: 'Explorador',
-      precio: 'Gratis',
+      precio: 'Por definir',
       descripcion: 'Para conocer SECTOR sin compromiso',
-      actual: true,
       features: [
         '1 proyecto activo',
         'Hasta 20 unidades',
@@ -18,8 +17,7 @@ export default function PreciosPage() {
     },
     {
       nombre: 'Profesional',
-      precio: '$49',
-      periodo: '/mes',
+      precio: 'Por definir',
       descripcion: 'Para constructoras activas',
       popular: true,
       features: [
@@ -34,8 +32,7 @@ export default function PreciosPage() {
     },
     {
       nombre: 'Empresa',
-      precio: '$99',
-      periodo: '/mes',
+      precio: 'Por definir',
       descripcion: 'Para grupos inmobiliarios',
       features: [
         'Proyectos ilimitados',
@@ -75,7 +72,6 @@ export default function PreciosPage() {
                 <span className={`font-black text-4xl tracking-tight ${plan.popular ? 'text-[#d4ff3b]' : 'text-white'}`}>
                   {plan.precio}
                 </span>
-                {plan.periodo && <span className="text-white text-sm mb-1">{plan.periodo}</span>}
               </div>
             </div>
 
@@ -88,19 +84,15 @@ export default function PreciosPage() {
               ))}
             </ul>
 
-            <button className={`w-full py-3 rounded-xl text-sm font-bold transition ${
-              plan.actual ? 'bg-zinc-800 text-white cursor-default' :
-              plan.popular ? 'bg-[#d4ff3b] hover:bg-[#c2eb30] text-black' :
-              'bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700'
-            }`}>
-              {plan.actual ? 'Plan actual' : plan.nombre === 'Empresa' ? 'Contactar ventas' : 'Empezar ahora'}
+            <button className="w-full py-3 rounded-xl text-sm font-bold bg-zinc-800 text-zinc-500 cursor-default" disabled>
+              Próximamente
             </button>
           </div>
         ))}
       </div>
 
       <div className="mt-10 bg-[#18181b] border border-zinc-800 rounded-2xl p-6 text-center">
-        <p className="text-white text-sm">¿Preguntas? Escríbenos a <span className="text-[#d4ff3b]">ventas@sector.do</span></p>
+        <p className="text-white text-sm">¿Preguntas? Escríbenos a <a href="mailto:ventas@sector.do" className="text-[#d4ff3b] hover:underline">ventas@sector.do</a></p>
       </div>
     </div>
   );
