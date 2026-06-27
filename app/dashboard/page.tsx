@@ -103,9 +103,10 @@ export default function DashboardPage() {
     // Cuotas vencidas
     const hoy = new Date().toISOString().split('T')[0];
     const { data: cuotasVencidas } = await supabase
-      .from('cuotas').select('*, planes_pago(cliente_nombre, unidad_id)')
+      .from('cuotas')
+      .select('*, planes_pago(unidad_id, unidades(cliente_nombre))')
       .eq('estado', 'pendiente').lt('fecha_vencimiento', hoy)
-      .order('fecha_vencimiento', { ascending: true }).limit(10);
+      .order('fecha_vencimiento', { ascending: true });
 
     const alertasCuotasData: AlertaCuota[] = [];
     for (const c of cuotasVencidas || []) {
@@ -119,7 +120,7 @@ export default function DashboardPage() {
           fecha_vencimiento: c.fecha_vencimiento,
           dias_vencida: diasDesde(c.fecha_vencimiento),
           unidad_numero: unidad?.numero || '—',
-          cliente_nombre: c.planes_pago?.cliente_nombre || null,
+          cliente_nombre: c.planes_pago?.unidades?.cliente_nombre || null,
         });
       }
     }
