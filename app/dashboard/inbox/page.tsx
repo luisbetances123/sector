@@ -6,19 +6,19 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/app/lib/supabase';
 interface Mensaje {
   id: string
-  cliente_id: string | null
+  prospecto_id: string | null
   canal: string
   direccion: string
   mensaje: string
   leido: boolean
   created_at: string
-  cliente?: { name: string; phone: string }
+  cliente?: { nombre: string; contacto: string }
 }
 
 interface Cliente {
   id: string
-  name: string
-  phone: string
+  nombre: string
+  contacto: string
 }
 
 const CANALES = ['whatsapp', 'instagram', 'facebook', 'email', 'llamada', 'sistema']
@@ -40,7 +40,7 @@ export default function InboxPage() {
   const [filtroCanal, setFiltroCanal] = useState('todos')
   const [filtroLeido, setFiltroLeido] = useState('todos')
   const [form, setForm] = useState({
-    cliente_id: '',
+    prospecto_id: '',
     canal: 'whatsapp',
     direccion: 'entrante',
     mensaje: ''
@@ -54,14 +54,14 @@ export default function InboxPage() {
   async function fetchMensajes() {
     const { data } = await supabase
       .from('inbox')
-      .select('*, cliente:clients(name, phone)')
+      .select('*, cliente:prospectos(nombre, contacto)')
       .order('created_at', { ascending: false })
     if (data) setMensajes(data)
     setLoading(false)
   }
 
   async function fetchClientes() {
-    const { data } = await supabase.from('clients').select('id, name, phone').order('name')
+    const { data } = await supabase.from('prospectos').select('id, nombre, contacto').order('nombre')
     if (data) setClientes(data)
   }
 
@@ -70,7 +70,7 @@ export default function InboxPage() {
     setSaving(true)
     const { data: { user } } = await supabase.auth.getUser()
     const { error } = await supabase.from('inbox').insert([{
-      cliente_id: form.cliente_id || null,
+      prospecto_id: form.prospecto_id || null,
       canal: form.canal,
       direccion: form.direccion,
       mensaje: form.mensaje,
@@ -78,7 +78,7 @@ export default function InboxPage() {
       user_id: user?.id
     }])
     if (!error) {
-      setForm({ cliente_id: '', canal: 'whatsapp', direccion: 'entrante', mensaje: '' })
+      setForm({ prospecto_id: '', canal: 'whatsapp', direccion: 'entrante', mensaje: '' })
       setShowForm(false)
       fetchMensajes()
     }
@@ -147,10 +147,10 @@ export default function InboxPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="text-[9px] font-mono text-white uppercase">Cliente</label>
-              <select value={form.cliente_id} onChange={e => setForm({...form, cliente_id: e.target.value})}
+              <select value={form.prospecto_id} onChange={e => setForm({...form, prospecto_id: e.target.value})}
                 className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 mt-1 outline-none">
                 <option value="">Sin cliente asignado</option>
-                {clientes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                {clientes.map(c => <option key={c.id} value={c.id}>{c.nombre}</option>)}
               </select>
             </div>
             <div>
@@ -219,7 +219,7 @@ export default function InboxPage() {
                     {m.direccion === 'entrante' ? '← Entrante' : '→ Saliente'}
                   </span>
                   {m.cliente && (
-                    <span className="text-[10px] font-mono text-white">{m.cliente.name}</span>
+                    <span className="text-[10px] font-mono text-white">{m.cliente.nombre}</span>
                   )}
                   {!m.leido && (
                     <span className="text-[10px] font-mono text-[#CCFF00] font-bold">● Nuevo</span>

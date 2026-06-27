@@ -4,7 +4,7 @@ import { supabase } from '@/app/lib/supabase'
 
 interface FollowUp {
   id: string
-  cliente_id: string
+  prospecto_id: string
   tipo: string
   titulo: string
   detalle: string
@@ -67,9 +67,9 @@ export default function CalendarPage() {
   const [diaSeleccionado, setDiaSeleccionado] = useState<string | null>(hoy.toISOString().split('T')[0])
   const [showForm, setShowForm] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [clientes, setClientes] = useState<{id: string, nombre: string, telefono?: string}[]>([])
+  const [clientes, setClientes] = useState<{id: string, nombre: string, contacto?: string}[]>([])
   const hoyStr = hoy.toISOString().split('T')[0]
-  const [form, setForm] = useState({ cliente_id: '', tipo: 'llamada', titulo: '', detalle: '', fecha: hoyStr, hora: '09:00', urgencia: 'media' })
+  const [form, setForm] = useState({ prospecto_id: '', tipo: 'llamada', titulo: '', detalle: '', fecha: hoyStr, hora: '09:00', urgencia: 'media' })
 
   useEffect(() => { 
     fetchClientes().then(() => {
@@ -78,7 +78,7 @@ export default function CalendarPage() {
   }, [])
 
   async function fetchClientes() {
-    const { data } = await supabase.from('clientes').select('id, nombre, telefono')
+    const { data } = await supabase.from('prospectos').select('id, nombre, contacto')
     if (data) setClientes(data)
   }
 
@@ -107,7 +107,7 @@ export default function CalendarPage() {
 
         return {
           id: `mov-${mov.id}`,
-          cliente_id: mov.client_id,
+          prospecto_id: mov.client_id,
           tipo: 'movimiento',
           titulo: `Cambio a etapa: ${mov.etapa}`,
           detalle: `El cliente fue movido en el Pipeline.`,
@@ -130,7 +130,7 @@ export default function CalendarPage() {
     setSaving(true)
     const { error } = await supabase.from('followups').insert([{ ...form, hecho: false }])
     if (!error) {
-      setForm({ cliente_id: '', tipo: 'llamada', titulo: '', detalle: '', fecha: diaSeleccionado || hoyStr, hora: '09:00', urgencia: 'media' })
+      setForm({ prospecto_id: '', tipo: 'llamada', titulo: '', detalle: '', fecha: diaSeleccionado || hoyStr, hora: '09:00', urgencia: 'media' })
       setShowForm(false)
       fetchData()
     } else {
@@ -146,13 +146,13 @@ export default function CalendarPage() {
   }
 
   const enviarRecordatorioWhatsApp = (f: FollowUp) => {
-    const clienteObj = clientes.find(c => c.id === f.cliente_id)
-    if (!clienteObj || !clienteObj.telefono) {
+    const clienteObj = clientes.find(c => c.id === f.prospecto_id)
+    if (!clienteObj || !clienteObj.contacto) {
       alert('Este cliente no tiene un número de teléfono registrado.')
       return
     }
 
-    const numeroLimpio = clienteObj.telefono.replace(/[^0-9]/g, '')
+    const numeroLimpio = clienteObj.contacto.replace(/[^0-9]/g, '')
     const fechaAmigable = new Date(f.fecha + 'T12:00:00').toLocaleDateString('es-DO', { 
       day: 'numeric', 
       month: 'long' 
@@ -251,7 +251,7 @@ export default function CalendarPage() {
                       </div>
                       
                       <div className="flex items-center gap-2 flex-shrink-0">
-                        {f.cliente_id && !f.isMovement && (
+                        {f.prospecto_id && !f.isMovement && (
                           <button 
                             onClick={() => enviarRecordatorioWhatsApp(f)}
                             className="bg-green-600 hover:bg-green-500 text-white p-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1"
@@ -270,7 +270,7 @@ export default function CalendarPage() {
                       </div>
                     </div>
                     {f.hora && <p className="text-[#CCFF00] text-xs font-mono mt-1">{f.hora}</p>}
-                    {f.cliente_id && nombreCliente(f.cliente_id) && <p className="text-white text-xs mt-1">👤 {nombreCliente(f.cliente_id)}</p>}
+                    {f.prospecto_id && nombreCliente(f.prospecto_id) && <p className="text-white text-xs mt-1">👤 {nombreCliente(f.prospecto_id)}</p>}
                     {f.detalle && <p className="text-white text-xs mt-1">{f.detalle}</p>}
                     <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold mt-2 inline-block ${urgenciaColor[f.urgencia] || urgenciaColor.media}`}>{f.urgencia}</span>
                   </div>
@@ -287,7 +287,7 @@ export default function CalendarPage() {
             <h2 className="text-xl font-black text-[#CCFF00] uppercase mb-6">Nuevo Evento</h2>
             <div className="flex flex-col gap-4">
               <input placeholder="Titulo *" value={form.titulo} onChange={e => setForm({...form, titulo: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-[#CCFF00] outline-none" />
-              <select value={form.cliente_id} onChange={e => setForm({...form, cliente_id: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-[#CCFF00] outline-none">
+              <select value={form.prospecto_id} onChange={e => setForm({...form, prospecto_id: e.target.value})} className="bg-zinc-800 text-white px-4 py-3 rounded-xl border border-zinc-700 focus:border-[#CCFF00] outline-none">
                 <option value="">Sin cliente</option>
                 {clientes.map(c => <option key={c.id} value={c.id}>{c.nombre}</option>)}
               </select>
