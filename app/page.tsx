@@ -15,14 +15,6 @@ function InstagramIcon({ size = 14 }: { size?: number }) {
   )
 }
 
-function LinkedinIcon({ size = 14 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.124 2.062 2.062 0 0 1 0 4.124zM7.114 20.452H3.56V9h3.554v11.452z"/>
-    </svg>
-  )
-}
-
 
 // ── Typewriter cíclico del hero ──────────────────────────────────────────────
 function useCyclingTypewriter(words: string[]) {
@@ -122,15 +114,15 @@ const FLOOR_15: ('libre' | 'reservado' | 'vendido')[] = ['libre', 'vendido', 've
 const FLOOR_14: ('libre' | 'reservado' | 'vendido')[] = ['libre', 'libre', 'reservado', 'libre', 'libre', 'vendido', 'libre', 'vendido']
 
 const KANBAN = [
-  { titulo: '01. LEAD', cards: [
-    { nm: 'Maria Núñez', pr: 'Torre Piantini · 4A', am: 'US$250,000' },
-    { nm: 'Seung Lee', pr: 'Naco Residences · 12', am: 'US$220,000' },
+  { titulo: '01. COBRADO', cards: [
+    { nm: 'Cuota Inicial', pr: 'Torre Piantini · 4A', am: 'US$25,000' },
+    { nm: 'Cuota 2', pr: 'Naco Residences · 12', am: 'US$8,500' },
   ]},
-  { titulo: '02. RESERVA', cards: [
-    { nm: 'Eric Peña', pr: 'Torre Piantini · 21', am: 'US$210,000' },
+  { titulo: '02. POR COBRAR', cards: [
+    { nm: 'Cuota 5', pr: 'Torre Piantini · 21', am: 'US$8,500' },
   ]},
-  { titulo: '03. CIERRE', cards: [
-    { nm: 'Liz Betances', pr: 'Naco Residences · 07', am: 'US$195,000' },
+  { titulo: '03. VENCIDO', cards: [
+    { nm: 'Cuota 3', pr: 'Naco Residences · 07', am: 'US$8,500' },
   ]},
 ]
 
@@ -488,7 +480,7 @@ export default function Page() {
 
           <div className="tabs-row">
             <button className={`tab-btn ${activeTab === 'a' ? 'active' : ''}`} onClick={() => setActiveTab('a')}>MÓDULO A<span className="lbl">Control de unidades</span></button>
-            <button className={`tab-btn ${activeTab === 'b' ? 'active' : ''}`} onClick={() => setActiveTab('b')}>MÓDULO B<span className="lbl">Pipeline comercial</span></button>
+            <button className={`tab-btn ${activeTab === 'b' ? 'active' : ''}`} onClick={() => setActiveTab('b')}>MÓDULO B<span className="lbl">Finanzas</span></button>
             <button className={`tab-btn ${activeTab === 'c' ? 'active' : ''}`} onClick={() => setActiveTab('c')}>MÓDULO C<span className="lbl">Red de brokers</span></button>
           </div>
 
@@ -525,8 +517,8 @@ export default function Page() {
               <div className="mod-intro">
               <p className="mod-sub">El motor financiero y el flujo de tus contratos. Desde el primer depósito de separación hasta el cierre definitivo, con visibilidad total de tu caja.</p>
               <div className="mod-points">
-                <div className="mod-point"><span className="mod-point-title">Pipeline de Ventas Transparente</span><p>Visualiza en qué etapa está cada negocio (Separación, Contrato, Financiamiento, Entrega). Identifica cuellos de botella antes de que afecten el flujo.</p></div>
-                <div className="mod-point"><span className="mod-point-title">Gestión de Clientes y Perfiles</span><p>Historial centralizado de cada comprador. Documentos, contratos firmados, estados de cuenta y comunicaciones en un solo expediente digital protegido.</p></div>
+                <div className="mod-point"><span className="mod-point-title">Planes de Pago Automatizados</span><p>Genera el cronograma de cuotas de cada unidad: inicial, construcción y entrega, con los montos calculados al centavo.</p></div>
+                <div className="mod-point"><span className="mod-point-title">Alertas de Cartera Vencida</span><p>El sistema te avisa apenas una cuota se atrasa, con el comprador y el monto exacto, para que ningún pago se pierda.</p></div>
                 <div className="mod-point"><span className="mod-point-title">Control de Finanzas</span><p>Rastrea pagos, abonos a iniciales y cubicaciones. El sistema te alerta automáticamente si una reserva venció sin recibir el depósito para liberar la unidad de inmediato.</p></div>
               </div>
             </div>
@@ -627,11 +619,8 @@ export default function Page() {
             <a href="https://www.instagram.com/sector.do" target="_blank" rel="noopener noreferrer" className="foot-social" aria-label="Instagram">
               <InstagramIcon size={14} />
             </a>
-            <a href="https://www.linkedin.com/in/luis-betances-054905181/" target="_blank" rel="noopener noreferrer" className="foot-social" aria-label="LinkedIn">
-              <LinkedinIcon size={14} />
-            </a>
             <span style={{ opacity: 0.25 }}>|</span>
-            <span>Developed by Fraglaz Software · New York, USA</span>
+            <span>New York, USA · 2026</span>
           </div>
         </footer>
       </div>

@@ -69,7 +69,7 @@ const menuItems = [
       
       <header className="md:hidden w-full border-b border-zinc-900 bg-black/60 backdrop-blur-md px-6 py-4 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-3">
-          <Image src="/sector-logo.png" alt="SECTOR" width={300} height={160} priority style={{ height: '28px', width: 'auto' }} />
+          <Link href="/dashboard"><Image src="/sector-logo.png" alt="SECTOR" width={300} height={160} priority style={{ height: '28px', width: 'auto' }} /></Link>
         </div>
         <button 
           onClick={() => setIsOpen(!isOpen)}
@@ -118,7 +118,7 @@ const menuItems = [
       <aside className="hidden md:flex w-64 border-r border-zinc-900 bg-black/40 backdrop-blur-md flex-col justify-between p-6 shrink-0 h-screen sticky top-0">
         <div className="space-y-8">
           <div className="flex items-center gap-3 px-2">
-            <Image src="/sector-logo.png" alt="SECTOR" width={300} height={160} priority style={{ height: '32px', width: 'auto' }} />
+            <Link href="/dashboard"><Image src="/sector-logo.png" alt="SECTOR" width={300} height={160} priority style={{ height: '32px', width: 'auto' }} /></Link>
           </div>
           <nav className="space-y-1.5">
             {menuItems.map((item) => {
