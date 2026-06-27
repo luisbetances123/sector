@@ -4,11 +4,10 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { supabase } from '@/app/lib/supabase'
-import { 
-  LayoutDashboard, 
-  Users, 
-  Building2, 
-  GitFork, 
+import {
+  LayoutDashboard,
+  Users,
+  Building2,
   Calendar,
   BarChart2,
   LogOut,
@@ -38,7 +37,6 @@ const menuItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Mi Empresa', href: '/dashboard/constructoras', icon: HardHat },
 { name: 'Brokers', href: '/dashboard/brokers', icon: Users },
-    { name: 'Pipeline', href: '/dashboard/pipeline', icon: GitFork },
 { name: 'Finanzas', href: '/dashboard/finanzas', icon: BarChart2 },
   { name: 'Reportes', href: '/dashboard/reports', icon: BarChart2 },
     { name: 'Inbox', href: '/dashboard/inbox', icon: Building2 },
