@@ -17,13 +17,29 @@ export default function RemindersPage() {
   const [texto, setTexto] = useState('')
   const [fecha, setFecha] = useState('')
   const [saving, setSaving] = useState(false)
+  const [constructoraId, setConstructoraId] = useState<string | null>(null)
 
-  useEffect(() => { fetchRecordatorios() }, [])
+  useEffect(() => {
+    async function init() {
+      const { data } = await supabase
+        .from('constructoras')
+        .select('id')
+        .eq('activa', true)
+        .limit(1)
+        .maybeSingle()
+      const id = data?.id ?? null
+      setConstructoraId(id)
+      fetchRecordatorios(id)
+    }
+    init()
+  }, [])
 
-  async function fetchRecordatorios() {
+  async function fetchRecordatorios(cid: string | null = constructoraId) {
+    if (cid === null) return
     const { data } = await supabase
       .from('recordatorios')
       .select('*')
+      .eq('constructora_id', cid)
       .order('fecha', { ascending: true })
     if (data) setRecordatorios(data)
     setLoading(false)
@@ -32,7 +48,7 @@ export default function RemindersPage() {
   async function agregar() {
     if (!texto.trim() || !fecha) return
     setSaving(true)
-    await supabase.from('recordatorios').insert([{ texto, fecha, completado: false }])
+    await supabase.from('recordatorios').insert([{ texto, fecha, completado: false, constructora_id: constructoraId }])
     setTexto('')
     setFecha('')
     fetchRecordatorios()

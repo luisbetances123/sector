@@ -47,7 +47,7 @@ export async function GET(request: Request) {
       day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
     })
     await supabase.from('inbox').insert([{
-      cliente_id: null,
+      prospecto_id: null,
       canal: 'sistema',
       direccion: 'entrante',
       mensaje: `⚠️ Reserva próxima a vencer: Unidad ${u.numero} — vence en ${horasRestantes}h (${fechaLegible}). Confirmar o liberar antes de que expire.`,
