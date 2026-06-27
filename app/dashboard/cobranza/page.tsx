@@ -42,7 +42,7 @@ export default function CobranzaPage() {
     const en30 = en30dias.toISOString().split('T')[0];
 
     // Traer constructora y proyectos
-    const { data: constructora } = await supabase.from('constructoras').select('id').limit(1).maybeSingle();
+    const { data: constructora } = await supabase.from('constructoras').select('id').eq('activa', true).limit(1).maybeSingle();
     if (!constructora) { setLoading(false); return; }
 
     const { data: proyectos } = await supabase.from('proyectos').select('id, nombre').eq('constructora_id', constructora.id);

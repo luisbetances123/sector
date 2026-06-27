@@ -28,7 +28,7 @@ export default function PerfilPage() {
   useEffect(() => { cargarPerfil(); }, []);
 
   const cargarPerfil = async () => {
-    const { data } = await supabase.from('constructoras').select('*').limit(1).maybeSingle();
+    const { data } = await supabase.from('constructoras').select('*').eq('activa', true).limit(1).maybeSingle();
     if (data) {
       setConstructora(data);
       setFormData({
