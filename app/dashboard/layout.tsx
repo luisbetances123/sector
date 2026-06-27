@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
@@ -26,6 +26,21 @@ export default function DashboardLayout({
   const pathname = usePathname()
   const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
+  const [checking, setChecking] = useState(true)
+  const [autorizado, setAutorizado] = useState(false)
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) {
+        setAutorizado(true)
+      } else {
+        router.push('/login')
+      }
+      setChecking(false)
+    })
+  }, [router])
+
+  if (checking || !autorizado) return <div className="min-h-screen bg-[#09090b]" />
 
   async function handleLogout() {
     await supabase.auth.signOut()
