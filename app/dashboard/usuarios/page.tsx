@@ -12,6 +12,7 @@ interface Profile {
 export default function UsuariosPage() {
   const [profiles, setProfiles] = useState<Profile[]>([])
   const [currentUserRol, setCurrentUserRol] = useState('')
+  const [currentUserId, setCurrentUserId] = useState('')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [newUser, setNewUser] = useState({ email: '', password: '', nombre: '', rol: 'agente' })
@@ -26,19 +27,31 @@ export default function UsuariosPage() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
 
+    setCurrentUserId(user.id)
+
     const { data: profile } = await supabase
       .from('profiles')
       .select('rol')
       .eq('id', user.id)
       .single()
-    
+
     if (profile) setCurrentUserRol(profile.rol)
+
+    const { data: constructora } = await supabase
+      .from('constructoras')
+      .select('id')
+      .eq('activa', true)
+      .limit(1)
+      .maybeSingle()
+
+    if (!constructora) { setLoading(false); return }
 
     const { data: allProfiles } = await supabase
       .from('profiles')
       .select('*')
+      .eq('constructora_id', constructora.id)
       .order('created_at')
-    
+
     if (allProfiles) setProfiles(allProfiles)
     setLoading(false)
   }
@@ -99,9 +112,9 @@ export default function UsuariosPage() {
                 <td className="p-4">
                   <select
                     value={profile.rol}
-                    disabled={saving}
+                    disabled={saving || profile.id === currentUserId}
                     onChange={e => cambiarRol(profile.id, e.target.value)}
-                    className="bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-3 py-2 outline-none"
+                    className="bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-3 py-2 outline-none disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     <option value="admin">Admin</option>
                     <option value="agente">Agente</option>
