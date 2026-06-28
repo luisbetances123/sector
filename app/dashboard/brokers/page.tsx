@@ -36,10 +36,33 @@ export default function BrokersPage() {
   const cargarBrokers = useCallback(async () => {
     setLoading(true);
 
-    // Traer todos los accesos con su proyecto
+    // Resolver constructora propia del usuario
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setLoading(false); return; }
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('constructora_id')
+      .eq('id', user.id)
+      .single();
+
+    const constructoraId = profile?.constructora_id;
+    if (!constructoraId) { setBrokers([]); setLoading(false); return; }
+
+    // Obtener ids de proyectos propios de la constructora
+    const { data: proyectosPropios } = await supabase
+      .from('proyectos')
+      .select('id')
+      .eq('constructora_id', constructoraId);
+
+    const idsDeProyectosPropios = (proyectosPropios || []).map(p => p.id);
+    if (idsDeProyectosPropios.length === 0) { setBrokers([]); setLoading(false); return; }
+
+    // Traer accesos filtrados por proyectos de la constructora propia
     const { data: accesos } = await supabase
       .from('proyecto_accesos')
       .select('*, proyectos(id, nombre, constructora_id)')
+      .in('proyecto_id', idsDeProyectosPropios)
       .order('created_at', { ascending: false });
 
     if (!accesos) { setLoading(false); return; }
