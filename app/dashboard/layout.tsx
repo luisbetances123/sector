@@ -61,7 +61,6 @@ const menuItems = [
     { name: 'Recordatorios', href: '/dashboard/reminders', icon: Calendar },
     { name: 'Usuarios', href: '/dashboard/usuarios', icon: UserCircle },
     { name: 'Precios', href: '/dashboard/precios', icon: TrendingUp },
-    { name: 'Mi Perfil', href: '/dashboard/perfil', icon: UserCircle },
   ]
 
   return (
