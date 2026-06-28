@@ -30,9 +30,30 @@ export default function ReportsPage() {
   }, [])
 
   async function fetchData() {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) { setLoading(false); return }
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('constructora_id')
+      .eq('id', user.id)
+      .single()
+
+    const constructoraId = profile?.constructora_id
+    if (!constructoraId) { setLoading(false); return }
+
+    const { data: proyectosPropios } = await supabase
+      .from('proyectos')
+      .select('id')
+      .eq('constructora_id', constructoraId)
+
+    const idsDeProyectosPropios = (proyectosPropios || []).map(p => p.id)
+    if (idsDeProyectosPropios.length === 0) { setLoading(false); return }
+
     const { data } = await supabase
       .from('unidades')
       .select('estado, precio, reservado_por, fecha_venta')
+      .in('proyecto_id', idsDeProyectosPropios)
 
     setUnidades(data || [])
     setLoading(false)
