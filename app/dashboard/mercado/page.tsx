@@ -18,19 +18,22 @@ export default function MercadoPage() {
 
   useEffect(() => {
     async function cargar() {
-      const { data: constructora } = await supabase
-        .from('constructoras')
-        .select('id')
-        .eq('activa', true)
-        .limit(1)
-        .maybeSingle()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { setLoading(false); return }
 
-      if (!constructora) { setLoading(false); return }
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('constructora_id')
+        .eq('id', user.id)
+        .single()
+
+      const constructoraId = profile?.constructora_id
+      if (!constructoraId) { setLoading(false); return }
 
       const { data: proyectos } = await supabase
         .from('proyectos')
         .select('id, sector')
-        .eq('constructora_id', constructora.id)
+        .eq('constructora_id', constructoraId)
 
       if (!proyectos?.length) { setLoading(false); return }
 
