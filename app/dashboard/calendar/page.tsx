@@ -84,45 +84,7 @@ export default function CalendarPage() {
 
   async function fetchData() {
     const { data: followupsData } = await supabase.from('followups').select('*').order('fecha').order('hora')
-    
-    const { data: movementsData } = await supabase
-      .from('client_movements')
-      .select('id, client_id, etapa, moved_at')
-
-    let combinados: FollowUp[] = []
-
-    if (followupsData) {
-      combinados = [...followupsData]
-    }
-
-    if (movementsData) {
-      const movimientosFormateados: FollowUp[] = movementsData.map(mov => {
-        const fechaJusta = mov.moved_at ? mov.moved_at.split('T')[0] : ''
-        const horaJusta = mov.moved_at ? mov.moved_at.split('T')[1]?.substring(0, 5) : '12:00'
-        
-        let colorB = 'border-l-zinc-500'
-        if (mov.etapa === 'BUSCANDO') colorB = 'border-l-blue-600'
-        if (mov.etapa === 'EN OFERTA') colorB = 'border-l-amber-500'
-        if (mov.etapa === 'CIERRE') colorB = 'border-l-green-600'
-
-        return {
-          id: `mov-${mov.id}`,
-          prospecto_id: mov.client_id,
-          tipo: 'movimiento',
-          titulo: `Cambio a etapa: ${mov.etapa}`,
-          detalle: `El cliente fue movido en el Pipeline.`,
-          fecha: fechaJusta,
-          hora: horaJusta,
-          urgencia: mov.etapa, 
-          hecho: true,         
-          isMovement: true,
-          colorBorde: colorB
-        }
-      })
-      combinados = [...combinados, ...movimientosFormateados]
-    }
-
-    setFollowups(combinados)
+    setFollowups(followupsData ?? [])
   }
 
   async function saveFollowup() {
