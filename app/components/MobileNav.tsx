@@ -25,16 +25,19 @@ export default function MobileNav() {
     const hoy = new Date().toISOString().split('T')[0]
     const { data } = await supabase
       .from('followups')
-      .select('id, titulo, fecha, clientes(nombre)')
+      .select('id, titulo, fecha, prospecto_id')
       .eq('hecho', false)
       .lte('fecha', hoy)
       .order('fecha', { ascending: true })
     if (!data) return
+    const prospectoIds = data.map((f: any) => f.prospecto_id).filter(Boolean)
+    const { data: prospectosData } = await supabase.from('prospectos').select('id, nombre').in('id', prospectoIds)
+    const nombresPorId = Object.fromEntries((prospectosData || []).map((p: any) => [p.id, p.nombre]))
     setNotifs(data.map((f: any) => ({
       id: f.id,
       tipo: f.fecha < hoy ? 'vencido' : 'hoy',
       titulo: f.titulo,
-      cliente: f.clientes?.nombre || 'Cliente',
+      cliente: nombresPorId[f.prospecto_id] || 'Prospecto',
       fecha: f.fecha,
     })))
   }

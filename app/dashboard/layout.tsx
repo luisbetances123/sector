@@ -17,6 +17,8 @@ import {
   UserCircle,
   TrendingUp
 } from 'lucide-react'
+import NotificationBell from '@/app/components/NotificationBell'
+import MobileNav from '@/app/components/MobileNav'
 
 export default function DashboardLayout({
   children,
@@ -70,13 +72,16 @@ const menuItems = [
         <div className="flex items-center gap-3">
           <Link href="/dashboard"><Image src="/sector-logo.png" alt="SECTOR" width={300} height={160} priority style={{ height: '28px', width: 'auto' }} /></Link>
         </div>
-        <button 
-          onClick={() => setIsOpen(!isOpen)}
-          className="p-2 text-white hover:text-white transition-colors"
-          aria-label="Abrir menú"
-        >
-          {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
+        <div className="flex items-center gap-2">
+          <NotificationBell />
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="p-2 text-white hover:text-white transition-colors"
+            aria-label="Abrir menú"
+          >
+            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
       </header>
 
       {isOpen && (
@@ -156,6 +161,8 @@ const menuItems = [
           {children}
         </div>
       </main>
+
+      <MobileNav />
 
     </div>
   )
