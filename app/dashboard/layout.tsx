@@ -121,8 +121,9 @@ const menuItems = [
 
       <aside className="hidden md:flex w-64 border-r border-zinc-900 bg-black/40 backdrop-blur-md flex-col justify-between p-6 shrink-0 h-screen sticky top-0">
         <div className="space-y-8">
-          <div className="flex items-center gap-3 px-2">
+          <div className="flex items-center justify-between px-2">
             <Link href="/dashboard"><Image src="/sector-logo.png" alt="SECTOR" width={300} height={160} priority style={{ height: '32px', width: 'auto' }} /></Link>
+            <NotificationBell />
           </div>
           <nav className="space-y-1.5">
             {menuItems.map((item) => {
