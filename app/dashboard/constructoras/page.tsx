@@ -21,33 +21,64 @@ interface Constructora {
   descripcion: string | null;
 }
 
-const formVacio = {
-  nombre: '', logo_url: '', telefono: '', email: '', contacto_nombre: '',
-  direccion: '', anio_fundacion: '', sitio_web: '', instagram: '', linkedin: '', descripcion: '',
-};
-
-export default function ConstructorasPage() {
-  const [constructoras, setConstructoras] = useState<Constructora[]>([]);
+export default function MiEmpresaPage() {
+  const [constructora, setConstructora] = useState<Constructora | null>(null);
   const [loading, setLoading] = useState(true);
-  const [editandoId, setEditandoId] = useState<string | null>(null);
   const [mensaje, setMensaje] = useState<{ tipo: 'exito' | 'error'; texto: string } | null>(null);
   const [stats, setStats] = useState({ totalProyectos: 0, totalUnidades: 0 });
-  const [formData, setFormData] = useState(formVacio);
+  const [formData, setFormData] = useState({
+    nombre: '', logo_url: '', telefono: '', email: '', contacto_nombre: '',
+    direccion: '', anio_fundacion: '', sitio_web: '', instagram: '', linkedin: '', descripcion: '',
+  });
 
-  useEffect(() => { cargarConstructoras(); }, []);
+  useEffect(() => { cargarEmpresa(); }, []);
 
-  const cargarConstructoras = async () => {
+  const cargarEmpresa = async () => {
     setLoading(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setLoading(false); return; }
+
+    const { data: perfil } = await supabase
+      .from('profiles')
+      .select('constructora_id')
+      .eq('id', user.id)
+      .single();
+
+    if (!perfil?.constructora_id) { setLoading(false); return; }
+
     const { data, error } = await supabase
       .from('constructoras')
       .select('*')
-      .order('created_at', { ascending: false });
-    if (!error && data) setConstructoras(data);
-    const { data: proyectos } = await supabase.from('proyectos').select('unidades_total');
-    if (proyectos) setStats({
-      totalProyectos: proyectos.length,
-      totalUnidades: proyectos.reduce((s, p) => s + (p.unidades_total || 0), 0),
-    });
+      .eq('id', perfil.constructora_id)
+      .single();
+
+    if (!error && data) {
+      setConstructora(data);
+      setFormData({
+        nombre: data.nombre,
+        logo_url: data.logo_url || '',
+        telefono: data.telefono || '',
+        email: data.email || '',
+        contacto_nombre: data.contacto_nombre || '',
+        direccion: data.direccion || '',
+        anio_fundacion: data.anio_fundacion || '',
+        sitio_web: data.sitio_web || '',
+        instagram: data.instagram || '',
+        linkedin: data.linkedin || '',
+        descripcion: data.descripcion || '',
+      });
+
+      const { data: proyectos } = await supabase
+        .from('proyectos')
+        .select('unidades_total')
+        .eq('constructora_id', data.id);
+
+      if (proyectos) setStats({
+        totalProyectos: proyectos.length,
+        totalUnidades: proyectos.reduce((s, p) => s + (p.unidades_total || 0), 0),
+      });
+    }
+
     setLoading(false);
   };
 
@@ -57,9 +88,10 @@ export default function ConstructorasPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!constructora) return;
     setMensaje(null);
 
-    const datosAEnviar = {
+    const { error } = await supabase.from('constructoras').update({
       nombre: formData.nombre,
       logo_url: formData.logo_url || null,
       telefono: formData.telefono || null,
@@ -71,52 +103,30 @@ export default function ConstructorasPage() {
       instagram: formData.instagram || null,
       linkedin: formData.linkedin || null,
       descripcion: formData.descripcion || null,
-    };
+    }).eq('id', constructora.id);
 
-    if (editandoId) {
-      const { error } = await supabase.from('constructoras').update(datosAEnviar).eq('id', editandoId);
-      if (error) { setMensaje({ tipo: 'error', texto: 'Error: ' + error.message }); return; }
+    if (error) {
+      setMensaje({ tipo: 'error', texto: 'Error: ' + error.message });
     } else {
-      const { error } = await supabase.from('constructoras').insert([datosAEnviar]);
-      if (error) { setMensaje({ tipo: 'error', texto: 'Error: ' + error.message }); return; }
+      setMensaje({ tipo: 'exito', texto: 'Empresa actualizada.' });
+      setConstructora({ ...constructora, ...formData, logo_url: formData.logo_url || null });
     }
-
-    setMensaje({ tipo: 'exito', texto: editandoId ? 'Constructora actualizada.' : 'Constructora registrada.' });
-    setEditandoId(null);
-    setFormData(formVacio);
-    cargarConstructoras();
-  };
-
-  const iniciarEdicion = (c: Constructora) => {
-    setEditandoId(c.id);
-    setFormData({
-      nombre: c.nombre,
-      logo_url: c.logo_url || '',
-      telefono: c.telefono || '',
-      email: c.email || '',
-      contacto_nombre: c.contacto_nombre || '',
-      direccion: c.direccion || '',
-      anio_fundacion: c.anio_fundacion || '',
-      sitio_web: c.sitio_web || '',
-      instagram: c.instagram || '',
-      linkedin: c.linkedin || '',
-      descripcion: c.descripcion || '',
-    });
-  };
-
-  const toggleActiva = async (id: string, activa: boolean) => {
-    await supabase.from('constructoras').update({ activa: !activa }).eq('id', id);
-    cargarConstructoras();
-  };
-
-  const eliminar = async (id: string) => {
-    if (!confirm('¿Eliminar esta constructora?')) return;
-    await supabase.from('constructoras').delete().eq('id', id);
-    cargarConstructoras();
   };
 
   const input = "w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-[#CCFF00] transition";
   const label = "block text-[11px] font-mono text-zinc-400 uppercase tracking-wider mb-1";
+
+  if (loading) return (
+    <div className="p-4 md:p-8 min-h-screen bg-transparent text-zinc-100">
+      <div className="text-center py-20 text-white font-mono text-sm animate-pulse">Cargando empresa...</div>
+    </div>
+  );
+
+  if (!constructora) return (
+    <div className="p-4 md:p-8 min-h-screen bg-transparent text-zinc-100">
+      <div className="text-center py-20 text-zinc-600 font-mono text-sm">No se encontró tu empresa.</div>
+    </div>
+  );
 
   return (
     <div className="p-4 md:p-8 min-h-screen bg-transparent text-zinc-100">
@@ -124,16 +134,19 @@ export default function ConstructorasPage() {
       {/* Header */}
       <div className="flex justify-between items-start mb-6">
         <div>
-          <h1 className="text-2xl md:text-4xl font-black italic text-[#CCFF00] tracking-tighter uppercase">CONSTRUCTORAS</h1>
-          <p className="text-white text-xs mt-1 uppercase tracking-widest">Empresas desarrolladoras registradas en SECTOR</p>
+          <h1 className="text-2xl md:text-4xl font-black italic text-[#CCFF00] tracking-tighter uppercase">MI EMPRESA</h1>
+          <p className="text-white text-xs mt-1 uppercase tracking-widest">Perfil y datos de tu empresa en SECTOR</p>
         </div>
+        <a href={`/dashboard/constructoras/${constructora.id}/proyectos`}
+          className="text-center bg-[#d4ff3b]/10 hover:bg-[#d4ff3b] text-[#d4ff3b] hover:text-black text-xs px-4 py-2.5 rounded-xl font-semibold transition border border-[#d4ff3b]/20 whitespace-nowrap self-center">
+          Ver Proyectos →
+        </a>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-3 mb-6">
+      <div className="grid grid-cols-2 gap-3 mb-6">
         {[
-          { label: 'Constructoras', value: constructoras.length, color: 'text-[#CCFF00]' },
-          { label: 'Proyectos', value: stats.totalProyectos, color: 'text-white' },
+          { label: 'Proyectos', value: stats.totalProyectos, color: 'text-[#CCFF00]' },
           { label: 'Unidades Totales', value: stats.totalUnidades, color: 'text-white' },
         ].map(s => (
           <div key={s.label} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-3 md:p-5">
@@ -144,15 +157,9 @@ export default function ConstructorasPage() {
       </div>
 
       {/* Formulario */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 mb-8">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xs font-mono text-zinc-400 uppercase tracking-widest">
-            {editandoId ? '⚡ Editar Constructora' : '＋ Registrar Constructora'}
-          </h2>
-          {editandoId && (
-            <button type="button" onClick={() => { setEditandoId(null); setFormData(formVacio); setMensaje(null); }}
-              className="text-zinc-500 hover:text-white text-xs transition">✕ Cancelar</button>
-          )}
+      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+        <div className="mb-6">
+          <h2 className="text-xs font-mono text-zinc-400 uppercase tracking-widest">⚡ Editar Información</h2>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
@@ -266,65 +273,11 @@ export default function ConstructorasPage() {
           <div className="flex justify-end">
             <button type="submit"
               className="bg-[#CCFF00] hover:bg-white text-black px-6 py-2.5 rounded-xl text-xs font-black uppercase transition">
-              {editandoId ? 'Actualizar' : 'Registrar Constructora'}
+              Guardar Cambios
             </button>
           </div>
         </form>
       </div>
-
-      {/* Lista */}
-      {loading ? (
-        <div className="text-center py-20 text-white font-mono text-sm animate-pulse">Cargando constructoras...</div>
-      ) : constructoras.length === 0 ? (
-        <div className="text-center py-20 text-zinc-600 font-mono text-sm">No hay constructoras registradas aún.</div>
-      ) : (
-        <div className="flex flex-col gap-4">
-          {constructoras.map((c) => (
-            <div key={c.id} className="bg-[#18181b] border border-zinc-800 rounded-xl p-6 hover:border-zinc-700 transition flex flex-col md:flex-row md:items-center gap-5">
-              <div className="flex items-center gap-4 md:w-72 flex-shrink-0">
-                <div className="w-12 h-12 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center overflow-hidden flex-shrink-0">
-                  {c.logo_url
-                    ? <img src={c.logo_url} alt={c.nombre} className="w-full h-full object-cover" />
-                    : <span className="text-zinc-600 text-xl">🏗️</span>
-                  }
-                </div>
-                <div>
-                  <h3 className="text-white font-bold text-sm">{c.nombre}</h3>
-                  {c.contacto_nombre && <p className="text-zinc-500 text-xs mt-0.5">{c.contacto_nombre}</p>}
-                </div>
-              </div>
-
-              <div className="flex-1 flex flex-wrap gap-x-6 gap-y-1">
-                {c.telefono && <p className="text-xs text-zinc-500 font-mono">📞 {c.telefono}</p>}
-                {c.email && <p className="text-xs text-zinc-500 font-mono">✉️ {c.email}</p>}
-              </div>
-
-              <span className={`text-[10px] px-2 py-1 rounded-full font-mono border self-start md:self-center ${c.activa ? 'bg-[#d4ff3b]/10 text-[#d4ff3b] border-[#d4ff3b]/20' : 'bg-zinc-800 text-zinc-500 border-zinc-700'}`}>
-                {c.activa ? 'Activa' : 'Inactiva'}
-              </span>
-
-              <div className="flex gap-2 flex-shrink-0">
-                <a href={`/dashboard/constructoras/${c.id}/proyectos`}
-                  className="text-center bg-[#d4ff3b]/10 hover:bg-[#d4ff3b] text-[#d4ff3b] hover:text-black text-xs px-3 py-2 rounded-lg font-semibold transition border border-[#d4ff3b]/20 whitespace-nowrap">
-                  Ver Proyectos →
-                </a>
-                <button onClick={() => iniciarEdicion(c)}
-                  className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs px-3 py-2 rounded-lg transition border border-zinc-700">
-                  Editar
-                </button>
-                <button onClick={() => toggleActiva(c.id, c.activa)}
-                  className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs px-3 py-2 rounded-lg transition border border-zinc-700 whitespace-nowrap">
-                  {c.activa ? 'Desactivar' : 'Activar'}
-                </button>
-                <button onClick={() => eliminar(c.id)}
-                  className="bg-zinc-900 hover:bg-red-950/40 text-zinc-500 hover:text-red-400 text-xs px-3 py-2 rounded-lg transition border border-zinc-800">
-                  Borrar
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   );
 }
