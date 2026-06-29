@@ -127,10 +127,17 @@ export default function FichaUnidadPage() {
   const cambiarEstado = async (nuevoEstado: string) => {
     if (!unidad) return;
     const extras: Record<string, string | null> = {};
-    if (nuevoEstado === 'libre') { extras.reservado_por = null; extras.reservado_hasta = null; extras.fecha_reserva = null; }
+    if (nuevoEstado === 'libre') { extras.reservado_por = null; extras.reservado_hasta = null; extras.fecha_reserva = null; extras.cliente_nombre = null; }
     if (nuevoEstado === 'reservado') { extras.fecha_reserva = new Date().toISOString(); extras.reservado_por = 'Desarrollador'; }
-    await supabase.from('unidades').update({ estado: nuevoEstado, ...extras }).eq('id', unidad.id);
-    await supabase.from('unidad_historial').insert([{ unidad_id: unidad.id, estado_anterior: unidad.estado, estado_nuevo: nuevoEstado, actor: 'Constructora' }]);
+    const { error: errorUpdate } = await supabase.from('unidades').update({ estado: nuevoEstado, ...extras }).eq('id', unidad.id);
+    if (errorUpdate) {
+      alert('Error al cambiar el estado: ' + errorUpdate.message);
+      return;
+    }
+    const { error: errorHistorial } = await supabase.from('unidad_historial').insert([{ unidad_id: unidad.id, estado_anterior: unidad.estado, estado_nuevo: nuevoEstado, actor: 'Constructora' }]);
+    if (errorHistorial) {
+      console.error('Error guardando historial:', errorHistorial.message);
+    }
     cargarDatos();
   };
 

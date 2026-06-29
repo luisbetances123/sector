@@ -216,16 +216,24 @@ export default function UnidadesPage() {
       extras.reservado_por = null;
       extras.reservado_hasta = null;
       extras.fecha_reserva = null;
+      extras.cliente_nombre = null;
     }
-    await supabase.from('unidades').update({ estado: nuevoEstado, ...extras }).eq('id', id);
+    const { error: errorUpdate } = await supabase.from('unidades').update({ estado: nuevoEstado, ...extras }).eq('id', id);
+    if (errorUpdate) {
+      alert('Error al cambiar el estado: ' + errorUpdate.message);
+      return;
+    }
     if (unidadAnterior) {
-      await supabase.from('unidad_historial').insert([{
+      const { error: errorHistorial } = await supabase.from('unidad_historial').insert([{
         unidad_id: id,
         estado_anterior: unidadAnterior.estado,
         estado_nuevo: nuevoEstado,
         actor: unidadAnterior.reservado_por || 'Constructora',
         nota: null,
       }]);
+      if (errorHistorial) {
+        console.error('Error guardando historial:', errorHistorial.message);
+      }
     }
     cargarDatos();
     setUnidadSeleccionada(null);
