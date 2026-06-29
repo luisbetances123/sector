@@ -54,19 +54,23 @@ export default function CobranzaPage() {
     const constructoraId = profile?.constructora_id;
     if (!constructoraId) { setLoading(false); return; }
 
-    const { data: proyectos } = await supabase.from('proyectos').select('id, nombre').eq('constructora_id', constructoraId);
+    const { data: proyectos, error: errorProyectos } = await supabase.from('proyectos').select('id, nombre').eq('constructora_id', constructoraId);
+    if (errorProyectos) { console.error('Error al cargar proyectos:', errorProyectos); setLoading(false); return; }
     if (!proyectos) { setLoading(false); return; }
 
     const proyectoIds = proyectos.map(p => p.id);
     const proyectoMap = Object.fromEntries(proyectos.map(p => [p.id, p.nombre]));
 
     // Traer unidades
-    const { data: unidades } = await supabase.from('unidades').select('id, numero, proyecto_id, cliente_nombre').in('proyecto_id', proyectoIds);
+    const { data: unidades, error: errorUnidades } = await supabase.from('unidades').select('id, numero, proyecto_id, cliente_nombre').in('proyecto_id', proyectoIds);
+    if (errorUnidades) { console.error('Error al cargar unidades:', errorUnidades); setLoading(false); return; }
     const unidadMap = Object.fromEntries((unidades || []).map(u => [u.id, u]));
 
     // Traer todos los planes y cuotas
-    const { data: planes } = await supabase.from('planes_pago').select('id, unidad_id, precio_total');
-    const { data: cuotas } = await supabase.from('cuotas').select('*');
+    const { data: planes, error: errorPlanes } = await supabase.from('planes_pago').select('id, unidad_id, precio_total');
+    if (errorPlanes) { console.error('Error al cargar planes de pago:', errorPlanes); setLoading(false); return; }
+    const { data: cuotas, error: errorCuotas } = await supabase.from('cuotas').select('*');
+    if (errorCuotas) { console.error('Error al cargar cuotas:', errorCuotas); setLoading(false); return; }
 
     if (!planes || !cuotas) { setLoading(false); return; }
 
@@ -134,7 +138,16 @@ export default function CobranzaPage() {
   useEffect(() => { cargarDatos(); }, [cargarDatos]);
 
   const marcarPagado = async (cuotaId: string) => {
-    await supabase.from('cuotas').update({ estado: 'pagado', fecha_pago: new Date().toISOString().split('T')[0] }).eq('id', cuotaId);
+    const { data: { user } } = await supabase.auth.getUser();
+    const { error } = await supabase.from('cuotas').update({
+      estado: 'pagado',
+      fecha_pago: new Date().toISOString().split('T')[0],
+      pagado_por: user?.email || 'Desconocido',
+    }).eq('id', cuotaId);
+    if (error) {
+      alert('Error al marcar la cuota como pagada: ' + error.message);
+      return;
+    }
     cargarDatos();
   };
 
