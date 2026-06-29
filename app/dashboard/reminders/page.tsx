@@ -109,17 +109,19 @@ export default function RemindersPage() {
       {/* FORM */}
       <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 space-y-4">
         <h2 className="text-xs font-mono text-white uppercase tracking-wider">Nuevo Recordatorio</h2>
-        <div className="flex gap-3">
+        <div className="flex flex-col gap-3">
           <input value={texto} onChange={e => setTexto(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && agregar()}
             placeholder="Ej. Llamar a Maria Nunez para seguimiento..."
-            className="flex-1 bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-3 outline-none placeholder-zinc-600" />
-          <input type="date" value={fecha} onChange={e => setFecha(e.target.value)} min={hoy}
-            className="bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-3 outline-none" />
-          <button onClick={agregar} disabled={saving || !texto.trim() || !fecha}
-            className="bg-[#CCFF00] text-black font-black text-xs rounded-xl px-5 py-3 hover:bg-[#b8e600] transition-colors disabled:opacity-50">
-            + Agregar
-          </button>
+            className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-3 outline-none placeholder-zinc-600" />
+          <div className="flex gap-3">
+            <input type="date" value={fecha} onChange={e => setFecha(e.target.value)} min={hoy}
+              className="flex-1 bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-sm rounded-xl px-4 py-3 outline-none" />
+            <button onClick={agregar} disabled={saving || !texto.trim() || !fecha}
+              className="bg-[#CCFF00] text-black font-black text-xs rounded-xl px-5 py-3 hover:bg-[#b8e600] transition-colors disabled:opacity-50">
+              + Agregar
+            </button>
+          </div>
         </div>
       </div>
 

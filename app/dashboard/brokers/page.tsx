@@ -183,7 +183,7 @@ export default function BrokersPage() {
       ) : (
         <div className="bg-[#18181b] border border-zinc-800 rounded-2xl overflow-hidden">
           {/* Header tabla */}
-          <div className="grid grid-cols-12 gap-4 px-6 py-3 border-b border-zinc-800 bg-zinc-900/50">
+          <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-3 border-b border-zinc-800 bg-zinc-900/50">
             <p className="col-span-3 text-[10px] text-white uppercase tracking-wider font-mono">Broker / Agencia</p>
             <p className="col-span-2 text-[10px] text-white uppercase tracking-wider font-mono">Proyecto</p>
             <p className="col-span-1 text-[10px] text-white uppercase tracking-wider font-mono text-center">Reservadas</p>
@@ -198,79 +198,88 @@ export default function BrokersPage() {
               <div key={idx}>
                 {/* Fila principal — clickeable */}
                 <div
-                  className="grid grid-cols-12 gap-4 px-6 py-4 hover:bg-zinc-900/30 transition items-center cursor-pointer"
+                  className="flex flex-col gap-3 px-4 py-4 md:grid md:grid-cols-12 md:gap-4 md:px-6 md:items-center hover:bg-zinc-900/30 transition cursor-pointer"
                   onClick={() => setExpandido(expandido === b.token ? null : b.token)}
                 >
-                  {/* Nombre */}
-                  <div className="col-span-3">
+                  {/* Nombre + estado (mobile) */}
+                  <div className="flex items-center justify-between md:col-span-3">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-bold text-white flex-shrink-0">
                         {b.nombre_agencia.charAt(0).toUpperCase()}
                       </div>
                       <div>
                         <p className="text-white text-sm font-semibold">{b.nombre_agencia}</p>
-                        <p className="text-white text-[10px] font-mono">
+                        <p className="text-zinc-400 text-[10px] font-mono">
                           {new Date(b.created_at).toLocaleDateString('es-DO', { day: '2-digit', month: 'short', year: 'numeric' })}
                         </p>
                       </div>
                     </div>
+                    <span className={`md:hidden text-[10px] px-2 py-1 rounded-full border font-mono ${b.activo ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-zinc-800 text-zinc-500 border-zinc-700'}`}>
+                      {b.activo ? 'Activo' : 'Inactivo'}
+                    </span>
                   </div>
 
                   {/* Proyecto */}
-                  <div className="col-span-2">
-                    <p className="text-white text-sm truncate">{b.proyecto_nombre}</p>
-                  </div>
-
-                  {/* Reservadas */}
-                  <div className="col-span-1 text-center">
-                    <span className={`font-mono font-bold text-sm ${b.unidades_reservadas > 0 ? 'text-amber-400' : 'text-zinc-600'}`}>
-                      {b.unidades_reservadas}
-                    </span>
-                  </div>
-
-                  {/* Vendidas */}
-                  <div className="col-span-1 text-center">
-                    <span className={`font-mono font-bold text-sm ${b.unidades_vendidas > 0 ? 'text-red-400' : 'text-zinc-600'}`}>
-                      {b.unidades_vendidas}
-                    </span>
-                  </div>
-
-                  {/* Volumen */}
-                  <div className="col-span-2 text-right">
-                    <p className={`font-mono font-bold text-sm ${b.volumen_reservado + b.volumen_vendido > 0 ? 'text-[#d4ff3b]' : 'text-zinc-600'}`}>
-                      ${(b.volumen_reservado + b.volumen_vendido).toLocaleString()}
+                  <div className="md:col-span-2">
+                    <p className="text-zinc-400 text-sm truncate">
+                      <span className="md:hidden text-zinc-500 font-mono text-[10px] uppercase mr-1">Proyecto:</span>
+                      {b.proyecto_nombre}
                     </p>
-                    {b.volumen_reservado > 0 && b.volumen_vendido > 0 && (
-                      <p className="text-white text-[10px] font-mono">${b.volumen_reservado.toLocaleString()} reservado</p>
-                    )}
                   </div>
 
-                  {/* Estado */}
-                  <div className="col-span-1 text-center">
+                  {/* Reservadas / Vendidas / Volumen — mini grid en mobile, columnas en desktop */}
+                  <div className="grid grid-cols-3 gap-2 md:contents">
+                    <div className="md:col-span-1 md:text-center">
+                      <p className="md:hidden text-[9px] text-zinc-500 font-mono uppercase mb-0.5">Reservadas</p>
+                      <span className={`font-mono font-bold text-sm ${b.unidades_reservadas > 0 ? 'text-amber-400' : 'text-zinc-600'}`}>
+                        {b.unidades_reservadas}
+                      </span>
+                    </div>
+                    <div className="md:col-span-1 md:text-center">
+                      <p className="md:hidden text-[9px] text-zinc-500 font-mono uppercase mb-0.5">Vendidas</p>
+                      <span className={`font-mono font-bold text-sm ${b.unidades_vendidas > 0 ? 'text-red-400' : 'text-zinc-600'}`}>
+                        {b.unidades_vendidas}
+                      </span>
+                    </div>
+                    <div className="md:col-span-2 md:text-right">
+                      <p className="md:hidden text-[9px] text-zinc-500 font-mono uppercase mb-0.5">Volumen</p>
+                      <p className={`font-mono font-bold text-sm ${b.volumen_reservado + b.volumen_vendido > 0 ? 'text-[#d4ff3b]' : 'text-zinc-600'}`}>
+                        ${(b.volumen_reservado + b.volumen_vendido).toLocaleString()}
+                      </p>
+                      {b.volumen_reservado > 0 && b.volumen_vendido > 0 && (
+                        <p className="text-zinc-400 text-[10px] font-mono">${b.volumen_reservado.toLocaleString()} reservado</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Estado (solo desktop, ya está duplicado arriba para mobile) */}
+                  <div className="hidden md:block md:col-span-1 md:text-center">
                     <span className={`text-[10px] px-2 py-1 rounded-full border font-mono ${b.activo ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-zinc-800 text-zinc-500 border-zinc-700'}`}>
                       {b.activo ? 'Activo' : 'Inactivo'}
                     </span>
                   </div>
 
                   {/* Acciones + flecha */}
-                  <div className="col-span-2 flex justify-end items-center gap-2">
+                  <div className="flex justify-between md:justify-end items-center gap-2 md:col-span-2">
                     <span className={`text-zinc-500 text-xs font-mono inline-block transition-transform duration-200 ${expandido === b.token ? 'rotate-180' : ''}`}>
                       ▾
                     </span>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); copiarLink(b.token); }}
-                      className="bg-zinc-800 hover:bg-zinc-700 text-white text-[10px] px-3 py-1.5 rounded-lg transition font-mono"
-                    >
-                      Copiar link
-                    </button>
-                    {b.activo && (
+                    <div className="flex items-center gap-2">
                       <button
-                        onClick={(e) => { e.stopPropagation(); desactivarAcceso(b.token); }}
-                        className="bg-zinc-900 hover:bg-red-950/40 text-zinc-600 hover:text-red-400 text-[10px] px-2 py-1.5 rounded-lg transition border border-zinc-800"
+                        onClick={(e) => { e.stopPropagation(); copiarLink(b.token); }}
+                        className="bg-zinc-800 hover:bg-zinc-700 text-white text-[10px] px-3 py-1.5 rounded-lg transition font-mono"
                       >
-                        ✕
+                        Copiar link
                       </button>
-                    )}
+                      {b.activo && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); desactivarAcceso(b.token); }}
+                          className="bg-zinc-900 hover:bg-red-950/40 text-zinc-600 hover:text-red-400 text-[10px] px-2 py-1.5 rounded-lg transition border border-zinc-800"
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
 
