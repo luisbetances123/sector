@@ -37,9 +37,9 @@ export default function CobranzaPage() {
 
   const cargarDatos = useCallback(async () => {
     setLoading(true);
-    const hoy = new Date().toISOString().split('T')[0];
+    const hoy = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Santo_Domingo' });
     const en30dias = new Date(); en30dias.setDate(en30dias.getDate() + 30);
-    const en30 = en30dias.toISOString().split('T')[0];
+    const en30 = en30dias.toLocaleDateString('en-CA', { timeZone: 'America/Santo_Domingo' });
 
     // Traer constructora y proyectos
     const { data: { user } } = await supabase.auth.getUser();
