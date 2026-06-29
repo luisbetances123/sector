@@ -46,14 +46,18 @@ export async function GET(request: Request) {
     const fechaLegible = new Date(u.reservado_hasta).toLocaleString('es-DO', {
       day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
     })
-    await supabase.from('inbox').insert([{
+    const { error: errorInsert } = await supabase.from('inbox').insert([{
       prospecto_id: null,
       canal: 'sistema',
       direccion: 'entrante',
       mensaje: `⚠️ Reserva próxima a vencer: Unidad ${u.numero} — vence en ${horasRestantes}h (${fechaLegible}). Confirmar o liberar antes de que expire.`,
       leido: false,
     }])
-    alertas++
+    if (errorInsert) {
+      console.error(`Error insertando alerta para unidad ${u.numero}:`, errorInsert.message)
+    } else {
+      alertas++
+    }
   }
 
   return NextResponse.json({

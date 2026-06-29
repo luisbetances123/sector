@@ -49,20 +49,25 @@ export async function GET(request: Request) {
       unidadesVencidas.push(unidad)
 
       // 1. Actualizar estado de la unidad
-      await supabase
+      const { error: errorUpdate } = await supabase
         .from('unidades')
         .update({ estado: 'libre', reservado_hasta: null, reservado_por: null })
         .eq('id', unidad.id)
 
       // 2. Registrar en el historial de cambios
-      await supabase.from('unidad_historial').insert([{
+      const { error: errorInsert } = await supabase.from('unidad_historial').insert([{
         unidad_id: unidad.id,
         estado_anterior: 'reservado',
         estado_nuevo: 'libre',
         actor: 'Sistema automático',
         nota: 'Reserva de 48h expirada automáticamente',
       }])
-      liberadas++
+
+      if (errorUpdate || errorInsert) {
+        console.error(`Error liberando unidad ${unidad.id}:`, errorUpdate?.message ?? errorInsert?.message)
+      } else {
+        liberadas++
+      }
     }
   }
 
