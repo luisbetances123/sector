@@ -42,10 +42,19 @@ export default function CobranzaPage() {
     const en30 = en30dias.toISOString().split('T')[0];
 
     // Traer constructora y proyectos
-    const { data: constructora } = await supabase.from('constructoras').select('id').eq('activa', true).limit(1).maybeSingle();
-    if (!constructora) { setLoading(false); return; }
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setLoading(false); return; }
 
-    const { data: proyectos } = await supabase.from('proyectos').select('id, nombre').eq('constructora_id', constructora.id);
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('constructora_id')
+      .eq('id', user.id)
+      .single();
+
+    const constructoraId = profile?.constructora_id;
+    if (!constructoraId) { setLoading(false); return; }
+
+    const { data: proyectos } = await supabase.from('proyectos').select('id, nombre').eq('constructora_id', constructoraId);
     if (!proyectos) { setLoading(false); return; }
 
     const proyectoIds = proyectos.map(p => p.id);
