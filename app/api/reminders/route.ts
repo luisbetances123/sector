@@ -21,7 +21,7 @@ export async function GET(request: Request) {
 
   const { data: unidades, error } = await supabase
     .from('unidades')
-    .select('id, numero, reservado_hasta, reservado_por')
+    .select('id, numero, proyecto_id, reservado_hasta, reservado_por')
     .eq('estado', 'reservado')
     .gt('reservado_hasta', ahoraISO)
     .lt('reservado_hasta', en48h)
@@ -46,12 +46,18 @@ export async function GET(request: Request) {
     const fechaLegible = new Date(u.reservado_hasta).toLocaleString('es-DO', {
       day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
     })
+    const { data: proyecto } = await supabase
+      .from('proyectos')
+      .select('constructora_id')
+      .eq('id', u.proyecto_id)
+      .single()
     const { error: errorInsert } = await supabase.from('inbox').insert([{
       prospecto_id: null,
       canal: 'sistema',
       direccion: 'entrante',
       mensaje: `⚠️ Reserva próxima a vencer: Unidad ${u.numero} — vence en ${horasRestantes}h (${fechaLegible}). Confirmar o liberar antes de que expire.`,
       leido: false,
+      constructora_id: proyecto?.constructora_id,
     }])
     if (errorInsert) {
       console.error(`Error insertando alerta para unidad ${u.numero}:`, errorInsert.message)

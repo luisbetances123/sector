@@ -12,7 +12,6 @@ interface Mensaje {
   mensaje: string
   leido: boolean
   created_at: string
-  cliente?: { nombre: string; contacto: string }
 }
 
 interface Cliente {
@@ -54,7 +53,7 @@ export default function InboxPage() {
   async function fetchMensajes() {
     const { data } = await supabase
       .from('inbox')
-      .select('*, cliente:prospectos(nombre, contacto)')
+      .select('*')
       .order('created_at', { ascending: false })
     if (data) setMensajes(data)
     setLoading(false)
@@ -69,13 +68,15 @@ export default function InboxPage() {
     if (!form.mensaje.trim()) return
     setSaving(true)
     const { data: { user } } = await supabase.auth.getUser()
+    const { data: profile } = await supabase.from('profiles').select('constructora_id').eq('id', user?.id).single()
     const { error } = await supabase.from('inbox').insert([{
       prospecto_id: form.prospecto_id || null,
       canal: form.canal,
       direccion: form.direccion,
       mensaje: form.mensaje,
       leido: true,
-      user_id: user?.id
+      user_id: user?.id,
+      constructora_id: profile?.constructora_id
     }])
     if (!error) {
       setForm({ prospecto_id: '', canal: 'whatsapp', direccion: 'entrante', mensaje: '' })
@@ -218,8 +219,8 @@ export default function InboxPage() {
                   <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border ${m.direccion === 'entrante' ? 'bg-zinc-900 text-white border-zinc-800' : 'bg-blue-500/10 text-blue-400 border-blue-500/20'}`}>
                     {m.direccion === 'entrante' ? '← Entrante' : '→ Saliente'}
                   </span>
-                  {m.cliente && (
-                    <span className="text-[10px] font-mono text-white">{m.cliente.nombre}</span>
+                  {m.prospecto_id && clientes.find(c => c.id === m.prospecto_id) && (
+                    <span className="text-[10px] font-mono text-white">{clientes.find(c => c.id === m.prospecto_id)?.nombre}</span>
                   )}
                   {!m.leido && (
                     <span className="text-[10px] font-mono text-[#CCFF00] font-bold">● Nuevo</span>
