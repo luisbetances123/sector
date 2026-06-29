@@ -21,13 +21,10 @@ export default function RemindersPage() {
 
   useEffect(() => {
     async function init() {
-      const { data } = await supabase
-        .from('constructoras')
-        .select('id')
-        .eq('activa', true)
-        .limit(1)
-        .maybeSingle()
-      const id = data?.id ?? null
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { setLoading(false); return }
+      const { data: profile } = await supabase.from('profiles').select('constructora_id').eq('id', user.id).single()
+      const id = profile?.constructora_id ?? null
       setConstructoraId(id)
       fetchRecordatorios(id)
     }
@@ -65,7 +62,7 @@ export default function RemindersPage() {
     fetchRecordatorios()
   }
 
-  const hoy = new Date().toISOString().split('T')[0]
+  const hoy = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Santo_Domingo' })
   const vencidos = recordatorios.filter(r => !r.completado && r.fecha < hoy)
   const pendientes = recordatorios.filter(r => !r.completado && r.fecha >= hoy)
   const completados = recordatorios.filter(r => r.completado)
