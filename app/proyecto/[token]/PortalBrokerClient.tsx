@@ -299,7 +299,7 @@ export default function PortalBrokerClient({ acceso, proyecto, unidadesIniciales
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                   {unidadesPiso.map(u => (
                     <button key={u.id}
-                      onClick={() => { if (u.estado === 'libre') { setUnidadSeleccionada(u); cargarProspectos(u.id); } }}
+                      onClick={() => { setUnidadSeleccionada(u); cargarProspectos(u.id); }}
                       style={{
                         background: ESTADO_COLORES[u.estado],
                         color: '#fff',
@@ -308,7 +308,7 @@ export default function PortalBrokerClient({ acceso, proyecto, unidadesIniciales
                         padding: '10px 16px',
                         fontWeight: 800,
                         fontSize: 13,
-                        cursor: u.estado === 'libre' ? 'pointer' : 'default',
+                        cursor: 'pointer',
                         opacity: u.estado === 'vendido' ? 0.6 : 1,
                         transition: 'transform 0.1s',
                         minWidth: 64,
@@ -346,7 +346,9 @@ export default function PortalBrokerClient({ acceso, proyecto, unidadesIniciales
               <>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: 24 }}>
                   <div>
-                    <div style={{ color: '#666', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>Reservar Unidad</div>
+                    <div style={{ color: '#666', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>
+                      {unidadSeleccionada.estado === 'libre' ? 'Reservar Unidad' : `Gestionar Unidad — ${ESTADO_TEXTO[unidadSeleccionada.estado]}`}
+                    </div>
                     <h3 style={{ color: '#fff', fontSize: 24, fontWeight: 900, margin: 0 }}>{unidadSeleccionada.numero}</h3>
                   </div>
                   <button onClick={() => setUnidadSeleccionada(null)} style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer', fontSize: 20 }}>✕</button>
@@ -453,23 +455,27 @@ export default function PortalBrokerClient({ acceso, proyecto, unidadesIniciales
                   </div>
                 </div>
 
-                <div style={{ marginBottom: 16 }}>
-                  <label style={{ color: '#aaa', fontSize: 12, display: 'block', marginBottom: 8 }}>Tu nombre o el de tu agencia</label>
-                  <input
-                    type="text" value={nombreBroker} onChange={e => setNombreBroker(e.target.value)}
-                    placeholder="Ej. Juan Pérez / Remax Capital"
-                    style={{ width: '100%', background: '#0d0d0f', border: `1px solid ${BORDER}`, borderRadius: 10, padding: '12px 16px', color: '#fff', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
-                  />
-                </div>
+                {unidadSeleccionada.estado === 'libre' && (
+                  <>
+                    <div style={{ marginBottom: 16 }}>
+                      <label style={{ color: '#aaa', fontSize: 12, display: 'block', marginBottom: 8 }}>Tu nombre o el de tu agencia</label>
+                      <input
+                        type="text" value={nombreBroker} onChange={e => setNombreBroker(e.target.value)}
+                        placeholder="Ej. Juan Pérez / Remax Capital"
+                        style={{ width: '100%', background: '#0d0d0f', border: `1px solid ${BORDER}`, borderRadius: 10, padding: '12px 16px', color: '#fff', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+                      />
+                    </div>
 
-                <p style={{ color: '#555', fontSize: 12, lineHeight: 1.5, marginBottom: 20 }}>
-                  Esta reserva bloquea la unidad por 48 horas. La constructora recibirá una notificación inmediata.
-                </p>
+                    <p style={{ color: '#555', fontSize: 12, lineHeight: 1.5, marginBottom: 20 }}>
+                      Esta reserva bloquea la unidad por 48 horas. La constructora recibirá una notificación inmediata.
+                    </p>
 
-                <button onClick={reservarUnidad} disabled={reservando || !nombreBroker.trim()}
-                  style={{ width: '100%', background: nombreBroker.trim() ? LIME : '#333', color: nombreBroker.trim() ? BG : '#666', border: 'none', borderRadius: 12, padding: '16px', fontWeight: 800, fontSize: 15, cursor: nombreBroker.trim() ? 'pointer' : 'not-allowed', transition: 'all 0.2s' }}>
-                  {reservando ? 'Reservando...' : 'Confirmar Reserva de 48h'}
-                </button>
+                    <button onClick={reservarUnidad} disabled={reservando || !nombreBroker.trim()}
+                      style={{ width: '100%', background: nombreBroker.trim() ? LIME : '#333', color: nombreBroker.trim() ? BG : '#666', border: 'none', borderRadius: 12, padding: '16px', fontWeight: 800, fontSize: 15, cursor: nombreBroker.trim() ? 'pointer' : 'not-allowed', transition: 'all 0.2s' }}>
+                      {reservando ? 'Reservando...' : 'Confirmar Reserva de 48h'}
+                    </button>
+                  </>
+                )}
               </>
             )}
           </div>
