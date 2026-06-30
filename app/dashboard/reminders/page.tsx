@@ -75,7 +75,7 @@ export default function RemindersPage() {
         className={`mt-0.5 w-5 h-5 rounded-full border-2 flex-shrink-0 transition-all ${r.completado ? 'bg-[#CCFF00] border-[#CCFF00]' : vencido ? 'border-red-400 hover:border-red-300' : 'border-zinc-600 hover:border-[#CCFF00]'}`} />
       <div className="flex-1 min-w-0">
         <p className={`text-sm ${r.completado ? 'line-through text-zinc-500' : 'text-white'}`}>{r.texto}</p>
-        <p className={`text-[11px] font-mono mt-1 ${vencido ? 'text-red-400' : 'text-zinc-500'}`}>
+        <p className={`text-xs font-mono mt-1 ${vencido ? 'text-red-400' : 'text-zinc-300'}`}>
           {vencido ? '⚠ Vencido — ' : ''}{formatFecha(r.fecha)}
         </p>
       </div>

@@ -110,7 +110,7 @@ export default function InboxPage() {
 
   return (
     <div className="text-zinc-100 font-sans space-y-8">
-      <header className="border-b border-zinc-900 pb-6 flex justify-between items-end">
+      <header className="border-b border-zinc-900 pb-6 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3">
         <div>
           <span className="text-sm font-mono text-[#CCFF00] uppercase tracking-widest">Comunicaciones</span>
           <h1 className="text-4xl font-extrabold tracking-tighter text-white mt-1">Conversaciones</h1>
@@ -147,7 +147,7 @@ export default function InboxPage() {
           <h2 className="text-xs font-mono text-white uppercase tracking-wider">Nueva Conversación</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="text-[9px] font-mono text-white uppercase">Cliente</label>
+              <label className="text-xs font-mono text-white uppercase">Cliente</label>
               <select value={form.prospecto_id} onChange={e => setForm({...form, prospecto_id: e.target.value})}
                 className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 mt-1 outline-none">
                 <option value="">Sin cliente asignado</option>
@@ -155,14 +155,14 @@ export default function InboxPage() {
               </select>
             </div>
             <div>
-              <label className="text-[9px] font-mono text-white uppercase">Canal</label>
+              <label className="text-xs font-mono text-white uppercase">Canal</label>
               <select value={form.canal} onChange={e => setForm({...form, canal: e.target.value})}
                 className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 mt-1 outline-none">
                 {CANALES.map(c => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-[9px] font-mono text-white uppercase">Dirección</label>
+              <label className="text-xs font-mono text-white uppercase">Dirección</label>
               <select value={form.direccion} onChange={e => setForm({...form, direccion: e.target.value})}
                 className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 mt-1 outline-none">
                 <option value="entrante">Entrante</option>
@@ -171,7 +171,7 @@ export default function InboxPage() {
             </div>
           </div>
           <div>
-            <label className="text-[9px] font-mono text-white uppercase">Mensaje / Resumen</label>
+            <label className="text-xs font-mono text-white uppercase">Mensaje / Resumen</label>
             <textarea value={form.mensaje} onChange={e => setForm({...form, mensaje: e.target.value})}
               rows={3} placeholder="Resumen de la conversación..."
               className="w-full bg-zinc-900 border border-zinc-800 focus:border-[#CCFF00] text-white text-xs rounded-xl px-4 py-3 mt-1 outline-none resize-none placeholder-zinc-600" />
@@ -213,25 +213,25 @@ export default function InboxPage() {
             <div key={m.id} className={`flex items-start gap-4 p-4 rounded-xl border transition-all ${!m.leido ? 'border-[#CCFF00]/20 bg-[#CCFF00]/5' : 'border-zinc-800 bg-zinc-950'}`}>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap mb-1">
-                  <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${CANAL_COLORS[m.canal] || 'bg-zinc-900 text-white border-zinc-800'}`}>
+                  <span className={`text-xs font-mono font-bold px-2 py-0.5 rounded-full border ${CANAL_COLORS[m.canal] || 'bg-zinc-900 text-white border-zinc-800'}`}>
                     {m.canal}
                   </span>
-                  <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border ${m.direccion === 'entrante' ? 'bg-zinc-900 text-white border-zinc-800' : 'bg-blue-500/10 text-blue-400 border-blue-500/20'}`}>
+                  <span className={`text-xs font-mono px-2 py-0.5 rounded-full border ${m.direccion === 'entrante' ? 'bg-zinc-900 text-white border-zinc-800' : 'bg-blue-500/10 text-blue-400 border-blue-500/20'}`}>
                     {m.direccion === 'entrante' ? '← Entrante' : '→ Saliente'}
                   </span>
                   {m.prospecto_id && clientes.find(c => c.id === m.prospecto_id) && (
-                    <span className="text-[10px] font-mono text-white">{clientes.find(c => c.id === m.prospecto_id)?.nombre}</span>
+                    <span className="text-xs font-mono text-white">{clientes.find(c => c.id === m.prospecto_id)?.nombre}</span>
                   )}
                   {!m.leido && (
-                    <span className="text-[10px] font-mono text-[#CCFF00] font-bold">● Nuevo</span>
+                    <span className="text-xs font-mono text-[#CCFF00] font-bold">● Nuevo</span>
                   )}
                 </div>
                 <p className="text-sm text-zinc-200 leading-relaxed">{m.mensaje}</p>
-                <p className="text-[11px] text-zinc-600 font-mono mt-1">{formatFecha(m.created_at)}</p>
+                <p className="text-[11px] text-zinc-400 font-mono mt-1">{formatFecha(m.created_at)}</p>
               </div>
               <div className="flex gap-2 flex-shrink-0">
                 <button onClick={() => toggleLeido(m.id, m.leido)}
-                  className={`text-[10px] px-2.5 py-1.5 rounded-lg border transition-all font-mono ${m.leido ? 'border-zinc-800 text-zinc-600 hover:text-white' : 'border-[#CCFF00]/30 text-[#CCFF00] hover:bg-[#CCFF00]/10'}`}>
+                  className={`text-xs px-2.5 py-1.5 rounded-lg border transition-all font-mono ${m.leido ? 'border-zinc-800 text-zinc-400 hover:text-white' : 'border-[#CCFF00]/30 text-[#CCFF00] hover:bg-[#CCFF00]/10'}`}>
                   {m.leido ? 'Marcar nuevo' : 'Leído'}
                 </button>
                 <button onClick={() => eliminar(m.id)} className="text-zinc-700 hover:text-red-400 text-xs transition-colors px-1">✕</button>

@@ -239,12 +239,12 @@ export default function Page() {
         @media (min-width: 640px) { .h-table-col { border-bottom: none; border-right: 1px solid #1a1a1a; } }
         .h-table-head { padding: 10px 16px; font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255,255,255,0.55); border-top: 1px solid #1a1a1a; }
         table.h-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 11px; }
-        table.h-table th { padding: 6px 16px; text-align: left; color: rgba(255,255,255,0.5); font-weight: 400; border-bottom: 1px solid #1a1a1a; }
+        table.h-table th { padding: 6px 16px; text-align: left; color: rgba(255,255,255,0.75); font-weight: 400; border-bottom: 1px solid #1a1a1a; }
         table.h-table th:last-child { text-align: right; }
         table.h-table td { padding: 8px 16px; border-bottom: 1px solid #141414; vertical-align: middle; }
         table.h-table tr:last-child td { border-bottom: none; }
         .unit-id { color: #fff; }
-        .unit-meta { font-size: 10px; color: rgba(255,255,255,0.55); margin-top: 1px; }
+        .unit-meta { font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 1px; }
         .pill { display: inline-block; border-radius: 3px; padding: 2px 6px; font-size: 10px; border: 1px solid; }
         .pill.libre { color: #CCFF00; border-color: rgba(204,255,0,0.3); background: rgba(204,255,0,0.06); }
         .pill.reservado { color: #888; border-color: #333; background: rgba(255,255,255,0.02); }
@@ -255,7 +255,7 @@ export default function Page() {
         .h-abs-num { margin-top: 4px; font-family: var(--mono); font-size: 20px; font-weight: 600; color: #fff; }
         .h-abs-delta { font-family: var(--mono); font-size: 10px; color: #CCFF00; }
         .h-abs-chart { margin-top: 12px; height: 80px; width: 100%; }
-        .h-abs-dates { margin-top: auto; display: flex; justify-content: space-between; font-family: var(--mono); font-size: 9px; color: rgba(255,255,255,0.45); }
+        .h-abs-dates { margin-top: auto; display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; color: rgba(255,255,255,0.65); }
         .sec { border-bottom: 1px solid #1a1a1a; padding: 56px 24px; }
         @media (min-width: 1024px) { .sec { padding: 72px 40px; } }
         .sec-eyebrow { font-family: var(--mono); font-size: 11px; color: rgba(255,255,255,0.55); text-transform: uppercase; letter-spacing: 1px; }
