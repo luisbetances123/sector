@@ -16,10 +16,19 @@ export default function MobileNav() {
   const pathname = usePathname()
   const [notifs, setNotifs] = useState<Notificacion[]>([])
   const [showPanel, setShowPanel] = useState(false)
+  const [showScrollTop, setShowScrollTop] = useState(false)
 
   useEffect(() => {
     cargarNotifs()
   }, [])
+
+  useEffect(() => {
+    const handleScroll = () => setShowScrollTop(window.scrollY > 400)
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 
   const cargarNotifs = async () => {
     const hoy = new Date().toISOString().split('T')[0]
@@ -102,6 +111,18 @@ export default function MobileNav() {
             )}
           </div>
         </div>
+      )}
+
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="md:hidden fixed bottom-20 right-4 z-[100] w-10 h-10 bg-zinc-900/90 backdrop-blur-xl border border-white/10 rounded-full flex items-center justify-center text-white shadow-lg active:scale-95 transition-transform"
+          aria-label="Volver arriba"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 15l7-7 7 7" />
+          </svg>
+        </button>
       )}
 
       <nav className="md:hidden fixed bottom-0 left-0 w-full bg-[#050505]/95 backdrop-blur-xl border-t border-white/10 z-[100]">
