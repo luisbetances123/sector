@@ -22,6 +22,15 @@ interface Documento {
   created_at: string
 }
 
+interface UnidadResumen {
+  piso: number
+  torre: string | null
+  total: number
+  libres: number
+  reservadas: number
+  vendidas: number
+}
+
 const TIPOS = ['plano', 'brochure', 'specs', 'otro']
 
 export default function ProyectoDetallePage() {
@@ -34,6 +43,7 @@ export default function ProyectoDetallePage() {
   const [loading, setLoading] = useState(true)
   const [subiendo, setSubiendo] = useState(false)
   const [tipoSeleccionado, setTipoSeleccionado] = useState('plano')
+  const [unidadesPorPiso, setUnidadesPorPiso] = useState<UnidadResumen[]>([])
 
   useEffect(() => {
     cargarDatos()
@@ -55,6 +65,25 @@ export default function ProyectoDetallePage() {
 
     setProyecto(proyectoData)
     setDocumentos(documentosData || [])
+
+    const { data: unidadesData } = await supabase
+      .from('unidades')
+      .select('piso, torre, estado')
+      .eq('proyecto_id', proyectoId)
+
+    const resumen: Record<string, UnidadResumen> = {}
+    for (const u of (unidadesData || [])) {
+      const key = `${u.torre ?? 'unica'}-${u.piso}`
+      if (!resumen[key]) {
+        resumen[key] = { piso: u.piso, torre: u.torre, total: 0, libres: 0, reservadas: 0, vendidas: 0 }
+      }
+      resumen[key].total++
+      if (u.estado === 'libre') resumen[key].libres++
+      else if (u.estado === 'reservada') resumen[key].reservadas++
+      else if (u.estado === 'vendida') resumen[key].vendidas++
+    }
+    setUnidadesPorPiso(Object.values(resumen).sort((a, b) => b.piso - a.piso || (a.torre ?? '').localeCompare(b.torre ?? '')))
+
     setLoading(false)
   }
 
@@ -126,6 +155,63 @@ export default function ProyectoDetallePage() {
           {proyecto.ubicacion} {proyecto.sector ? `· ${proyecto.sector}` : ''} · {proyecto.porcentaje_avance ?? 0}% avance
         </p>
       </div>
+
+      {unidadesPorPiso.length > 0 && (
+        <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-6">
+          <div className="flex items-center gap-2 mb-6">
+            <Building2 className="w-4 h-4 text-[#CCFF00]" />
+            <h2 className="font-bold text-sm uppercase tracking-wider">Disponibilidad por Piso</h2>
+          </div>
+
+          {/* Leyenda */}
+          <div className="flex items-center gap-6 mb-4 text-xs text-zinc-400">
+            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-[#CCFF00]" />Libre</span>
+            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-amber-500" />Reservada</span>
+            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-zinc-600" />Vendida</span>
+          </div>
+
+          <div className="space-y-2">
+            {unidadesPorPiso.map((fila) => {
+              const pctLibre = fila.total > 0 ? (fila.libres / fila.total) * 100 : 0
+              const pctReservada = fila.total > 0 ? (fila.reservadas / fila.total) * 100 : 0
+              const pctVendida = fila.total > 0 ? (fila.vendidas / fila.total) * 100 : 0
+              return (
+                <div key={`${fila.torre}-${fila.piso}`} className="flex items-center gap-3">
+                  <span className="text-xs text-zinc-400 w-16 text-right shrink-0">
+                    {fila.torre ? `${fila.torre} · ` : ''}P{fila.piso}
+                  </span>
+                  <div className="flex-1 h-6 rounded-md overflow-hidden flex bg-zinc-800">
+                    {pctLibre > 0 && (
+                      <div
+                        className="h-full bg-[#CCFF00] transition-all"
+                        style={{ width: `${pctLibre}%` }}
+                        title={`${fila.libres} libres`}
+                      />
+                    )}
+                    {pctReservada > 0 && (
+                      <div
+                        className="h-full bg-amber-500 transition-all"
+                        style={{ width: `${pctReservada}%` }}
+                        title={`${fila.reservadas} reservadas`}
+                      />
+                    )}
+                    {pctVendida > 0 && (
+                      <div
+                        className="h-full bg-zinc-600 transition-all"
+                        style={{ width: `${pctVendida}%` }}
+                        title={`${fila.vendidas} vendidas`}
+                      />
+                    )}
+                  </div>
+                  <span className="text-xs text-zinc-400 w-20 shrink-0">
+                    {fila.libres}/{fila.total} libres
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-6">
         <div className="flex items-center justify-between mb-6">
