@@ -51,19 +51,17 @@ export default function DashboardLayout({
   }
 
 const menuItems = [
-    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'Mi Empresa', href: '/dashboard/constructoras', icon: HardHat },
-{ name: 'Brokers', href: '/dashboard/brokers', icon: Users },
-{ name: 'Finanzas', href: '/dashboard/finanzas', icon: BarChart2 },
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Mi Empresa', href: '/dashboard/constructoras', icon: HardHat },
+  { name: 'Brokers', href: '/dashboard/brokers', icon: Users },
+  { name: 'Finanzas', href: '/dashboard/finanzas', icon: BarChart2 },
   { name: 'Reportes', href: '/dashboard/reportes', icon: BarChart2 },
-    { name: 'Inbox', href: '/dashboard/inbox', icon: Building2 },
-    { name: 'Calendario', href: '/dashboard/calendar', icon: Calendar },
-    { name: 'Calculadora', href: '/dashboard/calculadora', icon: TrendingUp },
-    { name: 'Mercado', href: '/dashboard/mercado', icon: TrendingUp },
-    { name: 'Recordatorios', href: '/dashboard/reminders', icon: Calendar },
-    { name: 'Usuarios', href: '/dashboard/usuarios', icon: UserCircle },
-    { name: 'Precios', href: '/dashboard/precios', icon: TrendingUp },
-  ]
+  { name: 'Proyectos', href: '/dashboard/mercado', icon: Building2 },
+  { name: 'Inbox', href: '/dashboard/inbox', icon: Building2 },
+  { name: 'Agenda', href: '/dashboard/calendar', icon: Calendar },
+  { name: 'Calculadora', href: '/dashboard/calculadora', icon: TrendingUp },
+  { name: 'Usuarios', href: '/dashboard/usuarios', icon: UserCircle },
+]
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-[#09090b] text-white antialiased selection:bg-[#CCFF00] selection:text-black">
