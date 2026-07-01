@@ -67,6 +67,15 @@ export default function DashboardPage() {
 
   const cargarDatos = useCallback(async () => {
     setLoading(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { data: profile } = await supabase
+        .from('profiles').select('rol').eq('id', user.id).single();
+      if (profile?.rol === 'broker') {
+        router.push('/dashboard/clientes');
+        return;
+      }
+    }
     const { data: constructora } = await supabase
       .from('constructoras').select('id, nombre').eq('activa', true).limit(1).maybeSingle();
     if (!constructora) { setLoading(false); return; }

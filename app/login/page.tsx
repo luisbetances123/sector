@@ -23,7 +23,17 @@ export default function LoginPage() {
       return
     }
 
-    window.location.href = '/dashboard'
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('rol')
+      .eq('id', (await supabase.auth.getUser()).data.user?.id)
+      .single()
+
+    if (profile?.rol === 'broker') {
+      window.location.href = '/dashboard/clientes'
+    } else {
+      window.location.href = '/dashboard'
+    }
   }
 
   async function handleReset() {

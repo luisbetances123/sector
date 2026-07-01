@@ -30,11 +30,18 @@ export default function DashboardLayout({
   const [isOpen, setIsOpen] = useState(false)
   const [checking, setChecking] = useState(true)
   const [autorizado, setAutorizado] = useState(false)
+  const [userRol, setUserRol] = useState<string | null>(null)
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
+    supabase.auth.getUser().then(async ({ data }) => {
       if (data.user) {
         setAutorizado(true)
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('rol')
+          .eq('id', data.user.id)
+          .single()
+        setUserRol(profile?.rol || 'admin')
       } else {
         router.push('/login')
       }
@@ -64,6 +71,13 @@ const menuItems = [
   { name: 'Usuarios', href: '/dashboard/usuarios', icon: UserCircle },
 ]
 
+const menuFiltrado = menuItems.filter(item => {
+  if (userRol === 'broker') {
+    return ['Mis Clientes', 'Proyectos', 'Inbox', 'Agenda', 'Calculadora'].includes(item.name)
+  }
+  return true
+})
+
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-[#09090b] text-white antialiased selection:bg-[#CCFF00] selection:text-black">
       
@@ -86,7 +100,7 @@ const menuItems = [
       {isOpen && (
         <div className="md:hidden fixed inset-0 top-[57px] bg-[#09090b] z-40 p-6 flex flex-col justify-between animate-fadeIn">
           <nav className="space-y-2">
-            {menuItems.map((item) => {
+            {menuFiltrado.map((item) => {
               const Icon = item.icon
               const isActive = pathname === item.href
               return (
@@ -125,7 +139,7 @@ const menuItems = [
             <NotificationBell />
           </div>
           <nav className="space-y-1.5">
-            {menuItems.map((item) => {
+            {menuFiltrado.map((item) => {
               const Icon = item.icon
               const isActive = pathname === item.href
               return (
