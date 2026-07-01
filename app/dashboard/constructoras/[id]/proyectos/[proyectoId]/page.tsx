@@ -39,6 +39,26 @@ interface UnidadSelector {
   torre: string | null
 }
 
+interface UnidadCompleta {
+  id: string
+  numero: string
+  piso: number
+  torre: string | null
+  tipo: string | null
+  estado: string
+  precio: number | null
+  habitaciones: number | null
+  banos: number | null
+  area_m2: number | null
+  reservado_por: string | null
+  cliente_nombre: string | null
+}
+
+interface ModalEstado {
+  unidad: UnidadCompleta
+  estadoNuevo: 'libre' | 'reservada' | 'vendida'
+}
+
 const TIPOS = ['plano', 'brochure', 'specs', 'otro']
 
 export default function ProyectoDetallePage() {
@@ -55,6 +75,11 @@ export default function ProyectoDetallePage() {
   const [docPreview, setDocPreview] = useState<Documento | null>(null)
   const [unidades, setUnidades] = useState<UnidadSelector[]>([])
   const [unidadSeleccionada, setUnidadSeleccionada] = useState<string>('')
+  const [unidadesCompletas, setUnidadesCompletas] = useState<UnidadCompleta[]>([])
+  const [modalEstado, setModalEstado] = useState<ModalEstado | null>(null)
+  const [notaModal, setNotaModal] = useState('')
+  const [guardando, setGuardando] = useState(false)
+  const [userEmail, setUserEmail] = useState('')
 
   useEffect(() => {
     cargarDatos()
@@ -102,6 +127,16 @@ export default function ProyectoDetallePage() {
       .order('piso', { ascending: false })
     setUnidades(unidadesData2 || [])
 
+    const { data: unidadesFullData } = await supabase
+      .from('unidades')
+      .select('id, numero, piso, torre, tipo, estado, precio, habitaciones, banos, area_m2, reservado_por, cliente_nombre')
+      .eq('proyecto_id', proyectoId)
+      .order('piso', { ascending: false })
+    setUnidadesCompletas(unidadesFullData || [])
+
+    const { data: { user } } = await supabase.auth.getUser()
+    setUserEmail(user?.email || 'usuario')
+
     setLoading(false)
   }
 
@@ -145,10 +180,44 @@ export default function ProyectoDetallePage() {
     cargarDatos()
   }
 
+  async function handleCambiarEstado() {
+    if (!modalEstado) return
+    setGuardando(true)
+    try {
+      const res = await fetch('/api/unidades/estado', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          unidad_id: modalEstado.unidad.id,
+          estado_nuevo: modalEstado.estadoNuevo,
+          actor: userEmail,
+          nota: notaModal || null,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        alert(data.error || 'Error al cambiar estado')
+      } else {
+        setModalEstado(null)
+        setNotaModal('')
+        cargarDatos()
+      }
+    } finally {
+      setGuardando(false)
+    }
+  }
+
   async function handleEliminar(doc: Documento) {
     if (!confirm(`¿Eliminar "${doc.nombre}"? Esta acción no se puede revertir.`)) return
     await supabase.from('proyecto_documentos').delete().eq('id', doc.id)
     cargarDatos()
+  }
+
+  function badgeEstado(estado: string) {
+    if (estado === 'libre') return 'bg-[#CCFF00]/20 text-[#CCFF00]'
+    if (estado === 'reservada') return 'bg-amber-500/20 text-amber-400'
+    if (estado === 'vendida') return 'bg-zinc-600/40 text-zinc-400'
+    return 'bg-zinc-800 text-zinc-400'
   }
 
   function esImagen(doc: Documento) {
@@ -246,6 +315,66 @@ export default function ProyectoDetallePage() {
         </div>
       )}
 
+      {unidadesCompletas.length > 0 && (
+        <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-6">
+          <div className="flex items-center gap-2 mb-6">
+            <Building2 className="w-4 h-4 text-[#CCFF00]" />
+            <h2 className="font-bold text-sm uppercase tracking-wider">Inventario de Unidades</h2>
+            <span className="ml-auto text-xs text-zinc-500">{unidadesCompletas.length} unidades</span>
+          </div>
+          <div className="space-y-2">
+            {unidadesCompletas.map((u) => (
+              <div key={u.id} className="flex items-center gap-3 p-3 bg-zinc-900 rounded-lg border border-zinc-800">
+                <div className="w-12 text-center">
+                  <span className="text-white font-bold text-sm">{u.numero}</span>
+                  <p className="text-zinc-500 text-[10px]">{u.torre ? `T${u.torre}` : ''} P{u.piso}</p>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${badgeEstado(u.estado)}`}>
+                      {u.estado}
+                    </span>
+                    {u.tipo && <span className="text-[10px] text-zinc-500 uppercase">{u.tipo}</span>}
+                    {u.precio && <span className="text-[10px] text-zinc-400">US$ {u.precio.toLocaleString()}</span>}
+                  </div>
+                  {(u.reservado_por || u.cliente_nombre) && (
+                    <p className="text-[10px] text-zinc-500 mt-0.5 truncate">
+                      {u.estado === 'reservada' ? `Broker: ${u.reservado_por}` : `Cliente: ${u.cliente_nombre}`}
+                    </p>
+                  )}
+                </div>
+                <div className="flex items-center gap-1 shrink-0">
+                  {u.estado !== 'libre' && (
+                    <button
+                      onClick={() => { setModalEstado({ unidad: u, estadoNuevo: 'libre' }); setNotaModal('') }}
+                      className="text-[10px] px-2 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-400 transition-colors"
+                    >
+                      Liberar
+                    </button>
+                  )}
+                  {u.estado !== 'reservada' && (
+                    <button
+                      onClick={() => { setModalEstado({ unidad: u, estadoNuevo: 'reservada' }); setNotaModal('') }}
+                      className="text-[10px] px-2 py-1 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 transition-colors"
+                    >
+                      Reservar
+                    </button>
+                  )}
+                  {u.estado !== 'vendida' && (
+                    <button
+                      onClick={() => { setModalEstado({ unidad: u, estadoNuevo: 'vendida' }); setNotaModal('') }}
+                      className="text-[10px] px-2 py-1 rounded bg-zinc-700 hover:bg-zinc-600 text-zinc-300 transition-colors"
+                    >
+                      Vender
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
@@ -337,6 +466,57 @@ export default function ProyectoDetallePage() {
           </div>
         )}
       </div>
+      {modalEstado && (
+        <div
+          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+          onClick={() => setModalEstado(null)}
+        >
+          <div
+            className="bg-zinc-950 border border-zinc-800 rounded-xl p-6 w-full max-w-md"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="font-bold text-white mb-1">
+              {modalEstado.estadoNuevo === 'libre' && 'Liberar unidad'}
+              {modalEstado.estadoNuevo === 'reservada' && 'Reservar unidad'}
+              {modalEstado.estadoNuevo === 'vendida' && 'Registrar venta'}
+            </h3>
+            <p className="text-zinc-400 text-sm mb-4">
+              Unidad {modalEstado.unidad.numero} · Piso {modalEstado.unidad.piso}
+              {modalEstado.unidad.torre ? ` · Torre ${modalEstado.unidad.torre}` : ''}
+            </p>
+            {modalEstado.estadoNuevo !== 'libre' && (
+              <div className="mb-4">
+                <label className="text-xs text-zinc-400 mb-1 block">
+                  {modalEstado.estadoNuevo === 'reservada' ? 'Nombre del broker (opcional)' : 'Nombre del cliente (opcional)'}
+                </label>
+                <input
+                  type="text"
+                  value={notaModal}
+                  onChange={(e) => setNotaModal(e.target.value)}
+                  placeholder={modalEstado.estadoNuevo === 'reservada' ? 'Ej: Juan Pérez' : 'Ej: María Rodríguez'}
+                  className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-[#CCFF00]"
+                />
+              </div>
+            )}
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={() => setModalEstado(null)}
+                className="px-4 py-2 text-sm text-zinc-400 hover:text-white transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleCambiarEstado}
+                disabled={guardando}
+                className="px-4 py-2 text-sm bg-[#CCFF00] text-black font-bold rounded-lg hover:bg-[#b8e600] transition-colors disabled:opacity-50"
+              >
+                {guardando ? 'Guardando...' : 'Confirmar'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {docPreview && (
         <div
           className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
