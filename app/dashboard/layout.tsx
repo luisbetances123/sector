@@ -55,7 +55,7 @@ const menuItems = [
     { name: 'Mi Empresa', href: '/dashboard/constructoras', icon: HardHat },
 { name: 'Brokers', href: '/dashboard/brokers', icon: Users },
 { name: 'Finanzas', href: '/dashboard/finanzas', icon: BarChart2 },
-  { name: 'Reportes', href: '/dashboard/reports', icon: BarChart2 },
+  { name: 'Reportes', href: '/dashboard/reportes', icon: BarChart2 },
     { name: 'Inbox', href: '/dashboard/inbox', icon: Building2 },
     { name: 'Calendario', href: '/dashboard/calendar', icon: Calendar },
     { name: 'Calculadora', href: '/dashboard/calculadora', icon: TrendingUp },
