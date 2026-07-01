@@ -20,6 +20,7 @@ interface Documento {
   url: string
   tamano_kb: number | null
   created_at: string
+  unidad_id?: string | null
 }
 
 interface UnidadResumen {
@@ -29,6 +30,13 @@ interface UnidadResumen {
   libres: number
   reservadas: number
   vendidas: number
+}
+
+interface UnidadSelector {
+  id: string
+  numero: string
+  piso: number
+  torre: string | null
 }
 
 const TIPOS = ['plano', 'brochure', 'specs', 'otro']
@@ -45,6 +53,8 @@ export default function ProyectoDetallePage() {
   const [tipoSeleccionado, setTipoSeleccionado] = useState('plano')
   const [unidadesPorPiso, setUnidadesPorPiso] = useState<UnidadResumen[]>([])
   const [docPreview, setDocPreview] = useState<Documento | null>(null)
+  const [unidades, setUnidades] = useState<UnidadSelector[]>([])
+  const [unidadSeleccionada, setUnidadSeleccionada] = useState<string>('')
 
   useEffect(() => {
     cargarDatos()
@@ -85,6 +95,13 @@ export default function ProyectoDetallePage() {
     }
     setUnidadesPorPiso(Object.values(resumen).sort((a, b) => b.piso - a.piso || (a.torre ?? '').localeCompare(b.torre ?? '')))
 
+    const { data: unidadesData2 } = await supabase
+      .from('unidades')
+      .select('id, numero, piso, torre')
+      .eq('proyecto_id', proyectoId)
+      .order('piso', { ascending: false })
+    setUnidades(unidadesData2 || [])
+
     setLoading(false)
   }
 
@@ -119,9 +136,11 @@ export default function ProyectoDetallePage() {
       tipo: tipoSeleccionado,
       url: urlData.publicUrl,
       tamano_kb: Math.round(file.size / 1024),
+      unidad_id: unidadSeleccionada || null,
     }])
 
     setSubiendo(false)
+    setUnidadSeleccionada('')
     e.target.value = ''
     cargarDatos()
   }
@@ -245,6 +264,19 @@ export default function ProyectoDetallePage() {
               ))}
             </select>
 
+            <select
+              value={unidadSeleccionada}
+              onChange={(e) => setUnidadSeleccionada(e.target.value)}
+              className="bg-zinc-900 border border-zinc-800 text-white text-xs rounded-lg px-3 py-2 outline-none focus:border-[#CCFF00]"
+            >
+              <option value="">Proyecto completo</option>
+              {unidades.map((u) => (
+                <option key={u.id} value={u.id}>
+                  {u.torre ? `Torre ${u.torre} · ` : ''}{u.numero} (P{u.piso})
+                </option>
+              ))}
+            </select>
+
             <label className="bg-[#CCFF00] text-black font-black text-xs rounded-xl px-4 py-2.5 hover:bg-[#b8e600] transition-colors cursor-pointer inline-flex items-center gap-2">
               <Upload className="w-3.5 h-3.5" />
               {subiendo ? 'Subiendo...' : 'Subir documento'}
@@ -274,6 +306,11 @@ export default function ProyectoDetallePage() {
                     <p className="text-zinc-500 text-xs uppercase tracking-wider">
                       {doc.tipo || 'otro'} {doc.tamano_kb ? `· ${doc.tamano_kb} KB` : ''}
                     </p>
+                    {doc.unidad_id && (
+                      <span className="text-[10px] text-[#CCFF00]/70 bg-[#CCFF00]/10 px-1.5 py-0.5 rounded">
+                        {unidades.find(u => u.id === doc.unidad_id)?.numero ?? 'Unidad'}
+                      </span>
+                    )}
                   </div>
                 </div>
 
