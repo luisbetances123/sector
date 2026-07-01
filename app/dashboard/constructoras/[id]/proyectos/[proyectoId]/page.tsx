@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/app/lib/supabase'
-import { FileText, Upload, Download, Trash2, ArrowLeft, Building2 } from 'lucide-react'
+import { FileText, Upload, Download, Trash2, ArrowLeft, Building2, X } from 'lucide-react'
 
 interface Proyecto {
   id: string
@@ -44,6 +44,7 @@ export default function ProyectoDetallePage() {
   const [subiendo, setSubiendo] = useState(false)
   const [tipoSeleccionado, setTipoSeleccionado] = useState('plano')
   const [unidadesPorPiso, setUnidadesPorPiso] = useState<UnidadResumen[]>([])
+  const [docPreview, setDocPreview] = useState<Documento | null>(null)
 
   useEffect(() => {
     cargarDatos()
@@ -129,6 +130,19 @@ export default function ProyectoDetallePage() {
     if (!confirm(`¿Eliminar "${doc.nombre}"? Esta acción no se puede revertir.`)) return
     await supabase.from('proyecto_documentos').delete().eq('id', doc.id)
     cargarDatos()
+  }
+
+  function esImagen(doc: Documento) {
+    const nombre = doc.nombre.toLowerCase()
+    return nombre.endsWith('.jpg') || nombre.endsWith('.jpeg') || nombre.endsWith('.png') || nombre.endsWith('.webp')
+  }
+
+  function handlePreview(doc: Documento) {
+    if (esImagen(doc)) {
+      setDocPreview(doc)
+    } else {
+      window.open(doc.url, '_blank')
+    }
   }
 
   if (loading) {
@@ -248,7 +262,8 @@ export default function ProyectoDetallePage() {
             {documentos.map((doc) => (
               <div
                 key={doc.id}
-                className="flex items-center justify-between p-4 bg-zinc-900 border border-zinc-800 rounded-xl group"
+                className="flex items-center justify-between p-4 bg-zinc-900 border border-zinc-800 rounded-xl group cursor-pointer hover:border-zinc-600 transition-colors"
+                onClick={() => handlePreview(doc)}
               >
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-lg bg-zinc-800 flex items-center justify-center">
@@ -285,6 +300,30 @@ export default function ProyectoDetallePage() {
           </div>
         )}
       </div>
+      {docPreview && (
+        <div
+          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+          onClick={() => setDocPreview(null)}
+        >
+          <div
+            className="relative max-w-4xl max-h-[90vh] w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setDocPreview(null)}
+              className="absolute -top-10 right-0 text-zinc-400 hover:text-white text-sm flex items-center gap-1"
+            >
+              <X className="w-4 h-4" /> Cerrar
+            </button>
+            <img
+              src={docPreview.url}
+              alt={docPreview.nombre}
+              className="w-full h-auto max-h-[90vh] object-contain rounded-xl"
+            />
+            <p className="text-center text-zinc-400 text-xs mt-3">{docPreview.nombre}</p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
