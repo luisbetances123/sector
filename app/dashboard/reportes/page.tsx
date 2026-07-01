@@ -7,6 +7,12 @@ interface Unidad {
   precio: number | null
   reservado_por: string | null
   fecha_venta: string | null
+  proyecto_id?: string
+}
+
+interface Proyecto {
+  id: string
+  nombre: string
 }
 
 interface BrokerStats {
@@ -24,6 +30,8 @@ interface MesStats {
 export default function ReportsPage() {
   const [unidades, setUnidades] = useState<Unidad[]>([])
   const [loading, setLoading] = useState(true)
+  const [proyectos, setProyectos] = useState<Proyecto[]>([])
+  const [proyectoFiltro, setProyectoFiltro] = useState<string>('todos')
 
   useEffect(() => {
     fetchData()
@@ -44,26 +52,29 @@ export default function ReportsPage() {
 
     const { data: proyectosPropios } = await supabase
       .from('proyectos')
-      .select('id')
+      .select('id, nombre')
       .eq('constructora_id', constructoraId)
 
     const idsDeProyectosPropios = (proyectosPropios || []).map(p => p.id)
+    setProyectos(proyectosPropios || [])
     if (idsDeProyectosPropios.length === 0) { setLoading(false); return }
 
     const { data } = await supabase
       .from('unidades')
-      .select('estado, precio, reservado_por, fecha_venta')
+      .select('estado, precio, reservado_por, fecha_venta, proyecto_id')
       .in('proyecto_id', idsDeProyectosPropios)
 
     setUnidades(data || [])
     setLoading(false)
   }
 
-  const total = unidades.length
-  const libres = unidades.filter(u => u.estado === 'libre').length
-  const reservadas = unidades.filter(u => u.estado === 'reservada').length
-  const vendidas = unidades.filter(u => u.estado === 'vendida').length
-  const volumenVendido = unidades
+  const unidadesFiltradas = proyectoFiltro === 'todos' ? unidades : unidades.filter(u => u.proyecto_id === proyectoFiltro)
+
+  const total = unidadesFiltradas.length
+  const libres = unidadesFiltradas.filter(u => u.estado === 'libre').length
+  const reservadas = unidadesFiltradas.filter(u => u.estado === 'reservada').length
+  const vendidas = unidadesFiltradas.filter(u => u.estado === 'vendida').length
+  const volumenVendido = unidadesFiltradas
     .filter(u => u.estado === 'vendida')
     .reduce((s, u) => s + (u.precio || 0), 0)
 
@@ -72,7 +83,7 @@ export default function ReportsPage() {
   const pctLibre = 100 - pctVendido - pctReservado
 
   const ventasPorMes: Record<string, number> = {}
-  unidades
+  unidadesFiltradas
     .filter(u => u.estado === 'vendida' && u.fecha_venta)
     .forEach(u => {
       const d = new Date(u.fecha_venta!)
@@ -93,7 +104,7 @@ export default function ReportsPage() {
   const mesesParaAgotar = tasaAbsorcionMensual > 0 ? Math.ceil(libres / tasaAbsorcionMensual) : null
 
   const brokerMap: Record<string, BrokerStats> = {}
-  unidades
+  unidadesFiltradas
     .filter(u => (u.estado === 'vendida' || u.estado === 'reservada') && u.reservado_por)
     .forEach(u => {
       const nombre = u.reservado_por!
@@ -114,6 +125,29 @@ export default function ReportsPage() {
         <span className="text-sm font-mono text-[#CCFF00] uppercase tracking-widest">Analitica</span>
         <h1 className="text-4xl font-extrabold tracking-tighter text-white mt-1">Inventario y Absorción</h1>
       </header>
+
+      {proyectos.length > 1 && (
+        <div className="flex items-center gap-3 mb-6">
+          <span className="text-xs text-zinc-500 uppercase tracking-wider">Proyecto</span>
+          <div className="flex gap-2 flex-wrap">
+            <button
+              onClick={() => setProyectoFiltro('todos')}
+              className={`text-xs px-3 py-1.5 rounded-lg transition-colors ${proyectoFiltro === 'todos' ? 'bg-[#CCFF00] text-black font-bold' : 'bg-zinc-800 text-zinc-400 hover:text-white'}`}
+            >
+              Todos
+            </button>
+            {proyectos.map(p => (
+              <button
+                key={p.id}
+                onClick={() => setProyectoFiltro(p.id)}
+                className={`text-xs px-3 py-1.5 rounded-lg transition-colors ${proyectoFiltro === p.id ? 'bg-[#CCFF00] text-black font-bold' : 'bg-zinc-800 text-zinc-400 hover:text-white'}`}
+              >
+                {p.nombre}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <div className="text-white text-sm text-center py-20">Cargando datos...</div>
