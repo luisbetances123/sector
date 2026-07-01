@@ -54,6 +54,7 @@ const menuItems = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Mi Empresa', href: '/dashboard/constructoras', icon: HardHat },
   { name: 'Brokers', href: '/dashboard/brokers', icon: Users },
+  { name: 'Mis Clientes', href: '/dashboard/clientes', icon: UserCircle },
   { name: 'Finanzas', href: '/dashboard/finanzas', icon: BarChart2 },
   { name: 'Reportes', href: '/dashboard/reportes', icon: BarChart2 },
   { name: 'Proyectos', href: '/dashboard/mercado', icon: Building2 },
