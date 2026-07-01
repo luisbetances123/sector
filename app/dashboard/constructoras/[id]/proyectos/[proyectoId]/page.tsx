@@ -267,7 +267,7 @@ export default function ProyectoDetallePage() {
             <select
               value={unidadSeleccionada}
               onChange={(e) => setUnidadSeleccionada(e.target.value)}
-              className="bg-zinc-900 border border-zinc-800 text-white text-xs rounded-lg px-3 py-2 outline-none focus:border-[#CCFF00]"
+              className="bg-zinc-900 border border-zinc-800 text-white text-xs rounded-lg px-3 py-2 outline-none focus:border-[#CCFF00] overflow-hidden"
             >
               <option value="">Proyecto completo</option>
               {unidades.map((u) => (

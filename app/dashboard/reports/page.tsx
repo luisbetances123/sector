@@ -61,10 +61,10 @@ export default function ReportsPage() {
 
   const total = unidades.length
   const libres = unidades.filter(u => u.estado === 'libre').length
-  const reservadas = unidades.filter(u => u.estado === 'reservado').length
-  const vendidas = unidades.filter(u => u.estado === 'vendido').length
+  const reservadas = unidades.filter(u => u.estado === 'reservada').length
+  const vendidas = unidades.filter(u => u.estado === 'vendida').length
   const volumenVendido = unidades
-    .filter(u => u.estado === 'vendido')
+    .filter(u => u.estado === 'vendida')
     .reduce((s, u) => s + (u.precio || 0), 0)
 
   const pctVendido = total > 0 ? Math.round(vendidas / total * 100) : 0
@@ -73,7 +73,7 @@ export default function ReportsPage() {
 
   const ventasPorMes: Record<string, number> = {}
   unidades
-    .filter(u => u.estado === 'vendido' && u.fecha_venta)
+    .filter(u => u.estado === 'vendida' && u.fecha_venta)
     .forEach(u => {
       const d = new Date(u.fecha_venta!)
       const label = d.toLocaleDateString('es', { month: 'short', year: 'numeric' })
@@ -87,13 +87,18 @@ export default function ReportsPage() {
     })
   const maxMes = Math.max(...meses.map(m => m.count), 1)
 
+  const mesesActivos = meses.length || 1
+  const unidadesComprometidas = vendidas + reservadas
+  const tasaAbsorcionMensual = mesesActivos > 0 ? Math.round((vendidas / mesesActivos) * 10) / 10 : 0
+  const mesesParaAgotar = tasaAbsorcionMensual > 0 ? Math.ceil(libres / tasaAbsorcionMensual) : null
+
   const brokerMap: Record<string, BrokerStats> = {}
   unidades
-    .filter(u => (u.estado === 'vendido' || u.estado === 'reservado') && u.reservado_por)
+    .filter(u => (u.estado === 'vendida' || u.estado === 'reservada') && u.reservado_por)
     .forEach(u => {
       const nombre = u.reservado_por!
       if (!brokerMap[nombre]) brokerMap[nombre] = { nombre, vendidas: 0, reservadas: 0, volumen: 0 }
-      if (u.estado === 'vendido') {
+      if (u.estado === 'vendida') {
         brokerMap[nombre].vendidas++
         brokerMap[nombre].volumen += u.precio || 0
       } else {
@@ -134,6 +139,32 @@ export default function ReportsPage() {
             <div className="bg-zinc-950 p-5 rounded-2xl border border-zinc-900">
               <p className="text-xs font-mono text-[#CCFF00] uppercase">Volumen Vendido</p>
               <p className="text-xl font-black text-[#CCFF00] mt-1">US$ {volumenVendido.toLocaleString()}</p>
+            </div>
+          </section>
+
+          <section className="bg-zinc-950 border border-zinc-900 rounded-2xl p-6 space-y-4">
+            <h2 className="text-xs font-mono text-white uppercase tracking-wider">Absorción del Proyecto</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-zinc-900 rounded-xl p-4">
+                <p className="text-xs font-mono text-zinc-400 uppercase">Tasa mensual</p>
+                <p className="text-3xl font-black text-white mt-1">{tasaAbsorcionMensual}<span className="text-sm font-normal text-zinc-400 ml-1">unid/mes</span></p>
+              </div>
+              <div className="bg-zinc-900 rounded-xl p-4">
+                <p className="text-xs font-mono text-zinc-400 uppercase">Comprometido</p>
+                <p className="text-3xl font-black text-[#CCFF00] mt-1">{unidadesComprometidas}<span className="text-sm font-normal text-zinc-400 ml-1">de {total}</span></p>
+              </div>
+              <div className="bg-zinc-900 rounded-xl p-4">
+                <p className="text-xs font-mono text-zinc-400 uppercase">Proyección cierre</p>
+                <p className="text-3xl font-black text-white mt-1">
+                  {mesesParaAgotar === null ? '—' : mesesParaAgotar === 0 ? 'Agotado' : `${mesesParaAgotar}`}
+                  {mesesParaAgotar !== null && mesesParaAgotar > 0 && <span className="text-sm font-normal text-zinc-400 ml-1">meses</span>}
+                </p>
+                {mesesParaAgotar !== null && mesesParaAgotar > 0 && (
+                  <p className="text-xs text-zinc-500 mt-1">
+                    {new Date(Date.now() + mesesParaAgotar * 30 * 24 * 60 * 60 * 1000).toLocaleDateString('es', { month: 'long', year: 'numeric' })}
+                  </p>
+                )}
+              </div>
             </div>
           </section>
 
