@@ -85,6 +85,20 @@ export default function ProyectoDetallePage() {
     cargarDatos()
   }, [proyectoId])
 
+  useEffect(() => {
+    if (window.location.hash === '#documentos') {
+      const intentarScroll = (intentos: number) => {
+        const el = document.getElementById('documentos')
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' })
+        } else if (intentos > 0) {
+          setTimeout(() => intentarScroll(intentos - 1), 300)
+        }
+      }
+      setTimeout(() => intentarScroll(10), 800)
+    }
+  }, [])
+
   async function cargarDatos() {
     setLoading(true)
     const { data: proyectoData } = await supabase
