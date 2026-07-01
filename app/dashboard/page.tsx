@@ -42,6 +42,7 @@ interface Stats {
   cuotas_vencidas_monto: number;
   constructora_id: string | null;
   constructora_nombre: string | null;
+  proyectos_detalle?: { id: string; nombre: string; libres: number; reservadas: number; vendidas: number; total: number }[]
 }
 
 function tiempoRestante(hasta: string): number {
@@ -81,12 +82,24 @@ export default function DashboardPage() {
 
     // Stats básicas
     const libres = unidades?.filter(u => u.estado === 'libre').length || 0;
-    const reservadas = unidades?.filter(u => u.estado === 'reservado').length || 0;
-    const vendidas = unidades?.filter(u => u.estado === 'vendido').length || 0;
+    const reservadas = unidades?.filter(u => u.estado === 'reservada').length || 0;
+    const vendidas = unidades?.filter(u => u.estado === 'vendida').length || 0;
+
+    const resumenProyectos = (proyectos?.map(p => {
+      const unidadesProyecto = (unidades || []).filter(u => u.proyecto_id === p.id)
+      return {
+        id: p.id,
+        nombre: p.nombre,
+        total: unidadesProyecto.length,
+        libres: unidadesProyecto.filter(u => u.estado === 'libre').length,
+        reservadas: unidadesProyecto.filter(u => u.estado === 'reservada').length,
+        vendidas: unidadesProyecto.filter(u => u.estado === 'vendida').length,
+      }
+    }) || [])
 
     // Alertas de reservas por vencer (menos de 6 horas)
     const reservasPorVencer: AlertaReserva[] = (unidades || [])
-      .filter(u => u.estado === 'reservado' && u.reservado_hasta)
+      .filter(u => u.estado === 'reservada' && u.reservado_hasta)
       .map(u => ({
         id: u.id,
         numero: u.numero,
@@ -154,6 +167,7 @@ export default function DashboardPage() {
       cuotas_vencidas_monto: montoVencido,
       constructora_id: constructora.id,
       constructora_nombre: constructora.nombre,
+      proyectos_detalle: resumenProyectos,
     });
     setLoading(false);
   }, []);
@@ -226,6 +240,36 @@ export default function DashboardPage() {
           ))}
         </div>
       </div>
+
+      {stats.proyectos_detalle && stats.proyectos_detalle.length > 0 && (
+        <div className="bg-[#18181b] border border-zinc-800 rounded-xl p-5 mb-6">
+          <p className="text-[10px] text-white uppercase tracking-wider font-mono mb-3">Proyectos</p>
+          <div className="space-y-3">
+            {stats.proyectos_detalle.map(p => {
+              const pctLibre = p.total > 0 ? (p.libres / p.total) * 100 : 0
+              const pctReservada = p.total > 0 ? (p.reservadas / p.total) * 100 : 0
+              const pctVendida = p.total > 0 ? (p.vendidas / p.total) * 100 : 0
+              return (
+                <div
+                  key={p.id}
+                  className="cursor-pointer"
+                  onClick={() => router.push(`/dashboard/constructoras/${stats.constructora_id}/proyectos/${p.id}`)}
+                >
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-white text-xs font-semibold">{p.nombre}</span>
+                    <span className="text-zinc-500 text-[10px]">{p.libres}/{p.total} libres</span>
+                  </div>
+                  <div className="w-full h-2 rounded-full overflow-hidden flex bg-zinc-800">
+                    {pctVendida > 0 && <div className="h-full bg-red-500 transition-all" style={{ width: `${pctVendida}%` }} />}
+                    {pctReservada > 0 && <div className="h-full bg-amber-500 transition-all" style={{ width: `${pctReservada}%` }} />}
+                    {pctLibre > 0 && <div className="h-full bg-[#CCFF00] transition-all" style={{ width: `${pctLibre}%` }} />}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Alertas */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
