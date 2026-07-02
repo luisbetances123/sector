@@ -51,10 +51,23 @@ export default function InboxPage() {
   }, [])
 
   async function fetchMensajes() {
-    const { data } = await supabase
+    const { data: { user } } = await supabase.auth.getUser()
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('rol')
+      .eq('id', user?.id)
+      .single()
+
+    let query = supabase
       .from('inbox')
       .select('*')
       .order('created_at', { ascending: false })
+
+    if (profile?.rol === 'broker') {
+      query = query.eq('user_id', user?.id)
+    }
+
+    const { data } = await query
     if (data) setMensajes(data)
     setLoading(false)
   }
