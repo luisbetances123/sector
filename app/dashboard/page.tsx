@@ -72,7 +72,7 @@ export default function DashboardPage() {
       const { data: profile } = await supabase
         .from('profiles').select('rol').eq('id', user.id).single();
       if (profile?.rol === 'broker') {
-        router.push('/dashboard/clientes');
+        router.push('/dashboard/broker');
         return;
       }
     }

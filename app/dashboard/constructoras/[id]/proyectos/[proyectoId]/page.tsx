@@ -198,6 +198,7 @@ export default function ProyectoDetallePage() {
     if (!modalEstado) return
     setGuardando(true)
     try {
+      const { data: { user } } = await supabase.auth.getUser()
       const res = await fetch('/api/unidades/estado', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -206,6 +207,7 @@ export default function ProyectoDetallePage() {
           estado_nuevo: modalEstado.estadoNuevo,
           actor: userEmail,
           nota: notaModal || null,
+          broker_id: modalEstado.estadoNuevo === 'reservada' ? user?.id : null,
         }),
       })
       const data = await res.json()

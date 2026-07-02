@@ -59,6 +59,7 @@ export default function DashboardLayout({
 
 const menuItems = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Mi Panel', href: '/dashboard/broker', icon: LayoutDashboard },
   { name: 'Mi Empresa', href: '/dashboard/constructoras', icon: HardHat },
   { name: 'Brokers', href: '/dashboard/brokers', icon: Users },
   { name: 'Mis Clientes', href: '/dashboard/clientes', icon: UserCircle },
@@ -73,7 +74,7 @@ const menuItems = [
 
 const menuFiltrado = menuItems.filter(item => {
   if (userRol === 'broker') {
-    return ['Mis Clientes', 'Proyectos', 'Inbox', 'Agenda', 'Calculadora'].includes(item.name)
+    return ['Mi Panel', 'Mis Clientes', 'Proyectos', 'Inbox', 'Agenda', 'Calculadora'].includes(item.name)
   }
   return true
 })

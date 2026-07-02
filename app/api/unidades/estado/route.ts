@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic'
 
 export async function POST(req: NextRequest) {
   try {
-    const { unidad_id, estado_nuevo, actor, nota } = await req.json()
+    const { unidad_id, estado_nuevo, actor, nota, broker_id } = await req.json()
 
     if (!unidad_id || !estado_nuevo || !actor) {
       return NextResponse.json({ error: 'Faltan campos requeridos' }, { status: 400 })
@@ -43,6 +43,7 @@ export async function POST(req: NextRequest) {
     if (estado_nuevo === 'reservada') {
       camposExtra.fecha_reserva = new Date().toISOString()
       if (nota) camposExtra.reservado_por = nota
+      if (broker_id) camposExtra.broker_id = broker_id
     }
     if (estado_nuevo === 'vendida') {
       camposExtra.fecha_venta = new Date().toISOString()
@@ -52,6 +53,7 @@ export async function POST(req: NextRequest) {
       camposExtra.fecha_reserva = null
       camposExtra.reservado_por = null
       camposExtra.cliente_nombre = null
+      camposExtra.broker_id = null
     }
 
     const { error: errorUpdate } = await supabase

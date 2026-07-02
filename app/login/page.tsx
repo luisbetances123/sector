@@ -30,7 +30,7 @@ export default function LoginPage() {
       .single()
 
     if (profile?.rol === 'broker') {
-      window.location.href = '/dashboard/clientes'
+      window.location.href = '/dashboard/broker'
     } else {
       window.location.href = '/dashboard'
     }
